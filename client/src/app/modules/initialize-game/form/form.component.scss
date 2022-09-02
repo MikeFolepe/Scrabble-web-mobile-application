@@ -1,0 +1,56 @@
+.centered {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+}
+#logo-scrabble {
+    margin-top: 10px;
+    width: 400px;
+    height: 80px;
+}
+
+#main-form-box {
+    margin-top: 10px;
+}
+
+#main-form-name {
+    text-align: center;
+    font-size: large;
+}
+
+#dictionaries {
+    margin-top: 10px;
+    width: 32%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#submit-button {
+    text-align: center;
+    display: block;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#player-name-box {
+    height: 6.875rem;
+}
+
+.form-section {
+    margin-top: 2%;
+    margin-bottom: 2%;
+}
+
+.warning {
+    color: red;
+}
+
+.loading {
+    display: flex;
+    height: 50%;
+    font-size: large;
+    align-items: center;
+    justify-content: center;
+    margin: auto auto;
+}
