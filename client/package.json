@@ -12,7 +12,7 @@
     "coverage": "ng test --code-coverage --sourceMap=true",
     "lint": "ng lint --format stylish",
     "lint:fix": "npm run lint -- --fix",
-    "electron build": "ng build --base-href ./ && electron .",
+    "electronb": "ng build --base-href ./",
     "electron" : "electron ."
   },
   "private": true,
