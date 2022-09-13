@@ -1,19 +1,19 @@
-import { AfterViewInit, Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
-import { DEFAULT_CHAT_HEIGHT, LOG2990_CHAT_HEIGHT, ONE_SECOND_DELAY, PLAYER_ONE_INDEX, PLAYER_TWO_INDEX } from '@app/classes/constants';
+import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
+import { DEFAULT_CHAT_HEIGHT, LOG2990_CHAT_HEIGHT } from '@app/classes/constants';
 import { MessageType } from '@app/classes/enum';
 import { BoardHandlerService } from '@app/services/board-handler.service';
 import { ChatboxService } from '@app/services/chatbox.service';
 import { EndGameService } from '@app/services/end-game.service';
 import { GameSettingsService } from '@app/services/game-settings.service';
 import { SendMessageService } from '@app/services/send-message.service';
-import { SkipTurnService } from '@app/services/skip-turn.service';
+import { GameType } from '@common/game-type';
 
 @Component({
     selector: 'app-chatbox',
     templateUrl: './chatbox.component.html',
     styleUrls: ['./chatbox.component.scss'],
 })
-export class ChatboxComponent implements OnInit, AfterViewInit {
+export class ChatboxComponent implements OnInit {
     @ViewChild('scrollMe') private myScrollContainer: ElementRef;
 
     message: string;
@@ -30,7 +30,6 @@ export class ChatboxComponent implements OnInit, AfterViewInit {
         private sendMessageService: SendMessageService,
         public endGameService: EndGameService,
         private boardHandlerService: BoardHandlerService,
-        private skipTurnService: SkipTurnService,
         private gameSettingsService: GameSettingsService,
     ) {
         this.message = '';
@@ -48,6 +47,11 @@ export class ChatboxComponent implements OnInit, AfterViewInit {
     ngOnInit(): void {
         this.sendMessageService.displayBound(this.displayMessageByType.bind(this));
         this.initializeChatHeight();
+        const gameType = this.gameSettingsService.gameType === GameType.Classic ? 'Classique' : 'LOG2990';
+        this.sendSystemMessage('Début de la partie, mode ' + gameType + '.');
+        this.sendSystemMessage(
+            "Affichez la liste des commandes disponibles en tapant la commande '!aide', puis en appuyant sur la touche 'Entrée' de votre clavier.",
+        );
     }
 
     handleKeyEvent(event: KeyboardEvent): void {
@@ -58,7 +62,6 @@ export class ChatboxComponent implements OnInit, AfterViewInit {
         }
     }
 
-    // TODO revoir cette fonction avec Étienne
     displayMessageByType(): void {
         if (this.sendMessageService.messageType === MessageType.Error && this.message.length) {
             this.listTypes.push(this.sendMessageService.messageType);
@@ -66,7 +69,8 @@ export class ChatboxComponent implements OnInit, AfterViewInit {
         }
         this.listTypes.push(this.sendMessageService.messageType);
         this.listMessages.push(this.sendMessageService.message);
-        this.message = ''; // Clear input
+        // Clear input
+        this.message = '';
         this.scrollToBottom();
     }
 
@@ -89,19 +93,5 @@ export class ChatboxComponent implements OnInit, AfterViewInit {
             if (this.gameSettingsService.gameType) chatBox.style.height = LOG2990_CHAT_HEIGHT + 'vh';
             else chatBox.style.height = DEFAULT_CHAT_HEIGHT + 'vh';
         }
-    }
-
-    ngAfterViewInit(): void {
-        const findEnd = setInterval(() => {
-            this.endGameService.checkEndGame();
-            if (this.endGameService.isEndGame) {
-                this.chatBoxService.displayFinalMessage(PLAYER_ONE_INDEX);
-                this.chatBoxService.displayFinalMessage(PLAYER_TWO_INDEX);
-                this.endGameService.getFinalScore(PLAYER_ONE_INDEX);
-                this.endGameService.getFinalScore(PLAYER_TWO_INDEX);
-                this.skipTurnService.stopTimer();
-                clearInterval(findEnd);
-            }
-        }, ONE_SECOND_DELAY);
     }
 }

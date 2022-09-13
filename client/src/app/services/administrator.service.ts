@@ -2,8 +2,9 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ElementRef, Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ERROR_MESSAGE_DELAY } from '@app/classes/constants';
-import { JoinDialogComponent } from '@app/modules/initialize-game/join-dialog/join-dialog.component';
+import { ERROR_MESSAGE_DELAY, TWO_SECOND_DELAY } from '@app/classes/constants';
+import { NameSelectorComponent } from '@app/modules/initialize-game/name-selector/name-selector.component';
+import { EditDictionaryDialogComponent } from '@app/pages/admin-page/edit-dictionary-dialog/edit-dictionary-dialog.component';
 import { CommunicationService } from '@app/services/communication.service';
 import { AiPlayer, AiPlayerDB, AiType } from '@common/ai-name';
 import { Dictionary } from '@common/dictionary';
@@ -15,33 +16,34 @@ import { saveAs } from 'file-saver';
     providedIn: 'root',
 })
 export class AdministratorService {
-    beginnerNames: AiPlayerDB[];
-    expertNames: AiPlayerDB[];
+    aiBeginner: AiPlayerDB[];
+    aiExpert: AiPlayerDB[];
     dictionaries: Dictionary[] = [];
     currentDictionary: Dictionary;
     fileInput: ElementRef;
     file: File | null;
-    uploadMessage: string;
+    serverError: string;
     isResetting: boolean;
     ajv: Ajv;
 
     constructor(private communicationService: CommunicationService, public snackBar: MatSnackBar, public dialog: MatDialog) {
         this.ajv = new Ajv();
         this.file = null;
-        this.uploadMessage = '';
+        this.serverError = '';
+        this.isResetting = false;
     }
 
     initializeAiPlayers(): void {
         this.communicationService.getAiPlayers(AiType.beginner).subscribe(
             (aiBeginners: AiPlayerDB[]) => {
-                this.beginnerNames = aiBeginners;
+                this.aiBeginner = aiBeginners;
             },
             (error: HttpErrorResponse) => this.handleRequestError(error),
         );
 
         this.communicationService.getAiPlayers(AiType.expert).subscribe(
             (aiExperts: AiPlayerDB[]) => {
-                this.expertNames = aiExperts;
+                this.aiExpert = aiExperts;
             },
             (error: HttpErrorResponse) => this.handleRequestError(error),
         );
@@ -58,14 +60,15 @@ export class AdministratorService {
             this.displayMessage('Vous ne pouvez pas modifier un joueur par défaut!');
             return;
         }
-        const nameDialog = this.dialog.open(JoinDialogComponent, { disableClose: true });
+        const nameDialog = this.dialog.open(NameSelectorComponent, { disableClose: true });
         nameDialog.afterClosed().subscribe((playerName: string) => {
-            if (playerName == null) return;
+            if (playerName === null) return;
 
             if (this.checkIfAlreadyExists(playerName)) {
                 this.displayMessage('Ce nom de joueur virtuel est déjà dans la base de données. Veuillez réessayer.');
                 return;
             }
+
             const aiPlayer: AiPlayer = {
                 aiName: playerName,
                 isDefault: false,
@@ -89,9 +92,9 @@ export class AdministratorService {
         this.communicationService.deleteAiPlayer(aiPlayer._id, aiType).subscribe(
             (aiPlayers: AiPlayerDB[]) => {
                 if (aiType === AiType.expert) {
-                    this.expertNames = aiPlayers;
+                    this.aiExpert = aiPlayers;
                 } else {
-                    this.beginnerNames = aiPlayers;
+                    this.aiBeginner = aiPlayers;
                 }
                 this.displayMessage('Joueur supprimé');
             },
@@ -107,11 +110,11 @@ export class AdministratorService {
         }
     }
 
-    async onSubmit() {
+    async onSubmit(): Promise<void> {
         if (await this.isDictionaryValid()) {
             this.addDictionary();
         } else {
-            this.displayUploadMessage("Le fichier n'est pas un dictionnaire");
+            this.displayMessage("Le fichier n'est pas un dictionnaire");
         }
     }
 
@@ -128,21 +131,19 @@ export class AdministratorService {
             }
             reader.onloadend = () => {
                 // Validate the dictionary with a schema
-                if (typeof reader.result === 'string') {
-                    try {
-                        this.currentDictionary = JSON.parse(reader.result);
-                    } catch (e) {
-                        resolve(false);
-                    }
+                try {
+                    this.currentDictionary = JSON.parse(reader.result as string);
+                } catch (e) {
+                    resolve(false);
                 }
                 resolve(this.ajv.validate(dictionarySchema, this.currentDictionary));
             };
         });
     }
 
-    addDictionary() {
+    addDictionary(): void {
         if (this.isDictionaryNameUsed(this.currentDictionary.title)) {
-            this.displayUploadMessage('Il existe déjà un dictionnaire portant le même nom');
+            this.displayMessage('Il existe déjà un dictionnaire portant le même nom');
             return;
         }
 
@@ -155,7 +156,8 @@ export class AdministratorService {
                         description: this.currentDictionary.description,
                         isDefault: false,
                     });
-                    this.displayUploadMessage(response);
+                    this.displayMessage(response);
+                    this.file = null;
                 },
                 (error: HttpErrorResponse) => {
                     this.displayMessage(`Le dictionnaire n'a pas été téléversé, erreur : ${error.message}`);
@@ -163,10 +165,32 @@ export class AdministratorService {
             );
         }
     }
+
+    editDictionary(dictionary: Dictionary): void {
+        if (dictionary.isDefault) {
+            this.displayMessage('Vous ne pouvez pas modifier le dictionnaire par défaut');
+            return;
+        }
+        this.dialog
+            .open(EditDictionaryDialogComponent, {
+                disableClose: true,
+                data: {
+                    title: dictionary.title,
+                    description: dictionary.description,
+                },
+            })
+            .afterClosed()
+            .subscribe((response) => {
+                if (!response) return;
+                if (!response.titleInput || !response.descriptionInput) return;
+                this.updateDictionary(dictionary, response);
+            });
+    }
+
     // JUSTIFICATION: Required as we don't know the explicit type of a dialog response
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     updateDictionary(dictionary: Dictionary, dialogResponse: any): void {
-        if (this.isDictionaryNameUsed(dialogResponse.title)) {
+        if (this.isDictionaryNameUsed(dialogResponse.titleInput)) {
             this.displayMessage('Ce titre de dictionnaire existe deja. Veuillez réessayer.');
             return;
         }
@@ -204,34 +228,29 @@ export class AdministratorService {
     }
 
     getAiBeginnerName(): string {
-        const randomAiBeginnerIndex = Math.floor(Math.random() * this.beginnerNames.length);
-        return this.beginnerNames[randomAiBeginnerIndex].aiName;
+        const randomAiBeginnerIndex = Math.floor(Math.random() * this.aiBeginner.length);
+        return this.aiBeginner[randomAiBeginnerIndex].aiName;
     }
 
     async resetData(): Promise<void> {
         this.isResetting = true;
-
         this.resetAiPlayers();
         this.resetDictionaries();
         this.resetScores();
 
-        this.isResetting = false;
-        // TODO fix envoie message reset
-        this.displayMessage('La base de données à été réinitialisée');
-    }
-
-    isDictionaryDeletable(dictionary: Dictionary): boolean {
-        if (dictionary.isDefault) this.displayMessage('Vous ne pouvez pas modifier le dictionnaire par défaut');
-        return !dictionary.isDefault;
+        setTimeout(() => {
+            this.isResetting = false;
+            this.displayMessage('La base de données à été réinitialisée');
+        }, TWO_SECOND_DELAY);
     }
 
     private addAiPlayer(aiPlayer: AiPlayer, aiType: AiType): void {
         this.communicationService.addAiPlayer(aiPlayer, aiType).subscribe(
             (aiFromDB: AiPlayerDB) => {
                 if (aiType === AiType.expert) {
-                    this.expertNames.push(aiFromDB);
+                    this.aiExpert.push(aiFromDB);
                 } else {
-                    this.beginnerNames.push(aiFromDB);
+                    this.aiBeginner.push(aiFromDB);
                 }
                 this.displayMessage('Joueur ajouté');
             },
@@ -245,9 +264,9 @@ export class AdministratorService {
         this.communicationService.updateAiPlayer(id, aiPlayer, aiType).subscribe(
             (aiPlayers) => {
                 if (aiType === AiType.expert) {
-                    this.expertNames = aiPlayers;
+                    this.aiExpert = aiPlayers;
                 } else {
-                    this.beginnerNames = aiPlayers;
+                    this.aiBeginner = aiPlayers;
                 }
                 this.displayMessage('Joueur modifié');
             },
@@ -258,52 +277,50 @@ export class AdministratorService {
     }
 
     private displayMessage(message: string): void {
-        if (this.isResetting) return; // TODO check si fonctionnel
+        if (this.isResetting) return;
         this.snackBar.open(message, 'OK', {
             duration: ERROR_MESSAGE_DELAY,
             horizontalPosition: 'center',
-            verticalPosition: 'top',
+            verticalPosition: 'bottom',
+            panelClass: ['snackBarStyle'],
         });
     }
 
     private isDictionaryNameUsed(dictionaryTitle: string): boolean {
-        for (const dictionary of this.dictionaries) {
-            if (dictionaryTitle === dictionary.title) return true;
-        }
-        return false;
+        return this.dictionaries.some((dictionaryToFind: Dictionary) => dictionaryToFind.title === dictionaryTitle);
     }
 
     private checkIfAlreadyExists(aiPlayerName: string): boolean {
-        // TODO: if (this.beginnerNames.find()... || this.expertNames.find()...) return false;
-        if (this.beginnerNames === undefined && this.expertNames === undefined) return false;
-        const aiBeginner = this.beginnerNames.find((aiBeginnerPlayer) => aiBeginnerPlayer.aiName === aiPlayerName);
-        const aiExpert = this.expertNames.find((aiExpertPlayer) => aiExpertPlayer.aiName === aiPlayerName);
-
-        return aiBeginner !== undefined || aiExpert !== undefined;
+        if (this.aiBeginner === undefined && this.aiExpert === undefined) return false;
+        if (
+            this.aiBeginner.find((aiBeginnerPlayer) => aiBeginnerPlayer.aiName === aiPlayerName) ||
+            this.aiExpert.find((aiExpertPlayer) => aiExpertPlayer.aiName === aiPlayerName)
+        )
+            return true;
+        return false;
     }
 
     private handleRequestError(error: HttpErrorResponse): void {
-        this.displayMessage(`Nous n'avons pas pu accéder au serveur, erreur : ${error.message}`);
+        this.displayServerError(`Nous n'avons pas pu accéder au serveur, erreur : ${error.message}`);
     }
 
-    private displayUploadMessage(uploadMessage: string): void {
-        if (this.uploadMessage.length) return; // There is already a message occurring
-        this.uploadMessage = uploadMessage;
+    private displayServerError(uploadMessage: string): void {
+        if (this.serverError.length) return; // There is already a message occurring
+        this.serverError = uploadMessage;
         this.file = null;
-
         setTimeout(() => {
-            this.uploadMessage = '';
+            this.serverError = '';
         }, ERROR_MESSAGE_DELAY);
     }
 
     private resetAiPlayers(): void {
-        const createdAiExpertNames = this.expertNames.filter((aiExpertPlayer) => !aiExpertPlayer.isDefault);
-        const createdAiBeginnerNames = this.beginnerNames.filter((aiBeginnerPlayer) => !aiBeginnerPlayer.isDefault);
+        const createdAiaiExpert = this.aiExpert.filter((aiExpertPlayer) => !aiExpertPlayer.isDefault);
+        const createdAiaiBeginner = this.aiBeginner.filter((aiBeginnerPlayer) => !aiBeginnerPlayer.isDefault);
 
-        for (const expertName of createdAiExpertNames) {
+        for (const expertName of createdAiaiExpert) {
             this.deleteAiPlayer(expertName, AiType.expert);
         }
-        for (const beginnerName of createdAiBeginnerNames) {
+        for (const beginnerName of createdAiaiBeginner) {
             this.deleteAiPlayer(beginnerName, AiType.beginner);
         }
     }

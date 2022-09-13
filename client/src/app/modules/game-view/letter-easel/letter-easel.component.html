@@ -1,6 +1,6 @@
 <div id="easel" class="easel-container" (click)="onEaselClick()" (contextmenu)="onEaselClick()" tabindex="0" #easel>
     <div
-        class="letter-container"
+        class="letter-container not-selectionnable"
         *ngFor="let letter of letterEaselTab; let i = index"
         [ngClass]="{ 'border-swap': letterEaselTab[i].isSelectedForSwap, 'border-manipulation': letterEaselTab[i].isSelectedForManipulation }"
         (contextmenu)="onRightClick($event, i)"

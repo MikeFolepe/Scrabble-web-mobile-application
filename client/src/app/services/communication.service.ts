@@ -33,25 +33,19 @@ export class CommunicationService {
     }
 
     addPlayersScores(players: PlayerScore[], gameType: GameType): Observable<void> {
-        if (gameType === GameType.Classic)
-            return this.http.post<void>(`${this.baseUrl}/game/best-scores-classic`, players).pipe(catchError(this.handleError<void>('addPlayers')));
-        return this.http.post<void>(`${this.baseUrl}/game/best-scores-log2990`, players).pipe(catchError(this.handleError<void>('addPlayers')));
+        return this.http
+            .post<void>(`${this.baseUrl}/game/best-scores-` + (gameType === GameType.Classic ? 'classic' : 'log2990'), players)
+            .pipe(catchError(this.handleError<void>('addPlayers')));
     }
 
     getBestPlayers(gameType: GameType): Observable<PlayerScore[]> {
-        if (gameType === GameType.Classic)
-            return this.http
-                .get<PlayerScore[]>(`${this.baseUrl}/game/best-scores-classic`)
-                .pipe(catchError(this.handleError<PlayerScore[]>('getBestPlayers')));
         return this.http
-            .get<PlayerScore[]>(`${this.baseUrl}/game/best-scores-log2990`)
+            .get<PlayerScore[]>(`${this.baseUrl}/game/best-scores-` + (gameType === GameType.Classic ? 'classic' : 'log2990'))
             .pipe(catchError(this.handleError<PlayerScore[]>('getBestPlayers')));
     }
 
     getAiPlayers(aiType: AiType): Observable<AiPlayerDB[]> {
-        return aiType === AiType.expert
-            ? this.http.get<AiPlayerDB[]>(`${this.baseUrl}/admin/aiExperts`)
-            : this.http.get<AiPlayerDB[]>(`${this.baseUrl}/admin/aiBeginners`);
+        return this.http.get<AiPlayerDB[]>(`${this.baseUrl}/admin/` + (aiType === AiType.expert ? 'aiExperts' : 'aiBeginners'));
     }
 
     addAiPlayer(aiPlayer: AiPlayer, aiType: AiType): Observable<AiPlayerDB> {
@@ -59,9 +53,7 @@ export class CommunicationService {
     }
 
     deleteAiPlayer(id: string, aiType: AiType): Observable<AiPlayerDB[]> {
-        return aiType === AiType.expert
-            ? this.http.delete<AiPlayerDB[]>(`${this.baseUrl}/admin/aiExperts/${id}`)
-            : this.http.delete<AiPlayerDB[]>(`${this.baseUrl}/admin/aiBeginners/${id}`);
+        return this.http.delete<AiPlayerDB[]>(`${this.baseUrl}/admin/` + (aiType === AiType.expert ? `aiExperts/${id}` : `aiBeginners/${id}`));
     }
 
     deleteScores(): Observable<void> {

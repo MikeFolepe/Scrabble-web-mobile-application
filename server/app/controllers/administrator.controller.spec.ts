@@ -9,9 +9,9 @@ import * as chai from 'chai';
 import { expect } from 'chai';
 import * as fileSystem from 'fs';
 import { StatusCodes } from 'http-status-codes';
+import * as sinon from 'sinon';
 import { Container } from 'typedi';
 import chaiHttp = require('chai-http');
-import Sinon = require('sinon');
 
 describe('AdminController', () => {
     let expressApp: Express.Application;
@@ -70,7 +70,7 @@ describe('AdminController', () => {
     });
 
     it('should return the beginner Ais', (done) => {
-        const stubOnGet = Sinon.stub(administratorService, 'getAllAiPlayers').returns(Promise.resolve(aiPlayers));
+        const stubOnGet = sinon.stub(administratorService, 'getAllAiPlayers').returns(Promise.resolve(aiPlayers));
         chai.request(expressApp)
             .get('/api/admin/aiBeginners')
             .end((err, response) => {
@@ -83,7 +83,7 @@ describe('AdminController', () => {
     });
 
     it('should return the experts Ais', (done) => {
-        const stubOnGet = Sinon.stub(administratorService, 'getAllAiPlayers').returns(Promise.resolve(aiPlayers));
+        const stubOnGet = sinon.stub(administratorService, 'getAllAiPlayers').returns(Promise.resolve(aiPlayers));
         chai.request(expressApp)
             .get('/api/admin/aiExperts')
             .end((err, response) => {
@@ -96,7 +96,7 @@ describe('AdminController', () => {
     });
 
     it('should handle the error while getting the beginners ', (done) => {
-        const stubOnGet = Sinon.stub(administratorService, 'getAllAiPlayers').returns(Promise.reject(new Error('fail')));
+        const stubOnGet = sinon.stub(administratorService, 'getAllAiPlayers').returns(Promise.reject(new Error('fail')));
         chai.request(expressApp)
             .get('/api/admin/aiBeginners')
             .end((err, response) => {
@@ -108,7 +108,7 @@ describe('AdminController', () => {
     });
 
     it('should handle the error while getting the experts ', (done) => {
-        const stubOnGet = Sinon.stub(administratorService, 'getAllAiPlayers').returns(Promise.reject(new Error('fail')));
+        const stubOnGet = sinon.stub(administratorService, 'getAllAiPlayers').returns(Promise.reject(new Error('fail')));
         chai.request(expressApp)
             .get('/api/admin/aiExperts')
             .end((err, response) => {
@@ -120,7 +120,7 @@ describe('AdminController', () => {
     });
 
     it('should delete the ai beginners  ', (done) => {
-        const stubOnDelete = Sinon.stub(administratorService, 'deleteAiPlayer').returns(Promise.resolve(newPlayers));
+        const stubOnDelete = sinon.stub(administratorService, 'deleteAiPlayer').returns(Promise.resolve(newPlayers));
         chai.request(expressApp)
             .delete('/api/admin/aiBeginners/1')
             .end((err, response) => {
@@ -133,7 +133,7 @@ describe('AdminController', () => {
     });
 
     it('should delete the ai experts  ', (done) => {
-        const stubOnDelete = Sinon.stub(administratorService, 'deleteAiPlayer').returns(Promise.resolve(newPlayers));
+        const stubOnDelete = sinon.stub(administratorService, 'deleteAiPlayer').returns(Promise.resolve(newPlayers));
         chai.request(expressApp)
             .delete('/api/admin/aiExperts/1')
             .end((err, response) => {
@@ -146,7 +146,7 @@ describe('AdminController', () => {
     });
 
     it('should handle the error while deleting the beginners ', (done) => {
-        const stubOnDelete = Sinon.stub(administratorService, 'deleteAiPlayer').returns(Promise.reject(new Error('fail')));
+        const stubOnDelete = sinon.stub(administratorService, 'deleteAiPlayer').returns(Promise.reject(new Error('fail')));
         chai.request(expressApp)
             .delete('/api/admin/aiBeginners/1')
             .end((err, response) => {
@@ -158,7 +158,7 @@ describe('AdminController', () => {
     });
 
     it('should handle the error while deleting the experts ', (done) => {
-        const stubOnDelete = Sinon.stub(administratorService, 'deleteAiPlayer').returns(Promise.reject(new Error('fail')));
+        const stubOnDelete = sinon.stub(administratorService, 'deleteAiPlayer').returns(Promise.reject(new Error('fail')));
         chai.request(expressApp)
             .delete('/api/admin/aiExperts/1')
             .end((err, response) => {
@@ -174,7 +174,7 @@ describe('AdminController', () => {
             aiName: 'Miss_Betty',
             isDefault: true,
         };
-        const stubOnAdd = Sinon.stub(administratorService, 'addAiPlayer').returns(Promise.resolve(aiPlayers[1]));
+        const stubOnAdd = sinon.stub(administratorService, 'addAiPlayer').returns(Promise.resolve(aiPlayers[1]));
         chai.request(expressApp)
             .post('/api/admin/aiPlayers')
             .send({
@@ -195,7 +195,7 @@ describe('AdminController', () => {
             aiName: 'Miss_Betty',
             isDefault: true,
         };
-        const stubOnAdd = Sinon.stub(administratorService, 'addAiPlayer').returns(Promise.reject(new Error('fail')));
+        const stubOnAdd = sinon.stub(administratorService, 'addAiPlayer').returns(Promise.reject(new Error('fail')));
         chai.request(expressApp)
             .post('/api/admin/aiPlayers')
             .send({
@@ -211,7 +211,7 @@ describe('AdminController', () => {
     });
 
     it('should handle an error while resetting the scores', (done) => {
-        const stubOnReset = Sinon.stub(administratorService, 'resetScores').returns(Promise.reject(new Error('fail')));
+        const stubOnReset = sinon.stub(administratorService, 'resetScores').returns(Promise.reject(new Error('fail')));
         chai.request(expressApp)
             .delete('/api/admin/scores')
             .end((err, response) => {
@@ -223,7 +223,7 @@ describe('AdminController', () => {
     });
 
     it('should reset the scores', (done) => {
-        const stubOnReset = Sinon.stub(administratorService, 'resetScores').returns(Promise.resolve());
+        const stubOnReset = sinon.stub(administratorService, 'resetScores').returns(Promise.resolve());
         chai.request(expressApp)
             .delete('/api/admin/scores')
             .end((err, response) => {
@@ -242,7 +242,7 @@ describe('AdminController', () => {
 
         const beginner = AiType.beginner;
 
-        const stubOnUpdate = Sinon.stub(administratorService, 'updateAiPlayer').returns(Promise.resolve(aiPlayers));
+        const stubOnUpdate = sinon.stub(administratorService, 'updateAiPlayer').returns(Promise.resolve(aiPlayers));
         chai.request(expressApp)
             .put('/api/admin/aiPlayers/2')
             .send({ aiPlayer, beginner })
@@ -256,7 +256,7 @@ describe('AdminController', () => {
     });
 
     it('should handle an error while updating the ai players', (done) => {
-        const stubOnUpdate = Sinon.stub(administratorService, 'updateAiPlayer').returns(Promise.reject(new Error('fail')));
+        const stubOnUpdate = sinon.stub(administratorService, 'updateAiPlayer').returns(Promise.reject(new Error('fail')));
         chai.request(expressApp)
             .put('/api/admin/aiPlayers/2')
             .end((err, response) => {
@@ -268,7 +268,7 @@ describe('AdminController', () => {
     });
 
     it('should return the the dictionaries', (done) => {
-        const stubOnGet = Sinon.stub(administratorService, 'getDictionaries').returns(dictionaries);
+        const stubOnGet = sinon.stub(administratorService, 'getDictionaries').returns(dictionaries);
         chai.request(expressApp)
             .get('/api/admin/dictionaries')
             .end((err, response) => {
@@ -281,7 +281,7 @@ describe('AdminController', () => {
     });
 
     it('should return the updated dictionaries', (done) => {
-        const stubOnUpdate = Sinon.stub(administratorService, 'updateDictionary').returns(dictionaries);
+        const stubOnUpdate = sinon.stub(administratorService, 'updateDictionary').returns(dictionaries);
         chai.request(expressApp)
             .put('/api/admin/dictionaries')
             .end((err, response) => {
@@ -294,7 +294,7 @@ describe('AdminController', () => {
     });
 
     it('should return the new dictionaries', (done) => {
-        const stubOnDelete = Sinon.stub(administratorService, 'deleteDictionary').returns(dictionaries);
+        const stubOnDelete = sinon.stub(administratorService, 'deleteDictionary').returns(dictionaries);
         chai.request(expressApp)
             .delete('/api/admin/dictionaries/dictionary.json')
             .end((err, response) => {
@@ -318,7 +318,7 @@ describe('AdminController', () => {
                 "aaleniens"
             ]
         }`;
-        const stubOnDelete = Sinon.stub(fileSystem, 'readFileSync').returns(jsonDictionary);
+        const stubOnDelete = sinon.stub(fileSystem, 'readFileSync').returns(jsonDictionary);
         chai.request(expressApp)
             .get('/api/admin/download/dictionary.json')
             .end((err, response) => {

@@ -1,16 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable no-empty */
-/* eslint-disable @typescript-eslint/no-require-imports */
 /* eslint-disable dot-notation */
-// import { AI_MODELS } from '@app/classes/database.schema';
-import { AI_MODELS, DbModel, SCORES_MODEL } from '@app/classes/database.schema';
-import { AiType } from '@common/ai-name';
+import { AI_MODELS, SCORES_MODEL } from '@app/classes/database.schema';
+import { AiPlayer, AiType } from '@common/ai-name';
 import { GameType } from '@common/game-type';
+import { PlayerScore } from '@common/player';
 import * as chai from 'chai';
 import { expect } from 'chai';
 import * as spies from 'chai-spies';
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import * as mongoose from 'mongoose';
 import * as sinon from 'sinon';
 import { DatabaseService } from './database.service';
 
@@ -49,7 +48,7 @@ describe('Database service', () => {
     });
 
     it('should set default data when starting', async () => {
-        const aiModel = AI_MODELS.get(AiType.beginner) as DbModel;
+        const aiModel = AI_MODELS.get(AiType.beginner) as mongoose.Model<AiPlayer>;
         const player = new aiModel({
             aiName: 'Mike',
             isDefault: true,
@@ -63,7 +62,7 @@ describe('Database service', () => {
     });
 
     it('should set default data when starting', async () => {
-        const aiModel = AI_MODELS.get(AiType.beginner) as DbModel;
+        const aiModel = AI_MODELS.get(AiType.beginner) as mongoose.Model<AiPlayer>;
         const player = new aiModel({
             aiName: 'Mike',
             isDefault: true,
@@ -77,7 +76,7 @@ describe('Database service', () => {
     });
 
     it('should set default data when starting', async () => {
-        const scoresModel = SCORES_MODEL.get(GameType.Classic) as DbModel;
+        const scoresModel = SCORES_MODEL.get(GameType.Classic) as mongoose.Model<PlayerScore>;
         const scoreToAdd = new scoresModel({
             score: 10,
             playerName: 'mike',

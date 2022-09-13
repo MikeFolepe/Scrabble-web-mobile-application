@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable dot-notation */
+/* eslint-disable no-unused-vars */
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -43,6 +44,8 @@ describe('EndGameService', () => {
     it('should check if it is the end of the game when checkEndGame()', () => {
         spyOn<any>(service, 'isEndGameByActions').and.returnValues(false, false, true, true);
         spyOn<any>(service, 'isEndGameByEasel').and.returnValues(false, true, false, true);
+        service.playerService.players.push(player);
+        service.playerService.players.push(playerAI);
 
         service.checkEndGame();
         expect(service.isEndGame).toBeFalse();
@@ -71,11 +74,17 @@ describe('EndGameService', () => {
     });
 
     it('should receive the endgame from the server', () => {
+        spyOn(service['sendMessageService'], 'displayFinalMessage');
+        service.playerService.players.push(player);
+        service.playerService.players.push(playerAI);
         service['clientSocketService'].socket = {
-            on: (eventName: string, callback: (isEndGame: boolean) => void) => {
+            on: (eventName: string, callback: (isEndGame: boolean, letterTable: Letter[]) => void) => {
                 if (eventName === 'receiveEndGame') {
-                    callback(true);
+                    callback(true, player.letterTable);
                 }
+            },
+            emit: (eventName: string, _args: any[] | any) => {
+                return;
             },
         } as unknown as Socket;
 
@@ -206,7 +215,6 @@ describe('EndGameService', () => {
         service.clearAllData();
 
         expect(service.playerService.players).toHaveSize(0);
-        // expect(service.letterService.reserve).toEqual(RESERVE);
         expect(service.isEndGame).toBeFalse();
         expect(service.actionsLog).toHaveSize(0);
         expect(service.debugService.debugServiceMessage).toHaveSize(0);

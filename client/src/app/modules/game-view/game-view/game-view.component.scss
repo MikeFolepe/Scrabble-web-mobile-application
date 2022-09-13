@@ -51,12 +51,28 @@ button {
     gap: 1em;
 }
 
-#regular-button {
+#regular-button-1 {
+    height: 3em;
+    flex: 1;
+    align-items: stretch;
+}
+#regular-button-2 {
     height: 3em;
     flex: 1;
     align-items: stretch;
 }
 
+#regular-button-3 {
+    height: 3em;
+    flex: 1;
+    align-items: stretch;
+}
+
+#regular-button-4 {
+    height: 3em;
+    flex: 1;
+    align-items: stretch;
+}
 #play-button {
     height: 3em;
     width: 100%;

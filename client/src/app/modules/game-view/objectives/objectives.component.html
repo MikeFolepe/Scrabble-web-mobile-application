@@ -21,7 +21,10 @@
     <div class="objective" [ngClass]="{ fade: objectives[1][1].isCompleted, invisible: !objectives[1][1].isCompleted }">
         <div class="score">{{ objectives[1][1].score }}</div>
         <div class="description">{{ objectives[1][1].name }}</div>
-        <div class="checked" [ngClass]="{ visible: objectives[1][1].isCompleted }">&#10003;</div>
+        <div class="checked" [ngClass]="{ visible: objectives[1][1].isCompleted }">
+            &#10003;
+            <p>Par : {{ gameSettingsService.gameSettings.playersNames[1] }}</p>
+        </div>
     </div>
 
     <h3>Publics</h3>

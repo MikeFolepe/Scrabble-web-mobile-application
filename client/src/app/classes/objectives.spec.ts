@@ -5,8 +5,6 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { OBJECTIVES } from '@app/classes/objectives';
 import { ObjectivesService } from '@app/services/objectives.service';
 
-// TODO creates GET console errors
-
 describe('Objectives', () => {
     let objectiveService: ObjectivesService;
 

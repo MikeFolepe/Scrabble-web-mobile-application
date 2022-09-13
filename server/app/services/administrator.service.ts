@@ -1,25 +1,25 @@
-import { AI_MODELS, DbModel, SCORES_MODEL } from '@app/classes/database.schema';
+import { AI_MODELS, SCORES_MODEL } from '@app/classes/database.schema';
 import { AiPlayer, AiPlayerDB, AiType } from '@common/ai-name';
 import { Dictionary } from '@common/dictionary';
 import { GameType } from '@common/game-type';
-import * as mongoose from 'mongoose';
-import * as fileSystem from 'fs';
-import { Service } from 'typedi';
 import { PlayerScore } from '@common/player';
+import * as fileSystem from 'fs';
+import * as mongoose from 'mongoose';
+import { Service } from 'typedi';
 
 @Service()
 export class AdministratorService {
     private newAiPlayer: AiPlayerDB;
-    private dictionaries: Dictionary[] = [];
+    private dictionaries: Dictionary[];
 
     async getAllAiPlayers(aiType: AiType): Promise<AiPlayerDB[]> {
-        const aiModel = AI_MODELS.get(aiType) as DbModel;
+        const aiModel = AI_MODELS.get(aiType) as mongoose.Model<AiPlayer>;
         const aiPlayers = await aiModel.find({}).exec();
         return aiPlayers;
     }
 
     async addAiPlayer(aiPlayer: AiPlayer, aiType: AiType): Promise<AiPlayerDB> {
-        const aiModel = AI_MODELS.get(aiType) as DbModel;
+        const aiModel = AI_MODELS.get(aiType) as mongoose.Model<AiPlayer>;
         const aiToSave = new aiModel({
             aiName: aiPlayer.aiName,
             isDefault: aiPlayer.isDefault,
@@ -31,13 +31,13 @@ export class AdministratorService {
     }
 
     async deleteAiPlayer(id: string, aiType: AiType): Promise<AiPlayerDB[]> {
-        const aiModel = AI_MODELS.get(aiType) as DbModel;
+        const aiModel = AI_MODELS.get(aiType) as mongoose.Model<AiPlayer>;
         await aiModel.findByIdAndDelete(id).exec();
         return await this.getAllAiPlayers(aiType);
     }
 
     async updateAiPlayer(id: string, object: { aiBeginner: AiPlayer; aiType: AiType }): Promise<AiPlayerDB[]> {
-        const aiModel = AI_MODELS.get(object.aiType) as DbModel;
+        const aiModel = AI_MODELS.get(object.aiType) as mongoose.Model<AiPlayer>;
         await aiModel.findByIdAndUpdate(id, { aiName: object.aiBeginner.aiName }).exec();
         return await this.getAllAiPlayers(object.aiType);
     }

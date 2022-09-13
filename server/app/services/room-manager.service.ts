@@ -139,17 +139,19 @@ export class RoomManagerService {
         return roomWaiting[roomIndex] as Room;
     }
 
-    getNumberOfRoomInWaitingState(gameType: GameType): number {
-        let numberOfRoom = 0;
-        // First  special case
-        if (this.rooms[gameType] === undefined) return numberOfRoom;
-        // Second special case
-        if (this.rooms[gameType].length === 0) {
-            return numberOfRoom;
+    getNumberOfRoomInWaitingState(): number[] {
+        const numberOfRoom: number[] = [0, 0];
+        // special case
+        if (this.rooms === undefined || this.rooms.length === 0) return numberOfRoom;
+
+        for (let i = 0; i < this.rooms.length; i++) {
+            let count = 0;
+            for (const room of this.rooms[i]) {
+                if (room.state === State.Waiting) count++;
+            }
+            numberOfRoom[i] = count;
         }
-        for (const room of this.rooms[gameType]) {
-            if (room.state === State.Waiting) numberOfRoom++;
-        }
+
         return numberOfRoom;
     }
 }

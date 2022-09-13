@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { ALL_EASEL_BONUS, BOARD_COLUMNS, BOARD_ROWS, RESERVE } from '@app/classes/constants';
 import { ScoreValidation } from '@app/classes/validation-score';
 import { CommunicationService } from '@app/services/communication.service';
@@ -8,7 +8,7 @@ import { ClientSocketService } from './client-socket.service';
 @Injectable({
     providedIn: 'root',
 })
-export class WordValidationService {
+export class WordValidationService implements OnDestroy {
     fileName: string;
     playedWords: Map<string, string[]>;
     lastPlayedWords: Map<string, string[]>;
@@ -118,9 +118,7 @@ export class WordValidationService {
             for (const word of this.foundWords) {
                 if (word.length >= 2) {
                     this.newPositions = this.getWordHorizontalOrVerticalPositions(word, x, y, isRow);
-                    if (!this.checkIfPlayed(word, this.newPositions)) {
-                        this.addToPlayedWords(word, this.newPositions, this.newPlayedWords);
-                    }
+                    if (!this.checkIfPlayed(word, this.newPositions)) this.addToPlayedWords(word, this.newPositions, this.newPlayedWords);
                 }
                 this.newPositions = [];
             }
@@ -147,11 +145,10 @@ export class WordValidationService {
     calculateLettersScore(score: number, word: string, positions: string[]): number {
         for (let i = 0; i < word.length; i++) {
             let char = word.charAt(i);
-            if (char.toUpperCase() === char) {
-                char = '*';
-            }
+            if (char.toUpperCase() === char) char = '*';
+
             for (const letter of RESERVE) {
-                if (char.toUpperCase() === letter.value) {
+                if (char.toUpperCase() === letter.value)
                     switch (this.bonusesPositions.get(positions[i])) {
                         case 'doubleLetter': {
                             score += letter.points * 2;
@@ -166,7 +163,6 @@ export class WordValidationService {
                             break;
                         }
                     }
-                }
             }
         }
         return score;
@@ -175,9 +171,7 @@ export class WordValidationService {
     removeBonuses(map: Map<string, string[]>): void {
         for (const positions of map.values()) {
             for (const position of positions) {
-                if (this.bonusesPositions.has(position)) {
-                    this.bonusesPositions.delete(position);
-                }
+                if (this.bonusesPositions.has(position)) this.bonusesPositions.delete(position);
             }
         }
     }
@@ -213,9 +207,7 @@ export class WordValidationService {
         }
         scoreTotal += this.calculateTotalScore(scoreTotal, this.newPlayedWords);
 
-        if (isEaselSize) {
-            scoreTotal += ALL_EASEL_BONUS;
-        }
+        if (isEaselSize) scoreTotal += ALL_EASEL_BONUS;
 
         if (!isPermanent) {
             this.newPlayedWords.clear();
@@ -224,9 +216,7 @@ export class WordValidationService {
 
         this.removeBonuses(this.newPlayedWords);
 
-        for (const word of this.currentWords.keys()) {
-            this.priorCurrentWords.set(word, this.currentWords.get(word) as string[]);
-        }
+        for (const word of this.currentWords.keys()) this.priorCurrentWords.set(word, this.currentWords.get(word) as string[]);
 
         this.lastPlayedWords.clear();
         for (const word of this.newPlayedWords.keys()) {
@@ -235,17 +225,27 @@ export class WordValidationService {
         }
 
         this.priorPlayedWords.clear();
-        for (const word of this.playedWords.keys()) {
-            this.priorPlayedWords.set(word, this.playedWords.get(word) as string[]);
-        }
+        for (const word of this.playedWords.keys()) this.priorPlayedWords.set(word, this.playedWords.get(word) as string[]);
 
-        for (const word of this.newPlayedWords.keys()) {
-            this.addToPlayedWords(word, this.newPlayedWords.get(word) as string[], this.playedWords);
-        }
+        for (const word of this.newPlayedWords.keys()) this.addToPlayedWords(word, this.newPlayedWords.get(word) as string[], this.playedWords);
 
         this.clientSocketService.socket.emit('updatePlayedWords', JSON.stringify(Array.from(this.playedWords)), this.clientSocketService.roomId);
 
         this.newPlayedWords.clear();
         return { validation: this.validationState, score: scoreTotal };
+    }
+
+    ngOnDestroy() {
+        this.newWords = new Array<string>();
+        this.playedWords = new Map<string, string[]>();
+        this.newPlayedWords = new Map<string, string[]>();
+        this.lastPlayedWords = new Map<string, string[]>();
+        this.priorCurrentWords = new Map<string, string[]>();
+        this.currentWords = new Map<string, string[]>();
+        this.priorPlayedWords = new Map<string, string[]>();
+        this.newPositions = new Array<string>();
+        this.bonusesPositions = new Map<string, string>(this.randomBonusService.bonusPositions);
+        this.validationState = false;
+        this.foundWords = new Array<string>();
     }
 }

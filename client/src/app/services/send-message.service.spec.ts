@@ -2,7 +2,9 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { PLAYER_ONE_INDEX, RESERVE, TWO_SECOND_DELAY } from '@app/classes/constants';
 import { MessageType } from '@app/classes/enum';
+import { Player } from '@app/models/player.model';
 import { SendMessageService } from '@app/services/send-message.service';
 import { Socket } from 'socket.io-client';
 
@@ -14,6 +16,14 @@ describe('SendMessageService', () => {
             imports: [HttpClientTestingModule, RouterTestingModule],
         });
         service = TestBed.inject(SendMessageService);
+
+        const letterA = RESERVE[0];
+        const letterB = RESERVE[1];
+        const letterC = RESERVE[2];
+
+        const firstPlayerEasel = [letterA, letterA, letterB, letterB, letterC, letterC, letterA];
+        const firstPlayer = new Player(1, 'Player 1', firstPlayerEasel);
+        service['playerService'].addPlayer(firstPlayer);
 
         let number = 1;
         service['displayMessage'] = () => {
@@ -104,5 +114,14 @@ describe('SendMessageService', () => {
         service.displayMessageByType('I am the system', MessageType.System);
         expect(service.message).toEqual('I am the system');
         expect(service.messageType).toEqual(MessageType.System);
+    });
+
+    it('calling displayFinalMessage should send the respective message to the chatbox', () => {
+        jasmine.clock().install();
+        spyOn(service, 'displayMessageByType');
+        service.displayFinalMessage(PLAYER_ONE_INDEX);
+        jasmine.clock().tick(TWO_SECOND_DELAY);
+        expect(service.displayMessageByType).toHaveBeenCalledWith('Player 1 : AABBCCA', MessageType.System);
+        jasmine.clock().uninstall();
     });
 });

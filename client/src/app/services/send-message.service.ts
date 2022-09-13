@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { PLAYER_ONE_INDEX } from '@app/classes/constants';
+import { PLAYER_ONE_INDEX, TWO_SECOND_DELAY } from '@app/classes/constants';
 import { MessageType } from '@app/classes/enum';
 import { ClientSocketService } from './client-socket.service';
 import { GameSettingsService } from './game-settings.service';
+import { PlayerService } from './player.service';
 
 @Injectable({
     providedIn: 'root',
@@ -12,7 +13,11 @@ export class SendMessageService {
     messageType: MessageType;
     private displayMessage: () => void;
 
-    constructor(private clientSocketService: ClientSocketService, private gameSettingsService: GameSettingsService) {
+    constructor(
+        private clientSocketService: ClientSocketService,
+        private gameSettingsService: GameSettingsService,
+        private playerService: PlayerService,
+    ) {
         this.receiveMessageFromOpponent();
         // To display message in real time in chat box
         this.receiveConversionMessage();
@@ -26,9 +31,9 @@ export class SendMessageService {
     displayMessageByType(message: string, messageType: MessageType): void {
         this.message = message;
         this.messageType = messageType;
-        if (this.messageType === MessageType.Player) {
+        if (this.messageType === MessageType.Player)
             this.sendMessageToOpponent(this.message, this.gameSettingsService.gameSettings.playersNames[PLAYER_ONE_INDEX]);
-        }
+
         this.displayMessage();
     }
 
@@ -60,5 +65,16 @@ export class SendMessageService {
         this.clientSocketService.socket.on('receiveRoomMessage', (message: string) => {
             this.sendOpponentMessage(message);
         });
+    }
+
+    displayFinalMessage(indexPlayer: number): void {
+        setTimeout(() => {
+            let endGameEasel = '';
+            this.displayMessageByType('Fin de partie - lettres restantes', MessageType.System);
+            for (const letter of this.playerService.players[indexPlayer].letterTable) {
+                endGameEasel += letter.value;
+            }
+            this.displayMessageByType(this.playerService.players[indexPlayer].name + ' : ' + endGameEasel, MessageType.System);
+        }, TWO_SECOND_DELAY);
     }
 }

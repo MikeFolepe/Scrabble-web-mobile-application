@@ -10,9 +10,11 @@ import {
 import { PlayerAI } from '@app/models/player-ai.model';
 import { ClientSocketService } from '@app/services/client-socket.service';
 import { GameSettingsService } from '@app/services/game-settings.service';
+import { CommunicationService } from './communication.service';
 import { EndGameService } from './end-game.service';
 import { ObjectivesService } from './objectives.service';
 import { PlayerService } from './player.service';
+import { SendMessageService } from './send-message.service';
 
 @Injectable({
     providedIn: 'root',
@@ -24,6 +26,7 @@ export class SkipTurnService {
     // JUSTIFICATION : Next line is mandatory, NodeJS return an eslint issue
     // eslint-disable-next-line no-undef
     intervalID: NodeJS.Timeout;
+    shouldNotBeDisplayed: boolean;
 
     constructor(
         public gameSettingsService: GameSettingsService,
@@ -31,10 +34,13 @@ export class SkipTurnService {
         private clientSocket: ClientSocketService,
         private playerService: PlayerService,
         private objectivesService: ObjectivesService,
+        private sendMessageService: SendMessageService,
+        private communicationService: CommunicationService,
     ) {
         this.receiveNewTurn();
         this.receiveStartFromServer();
         this.receiveStopFromServer();
+        this.shouldNotBeDisplayed = false;
     }
 
     receiveNewTurn(): void {
@@ -56,10 +62,11 @@ export class SkipTurnService {
     }
 
     switchTurn(): void {
-        if (this.endGameService.isEndGame) {
-            return;
-        }
+        this.checkEndGame();
+        if (this.endGameService.isEndGame) return;
+
         this.stopTimer();
+        if (this.isTurn) this.shouldNotBeDisplayed = true;
         setTimeout(() => {
             if (this.gameSettingsService.isSoloMode) {
                 if (this.isTurn) {
@@ -71,9 +78,11 @@ export class SkipTurnService {
                     }, DELAY_BEFORE_PLAYING);
                 } else {
                     this.isTurn = true;
+                    this.shouldNotBeDisplayed = false;
                     this.startTimer();
                 }
             } else {
+                this.shouldNotBeDisplayed = false;
                 this.clientSocket.socket.emit('switchTurn', this.isTurn, this.clientSocket.roomId);
                 this.isTurn = false;
             }
@@ -90,7 +99,7 @@ export class SkipTurnService {
                 this.seconds = 59;
                 this.updateActiveTime();
             } else if (this.seconds === 0 && this.minutes === 0) {
-                if (this.isTurn) {
+                if (this.isTurn || this.gameSettingsService.isSoloMode) {
                     this.endGameService.actionsLog.push('AucuneAction');
                     this.clientSocket.socket.emit('sendActions', this.endGameService.actionsLog, this.clientSocket.roomId);
                     this.switchTurn();
@@ -112,7 +121,22 @@ export class SkipTurnService {
         if (this.isTurn && this.objectivesService.activeTimeRemaining[PLAYER_ONE_INDEX] > 0)
             this.objectivesService.activeTimeRemaining[PLAYER_ONE_INDEX]--;
 
-        if (this.isTurn === false && this.objectivesService.activeTimeRemaining[PLAYER_TWO_INDEX] > 0)
+        if (!this.isTurn && this.objectivesService.activeTimeRemaining[PLAYER_TWO_INDEX] > 0)
             this.objectivesService.activeTimeRemaining[PLAYER_TWO_INDEX]--;
+    }
+
+    checkEndGame(): void {
+        if (this.endGameService.isEndGame) return;
+        this.endGameService.checkEndGame();
+        if (this.endGameService.isEndGame) {
+            this.endGameService.getFinalScore(PLAYER_ONE_INDEX);
+            this.endGameService.getFinalScore(PLAYER_TWO_INDEX);
+            this.stopTimer();
+            this.clientSocket.socket.emit('sendEasel', this.playerService.players[PLAYER_ONE_INDEX].letterTable, this.clientSocket.roomId);
+            this.sendMessageService.displayFinalMessage(PLAYER_ONE_INDEX);
+            this.sendMessageService.displayFinalMessage(PLAYER_TWO_INDEX);
+            this.shouldNotBeDisplayed = true;
+            this.communicationService.addPlayersScores(this.endGameService.playersScores, this.gameSettingsService.gameType).subscribe();
+        }
     }
 }

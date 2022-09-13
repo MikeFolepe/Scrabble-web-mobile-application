@@ -18,32 +18,9 @@ export class GameController {
     }
     private configureRouter(): void {
         this.router = Router();
-        /**
-         * @swagger
-         *
-         * /api/game/validateWords:
-         *   post:
-         *     description: return the validation result of a placed word
-         *     tags:
-         *       - Multiplayer
-         *     produces:
-         *       - a boolean that describe the result
-         *     responses:
-         *       200
-         *
-         * /api/game/uploadDictionary:
-         *   post:
-         *     description: upload a dictionary (json file) to server
-         *     tags:
-         *       - Multiplayer
-         *     produces:
-         *       - nothing for now
-         *     responses:
-         *       200
-         */
         this.router.post('/validateWords/:fileName', (req: Request, res: Response) => {
-            const validation = this.wordValidator.isValidInDictionary(req.body, req.params.fileName);
-            res.status(StatusCodes.OK).send(validation);
+            const isValid = this.wordValidator.isValidInDictionary(req.body, req.params.fileName);
+            res.status(StatusCodes.OK).send(isValid);
         });
 
         this.router.get('/dictionary/:fileName', (req: Request, res: Response) => {
@@ -54,12 +31,12 @@ export class GameController {
 
         this.router.post('/best-scores-classic', async (req: Request, res: Response) => {
             await this.bestScoresService.addPlayers(req.body, GameType.Classic);
-            res.send(StatusCodes.OK);
+            res.sendStatus(StatusCodes.OK);
         });
 
         this.router.post('/best-scores-log2990', async (req: Request, res: Response) => {
             await this.bestScoresService.addPlayers(req.body, GameType.Log2990);
-            res.send(StatusCodes.OK);
+            res.sendStatus(StatusCodes.OK);
         });
 
         this.router.get('/best-scores-classic', async (req: Request, res: Response) => {

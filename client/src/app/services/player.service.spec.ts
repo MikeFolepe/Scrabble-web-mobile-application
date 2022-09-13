@@ -4,7 +4,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { BOARD_COLUMNS, BOARD_ROWS, FONT_SIZE_MAX, FONT_SIZE_MIN, INVALID_INDEX, RESERVE } from '@app/classes/constants';
+import { BOARD_COLUMNS, BOARD_ROWS, FONT_SIZE_MAX, FONT_SIZE_MIN, INVALID_INDEX, PLAYER_TWO_INDEX, RESERVE } from '@app/classes/constants';
 import { PlayerAI } from '@app/models/player-ai.model';
 import { Player } from '@app/models/player.model';
 import { Letter } from '@common/letter';
@@ -342,5 +342,20 @@ describe('PlayerService', () => {
 
         expect(service.getEasel(0)).toEqual(easel);
         expect(service.getEasel(1)).toEqual(easelAI);
+    });
+
+    it('receiveOpponentEasel should update the second player easel', () => {
+        const letterTable = [letterA];
+        service['players'].push(player);
+        service['players'].push(playerAI);
+        service['clientSocketService'].socket = {
+            on: (eventName: string, callback: (letterTable: Letter[]) => void) => {
+                if (eventName === 'receiveOpponentEasel') {
+                    callback(letterTable);
+                }
+            },
+        } as unknown as Socket;
+        service.receiveOpponentEasel();
+        expect(service.players[PLAYER_TWO_INDEX].letterTable).toEqual(letterTable);
     });
 });

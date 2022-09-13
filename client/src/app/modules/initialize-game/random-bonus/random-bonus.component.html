@@ -1,6 +1,11 @@
 <div [formGroup]="parentForm">
     <mat-radio-group [formControlName]="'randomBonus'">
-        <mat-radio-button class="random-bonus-radio-box" *ngFor="let selectionValue of randomBonusSelectionList" value="{{ selectionValue }}">
+        <mat-radio-button
+            color="primary"
+            class="random-bonus-radio-box"
+            *ngFor="let selectionValue of randomBonusSelectionList"
+            value="{{ selectionValue }}"
+        >
             {{ selectionValue }}
         </mat-radio-button>
     </mat-radio-group>

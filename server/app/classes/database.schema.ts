@@ -1,10 +1,7 @@
-import { AiType } from '@common/ai-name';
+import { AiPlayer, AiType } from '@common/ai-name';
 import { GameType } from '@common/game-type';
 import { PlayerScore } from '@common/player';
 import * as mongoose from 'mongoose';
-// JUSTIFICATION : Required as we need this to use our map with the mongoose.Model type
-// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/ban-types
-export type DbModel = mongoose.Model<any, {}, {}, {}>;
 
 const scoreSchema = new mongoose.Schema({
     score: { type: Number, required: true },
@@ -23,7 +20,7 @@ const expertNameModel = mongoose.model('AiExpertName', aiNameSchema);
 const scoreModelClassic = mongoose.model('ScoresClassic', scoreSchema);
 const scoreModelLog2990 = mongoose.model('ScoresLog2990', scoreSchema);
 
-export const AI_MODELS: Map<AiType, DbModel> = new Map<AiType, DbModel>([
+export const AI_MODELS: Map<AiType, mongoose.Model<AiPlayer>> = new Map<AiType, mongoose.Model<AiPlayer>>([
     [AiType.beginner, beginnerNameModel],
     [AiType.expert, expertNameModel],
 ]);

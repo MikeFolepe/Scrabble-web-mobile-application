@@ -66,6 +66,7 @@ export class LetterEaselComponent implements OnInit {
         this.update();
         this.manipulateService.sendEasel(this.letterEaselTab);
     }
+
     onRightClick(event: MouseEvent, indexLetter: number): void {
         event.preventDefault();
         this.handleSwapSelection(indexLetter);
@@ -105,19 +106,16 @@ export class LetterEaselComponent implements OnInit {
     isSwapButtonActive(): boolean {
         let isButtonActive = false;
         // Deactivated if it is not your turn
-        if (!this.skipTurnService.isTurn) {
-            return isButtonActive;
-        }
+        if (!this.skipTurnService.isTurn) return isButtonActive;
+
         // Deactivated if there's less than 7 letters in the reserve
-        if (this.letterService.reserveSize < EASEL_SIZE) {
-            return isButtonActive;
-        }
+        if (this.letterService.reserveSize < EASEL_SIZE) return isButtonActive;
+
         // Activated if at least one letter is selected to swap
         for (const letter of this.letterEaselTab) {
-            if (letter.isSelectedForSwap) {
-                isButtonActive = true;
-            }
+            if (letter.isSelectedForSwap) isButtonActive = true;
         }
+
         return isButtonActive;
     }
 
@@ -134,13 +132,10 @@ export class LetterEaselComponent implements OnInit {
     }
 
     private handleSwapSelection(indexLetter: number): void {
+        this.manipulateService.unselectManipulation();
         // Unselect swap
-        if (this.letterEaselTab[indexLetter].isSelectedForSwap) {
-            this.letterEaselTab[indexLetter].isSelectedForSwap = false;
-        }
+        if (this.letterEaselTab[indexLetter].isSelectedForSwap) this.letterEaselTab[indexLetter].isSelectedForSwap = false;
         // Select to swap if the letter is not already selected for manipulation
-        else if (!this.letterEaselTab[indexLetter].isSelectedForManipulation) {
-            this.letterEaselTab[indexLetter].isSelectedForSwap = true;
-        }
+        else if (!this.letterEaselTab[indexLetter].isSelectedForManipulation) this.letterEaselTab[indexLetter].isSelectedForSwap = true;
     }
 }

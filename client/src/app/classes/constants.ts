@@ -1,22 +1,21 @@
+import { AiType } from '@common/ai-name';
 import { StartingPlayer } from '@common/game-settings';
 import { Letter } from '@common/letter';
-import { Level } from '@common/level';
 import { Vec2 } from '@common/vec2';
 import { CustomRange } from './range';
-
-// TODO avant remise vérifier que toutes les constantes sont utilisées au moins une fois
 
 export const DEFAULT_WIDTH = 750;
 export const DEFAULT_HEIGHT = 750;
 export const BOARD_ROWS = 15;
 export const BOARD_COLUMNS = 15;
 export const CENTRAL_CASE_POSITION: Vec2 = { x: 7, y: 7 };
-export const BOARD_SIZE = 16;
-export const GRID_CASE_SIZE = DEFAULT_WIDTH / BOARD_SIZE;
+const boardSize = 16;
+export const GRID_CASE_SIZE = DEFAULT_WIDTH / boardSize;
 export const EASEL_SIZE = 7;
 export const ALL_EASEL_BONUS = 50;
 export const MAX_NUMBER_OF_POSSIBILITY = 3;
 export const NUMBER_OF_SKIP = 6;
+export const MINIMUM_TIME_PLAYING_AI = 6;
 export const ONE_SECOND_DELAY = 1000;
 export const TWO_SECOND_DELAY = 2000;
 export const THREE_SECONDS_DELAY = 3000;
@@ -44,6 +43,8 @@ export const MIN_RESERVE_SIZE_TO_SWAP = 7;
 export const WHITE_LETTER_INDEX = 26;
 
 export const COLOR_BLACK = 'black';
+
+export const BEGINNER_POINTING_RANGE: CustomRange = { min: 1, max: 18 };
 
 export const NAME_SIZE: CustomRange = { min: 4, max: 12 };
 export const SPECIAL_CHAR = '@#$%^&*_';
@@ -118,7 +119,7 @@ export const DEFAULT_GAME_SETTINGS = {
     startingPlayer: StartingPlayer.Player1,
     timeMinute: '01',
     timeSecond: '00',
-    level: Level.Beginner,
+    level: AiType.beginner,
     randomBonus: 'Désactiver',
     bonusPositions: JSON.stringify(Array.from(BONUS_POSITIONS)),
     dictionary: '',

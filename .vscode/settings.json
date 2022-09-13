@@ -1,0 +1,53 @@
+{
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": true,
+        "source.fixAll.eslint": true
+    },
+    "html.format.indentInnerHtml": true,
+    "typescript.format.insertSpaceAfterOpeningAndBeforeClosingEmptyBraces": false,
+    "eslint.workingDirectories": ["./client", "./server"],
+    "eslint.probe": ["javascript", "typescript", "html", "vue", "markdown"],
+    "eslint.validate": ["javascript", "typescript", "html", "vue", "markdown"],
+    "cSpell.words": [
+        "affichages",
+        "Bucky",
+        "callout",
+        "Chatbox",
+        "débogage",
+        "debugMessage",
+        "décommenter",
+        "Deletable",
+        "Désactiver",
+        "dictionnary",
+        "displaymessage",
+        "échanger",
+        "ERREUR",
+        "fileupload",
+        "invalide",
+        "Joindre",
+        "Konqueror",
+        "lightyellow",
+        "mais",
+        "notok",
+        "nrteu",
+        "ONESECOND",
+        "POSX",
+        "selectionnable",
+        "substraction",
+        "syntaxe",
+        "typedi",
+        "Validationservice",
+        "vrai"
+    ],
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[html]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[scss]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    }
+}

@@ -7,6 +7,7 @@ import {
     FONT_SIZE_MAX,
     FONT_SIZE_MIN,
     INVALID_INDEX,
+    PLAYER_TWO_INDEX,
     RESERVE,
     WHITE_LETTER_INDEX,
 } from '@app/classes/constants';
@@ -30,6 +31,7 @@ export class PlayerService {
         this.fontSize = DEFAULT_FONT_SIZE;
         this.players = new Array<Player>();
         this.receiveScoreFromServer();
+        this.receiveOpponentEasel();
     }
 
     bindUpdateEasel(fn: () => void) {
@@ -39,6 +41,12 @@ export class PlayerService {
     receiveScoreFromServer(): void {
         this.clientSocketService.socket.on('receiveScoreInfo', (score: number, indexPlayer: number) => {
             this.players[indexPlayer].score = score;
+        });
+    }
+
+    receiveOpponentEasel(): void {
+        this.clientSocketService.socket.on('receiveOpponentEasel', (letterTable: Letter[]) => {
+            this.players[PLAYER_TWO_INDEX].letterTable = letterTable;
         });
     }
 
@@ -134,9 +142,8 @@ export class PlayerService {
         let letterToAdd: Letter;
         for (let i = this.players[indexPlayer].letterTable.length; i < EASEL_SIZE; i++) {
             letterToAdd = this.letterService.getRandomLetter();
-            if (letterToAdd.value === '') {
-                break;
-            }
+            if (letterToAdd.value === '') break;
+
             // Add a copy of the letter found
             this.players[indexPlayer].letterTable[i] = {
                 value: letterToAdd.value,
@@ -155,9 +162,7 @@ export class PlayerService {
                 return i;
             } else if (letter === letter.toUpperCase()) {
                 // White letter
-                if (this.players[indexPlayer].letterTable[i].value === '*') {
-                    return i;
-                }
+                if (this.players[indexPlayer].letterTable[i].value === '*') return i;
             }
         }
         return INVALID_INDEX;

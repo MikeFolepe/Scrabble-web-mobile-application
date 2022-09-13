@@ -7,16 +7,31 @@ import { TestBed } from '@angular/core/testing';
 import { CommunicationService } from '@app/services/communication.service';
 import { AiPlayer, AiPlayerDB, AiType } from '@common/ai-name';
 import { Dictionary } from '@common/dictionary';
+import { GameType } from '@common/game-type';
+import { PlayerScore } from '@common/player';
 import { of } from 'rxjs';
 
 describe('CommunicationService', () => {
     let httpMock: HttpTestingController;
     let service: CommunicationService;
+    const playersScores: PlayerScore[] = [
+        {
+            score: 15,
+            playerName: 'JoelleTest',
+            isDefault: false,
+        },
+        {
+            score: 20,
+            playerName: 'JojoTest',
+            isDefault: false,
+        },
+    ];
+
     const aiPlayers: AiPlayerDB[] = [
         {
             _id: 'db1',
             aiName: ' Mike',
-            isDefault: true,
+            isDefault: false,
         },
     ];
 
@@ -25,7 +40,7 @@ describe('CommunicationService', () => {
             fileName: 'dictionary.json',
             title: 'Mon dictionnaire',
             description: 'le dictionnaire',
-            isDefault: true,
+            isDefault: false,
         },
         {
             fileName: 'dictionary.text',
@@ -34,7 +49,6 @@ describe('CommunicationService', () => {
             isDefault: false,
         },
     ];
-    // let baseUrl: string;
     let httpClientSpy: jasmine.SpyObj<HttpClient>;
     const newPlayedWords: Map<string, string[]> = new Map<string, string[]>([['ma', ['H8', 'H9']]]);
     beforeEach(() => {
@@ -45,8 +59,6 @@ describe('CommunicationService', () => {
         });
         service = TestBed.inject(CommunicationService);
         httpMock = TestBed.inject(HttpTestingController);
-        // eslint-disable-next-line dot-notation -- baseUrl is private and we need access for the test
-        // baseUrl = service['baseUrl'];
     });
 
     afterEach(() => {
@@ -56,15 +68,6 @@ describe('CommunicationService', () => {
     it('should be created', () => {
         expect(service).toBeTruthy();
     });
-
-    // it('should handle http error safely', () => {
-    //     service.validationPost(newPlayedWords, dictionary).subscribe((response: boolean) => {
-    //         expect(response).toBeUndefined();
-    //     }, fail);
-    //     const req = httpMock.expectOne(`${baseUrl}/game/validateWords`);
-    //     expect(req.request.method).toBe('POST');
-    //     req.error(new ErrorEvent('Random error occurred'));
-    // });
 
     it('should return the result of a validation request', () => {
         httpClientSpy.post.and.returnValue(of(true));
@@ -206,6 +209,34 @@ describe('CommunicationService', () => {
         httpClientSpy.get.and.returnValue(of({}));
         service.downloadDictionary('dictionary').subscribe((result) => {
             expect(result).toEqual({});
+        });
+        expect(httpClientSpy.get).toHaveBeenCalled();
+    });
+
+    it('should post players on best-score-classic route', () => {
+        httpClientSpy.post.and.returnValue(of());
+        service.addPlayersScores(playersScores, GameType.Classic).subscribe(() => {});
+        expect(httpClientSpy.post).toHaveBeenCalled();
+    });
+
+    it('should post players on best-score-log2990 route', () => {
+        httpClientSpy.post.and.returnValue(of());
+        service.addPlayersScores(playersScores, GameType.Log2990).subscribe(() => {});
+        expect(httpClientSpy.post).toHaveBeenCalled();
+    });
+
+    it('should get players on best-score-log2990 route', () => {
+        httpClientSpy.get.and.returnValue(of(playersScores));
+        service.getBestPlayers(GameType.Classic).subscribe((response) => {
+            expect(response).toEqual(playersScores);
+        });
+        expect(httpClientSpy.get).toHaveBeenCalled();
+    });
+
+    it('should get players on best-score-log2990 route', () => {
+        httpClientSpy.get.and.returnValue(of(playersScores));
+        service.getBestPlayers(GameType.Log2990).subscribe((response) => {
+            expect(response).toEqual(playersScores);
         });
         expect(httpClientSpy.get).toHaveBeenCalled();
     });

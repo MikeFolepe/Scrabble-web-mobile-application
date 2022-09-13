@@ -115,10 +115,12 @@ export class GridService implements OnDestroy {
         context.stroke();
         context.fill();
     }
+
     ngOnDestroy(): void {
         this.eraseLayer(this.gridContextLettersLayer);
     }
-    // Transpose the positions from 15x15 array to 750x750 grid
+
+    // Convert the positions from 15x15 array to 750x750 grid
     private positionTabToPositionGrid(positionTabX: number, positionTabY: number): Vec2 {
         return {
             x: positionTabX * GRID_CASE_SIZE + GRID_CASE_SIZE,
@@ -160,13 +162,13 @@ export class GridService implements OnDestroy {
     }
 
     private writeBonusName(context: CanvasRenderingContext2D, text: string, startPosition: Vec2): void {
-        context.font = '12px system-ui';
+        context.font = '14px system-ui';
         context.fillStyle = COLOR_BLACK;
         context.textBaseline = 'middle';
         context.textAlign = 'center';
         const lines = text.split(' ');
-        text = lines[0] + '\n' + lines[1];
-        context.fillText(text, startPosition.x + GRID_CASE_SIZE / 2, startPosition.y + GRID_CASE_SIZE / 2);
+        context.fillText(lines[0], startPosition.x + GRID_CASE_SIZE / 2, startPosition.y + GRID_CASE_SIZE / 2.5);
+        context.fillText(lines[1], startPosition.x + GRID_CASE_SIZE / 2, startPosition.y + GRID_CASE_SIZE / 1.5);
     }
 
     // specify bonuses boxes on the grid by adding colors and bonuses names
@@ -203,7 +205,7 @@ export class GridService implements OnDestroy {
         this.gridContextBoardLayer.strokeRect(centerPosition.x, centerPosition.y, GRID_CASE_SIZE, GRID_CASE_SIZE);
         // drawing star
         const NB_SPIKES = 5;
-        this.drawStar(centerPosition.x + GRID_CASE_SIZE / 2, centerPosition.y + GRID_CASE_SIZE / 2, NB_SPIKES, GRID_CASE_SIZE / 2.5, 8);
+        this.drawStar(centerPosition.x + GRID_CASE_SIZE / 2, centerPosition.y + GRID_CASE_SIZE / 1.85, NB_SPIKES, GRID_CASE_SIZE / 3, 7);
     }
 
     private drawStar(cx: number, cy: number, spikes: number, outerRadius: number, innerRadius: number): void {

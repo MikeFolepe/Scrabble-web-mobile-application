@@ -11,8 +11,8 @@ import { AppRoutingModule } from '@app/modules/app-routing.module';
 import { GiveUpGameDialogComponent } from '@app/modules/game-view/give-up-game-dialog/give-up-game-dialog.component';
 import { SharedModule } from '@app/modules/shared/shared.module';
 import { FormComponent } from './form/form.component';
-import { JoinDialogComponent } from './join-dialog/join-dialog.component';
 import { LevelFieldComponent } from './level-field/level-field.component';
+import { NameSelectorComponent } from './name-selector/name-selector.component';
 import { PlayerNameFieldComponent } from './player-name-field/player-name-field.component';
 import { RandomBonusComponent } from './random-bonus/random-bonus.component';
 import { TimerFieldComponent } from './timer-field/timer-field.component';
@@ -24,7 +24,7 @@ import { TimerFieldComponent } from './timer-field/timer-field.component';
         TimerFieldComponent,
         LevelFieldComponent,
         RandomBonusComponent,
-        JoinDialogComponent,
+        NameSelectorComponent,
         GiveUpGameDialogComponent,
     ],
     imports: [
@@ -41,6 +41,6 @@ import { TimerFieldComponent } from './timer-field/timer-field.component';
         FormsModule,
     ],
     exports: [FormComponent],
-    entryComponents: [JoinDialogComponent],
+    entryComponents: [NameSelectorComponent],
 })
 export class InitializeGameModule {}

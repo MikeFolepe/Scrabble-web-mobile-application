@@ -13,7 +13,7 @@ const routes: Routes = [
     { path: 'home', component: MainPageComponent },
     { path: 'solo-game-ai', component: FormComponent },
     { path: 'multiplayer-mode', component: FormComponent },
-    { path: 'multiplayer-mode-waiting-room', component: WaitingRoomComponent },
+    { path: 'waiting-room', component: WaitingRoomComponent },
     { path: 'join-room', component: JoinRoomComponent },
     { path: 'game', component: GameViewComponent },
     { path: 'page-not-found', component: PageNotFoundComponent },

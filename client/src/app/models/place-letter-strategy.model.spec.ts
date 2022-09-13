@@ -9,8 +9,8 @@ import { BOARD_COLUMNS, BOARD_ROWS } from '@app/classes/constants';
 import { BoardPattern, Orientation, PatternInfo, PossibleWords } from '@app/classes/scrabble-board-pattern';
 import { PlayerAI } from '@app/models/player-ai.model';
 import { PlayerAIService } from '@app/services/player-ai.service';
+import { AiType } from '@common/ai-name';
 import { Letter } from '@common/letter';
-import { Level } from '@common/level';
 import { of } from 'rxjs';
 import { PlaceLetterStrategy } from './place-letter-strategy.model';
 
@@ -22,12 +22,9 @@ describe('Place Letter strategy', () => {
     let letterTable: Letter[] = [];
 
     beforeEach(async () => {
-        // Faire jasmine create spy object
-        // Mock bien tout les appels du .ts
         await TestBed.configureTestingModule({
             imports: [HttpClientTestingModule, RouterTestingModule],
         }).compileComponents();
-        // placeStrategy = TestBed.inject(PlaceLetterStrategy);
     });
 
     beforeEach(() => {
@@ -198,6 +195,7 @@ describe('Place Letter strategy', () => {
     it('should execute place letter by calling the right functions if it is not first round', async () => {
         const myDictionary: string[] = ['thon', 'maths', 'rond', 'math', 'art', 'lundi', 'mardi'];
         const spyAi = spyOn(playerAiService.communicationService, 'getGameDictionary').and.returnValue(of(myDictionary));
+        placeStrategy['isFirstRoundAi'] = false;
 
         scrabbleBoard[3][1] = 'm';
         scrabbleBoard[3][2] = 'a';
@@ -223,13 +221,17 @@ describe('Place Letter strategy', () => {
         const expectedPoss: PossibleWords[] = [word1, word2, word3, word6, word4, word5];
         playerAiService.placeLetterService.isFirstRound = false;
         playerAiService.placeLetterService.scrabbleBoard = scrabbleBoard;
-        playerAiService.gameSettingsService.gameSettings.level = Level.Expert;
+        playerAiService.gameSettingsService.gameSettings.level = AiType.expert;
 
         const spyOnCompute = spyOn<any>(placeStrategy, 'computeResults');
         const spyCalculate = spyOn(playerAiService, 'calculatePoints').and.returnValue(Promise.resolve([word1, word2, word3, word4, word5, word6]));
         const spyFilter = spyOn(playerAiService, 'filterByRange').and.returnValue([word1, word2, word3, word6, word4, word5]);
         const spyReceivePossibilities = spyOn(playerAiService.debugService, 'receiveAIDebugPossibilities');
         const spyRemove = spyOn<any>(placeStrategy, 'removeIfNotDisposable');
+
+        placeStrategy.dictionary = await playerAiService.communicationService
+            .getGameDictionary(playerAiService.gameSettingsService.gameSettings.dictionary)
+            .toPromise();
 
         await placeStrategy.execute(playerAiService);
 
@@ -244,6 +246,7 @@ describe('Place Letter strategy', () => {
     it('should execute place letter by calling the right functions if it is first round', async () => {
         const myDictionary: string[] = ['thon', 'maths', 'rond', 'math', 'art', 'lundi', 'mardi'];
         const spyAi = spyOn(playerAiService.communicationService, 'getGameDictionary').and.returnValue(of(myDictionary));
+        placeStrategy['isFirstRoundAi'] = true;
 
         scrabbleBoard[3][1] = 'm';
         scrabbleBoard[3][2] = 'a';
@@ -269,7 +272,7 @@ describe('Place Letter strategy', () => {
         const expectedPoss: PossibleWords[] = [word1, word2, word3, word6, word4, word5];
         playerAiService.placeLetterService.isFirstRound = true;
         playerAiService.placeLetterService.scrabbleBoard = scrabbleBoard;
-        playerAiService.gameSettingsService.gameSettings.level = Level.Expert;
+        playerAiService.gameSettingsService.gameSettings.level = AiType.expert;
 
         const spyOnCompute = spyOn<any>(placeStrategy, 'computeResults');
         const spyCalculate = spyOn(playerAiService, 'calculatePoints').and.returnValue(Promise.resolve([word1, word2, word3, word4, word5, word6]));
@@ -315,7 +318,7 @@ describe('Place Letter strategy', () => {
         const expectedPoss: PossibleWords[] = [word1, word2, word3, word6, word4, word5];
         playerAiService.placeLetterService.isFirstRound = true;
         playerAiService.placeLetterService.scrabbleBoard = scrabbleBoard;
-        playerAiService.gameSettingsService.gameSettings.level = Level.Beginner;
+        playerAiService.gameSettingsService.gameSettings.level = AiType.beginner;
 
         const spyOnCompute = spyOn<any>(placeStrategy, 'computeResults');
         const spyCalculate = spyOn(playerAiService, 'calculatePoints').and.returnValue(Promise.resolve([word1, word2, word3, word4, word5, word6]));

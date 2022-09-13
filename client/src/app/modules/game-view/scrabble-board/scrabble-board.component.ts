@@ -15,11 +15,11 @@ export class ScrabbleBoardComponent implements AfterViewInit {
     constructor(private readonly gridService: GridService, private boardHandlerService: BoardHandlerService) {}
 
     @HostListener('keydown', ['$event'])
-    buttonDetect(event: KeyboardEvent) {
+    buttonDetect(event: KeyboardEvent): void {
         this.boardHandlerService.buttonDetect(event);
     }
 
-    mouseHitDetect(event: MouseEvent) {
+    mouseHitDetect(event: MouseEvent): void {
         this.boardHandlerService.mouseHitDetect(event);
     }
 

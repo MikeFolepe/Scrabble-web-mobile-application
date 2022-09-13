@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable dot-notation */
-import { EASEL_SIZE, RESERVE } from '@app/classes/constants';
-import { Letter } from '@common/letter';
-import { LetterService } from './letter.service';
-import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { EASEL_SIZE, RESERVE } from '@app/classes/constants';
+import { Letter } from '@common/letter';
 import { Socket } from 'socket.io-client';
+import { LetterService } from './letter.service';
 
 describe('LetterService', () => {
     let service: LetterService;
@@ -74,7 +74,6 @@ describe('LetterService', () => {
 
     it('the emit receiveRoomMessage should call sendOpponentMessage', () => {
         service['clientSocketService'].socket = {
-            // eslint-disable-next-line no-unused-vars
             on: (eventName: string, callback: (reserve: Letter[], reserveSize: number) => void) => {
                 if (eventName === 'receiveReserve') {
                     callback(RESERVE, 100);
@@ -84,5 +83,16 @@ describe('LetterService', () => {
         service.receiveReserve();
         expect(service.reserve).toEqual(RESERVE);
         expect(service.reserveSize).toEqual(100);
+    });
+
+    it('should return an empty letter if an error occurres in getRandomLetter()', () => {
+        spyOn(service.reserve, 'indexOf').and.returnValue(-1);
+        expect(service.getRandomLetter()).toEqual({
+            value: '',
+            quantity: 0,
+            points: 0,
+            isSelectedForSwap: false,
+            isSelectedForManipulation: false,
+        });
     });
 });

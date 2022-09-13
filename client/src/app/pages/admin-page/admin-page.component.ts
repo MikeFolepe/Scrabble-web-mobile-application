@@ -2,8 +2,6 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatAccordion } from '@angular/material/expansion';
 import { AdministratorService } from '@app/services/administrator.service';
-import { Dictionary } from '@common/dictionary';
-import { EditDictionaryDialogComponent } from './edit-dictionary-dialog/edit-dictionary-dialog.component';
 
 @Component({
     selector: 'app-admin-page',
@@ -19,7 +17,7 @@ export class AdminPageComponent implements OnInit {
         this.isResetConfirmation = false;
     }
 
-    ngOnInit() {
+    ngOnInit(): void {
         this.adminService.initializeAiPlayers();
         this.adminService.initializeDictionaries();
     }
@@ -31,23 +29,5 @@ export class AdminPageComponent implements OnInit {
 
     cancelReset(): void {
         if (this.isResetConfirmation) this.isResetConfirmation = false;
-    }
-
-    editDictionary(dictionary: Dictionary): void {
-        if (!this.adminService.isDictionaryDeletable(dictionary)) return;
-        this.dialog
-            .open(EditDictionaryDialogComponent, {
-                disableClose: true,
-                data: {
-                    title: dictionary.title,
-                    description: dictionary.description,
-                },
-            })
-            .afterClosed()
-            .subscribe((response) => {
-                if (!response) return;
-                if (!response.title || !response.description) return;
-                this.adminService.updateDictionary(dictionary, response);
-            });
     }
 }

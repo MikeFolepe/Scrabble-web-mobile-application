@@ -1,22 +1,20 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/ban-types */
-/* eslint-disable no-empty */
-/* eslint-disable @typescript-eslint/no-require-imports */
 /* eslint-disable dot-notation */
-// import { GameType } from '@common/game-type';
 import { AI_BEGINNERS } from '@app/classes/constants';
-import { AI_MODELS, DbModel, SCORES_MODEL } from '@app/classes/database.schema';
+import { AI_MODELS, SCORES_MODEL } from '@app/classes/database.schema';
 import { DatabaseServiceMock } from '@app/classes/database.service.mock';
 import { AiPlayer, AiPlayerDB, AiType } from '@common/ai-name';
 import { Dictionary } from '@common/dictionary';
 import { GameType } from '@common/game-type';
+import { PlayerScore } from '@common/player';
 import * as chai from 'chai';
 import { expect } from 'chai';
 import * as spies from 'chai-spies';
 import * as fileSystem from 'fs';
+import * as mongoose from 'mongoose';
+import * as sinon from 'sinon';
 import { AdministratorService } from './administrator.service';
-import Sinon = require('sinon');
 
 describe('Admin service', () => {
     let databaseService: DatabaseServiceMock;
@@ -34,7 +32,7 @@ describe('Admin service', () => {
 
     it('should return the aiPlayers asked', (done) => {
         databaseService.start();
-        const aiModel = AI_MODELS.get(AiType.beginner) as DbModel;
+        const aiModel = AI_MODELS.get(AiType.beginner) as mongoose.Model<AiPlayer>;
 
         const spy = chai.spy.on(aiModel, 'find', () => {
             const player = new aiModel({
@@ -66,7 +64,7 @@ describe('Admin service', () => {
 
     it('should update the aiPlayer from the database', async () => {
         await databaseService.start();
-        const aiModel = AI_MODELS.get(AiType.beginner) as DbModel;
+        const aiModel = AI_MODELS.get(AiType.beginner) as mongoose.Model<AiPlayer>;
         const players: AiPlayerDB[] = [];
 
         for (const aiPlayer of AI_BEGINNERS) {
@@ -82,7 +80,7 @@ describe('Admin service', () => {
             aiName: 'Mike',
             isDefault: false,
         };
-        const spy = Sinon.spy(adminService, 'getAllAiPlayers');
+        const spy = sinon.spy(adminService, 'getAllAiPlayers');
 
         const result = await adminService.updateAiPlayer(players[0]._id, {
             aiBeginner: beginner,
@@ -95,7 +93,7 @@ describe('Admin service', () => {
 
     it('should delete the aiPlayer from the database', async () => {
         await databaseService.start();
-        const aiModel = AI_MODELS.get(AiType.beginner) as DbModel;
+        const aiModel = AI_MODELS.get(AiType.beginner) as mongoose.Model<AiPlayer>;
         const players: AiPlayerDB[] = [];
 
         for (const aiPlayer of AI_BEGINNERS) {
@@ -108,7 +106,7 @@ describe('Admin service', () => {
             });
         }
 
-        const spy = Sinon.spy(adminService, 'getAllAiPlayers');
+        const spy = sinon.spy(adminService, 'getAllAiPlayers');
         const result = await adminService.deleteAiPlayer(players[0]._id, AiType.beginner);
         expect(result[0].aiName).to.equal(players[1].aiName);
         expect(result[0].isDefault).to.equal(players[1].isDefault);
@@ -129,7 +127,7 @@ describe('Admin service', () => {
             ]
         }`;
         const expectedResult = JSON.parse(jsonDictionary);
-        const stubOnReadFile = Sinon.stub(fileSystem, 'readFileSync').returns(jsonDictionary);
+        const stubOnReadFile = sinon.stub(fileSystem, 'readFileSync').returns(jsonDictionary);
         const result = adminService.getDictionaries();
         expect(stubOnReadFile.called).to.equal(true);
 
@@ -160,9 +158,9 @@ describe('Admin service', () => {
             description: 'Mon test',
             isDefault: false,
         };
-        const spyOnReturn = Sinon.spy(adminService, 'getDictionaries');
-        const stubOnReadFile = Sinon.stub(fileSystem, 'readFileSync').returns(jsonDictionary);
-        const stubOnWrite = Sinon.stub(fileSystem, 'writeFileSync');
+        const spyOnReturn = sinon.spy(adminService, 'getDictionaries');
+        const stubOnReadFile = sinon.stub(fileSystem, 'readFileSync').returns(jsonDictionary);
+        const stubOnWrite = sinon.stub(fileSystem, 'writeFileSync');
 
         adminService.updateDictionary(dictionary);
         expect(spyOnReturn.called).to.equal(true);
@@ -180,8 +178,8 @@ describe('Admin service', () => {
             description: 'Mon test',
             isDefault: false,
         };
-        const stubOnUnSync = Sinon.stub(fileSystem, 'unlinkSync').returns();
-        const spyOnReturn = Sinon.spy(adminService, 'getDictionaries');
+        const stubOnUnSync = sinon.stub(fileSystem, 'unlinkSync').returns();
+        const spyOnReturn = sinon.spy(adminService, 'getDictionaries');
         adminService.deleteDictionary(dictionary.fileName);
         expect(stubOnUnSync.called).to.equal(true);
         expect(spyOnReturn.called).to.equal(true);
@@ -189,8 +187,8 @@ describe('Admin service', () => {
 
     it('should reset the scores', async () => {
         await databaseService.start();
-        const scoresModel = SCORES_MODEL.get(GameType.Classic) as DbModel;
-        const spyOn = Sinon.spy(scoresModel, 'deleteMany');
+        const scoresModel = SCORES_MODEL.get(GameType.Classic) as mongoose.Model<PlayerScore>;
+        const spyOn = sinon.spy(scoresModel, 'deleteMany');
         await adminService.resetScores(GameType.Classic);
         expect(spyOn.called).to.equal(true);
     });

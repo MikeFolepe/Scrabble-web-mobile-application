@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { BOARD_COLUMNS, BOARD_ROWS, GRID_CASE_SIZE, INVALID_INDEX, LAST_INDEX, PLAYER_ONE_INDEX } from '@app/classes/constants';
-import { MessageType, MouseButton } from '@app/classes/enum';
+import { MouseButton } from '@app/classes/enum';
 import { Orientation } from '@app/classes/scrabble-board-pattern';
 import { Vec2 } from '@common/vec2';
 import { GridService } from './grid.service';
 import { PlaceLetterService } from './place-letter.service';
-import { SendMessageService } from './send-message.service';
 import { SkipTurnService } from './skip-turn.service';
+import { PlacementsHandlerService } from './placements-handler.service';
 
 @Injectable({
     providedIn: 'root',
@@ -23,8 +23,8 @@ export class BoardHandlerService {
     constructor(
         private gridService: GridService,
         private placeLetterService: PlaceLetterService,
-        private sendMessageService: SendMessageService,
         private skipTurnService: SkipTurnService,
+        private placementsService: PlacementsHandlerService,
     ) {
         this.currentCase = { x: INVALID_INDEX, y: INVALID_INDEX };
         this.firstCase = { x: INVALID_INDEX, y: INVALID_INDEX };
@@ -58,7 +58,7 @@ export class BoardHandlerService {
             default: {
                 if (!this.skipTurnService.isTurn) break;
                 if (/([a-zA-Z\u00C0-\u00FF])+/g.test(event.key) && event.key.length === 1) {
-                    // Remove accents from the letter to place
+                    // Removes accents from the letter to place
                     const letterNoAccents = event.key.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
                     this.placeLetter(letterNoAccents);
                 }
@@ -85,23 +85,12 @@ export class BoardHandlerService {
 
     async confirmPlacement(): Promise<void> {
         // Validation of the placement
-        if (await this.placeLetterService.validateKeyboardPlacement(this.firstCase, this.orientation, this.word, PLAYER_ONE_INDEX)) {
-            const column = (this.firstCase.x + 1).toString();
-            const row: string = String.fromCharCode(this.firstCase.y + 'a'.charCodeAt(0));
-            const charOrientation = this.orientation === Orientation.Horizontal ? 'h' : 'v';
-            this.sendMessageService.displayMessageByType('!placer ' + row + column + charOrientation + ' ' + this.word, MessageType.Player);
-            this.word = '';
-            this.placedLetters = [];
-            this.isFirstCasePicked = false;
-            this.isFirstCaseLocked = false;
-            this.gridService.eraseLayer(this.gridService.gridContextPlacementLayer);
-        } else {
-            this.word = '';
-            this.placedLetters = [];
-            this.isFirstCasePicked = false;
-            this.isFirstCaseLocked = false;
-            this.gridService.eraseLayer(this.gridService.gridContextPlacementLayer);
-        }
+        await this.placeLetterService.validateKeyboardPlacement(this.firstCase, this.orientation, this.word, PLAYER_ONE_INDEX);
+        this.word = '';
+        this.placedLetters = [];
+        this.isFirstCasePicked = false;
+        this.isFirstCaseLocked = false;
+        this.gridService.eraseLayer(this.gridService.gridContextPlacementLayer);
     }
 
     cancelPlacement(): void {
@@ -123,7 +112,7 @@ export class BoardHandlerService {
             }
         } else if (this.isFirstCaseLocked) {
             // Placing following letters
-            this.goToNextCase();
+            this.goToNextCase(this.orientation);
             if (await this.placeLetterService.placeWithKeyboard(this.currentCase, letter, this.orientation, this.word.length, PLAYER_ONE_INDEX)) {
                 this.placedLetters[this.word.length] = true;
                 this.word += letter;
@@ -183,34 +172,14 @@ export class BoardHandlerService {
         return caseSelected.x >= 0 && caseSelected.y >= 0 ? this.placeLetterService.scrabbleBoard[caseSelected.y][caseSelected.x] === '' : false;
     }
 
-    private goToNextCase(): void {
-        if (this.orientation === Orientation.Horizontal) {
-            this.goToNextHorizontalCase();
-        } else if (this.orientation === Orientation.Vertical) {
-            this.goToNextVerticalCase();
-        }
-    }
-
-    // TODO perte de points du à la duplication de code à cause des deux fonctions suivantes
-    private goToNextHorizontalCase(): void {
-        this.currentCase.x++;
-        if (this.currentCase.x + 1 > BOARD_COLUMNS) return;
+    private goToNextCase(orientation: Orientation): void {
+        this.placementsService.goToNextPosition(this.currentCase, orientation);
+        if (this.currentCase.x + 1 > BOARD_COLUMNS || this.currentCase.y + 1 > BOARD_COLUMNS) return;
         while (this.placeLetterService.scrabbleBoard[this.currentCase.y][this.currentCase.x] !== '') {
             this.placedLetters[this.word.length] = false;
             this.word += this.placeLetterService.scrabbleBoard[this.currentCase.y][this.currentCase.x];
-            this.currentCase.x++;
-            if (this.currentCase.x + 1 > BOARD_COLUMNS) return;
-        }
-    }
-
-    private goToNextVerticalCase(): void {
-        this.currentCase.y++;
-        if (this.currentCase.y + 1 > BOARD_ROWS) return;
-        while (this.placeLetterService.scrabbleBoard[this.currentCase.y][this.currentCase.x] !== '') {
-            this.placedLetters[this.word.length] = false;
-            this.word += this.placeLetterService.scrabbleBoard[this.currentCase.y][this.currentCase.x];
-            this.currentCase.y++;
-            if (this.currentCase.y + 1 > BOARD_ROWS) return;
+            this.placementsService.goToNextPosition(this.currentCase, orientation);
+            if (this.currentCase.x + 1 > BOARD_COLUMNS || this.currentCase.y + 1 > BOARD_COLUMNS) return;
         }
     }
 

@@ -5,9 +5,9 @@ import { Player } from './player.model';
 
 export class PlayerAI extends Player {
     private strategy: PlaceLetterStrategy;
-    // TODO créer une constante pour le id ou utiliser les memes valeurs que les index
-    constructor(id: number, name: string, letterTable: Letter[], public playerAiService: PlayerAIService) {
-        super(id, name, letterTable);
+
+    constructor(id: number, name: string, letterTable: Letter[], public playerAiService: PlayerAIService, score: number = 0) {
+        super(id, name, letterTable, score);
         this.strategy = new PlaceLetterStrategy();
     }
 
@@ -15,7 +15,7 @@ export class PlayerAI extends Player {
         this.strategy.execute(this.playerAiService);
     }
 
-    getHand(): string {
+    getEasel(): string {
         let hand = '[';
         for (const letter of this.letterTable) {
             hand += letter.value;
@@ -24,15 +24,10 @@ export class PlayerAI extends Player {
         return hand + ']';
     }
 
-    // TODO rename function
-    playerQuantityOf(character: string): number {
+    getLetterQuantityInEasel(character: string): number {
         let quantity = 0;
 
-        for (const letter of this.letterTable) {
-            if (letter.value === character.toUpperCase()) {
-                quantity++;
-            }
-        }
+        for (const letter of this.letterTable) if (letter.value === character.toUpperCase()) quantity++;
 
         return quantity;
     }

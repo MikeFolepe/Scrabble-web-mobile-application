@@ -7,7 +7,6 @@
 }
 
 mat-icon {
-    /* not selectionnable */
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */
     -khtml-user-select: none; /* Konqueror HTML */
@@ -64,23 +63,8 @@ h2 {
     font-size: larger;
 }
 
-// TODO mettre classe dans styles.scss
-.window {
-    font: 1.3rem Inconsolata, monospace;
-    color: white;
-    text-shadow: 0 0 5px #c8c8c8;
-    background-color: rgba(0, 0, 0, 0.6);
-    border-radius: 6px;
-}
-
 #dictionaries {
     width: 48%;
-}
-
-#dictionaries .scrollable {
-    height: 40vh;
-    width: 100%;
-    overflow-y: auto;
 }
 
 #right-bar {
@@ -147,9 +131,21 @@ h2 {
 }
 
 #virtual-names .scrollable {
-    height: 30vh;
+    width: 100%;
+}
+
+.name-container {
+    max-height: 35vh;
     width: 100%;
     overflow-y: auto;
+    padding: 0.25em 0;
+}
+
+.dictionaries-container {
+    max-height: 50vh;
+    width: 100%;
+    overflow-y: auto;
+    padding: 0.5em 0;
 }
 
 .center {
@@ -179,33 +175,24 @@ h2 {
     border: 3px solid transparent;
     border-radius: 6px;
     width: 100%;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    box-sizing: border-box;
+    align-items: center;
 }
 
 .icons {
     visibility: hidden;
-    margin: 0.5em 0.5em 0.5em 0;
+    margin-right: 0.1em;
 }
 
-.icons button {
-    border: 0;
-    width: 1em;
-    padding: 0;
-}
-
-.icons button {
-    border: 1px solid transparent;
-}
-
-.item:hover button {
-    color: white;
-}
-
-.item:hover button:hover #deleteIcon {
+#deleteIcon {
     color: #f44336;
 }
 
-.item:hover button:hover #editIcon {
-    color: lightseagreen;
+#editIcon {
+    color: green;
 }
 
 .item:hover {
@@ -234,9 +221,9 @@ h2 {
 }
 
 .alert {
-    width: 23em;
+    width: 28em;
     margin: 0 auto;
-    margin-top: 1em;
+    margin-top: 15em;
     text-align: center;
     padding-top: 1em;
     border: 3px solid red;
@@ -295,7 +282,6 @@ h2 {
 
 button {
     color: green;
-    transition: 0.25s;
 }
 
 .content {

@@ -73,7 +73,7 @@ export class ObjectivesService implements OnDestroy {
     }
 
     checkObjectivesCompletion(): void {
-        // Classic Mode -> No check for objectives completion
+        // do not check for objectives completion if game is on classic mode
         if (this.gameSettingsService.gameType === GameType.Classic) return;
         if (!this.objectives[ObjectiveTypes.Private][this.playerIndex].isCompleted) {
             this.objectives[ObjectiveTypes.Private][this.playerIndex].validate(this);
@@ -84,7 +84,7 @@ export class ObjectivesService implements OnDestroy {
         }
     }
 
-    validateObjectiveOne(id: number) {
+    validateObjectiveOne(id: number): void {
         const numberOfOccurrencesToValidate = 3;
         const minLengthToValidate = 4;
         let actionLog: string[] = [];
@@ -94,13 +94,11 @@ export class ObjectivesService implements OnDestroy {
         for (let index = actionLogSize; index >= 0; index = index - 2) {
             actionLog.push(this.endGameService.actionsLog[index]);
         }
-
         actionLog = actionLog.reverse();
 
         for (const word of this.wordValidationService.lastPlayedWords.keys()) {
-            currentWordLength = word.length;
+            if (word.length > currentWordLength) currentWordLength = word.length;
         }
-
         for (let index = this.obj1LastAttempt[this.playerIndex]; index < actionLog.length; index++) {
             this.obj1ActionTracker[this.playerIndex].push(actionLog[index]);
         }
@@ -116,13 +114,12 @@ export class ObjectivesService implements OnDestroy {
                 break;
             }
         }
-
         this.obj1LastAttempt[this.playerIndex] = actionLog.length;
 
         if (this.obj1Counter[this.playerIndex] === numberOfOccurrencesToValidate) this.addObjectiveScore(id);
     }
 
-    validateObjectiveTwo(id: number) {
+    validateObjectiveTwo(id: number): void {
         const lowerCasePlayedWords: string[] = [];
         for (const word of this.wordValidationService.priorPlayedWords.keys()) {
             lowerCasePlayedWords.push(word.toLowerCase());
@@ -132,7 +129,7 @@ export class ObjectivesService implements OnDestroy {
         }
     }
 
-    validateObjectiveThree(id: number) {
+    validateObjectiveThree(id: number): void {
         for (const positions of this.wordValidationService.lastPlayedWords.values()) {
             const playedPositionsUsed: string[][] = [];
             for (const position of positions) {
@@ -145,7 +142,7 @@ export class ObjectivesService implements OnDestroy {
         }
     }
 
-    validateObjectiveFour(id: number) {
+    validateObjectiveFour(id: number): void {
         if (this.activeTimeRemaining[this.playerIndex] > 0 && this.playerService.players[this.playerIndex].score >= MIN_SCORE_FOR_OBJ4)
             this.addObjectiveScore(id);
     }
@@ -164,7 +161,7 @@ export class ObjectivesService implements OnDestroy {
         }
     }
 
-    validateObjectiveSix(id: number) {
+    validateObjectiveSix(id: number): void {
         if (this.extendedWords.length === 0) return;
         for (const position of this.placementsService.extendingPositions) {
             if (this.randomBonusesService.bonusPositions.has(position)) this.addObjectiveScore(id);
@@ -189,7 +186,7 @@ export class ObjectivesService implements OnDestroy {
         }
     }
 
-    findPositionInPlayedWords(position: string, playedPositionsUsed: string[][]) {
+    findPositionInPlayedWords(position: string, playedPositionsUsed: string[][]): void {
         for (const word of this.wordValidationService.priorCurrentWords.keys()) {
             const playedPositions = this.wordValidationService.priorCurrentWords.get(word) as string[];
             for (let i = 0; i < playedPositions.length / word.length; i++) {
@@ -237,8 +234,6 @@ export class ObjectivesService implements OnDestroy {
         this.obj1LastAttempt = [0, 0];
         this.obj1Counter = [0, 0];
         this.obj1ActionTracker = [[], []];
-        for (const objective of OBJECTIVES) {
-            objective.isCompleted = false;
-        }
+        for (const objective of OBJECTIVES) objective.isCompleted = false;
     }
 }

@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
-import { BOARD_COLUMNS, BOARD_ROWS } from '@app/classes/constants';
+import { BOARD_COLUMNS, BOARD_ROWS, CENTRAL_CASE_POSITION, INVALID_INDEX } from '@app/classes/constants';
 import { Direction } from '@app/classes/enum';
 import { Orientation } from '@app/classes/scrabble-board-pattern';
 import { Vec2 } from '@common/vec2';
 import { ClientSocketService } from './client-socket.service';
 import { WordValidationService } from './word-validation.service';
+import { PlayerService } from './player.service';
 
 @Injectable({
     providedIn: 'root',
@@ -14,7 +15,11 @@ export class PlacementsHandlerService {
     extendingPositions: string[];
     extendedWords: string[];
 
-    constructor(private wordValidationService: WordValidationService, private clientSocketService: ClientSocketService) {
+    constructor(
+        private wordValidationService: WordValidationService,
+        private playerService: PlayerService,
+        private clientSocketService: ClientSocketService,
+    ) {
         this.lastLettersPlaced = new Map<string, Vec2>();
         this.extendingPositions = [];
         this.receiveCurrentWords();
@@ -82,9 +87,8 @@ export class PlacementsHandlerService {
         const lastLettersPlaced = new Map<string, Vec2>();
         const lastLetterPosition: Vec2 = { x: startPosition.x, y: startPosition.y };
         for (let i = 0; i < word.length; i++) {
-            if (!validLetters[i]) {
-                lastLettersPlaced.set(word[i], { x: lastLetterPosition.x, y: lastLetterPosition.y });
-            }
+            if (!validLetters[i]) lastLettersPlaced.set(word[i], { x: lastLetterPosition.x, y: lastLetterPosition.y });
+
             this.goToNextPosition(lastLetterPosition, orientation);
         }
         return lastLettersPlaced;
@@ -116,6 +120,17 @@ export class PlacementsHandlerService {
             position = orientation === Orientation.Horizontal ? { x: position.x--, y: position.y } : { x: position.x, y: position.y-- };
     }
 
+    isFirstWordValid(position: Vec2, orientation: Orientation, word: string): boolean {
+        const currentPosition = { x: position.x, y: position.y };
+        // JUSTIFICATION : Neither the variable 'word' nor 'i' are used inside the loop
+        // eslint-disable-next-line @typescript-eslint/prefer-for-of
+        for (let i = 0; i < word.length; i++) {
+            if (currentPosition.x === CENTRAL_CASE_POSITION.x && currentPosition.y === CENTRAL_CASE_POSITION.y) return true;
+            this.goToNextPosition(currentPosition, orientation);
+        }
+        return false;
+    }
+
     reverseString(string: string): string {
         return string.split('').reverse().join('');
     }
@@ -142,5 +157,22 @@ export class PlacementsHandlerService {
             this.wordValidationService.currentWords.delete(extendedWord);
             this.wordValidationService.priorCurrentWords.delete(extendedWord);
         }
+    }
+
+    isLetterInEasel(letter: string, indexPlayer: number, indexLetters: number[]): boolean {
+        let isLetterExisting = false;
+        let currentLetterIndex = this.playerService.indexLetterInEasel(letter, 0, indexPlayer);
+
+        if (currentLetterIndex !== INVALID_INDEX) isLetterExisting = true;
+        for (const index of indexLetters) {
+            while (currentLetterIndex === index) {
+                currentLetterIndex = this.playerService.indexLetterInEasel(letter, currentLetterIndex + 1, indexPlayer);
+                if (currentLetterIndex === INVALID_INDEX) isLetterExisting = false;
+            }
+        }
+        if (isLetterExisting) {
+            indexLetters.push(currentLetterIndex); // We push the index so we know it is used
+        }
+        return isLetterExisting;
     }
 }

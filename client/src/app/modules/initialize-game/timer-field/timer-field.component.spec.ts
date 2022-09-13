@@ -2,7 +2,7 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Level } from '@common/level';
+import { AiType } from '@common/ai-name';
 import { TimerFieldComponent } from './timer-field.component';
 
 describe('TimerFieldComponent', () => {
@@ -57,7 +57,7 @@ describe('TimerFieldComponent', () => {
             playerName: new FormControl(''),
             minuteInput: new FormControl('70'),
             secondInput: new FormControl('00'),
-            levelInput: new FormControl(Level.Beginner),
+            levelInput: new FormControl(AiType.beginner),
         });
         component.setTimeValidity();
         expect(component.parentForm.controls.minuteInput.errors).toBeTruthy();
@@ -69,7 +69,7 @@ describe('TimerFieldComponent', () => {
             playerName: new FormControl(''),
             minuteInput: new FormControl('05'),
             secondInput: new FormControl('00'),
-            levelInput: new FormControl(Level.Beginner),
+            levelInput: new FormControl(AiType.beginner),
         });
         component.setTimeValidity();
         expect(component.parentForm.controls.minuteInput.errors).toBeNull();

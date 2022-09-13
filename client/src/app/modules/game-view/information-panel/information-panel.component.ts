@@ -10,7 +10,6 @@ import { PlayerAIService } from '@app/services/player-ai.service';
 import { PlayerService } from '@app/services/player.service';
 import { SkipTurnService } from '@app/services/skip-turn.service';
 import { WordValidationService } from '@app/services/word-validation.service';
-import { GameSettings } from '@common/game-settings';
 import { Letter } from '@common/letter';
 
 @Component({
@@ -19,7 +18,6 @@ import { Letter } from '@common/letter';
     styleUrls: ['./information-panel.component.scss'],
 })
 export class InformationPanelComponent implements OnInit, OnDestroy {
-    private gameSettings: GameSettings;
     constructor(
         public gameSettingsService: GameSettingsService,
         public letterService: LetterService,
@@ -30,14 +28,12 @@ export class InformationPanelComponent implements OnInit, OnDestroy {
         public playerAiService: PlayerAIService,
         private wordValidation: WordValidationService,
     ) {
-        this.gameSettings = gameSettingsService.gameSettings;
+        this.receivePlayerTwo();
     }
 
     ngOnInit(): void {
-        // this.endGameService.clearAllData();
-        this.wordValidation.fileName = this.gameSettings.dictionary;
+        this.wordValidation.fileName = this.gameSettingsService.gameSettings.dictionary;
         this.initializePlayers();
-        this.receivePlayerTwo();
         this.initializeFirstTurn();
         this.skipTurnService.startTimer();
         this.callThePlayerAiOnItsTurn();
@@ -45,9 +41,11 @@ export class InformationPanelComponent implements OnInit, OnDestroy {
 
     receivePlayerTwo(): void {
         this.clientSocketService.socket.on('receivePlayerTwo', (letterTable: Letter[]) => {
-            const player = new Player(2, this.gameSettings.playersNames[PLAYER_TWO_INDEX], letterTable);
-            if (this.playerService.players.length < 2) this.playerService.addPlayer(player);
-            this.letterService.removeLettersFromReserve(this.playerService.players[PLAYER_ONE_INDEX].letterTable);
+            const player = new Player(2, this.gameSettingsService.gameSettings.playersNames[PLAYER_TWO_INDEX], letterTable);
+            if (this.playerService.players.length < 2) {
+                this.playerService.addPlayer(player);
+                this.letterService.removeLettersFromReserve(this.playerService.players[PLAYER_ONE_INDEX].letterTable);
+            }
         });
     }
 
@@ -61,19 +59,23 @@ export class InformationPanelComponent implements OnInit, OnDestroy {
     }
 
     initializePlayers(): void {
-        let player = new Player(1, this.gameSettings.playersNames[PLAYER_ONE_INDEX], this.letterService.getRandomLetters());
+        let player = new Player(1, this.gameSettingsService.gameSettings.playersNames[PLAYER_ONE_INDEX], this.letterService.getRandomLetters());
         this.playerService.addPlayer(player);
         if (this.gameSettingsService.isSoloMode) {
-            player = new PlayerAI(2, this.gameSettings.playersNames[PLAYER_TWO_INDEX], this.letterService.getRandomLetters(), this.playerAiService);
+            player = new PlayerAI(
+                2,
+                this.gameSettingsService.gameSettings.playersNames[PLAYER_TWO_INDEX],
+                this.letterService.getRandomLetters(),
+                this.playerAiService,
+            );
             this.playerService.addPlayer(player);
             return;
         }
-
         this.clientSocketService.socket.emit('sendPlayerTwo', player.letterTable, this.clientSocketService.roomId);
     }
 
     initializeFirstTurn(): void {
-        this.skipTurnService.isTurn = Boolean(this.gameSettings.startingPlayer.valueOf());
+        this.skipTurnService.isTurn = Boolean(this.gameSettingsService.gameSettings.startingPlayer.valueOf());
     }
 
     displaySeconds(): string {

@@ -8,9 +8,9 @@ import { PLAYER_AI_INDEX, PLAYER_TWO_INDEX, RESERVE } from '@app/classes/constan
 import { PlayerAI } from '@app/models/player-ai.model';
 import { Player } from '@app/models/player.model';
 import { SkipTurnService } from '@app/services/skip-turn.service';
+import { AiType } from '@common/ai-name';
 import { GameSettings } from '@common/game-settings';
 import { Letter } from '@common/letter';
-import { Level } from '@common/level';
 import { Socket } from 'socket.io-client';
 import { InformationPanelComponent } from './information-panel.component';
 describe('InformationPanelComponent', () => {
@@ -34,12 +34,12 @@ describe('InformationPanelComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(InformationPanelComponent);
         component = fixture.componentInstance;
-        component['gameSettings'] = new GameSettings(
+        component['gameSettingsService'].gameSettings = new GameSettings(
             ['Paul', 'Mike'],
             1,
             '00',
             '30',
-            Level.Beginner,
+            AiType.beginner,
             'Désactiver',
             "[['A1', 'doubleLetter'], ['A4', 'tripleLetter']]",
             '',
@@ -85,7 +85,7 @@ describe('InformationPanelComponent', () => {
         component.receivePlayerTwo();
         expect(component['playerService'].players[PLAYER_TWO_INDEX].letterTable).toEqual(lettersReceived);
         expect(component['playerService'].addPlayer).not.toHaveBeenCalled();
-        expect(component['letterService'].removeLettersFromReserve).toHaveBeenCalled();
+        expect(component['letterService'].removeLettersFromReserve).toHaveBeenCalledTimes(0);
     });
 
     it('the emit receiveRoomMessage should call sendOpponentMessage and no add Player', () => {
@@ -111,7 +111,7 @@ describe('InformationPanelComponent', () => {
         component.receivePlayerTwo();
         expect(component['playerService'].players[PLAYER_TWO_INDEX].letterTable).toEqual(lettersReceived);
         expect(component['playerService'].addPlayer).not.toHaveBeenCalled();
-        expect(component['letterService'].removeLettersFromReserve).toHaveBeenCalled();
+        expect(component['letterService'].removeLettersFromReserve).toHaveBeenCalledTimes(0);
     });
     it('the emit receiveRoomMessage should call sendOpponentMessage and add Player if the size is under 2', () => {
         const lettersReceived = [RESERVE[0], RESERVE[1], RESERVE[2]];
@@ -150,19 +150,18 @@ describe('InformationPanelComponent', () => {
         spyOn(component['playerService'], 'addPlayer');
         component.initializePlayers();
         expect(component['playerService'].addPlayer).toHaveBeenCalledTimes(2);
-        // expect(component['playerService'].players[PLAYER_AI_INDEX].name).toEqual('Mike');
     });
     it('should not call the AI player if the turn is true', () => {
         component.skipTurnService.isTurn = true;
         component.gameSettingsService.isSoloMode = true;
-        // Création de joueurs
+
         const letterA = RESERVE[0];
         const letterB = RESERVE[1];
         const player = new Player(1, 'Player 1', [letterA]);
         const playerAI = new PlayerAI(2, 'Player AI', [letterB], component.playerAiService);
         component['playerService'].players.push(player);
         component['playerService'].players.push(playerAI);
-        // Debut du test
+
         const spyPlay = spyOn(playerAI, 'play');
         component.callThePlayerAiOnItsTurn();
         jasmine.clock().tick(4000);
@@ -171,7 +170,7 @@ describe('InformationPanelComponent', () => {
     it('should  call the AI player if the turn is false', () => {
         component.skipTurnService.isTurn = false;
         component.gameSettingsService.isSoloMode = true;
-        // Création de joueurs
+
         const letterA = RESERVE[0];
         const letterB = RESERVE[1];
         const player = new Player(1, 'Player 1', [letterA]);
@@ -179,7 +178,7 @@ describe('InformationPanelComponent', () => {
         const spyPlay = spyOn(playerAI, 'play');
         component['playerService'].players.push(player);
         component['playerService'].players.push(playerAI);
-        // Debut du test
+
         component.callThePlayerAiOnItsTurn();
         jasmine.clock().tick(4000);
         expect(spyPlay).toHaveBeenCalled();

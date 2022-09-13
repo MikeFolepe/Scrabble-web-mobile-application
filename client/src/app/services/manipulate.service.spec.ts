@@ -108,7 +108,7 @@ describe('ManipulateService', () => {
     });
 
     it('pressing the left arrow key should shift up the letter selected', () => {
-        const keyboardEvent = new KeyboardEvent('keydown', { key: 'ArrowLeft' });
+        const keyboardEvent = new KeyboardEvent('keydown', { key: 'ArrowUp' });
         service.letterEaselTab[3].isSelectedForManipulation = true;
         service.usedLetters[3] = true;
         service.onKeyPress(keyboardEvent);
@@ -117,7 +117,7 @@ describe('ManipulateService', () => {
     });
 
     it('pressing the right arrow key should shift down the letter selected', () => {
-        const keyboardEvent = new KeyboardEvent('keydown', { key: 'ArrowRight' });
+        const keyboardEvent = new KeyboardEvent('keydown', { key: 'ArrowDown' });
         service.letterEaselTab[3].isSelectedForManipulation = true;
         service.usedLetters[3] = true;
         service.onKeyPress(keyboardEvent);
@@ -126,7 +126,7 @@ describe('ManipulateService', () => {
     });
 
     it('pressing the left arrow key while the 1st letter is selected should shift up the letter to the last index', () => {
-        const keyboardEvent = new KeyboardEvent('keydown', { key: 'ArrowLeft' });
+        const keyboardEvent = new KeyboardEvent('keydown', { key: 'ArrowUp' });
         service.letterEaselTab[0].isSelectedForManipulation = true;
         service.usedLetters[0] = true;
         service.onKeyPress(keyboardEvent);
@@ -135,7 +135,7 @@ describe('ManipulateService', () => {
     });
 
     it('pressing the right arrow key while the last letter is selected should shift down the letter to the first index', () => {
-        const keyboardEvent = new KeyboardEvent('keydown', { key: 'ArrowRight' });
+        const keyboardEvent = new KeyboardEvent('keydown', { key: 'ArrowDown' });
         service.letterEaselTab[EASEL_SIZE - 1].isSelectedForManipulation = true;
         service.usedLetters[EASEL_SIZE - 1] = true;
         service.onKeyPress(keyboardEvent);
@@ -159,5 +159,11 @@ describe('ManipulateService', () => {
         const keyboardEvent = new KeyboardEvent('keydown', { key: 'Shift' });
         service.onKeyPress(keyboardEvent);
         expect(service.unselectAll).toHaveBeenCalledTimes(0);
+    });
+
+    it('unselectManipulation should unselect the letter selected for manipulation', () => {
+        service.letterEaselTab[0].isSelectedForManipulation = true;
+        service.unselectManipulation();
+        expect(service.letterEaselTab[0].isSelectedForManipulation).toBeFalse();
     });
 });

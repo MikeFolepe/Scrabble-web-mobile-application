@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DELAY_TO_PASS_TURN, EASEL_SIZE, INVALID_INDEX, MIN_RESERVE_SIZE_TO_SWAP, ONE_SECOND_DELAY, PLAYER_AI_INDEX } from '@app/classes/constants';
+import { DELAY_TO_PASS_TURN, EASEL_SIZE, INVALID_INDEX, MIN_RESERVE_SIZE_TO_SWAP, PLAYER_AI_INDEX } from '@app/classes/constants';
 import { MessageType } from '@app/classes/enum';
 import { CustomRange } from '@app/classes/range';
 import { Orientation, PossibleWords } from '@app/classes/scrabble-board-pattern';
@@ -41,7 +41,6 @@ export class PlayerAIService {
 
     skip(shouldDisplayMessage: boolean = true): void {
         setTimeout(() => {
-            this.skipTurnService.switchTurn();
             if (shouldDisplayMessage) {
                 this.sendMessageService.displayMessageByType(
                     this.playerService.players[PLAYER_AI_INDEX].name + ' : ' + '!passer ',
@@ -49,6 +48,7 @@ export class PlayerAIService {
                 );
                 this.endGameService.actionsLog.push('passer');
             }
+            this.skipTurnService.switchTurn();
         }, DELAY_TO_PASS_TURN);
     }
 
@@ -57,7 +57,7 @@ export class PlayerAIService {
         return Math.floor(Number(Math.random()) * maxValue);
     }
 
-    swap(isDifficultMode: boolean): boolean {
+    swap(isExpertLevel: boolean): boolean {
         const playerAi = this.playerService.players[PLAYER_AI_INDEX] as PlayerAI;
         const lettersToSwap: string[] = [];
 
@@ -67,7 +67,7 @@ export class PlayerAIService {
             return false;
         }
         // According to game mode some cases might not be possible according to rules
-        if (!isDifficultMode && this.letterService.reserveSize < MIN_RESERVE_SIZE_TO_SWAP) {
+        if (!isExpertLevel && this.letterService.reserveSize < MIN_RESERVE_SIZE_TO_SWAP) {
             this.skip(true);
             return false;
         }
@@ -78,15 +78,13 @@ export class PlayerAIService {
             numberOfLetterToChange = this.generateRandomNumber(Math.min(playerAi.letterTable.length + 1, this.letterService.reserveSize + 1));
         } while (numberOfLetterToChange === 0);
 
-        if (isDifficultMode) numberOfLetterToChange = Math.min(playerAi.letterTable.length, this.letterService.reserveSize);
+        if (isExpertLevel) numberOfLetterToChange = Math.min(playerAi.letterTable.length, this.letterService.reserveSize);
 
         // Choose the index of letters to be changed
         const indexOfLetterToBeChanged: number[] = [];
         while (indexOfLetterToBeChanged.length < numberOfLetterToChange) {
             const candidate = this.generateRandomNumber(playerAi.letterTable.length);
-            if (indexOfLetterToBeChanged.indexOf(candidate) === INVALID_INDEX) {
-                indexOfLetterToBeChanged.push(candidate);
-            }
+            if (indexOfLetterToBeChanged.indexOf(candidate) === INVALID_INDEX) indexOfLetterToBeChanged.push(candidate);
         }
 
         for (const index of indexOfLetterToBeChanged) {
@@ -113,20 +111,7 @@ export class PlayerAIService {
 
     async place(word: PossibleWords): Promise<void> {
         const startPos = word.orientation ? { x: word.line, y: word.startIndex } : { x: word.startIndex, y: word.line };
-        const isValid = await this.placeLetterService.placeCommand(startPos, word.orientation, word.word);
-        if (isValid) {
-            const column = (startPos.x + 1).toString();
-            const row: string = String.fromCharCode(startPos.y + 'a'.charCodeAt(0));
-            const charOrientation = word.orientation === Orientation.Horizontal ? 'h' : 'v';
-            setTimeout(() => {
-                this.sendMessageService.displayMessageByType(
-                    this.playerService.players[PLAYER_AI_INDEX].name + ' : ' + '!placer ' + row + column + charOrientation + ' ' + word.word,
-                    MessageType.Opponent,
-                );
-            }, ONE_SECOND_DELAY);
-            return;
-        }
-
+        if (await this.placeLetterService.placeCommand(startPos, word.orientation, word.word)) return;
         this.skip(false);
     }
 

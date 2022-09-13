@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { NUMBER_OF_SKIP, PLAYER_AI_INDEX, PLAYER_ONE_INDEX, PLAYER_TWO_INDEX } from '@app/classes/constants';
+import { PlayerAI } from '@app/models/player-ai.model';
 import { DebugService } from '@app/services/debug.service';
+import { Letter } from '@common/letter';
 import { PlayerScore } from '@common/player';
 import { ClientSocketService } from './client-socket.service';
-import { CommunicationService } from './communication.service';
 import { GameSettingsService } from './game-settings.service';
-// import { GridService } from './grid.service';
 import { LetterService } from './letter.service';
 import { PlayerService } from './player.service';
+import { SendMessageService } from './send-message.service';
 
 @Injectable({
     providedIn: 'root',
@@ -17,14 +18,15 @@ export class EndGameService {
     isEndGame: boolean = false;
     isEndGameByGiveUp = false;
     winnerNameByGiveUp = '';
+    playersScores: PlayerScore[] = [];
 
     constructor(
-        private httpServer: CommunicationService,
         public clientSocketService: ClientSocketService,
         public letterService: LetterService,
         public playerService: PlayerService,
         public debugService: DebugService,
-        public gameSettingsService: GameSettingsService, // private gridService: GridService,
+        public gameSettingsService: GameSettingsService,
+        private sendMessageService: SendMessageService,
     ) {
         this.clearAllData();
         this.actionsLog = [];
@@ -34,8 +36,16 @@ export class EndGameService {
     }
 
     receiveEndGameFromServer(): void {
-        this.clientSocketService.socket.on('receiveEndGame', (isEndGame: boolean) => {
+        this.clientSocketService.socket.on('receiveEndGame', (isEndGame: boolean, letterTable: Letter[]) => {
             this.isEndGame = isEndGame;
+            this.playerService.players[PLAYER_TWO_INDEX].letterTable = letterTable;
+            this.clientSocketService.socket.emit(
+                'sendEasel',
+                this.playerService.players[PLAYER_ONE_INDEX].letterTable,
+                this.clientSocketService.roomId,
+            );
+            this.sendMessageService.displayFinalMessage(PLAYER_ONE_INDEX);
+            this.sendMessageService.displayFinalMessage(PLAYER_TWO_INDEX);
         });
     }
 
@@ -62,40 +72,36 @@ export class EndGameService {
 
     checkEndGame(): void {
         this.isEndGame = this.isEndGameByActions() || this.isEndGameByEasel() || this.isEndGameByGiveUp;
-
         if (this.isEndGame) {
-            this.clientSocketService.socket.emit('sendEndGame', this.isEndGame, this.clientSocketService.roomId);
+            this.clientSocketService.socket.emit(
+                'sendEndGame',
+                this.isEndGame,
+                this.playerService.players[PLAYER_ONE_INDEX].letterTable,
+                this.clientSocketService.roomId,
+            );
         }
     }
 
     getFinalScore(indexPlayer: number): void {
-        if (this.playerService.players[indexPlayer].score === 0) return;
-
         for (const letter of this.playerService.players[indexPlayer].letterTable) {
             this.playerService.players[indexPlayer].score -= letter.points;
             // Check if score decrease under 0 after substraction
 
-            if (this.playerService.players[indexPlayer].score < 0) {
+            if (this.playerService.players[indexPlayer].score <= 0) {
                 this.playerService.players[indexPlayer].score = 0;
-                break;
             }
         }
-        // TODO: décommenter la ligne suivante si jamais le JV apparaît dans les classements
-        // if (this.playerService.players[indexPlayer].name in AI_NAME_DATABASE) return;
+        if (this.playerService.players[indexPlayer] instanceof PlayerAI) return;
 
-        const players: PlayerScore[] = [];
-        players[indexPlayer] = {
+        this.playersScores.push({
             score: this.playerService.players[indexPlayer].score,
             playerName: this.playerService.players[indexPlayer].name,
             isDefault: false,
-        };
-        this.httpServer.addPlayersScores(players, this.gameSettingsService.gameType).subscribe();
+        });
     }
 
     clearAllData(): void {
         this.playerService.players = [];
-        // this.gridService.ngOnDestroy();
-        // this.letterService.reserve = JSON.parse(JSON.stringify(RESERVE));
         this.isEndGameByGiveUp = false;
         this.winnerNameByGiveUp = '';
         this.isEndGame = false;

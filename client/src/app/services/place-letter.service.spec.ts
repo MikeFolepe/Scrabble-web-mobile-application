@@ -1,9 +1,11 @@
+/* eslint-disable max-lines */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable dot-notation */
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { PLAYER_AI_INDEX, PLAYER_ONE_INDEX, RESERVE, THREE_SECONDS_DELAY } from '@app/classes/constants';
+import { MessageType } from '@app/classes/enum';
 import { Orientation } from '@app/classes/scrabble-board-pattern';
 import { Player } from '@app/models/player.model';
 import { GridService } from '@app/services/grid.service';
@@ -80,22 +82,6 @@ describe('PlaceLetterService', () => {
         const orientation = Orientation.Horizontal;
         const word = 'cadeau';
         expect(service.isWordFitting(position, orientation, word)).toBeTrue();
-    });
-
-    it('first word placed on central case should be valid', () => {
-        const position: Vec2 = { x: 7, y: 7 }; // central case H8
-        let orientation = Orientation.Horizontal;
-        const word = 'office';
-        expect(service.isFirstWordValid(position, orientation, word)).toBeTrue();
-        orientation = Orientation.Vertical;
-        expect(service.isFirstWordValid(position, orientation, word)).toBeTrue();
-    });
-
-    it('first word not placed on central case should be invalid', () => {
-        const position: Vec2 = { x: 2, y: 9 };
-        const orientation = Orientation.Vertical;
-        const word = 'stage';
-        expect(service.isFirstWordValid(position, orientation, word)).toBeFalse();
     });
 
     it('word placed on the following rounds should be valid if he touches other words', async () => {
@@ -276,11 +262,13 @@ describe('PlaceLetterService', () => {
         const orientation = Orientation.Horizontal;
         const word = 'abcd';
         isPlacementValid = await service.validateKeyboardPlacement(position, orientation, word, PLAYER_ONE_INDEX);
+        jasmine.clock().tick(THREE_SECONDS_DELAY);
         expect(isPlacementValid).toBeFalse();
 
         service['isFirstRound'] = false;
         position = { x: 1, y: 1 };
         isPlacementValid = await service.validateKeyboardPlacement(position, orientation, word, PLAYER_ONE_INDEX);
+        jasmine.clock().tick(THREE_SECONDS_DELAY);
         expect(isPlacementValid).toBeFalse();
     });
 
@@ -290,6 +278,7 @@ describe('PlaceLetterService', () => {
         const orientation = Orientation.Horizontal;
         const word = 'abcd';
         const isPlacementValid = await service.validateKeyboardPlacement(position, orientation, word, PLAYER_ONE_INDEX);
+        jasmine.clock().tick(THREE_SECONDS_DELAY);
         expect(isPlacementValid).toBeFalse();
     });
 
@@ -334,5 +323,14 @@ describe('PlaceLetterService', () => {
         spyOn<any>(service, 'placeByOpponent');
         service['receivePlacement']();
         expect(service['placeByOpponent']).toHaveBeenCalledWith(scrabbleBoard, startPosition, orientation, word);
+    });
+
+    it('displayValid on solo mode with the Ai player index should display the correct message', () => {
+        service['startPosition'] = { x: 7, y: 7 };
+        service['orientation'] = Orientation.Horizontal;
+        service['gameSettingsService'].isSoloMode = true;
+        service['word'] = 'test';
+        service.displayValid(PLAYER_AI_INDEX);
+        expect(service['sendMessageService'].displayMessageByType).toHaveBeenCalledWith('Player 2 : !placer h8h test', MessageType.Opponent);
     });
 });

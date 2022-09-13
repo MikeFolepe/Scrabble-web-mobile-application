@@ -17,9 +17,7 @@ export class WordValidationService {
         // eslint-disable-next-line @typescript-eslint/prefer-for-of
         for (let i = 0; i < words.length; i++) {
             for (const item of this.currentDictionary) {
-                if (words[i].toLowerCase() === item) {
-                    validWordsCount++;
-                }
+                if (words[i].toLowerCase() === item) validWordsCount++;
             }
         }
         return validWordsCount === words.length;

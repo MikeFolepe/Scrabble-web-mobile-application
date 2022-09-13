@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable dot-notation */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
-import { MockLocationStrategy } from '@angular/common/testing';
+import { LocationStrategy } from '@angular/common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { MockLocationStrategy } from '@angular/common/testing';
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { PlayerAIService } from '@app/services/player-ai.service';
 import { PlayerAI } from './player-ai.model';
-import { LocationStrategy } from '@angular/common';
 
 describe('PlayerAI', () => {
     const letterTable = [
@@ -48,22 +48,22 @@ describe('PlayerAI', () => {
 
     it('should return playerHand formatted', () => {
         const playerHandFormatted = '[ABCEEEG]';
-        expect(playerAi.getHand()).toEqual(playerHandFormatted);
+        expect(playerAi.getEasel()).toEqual(playerHandFormatted);
     });
 
     it('should return quantity of present letter', () => {
-        expect(playerAi.playerQuantityOf('A')).toEqual(1);
+        expect(playerAi.getLetterQuantityInEasel('A')).toEqual(1);
     });
 
     it('should return quantity of no present letter', () => {
-        expect(playerAi.playerQuantityOf('H')).toEqual(0);
+        expect(playerAi.getLetterQuantityInEasel('H')).toEqual(0);
     });
 
     it('should return quantity of multiple letter', () => {
-        expect(playerAi.playerQuantityOf('E')).toEqual(3);
+        expect(playerAi.getLetterQuantityInEasel('E')).toEqual(3);
     });
 
     it('should return quantity of letter with case insensitivity', () => {
-        expect(playerAi.playerQuantityOf('e')).toEqual(3);
+        expect(playerAi.getLetterQuantityInEasel('e')).toEqual(3);
     });
 });

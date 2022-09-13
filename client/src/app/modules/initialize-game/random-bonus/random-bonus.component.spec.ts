@@ -1,7 +1,7 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Level } from '@common/level';
+import { AiType } from '@common/ai-name';
 import { RandomBonusComponent } from './random-bonus.component';
 
 describe('RandomBonusComponent', () => {
@@ -22,7 +22,7 @@ describe('RandomBonusComponent', () => {
             playerName: new FormControl('player 1'),
             minuteInput: new FormControl('01'),
             secondInput: new FormControl('00'),
-            levelInput: new FormControl(Level.Beginner),
+            levelInput: new FormControl(AiType.beginner),
             randomBonus: new FormControl('Non'),
         });
 

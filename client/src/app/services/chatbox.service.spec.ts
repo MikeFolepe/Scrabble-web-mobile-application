@@ -3,7 +3,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { PLAYER_ONE_INDEX, RESERVE } from '@app/classes/constants';
+import { RESERVE } from '@app/classes/constants';
 import { MessageType } from '@app/classes/enum';
 import { Orientation, PossibleWords } from '@app/classes/scrabble-board-pattern';
 import { Player } from '@app/models/player.model';
@@ -120,7 +120,7 @@ describe('ChatboxService', () => {
         expect(service['message']).toEqual('!passer');
     });
 
-    it('using a valid command !placer should display the respective message', async () => {
+    it('using a valid command !placer should not display any error message', async () => {
         spyOn(service['skipTurnService'], 'switchTurn');
         service['skipTurnService'].isTurn = true;
         spyOn(service['placeLetterService'], 'placeCommand').and.returnValue(Promise.resolve(true));
@@ -128,10 +128,10 @@ describe('ChatboxService', () => {
         service['message'] = '!placer h8v hello';
         service['messageType'] = MessageType.Player;
         await service['executePlace']();
-        expect(service['sendMessageService'].displayMessageByType).toHaveBeenCalledWith('!placer h8v hello', MessageType.Player);
+        expect(service['sendMessageService'].displayMessageByType).toHaveBeenCalledTimes(0);
     });
 
-    it('using a valid command !placer vertical should display the respective message', async () => {
+    it('using a valid command !placer vertical should not display any error message', async () => {
         spyOn(service['skipTurnService'], 'switchTurn');
         service['skipTurnService'].isTurn = true;
         spyOn(service['placeLetterService'], 'placeCommand').and.returnValue(Promise.resolve(true));
@@ -139,7 +139,7 @@ describe('ChatboxService', () => {
         service['message'] = '!placer h8h hello';
         service['messageType'] = MessageType.Player;
         await service['executePlace']();
-        expect(service['sendMessageService'].displayMessageByType).toHaveBeenCalledWith('!placer h8h hello', MessageType.Player);
+        expect(service['sendMessageService'].displayMessageByType).toHaveBeenCalledTimes(0);
     });
 
     it('using a valid command !échanger should display the respective message', () => {
@@ -200,12 +200,6 @@ describe('ChatboxService', () => {
         service['debugService'].debugServiceMessage = [{ word: 'test', orientation: Orientation.Horizontal, line: 0, startIndex: 0, point: 3 }];
         service['displayDebugMessage']();
         expect(service['message']).toEqual('test: -- 3');
-    });
-
-    it('calling displayFinalMessage should send the respective message to the chatbox', () => {
-        service['endGameService'].isEndGame = true;
-        service.displayFinalMessage(PLAYER_ONE_INDEX);
-        expect(service['sendMessageService'].displayMessageByType).toHaveBeenCalledWith('Player 1 : AABBCCA', MessageType.System);
     });
 
     it('should not write a message if swapCommand is false in executeSwap()', () => {

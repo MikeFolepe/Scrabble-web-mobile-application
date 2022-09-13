@@ -35,11 +35,11 @@ export class WaitingRoomComponent implements OnInit {
                 const connexionSuccess = 'Connexion réussie';
                 this.isWaiting = true;
                 this.waitBeforeChangeStatus(0, connexionSuccess);
-                const waitingMessage = 'En attente de joueur...';
+                const waitingMessage = "En attente d'un joueur...";
                 this.waitBeforeChangeStatus(TWO_SECOND_DELAY, waitingMessage);
                 this.clientSocket.socket.emit('createRoom', this.gameSettingsService.gameSettings, this.clientSocket.gameType);
             } else {
-                this.status = 'Erreur de connexion...veuillez réessayer';
+                this.status = 'Erreur de connexion... Veuillez réessayer';
                 this.isWaiting = false;
             }
         }, TWO_SECOND_DELAY);
@@ -60,15 +60,14 @@ export class WaitingRoomComponent implements OnInit {
         }, waitingTime);
     }
 
-    delete(): void {
-        this.clientSocket.socket.emit('deleteGame', this.clientSocket.roomId, this.clientSocket.gameType);
+    deleteGame(): void {
+        this.clientSocket.socket.emit('deleteGame', this.clientSocket.roomId);
     }
 
     routeToGameView(): void {
-        // TODO: A revoir pourquoi delete avec majid pourquoi on a fait ça???
         this.gameSettingsService.isSoloMode = true;
         this.gameSettingsService.isRedirectedFromMultiplayerGame = true;
-        this.delete();
+        this.deleteGame();
         this.router.navigate(['solo-game-ai']);
     }
 }

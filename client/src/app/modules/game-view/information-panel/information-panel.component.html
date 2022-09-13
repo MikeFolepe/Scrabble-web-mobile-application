@@ -33,11 +33,7 @@
             <hr />
         </div>
     </div>
-    <div *ngIf="endGameService.isEndGameByActions() || (endGameService.isEndGameByEasel() && !endGameService.isEndGameByGiveUp)">
+    <div *ngIf="endGameService.isEndGame">
         La partie est terminée. Félicitations à {{ this.endGameService.getWinnerName() }} qui est le vainqueur!!
-    </div>
-    <div *ngIf="!endGameService.isEndGameByActions() && !endGameService.isEndGameByEasel() && endGameService.isEndGameByGiveUp">
-        L'adversaire a quitté la partie. La partie est donc terminée. Félicitations à {{ this.endGameService.winnerNameByGiveUp }} qui est le
-        vainqueur!!
     </div>
 </div>

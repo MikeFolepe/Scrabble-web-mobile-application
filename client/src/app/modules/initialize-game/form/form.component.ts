@@ -2,14 +2,14 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { BONUS_POSITIONS, DEFAULT_DICTIONARY_INDEX, INVALID_INDEX, PLAYER_ONE_INDEX } from '@app/classes/constants';
-import { NUMBER_OF_OBJECTIVES, OBJECTIVES } from '@app/classes/objectives';
+import { NUMBER_OF_OBJECTIVES, NUMBER_OF_PUBLIC_OBJECTIVES, OBJECTIVES } from '@app/classes/objectives';
 import { AdministratorService } from '@app/services/administrator.service';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameSettingsService } from '@app/services/game-settings.service';
 import { RandomBonusesService } from '@app/services/random-bonuses.service';
+import { AiType } from '@common/ai-name';
 import { Dictionary } from '@common/dictionary';
 import { GameSettings, StartingPlayer } from '@common/game-settings';
-import { Level } from '@common/level';
 import { ObjectiveTypes } from '@common/objectives-type';
 
 @Component({
@@ -41,9 +41,9 @@ export class FormComponent implements OnInit, OnDestroy {
             playerName: new FormControl(this.gameSettingsService.gameSettings.playersNames[PLAYER_ONE_INDEX]),
             minuteInput: new FormControl(this.gameSettingsService.gameSettings.timeMinute),
             secondInput: new FormControl(this.gameSettingsService.gameSettings.timeSecond),
-            levelInput: new FormControl(this.gameSettingsService.gameSettings.level),
+            levelInput: new FormControl('Débutant'),
             dictionaryInput: new FormControl(this.selectedDictionary.title, [Validators.required]),
-            randomBonus: new FormControl(this.gameSettingsService.gameSettings.randomBonus), // TODO boolean pour randomBonus ?
+            randomBonus: new FormControl(this.gameSettingsService.gameSettings.randomBonus),
         });
         this.adminService.initializeAiPlayers();
     }
@@ -52,9 +52,7 @@ export class FormComponent implements OnInit, OnDestroy {
         await this.selectGameDictionary(this.selectedDictionary);
         if (this.isDictionaryDeleted) return;
         this.snapshotSettings();
-        // TODO juste waiting-room suffit comme URL ?
-        // TODO: ça suffira
-        const nextUrl = this.gameSettingsService.isSoloMode ? 'game' : 'multiplayer-mode-waiting-room';
+        const nextUrl = this.gameSettingsService.isSoloMode ? 'game' : 'waiting-room';
         this.router.navigate([nextUrl]);
     }
 
@@ -72,7 +70,7 @@ export class FormComponent implements OnInit, OnDestroy {
         this.fileName = this.selectedDictionary.fileName;
     }
 
-    keyPressSubmit(event: KeyboardEvent) {
+    keyPressSubmit(event: KeyboardEvent): void {
         if (event.key === 'Enter' && this.form.valid) this.initializeGame();
     }
 
@@ -93,15 +91,13 @@ export class FormComponent implements OnInit, OnDestroy {
         return Math.floor((Math.random() * Object.keys(StartingPlayer).length) / 2);
     }
 
-    private chooseRandomAIName(levelInput: Level): string {
+    private chooseRandomAIName(levelInput: AiType): string {
         let randomName = '';
         do {
             // Random value [0, AI_NAME_DATABASE.length[
-            const randomNumber = Math.floor(Math.random() * this.adminService.beginnerNames.length);
+            const randomNumber = Math.floor(Math.random() * this.adminService.aiBeginner.length);
             randomName =
-                levelInput === Level.Beginner
-                    ? this.adminService.beginnerNames[randomNumber].aiName
-                    : this.adminService.expertNames[randomNumber].aiName;
+                levelInput === AiType.beginner ? this.adminService.aiBeginner[randomNumber].aiName : this.adminService.aiExpert[randomNumber].aiName;
         } while (randomName === this.form.controls.playerName.value);
         return randomName;
     }
@@ -113,12 +109,16 @@ export class FormComponent implements OnInit, OnDestroy {
             this.chooseStartingPlayer(),
             this.form.controls.minuteInput.value,
             this.form.controls.secondInput.value,
-            this.form.controls.levelInput.value,
+            this.getLevel(),
             this.form.controls.randomBonus.value,
             this.getRightBonusPositions(),
             this.fileName,
             this.initializeObjective(),
         );
+    }
+
+    private getLevel(): AiType {
+        return this.form.controls.levelInput.value === AiType.beginner ? AiType.beginner : AiType.expert;
     }
 
     private initializeObjective(): number[][] {
@@ -131,8 +131,8 @@ export class FormComponent implements OnInit, OnDestroy {
 
         const objectiveByType: number[][] = [[], []];
 
-        objectiveByType[ObjectiveTypes.Public] = objectiveIds.slice(0, 2); // TODO const NUMBER_OF_PUBLIC_OBJ
-        objectiveByType[ObjectiveTypes.Private] = objectiveIds.slice(2, objectiveIds.length);
+        objectiveByType[ObjectiveTypes.Public] = objectiveIds.slice(0, NUMBER_OF_PUBLIC_OBJECTIVES);
+        objectiveByType[ObjectiveTypes.Private] = objectiveIds.slice(NUMBER_OF_PUBLIC_OBJECTIVES, objectiveIds.length);
 
         return objectiveByType;
     }

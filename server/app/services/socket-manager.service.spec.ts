@@ -1,30 +1,29 @@
-/* eslint-disable max-lines */
-/* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable no-unused-vars */
 /* eslint-disable max-lines */
+/* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
-/* eslint-disable @typescript-eslint/no-require-imports */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable dot-notation */
+import { AiType } from '@common/ai-name';
 import { GameSettings } from '@common/game-settings';
 import { GameType } from '@common/game-type';
-import { Level } from '@common/level';
+import { Letter } from '@common/letter';
 import { Room, State } from '@common/room';
 import { expect } from 'chai';
 import * as http from 'http';
+import * as sinon from 'sinon';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';
 import * as io from 'socket.io';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import { RoomManagerService } from './room-manager.service';
 import { SocketManagerService } from './socket-manager.service';
-import Sinon = require('sinon');
 
 describe('SocketManagerService', () => {
     let roomManagerService: SinonStubbedInstance<RoomManagerService>;
     let service: SocketManagerService;
     let sio: SinonStubbedInstance<io.Server>;
     const socketId = 'socket1';
-    const settings: GameSettings = new GameSettings(['mi', 'ma'], 1, '01', '00', Level.Beginner, 'Activer', 'francais', '00');
+    const settings: GameSettings = new GameSettings(['mi', 'ma'], 1, '01', '00', AiType.beginner, 'Activer', 'francais', '00');
     const scrabbleBoard: string[][] = [[]];
 
     const fakeIn = {
@@ -57,7 +56,7 @@ describe('SocketManagerService', () => {
             },
         } as io.Server;
 
-        const spy = Sinon.spy(fakeSocket, 'on');
+        const spy = sinon.spy(fakeSocket, 'on');
         service.handleSockets();
         expect(spy.called).to.equal(true);
     });
@@ -91,8 +90,8 @@ describe('SocketManagerService', () => {
                 return;
             },
         } as unknown as io.Server;
-        const spyOnJoin = Sinon.spy(fakeSocket, 'join');
-        const spyOnEmit = Sinon.spy(fakeSocket, 'emit');
+        const spyOnJoin = sinon.spy(fakeSocket, 'join');
+        const spyOnEmit = sinon.spy(fakeSocket, 'emit');
         const room = new Room('mike1234', socketId, settings, State.Waiting);
         roomManagerService.rooms = [[room], []];
         roomManagerService.createRoomId.returns('mike1234');
@@ -104,8 +103,6 @@ describe('SocketManagerService', () => {
     });
 
     it('should handle delete game event ', () => {
-        const typeOfGame = GameType.Classic;
-
         const fakeSocket = {
             // eslint-disable-next-line no-unused-vars
             on: (eventName: string, callback: (roomId: string) => void) => {
@@ -134,13 +131,13 @@ describe('SocketManagerService', () => {
             },
         } as unknown as io.Server;
 
-        const spyOnEmit = Sinon.spy(service['sio'], 'emit');
-        const spyOnLeave = Sinon.spy(service['sio'], 'socketsLeave');
+        const spyOnEmit = sinon.spy(service['sio'], 'emit');
+        const spyOnLeave = sinon.spy(service['sio'], 'socketsLeave');
         const room = new Room('mike1234', socketId, settings, State.Waiting);
         roomManagerService.rooms = [[room], []];
         service.handleSockets();
         expect(spyOnEmit.called).to.equal(true);
-        expect(spyOnEmit.calledWith('roomAvailable', roomManagerService.getNumberOfRoomInWaitingState(typeOfGame)));
+        expect(spyOnEmit.calledWith('roomAvailable', roomManagerService.getNumberOfRoomInWaitingState()));
         expect(spyOnLeave.calledWith('mike1234'));
         expect(roomManagerService.deleteRoom.calledWith('mike1234')).to.equal(true);
     });
@@ -152,14 +149,13 @@ describe('SocketManagerService', () => {
             on: (eventName: string, callback: (gameType: GameType) => void) => {
                 if (eventName === 'getRoomsConfiguration') {
                     callback(typeOfGame);
-                    // return;
                 }
             },
             emit: (eventName: string, args: any[] | any) => {
                 return;
             },
         };
-        const spy = Sinon.spy(fakeSocket, 'emit');
+        const spy = sinon.spy(fakeSocket, 'emit');
         service['sio'] = {
             on: (eventName: string, callback: (socket: any) => void) => {
                 if (eventName === 'connection') {
@@ -173,7 +169,7 @@ describe('SocketManagerService', () => {
         const room = new Room('mike1234', socketId, settings, State.Waiting);
         roomManagerService.rooms = [[room], []];
         service.handleSockets();
-        expect(spy.calledWith('roomConfiguration', roomManagerService.rooms[typeOfGame])).to.equal(true);
+        expect(spy.calledWith('roomConfiguration', roomManagerService.rooms)).to.equal(true);
     });
 
     it('should not emit the event onNewRoomCustomerOfRandomPlacement if the room is undefined', () => {
@@ -183,14 +179,13 @@ describe('SocketManagerService', () => {
             on: (eventName: string, callback: (customerName: string, gameType: GameType) => void) => {
                 if (eventName === 'newRoomCustomerOfRandomPlacement') {
                     callback('Paul', typeOfGame);
-                    // return;
                 }
             },
             emit: (eventName: string, args: any[] | any) => {
                 return;
             },
         };
-        const spy = Sinon.spy(fakeSocket, 'emit');
+        const spy = sinon.spy(fakeSocket, 'emit');
 
         service['sio'] = {
             on: (eventName: string, callback: (socket: any) => void) => {
@@ -213,14 +208,13 @@ describe('SocketManagerService', () => {
             on: (eventName: string, callback: (customerName: string, gameType: GameType) => void) => {
                 if (eventName === 'newRoomCustomerOfRandomPlacement') {
                     callback('Paul', typeOfGame);
-                    // return;
                 }
             },
             emit: (eventName: string, args: any[] | any) => {
                 return;
             },
         };
-        const spy = Sinon.spy(fakeSocket, 'emit');
+        const spy = sinon.spy(fakeSocket, 'emit');
 
         service['sio'] = {
             on: (eventName: string, callback: (socket: any) => void) => {
@@ -229,7 +223,7 @@ describe('SocketManagerService', () => {
                 }
             },
         } as unknown as io.Server;
-        // const spyOnEmit = Sinon.spy(service['sio'], 'emit');
+        // const spyOnEmit = sinon.spy(service['sio'], 'emit');
         const room = new Room('mike1234', socketId, settings, State.Waiting);
         roomManagerService.rooms = [[room], []];
         roomManagerService.findRoomInWaitingState.returns(room);
@@ -237,13 +231,11 @@ describe('SocketManagerService', () => {
         expect(spy.called).to.equal(true);
     });
     it('should emit the roomAvailable', () => {
-        const typeOfGame = GameType.Classic;
         const fakeSocket = {
             // eslint-disable-next-line no-unused-vars
-            on: (eventName: string, callback: (gameType: GameType) => void) => {
+            on: (eventName: string, callback: () => void) => {
                 if (eventName === 'getRoomAvailable') {
-                    callback(typeOfGame);
-                    // return;
+                    callback();
                 }
             },
             emit: (eventName: string, args: any[] | any) => {
@@ -260,11 +252,11 @@ describe('SocketManagerService', () => {
                 return;
             },
         } as unknown as io.Server;
-        const spyOnEmit = Sinon.spy(service['sio'], 'emit');
+        const spyOnEmit = sinon.spy(service['sio'], 'emit');
         const room = new Room('mike1234', socketId, settings, State.Waiting);
         roomManagerService.rooms = [[room], []];
         service.handleSockets();
-        expect(spyOnEmit.calledWith('roomAvailable', roomManagerService.getNumberOfRoomInWaitingState(typeOfGame))).to.equal(true);
+        expect(spyOnEmit.calledWith('roomAvailable', roomManagerService.getNumberOfRoomInWaitingState())).to.equal(true);
     });
 
     it('should update objectives', () => {
@@ -288,7 +280,7 @@ describe('SocketManagerService', () => {
                 }
             },
         } as unknown as io.Server;
-        const spy = Sinon.spy(fakeSocket, 'to');
+        const spy = sinon.spy(fakeSocket, 'to');
         service.handleSockets();
         expect(spy.called).to.equal(true);
     });
@@ -299,7 +291,6 @@ describe('SocketManagerService', () => {
             on: (eventName: string, callback: (playedWords: string, roomId: string) => void) => {
                 if (eventName === 'updatePlayedWords') {
                     callback('a', '1');
-                    // return;
                 }
             },
             emit: (eventName: string, args: any[] | any) => {
@@ -309,7 +300,7 @@ describe('SocketManagerService', () => {
                 return fakeIn;
             },
         };
-        const spy = Sinon.spy(fakeSocket, 'to');
+        const spy = sinon.spy(fakeSocket, 'to');
         service['sio'] = {
             on: (eventName: string, callback: (socket: any) => void) => {
                 if (eventName === 'connection') {
@@ -333,7 +324,6 @@ describe('SocketManagerService', () => {
             on: (eventName: string, callback: (currentWords: string, priorCurrentWords: string, roomId: string) => void) => {
                 if (eventName === 'updateCurrentWords') {
                     callback(fakeCurrentWord, fakePriorCurrentWords, fakeRoomId);
-                    // return;
                 }
             },
             emit: (eventName: string, args: any[] | any) => {
@@ -343,7 +333,7 @@ describe('SocketManagerService', () => {
                 return fakeIn;
             },
         };
-        const spy = Sinon.spy(fakeSocket, 'to');
+        const spy = sinon.spy(fakeSocket, 'to');
         service['sio'] = {
             on: (eventName: string, callback: (socket: any) => void) => {
                 if (eventName === 'connection') {
@@ -391,11 +381,11 @@ describe('SocketManagerService', () => {
                 return fakeIn;
             },
         } as unknown as io.Server;
-        const spy = Sinon.spy(fakeSocket, 'emit');
-        const spyTo = Sinon.spy(fakeSocket, 'to');
-        const spyJoin = Sinon.spy(fakeSocket, 'join');
-        const spyOnEmit = Sinon.spy(service['sio'], 'emit');
-        const spyIn = Sinon.spy(service['sio'], 'in');
+        const spy = sinon.spy(fakeSocket, 'emit');
+        const spyTo = sinon.spy(fakeSocket, 'to');
+        const spyJoin = sinon.spy(fakeSocket, 'join');
+        const spyOnEmit = sinon.spy(service['sio'], 'emit');
+        const spyIn = sinon.spy(service['sio'], 'in');
 
         const room = new Room('mike1234', socketId, settings, State.Waiting);
         roomManagerService.rooms = [[room], []];
@@ -443,15 +433,15 @@ describe('SocketManagerService', () => {
             },
         } as unknown as io.Server;
 
-        const spyOnEmit = Sinon.spy(service['sio'], 'emit');
-        const spyOnTo = Sinon.spy(fakeSocket, 'to');
-        const spyOnLeave = Sinon.spy(service['sio'], 'socketsLeave');
+        const spyOnEmit = sinon.spy(service['sio'], 'emit');
+        const spyOnTo = sinon.spy(fakeSocket, 'to');
+        const spyOnLeave = sinon.spy(service['sio'], 'socketsLeave');
         const room = new Room('mike1234', socketId, settings, State.Waiting);
         roomManagerService.rooms = [[room], []];
 
         service.handleSockets();
         expect(spyOnLeave.calledWith(room.id)).to.equal(true);
-        expect(spyOnEmit.calledWith('roomConfiguration', roomManagerService.rooms[GameType.Classic])).to.equal(true);
+        expect(spyOnEmit.calledWith('roomConfiguration', roomManagerService.rooms)).to.equal(true);
         expect(spyOnTo.calledWith(room.id)).to.equal(true);
     });
 
@@ -497,7 +487,7 @@ describe('SocketManagerService', () => {
                 return;
             },
         } as unknown as io.Server;
-        const spyOnEmit = Sinon.spy(service['sio'], 'emit');
+        const spyOnEmit = sinon.spy(service['sio'], 'emit');
         const room = new Room('mike1234', socketId, settings, State.Waiting);
         roomManagerService.rooms = [[room], []];
         roomManagerService.find.returns(room);
@@ -540,14 +530,13 @@ describe('SocketManagerService', () => {
                 return;
             },
         } as unknown as io.Server;
-        const spyOnTo = Sinon.spy(fakeSocket, 'to');
-        const spyOnLeave = Sinon.spy(fakeSocket, 'leave');
-        // const spyOnIn = Sinon.spy(service['sio'], 'in');
+        const spyOnTo = sinon.spy(fakeSocket, 'to');
+        const spyOnLeave = sinon.spy(fakeSocket, 'leave');
         const room = new Room('mike1234', socketId, settings, State.Playing);
         roomManagerService.rooms = [[room], []];
         roomManagerService.find.returns(room);
         roomManagerService.findRoomIdOf.returns(room.id);
-        const clock = Sinon.useFakeTimers();
+        const clock = sinon.useFakeTimers();
         service.handleSockets();
         clock.tick(6000);
         expect(spyOnTo.calledWith(room.id)).to.equal(true);
@@ -579,8 +568,8 @@ describe('SocketManagerService', () => {
             },
         } as unknown as io.Server;
         const room = new Room('mike1234', socketId, settings, State.Finish);
-        const spyOnEmit = Sinon.spy(service['sio'], 'emit');
-        const spyOnLeave = Sinon.spy(service['sio'], 'socketsLeave');
+        const spyOnEmit = sinon.spy(service['sio'], 'emit');
+        const spyOnLeave = sinon.spy(service['sio'], 'socketsLeave');
         roomManagerService.rooms = [[room], []];
         roomManagerService.find.returns(room);
         roomManagerService.findRoomIdOf.returns(room.id);
@@ -595,7 +584,6 @@ describe('SocketManagerService', () => {
             on: (eventName: string, callback: (message: string, roomId: string) => void) => {
                 if (eventName === 'sendRoomMessage') {
                     callback('Mike', 'mike1234');
-                    // return;
                 }
             },
 
@@ -607,7 +595,7 @@ describe('SocketManagerService', () => {
             },
         };
 
-        const spy = Sinon.spy(fakeSocket, 'to');
+        const spy = sinon.spy(fakeSocket, 'to');
         service['sio'] = {
             on: (eventName: string, callback: (socket: any) => void) => {
                 if (eventName === 'connection') {
@@ -624,7 +612,6 @@ describe('SocketManagerService', () => {
             on: (eventName: string, callback: (message: string, roomId: string) => void) => {
                 if (eventName === 'sendGameConversionMessage') {
                     callback('Mike', 'mike1234');
-                    // return;
                 }
             },
 
@@ -636,7 +623,7 @@ describe('SocketManagerService', () => {
             },
         };
 
-        const spy = Sinon.spy(fakeSocket, 'to');
+        const spy = sinon.spy(fakeSocket, 'to');
         service['sio'] = {
             on: (eventName: string, callback: (socket: any) => void) => {
                 if (eventName === 'connection') {
@@ -671,7 +658,7 @@ describe('SocketManagerService', () => {
         } as unknown as io.Server;
 
         roomManagerService.isNotAvailable.returns(true);
-        const spy = Sinon.spy(fakeSocket, 'emit');
+        const spy = sinon.spy(fakeSocket, 'emit');
         service.handleSockets();
         expect(spy.calledWith('roomAlreadyToken')).to.equal(true);
     });
@@ -701,7 +688,7 @@ describe('SocketManagerService', () => {
                 }
             },
         } as unknown as io.Server;
-        const spy = Sinon.spy(fakeSocket, 'to');
+        const spy = sinon.spy(fakeSocket, 'to');
         service.handleSockets();
         expect(spy.called).to.equal(true);
     });
@@ -732,7 +719,7 @@ describe('SocketManagerService', () => {
                 }
             },
         } as unknown as io.Server;
-        const spy = Sinon.spy(fakeSocket, 'to');
+        const spy = sinon.spy(fakeSocket, 'to');
         service.handleSockets();
         expect(spy.calledWith('mike123')).to.equal(true);
     });
@@ -769,8 +756,8 @@ describe('SocketManagerService', () => {
                 return;
             },
         } as unknown as io.Server;
-        const spyOnToFakeSocket = Sinon.spy(fakeSocket, 'to');
-        const spyOnInSio = Sinon.spy(service['sio'], 'in');
+        const spyOnToFakeSocket = sinon.spy(fakeSocket, 'to');
+        const spyOnInSio = sinon.spy(service['sio'], 'in');
         service.handleSockets();
         expect(spyOnInSio.called).to.equal(true);
         expect(spyOnToFakeSocket.called).to.equal(true);
@@ -810,8 +797,8 @@ describe('SocketManagerService', () => {
                 return;
             },
         } as unknown as io.Server;
-        const spyOnToFakeSocket = Sinon.spy(fakeSocket, 'to');
-        const spyOnInSio = Sinon.spy(service['sio'], 'in');
+        const spyOnToFakeSocket = sinon.spy(fakeSocket, 'to');
+        const spyOnInSio = sinon.spy(service['sio'], 'in');
         service.handleSockets();
         expect(spyOnInSio.called).to.equal(false);
         expect(spyOnToFakeSocket.called).to.equal(false);
@@ -844,8 +831,8 @@ describe('SocketManagerService', () => {
                 }
             },
         } as unknown as io.Server;
-        const spy = Sinon.spy(fakeSocket, 'to');
-        const spyOnEmit = Sinon.spy(fakeIn, 'emit');
+        const spy = sinon.spy(fakeSocket, 'to');
+        const spyOnEmit = sinon.spy(fakeIn, 'emit');
         service.handleSockets();
         expect(spyOnEmit.calledWith('receiveScoreInfo', 5, 0)).to.equal(true);
         expect(spy.calledWith('mike123')).to.equal(true);
@@ -874,16 +861,17 @@ describe('SocketManagerService', () => {
                 }
             },
         } as unknown as io.Server;
-        const spy = Sinon.spy(fakeSocket, 'to');
+        const spy = sinon.spy(fakeSocket, 'to');
         service.handleSockets();
         expect(spy.calledWith('mike123')).to.equal(true);
     });
 
     it('should emit receiveEndGame on sendEndGame event', () => {
+        const letterTable: Letter[] = [];
         const fakeSocket = {
-            on: (eventName: string, callback: (isEndGame: boolean, roomId: string) => void) => {
+            on: (eventName: string, callback: (isEndGame: boolean, letterTable: Letter[], roomId: string) => void) => {
                 if (eventName === 'sendEndGame') {
-                    callback(true, 'mike123');
+                    callback(true, letterTable, 'mike123');
                 }
             },
             to: (roomId: string) => {
@@ -904,9 +892,11 @@ describe('SocketManagerService', () => {
                 return fakeIn;
             },
         } as unknown as io.Server;
-        const spyOnIn = Sinon.spy(service['sio'], 'in');
+        const spyOnIn = sinon.spy(service['sio'], 'in');
+        const spyTwo = sinon.spy(fakeSocket, 'to');
         service.handleSockets();
-        expect(spyOnIn.calledWith('mike123')).to.equal(true);
+        expect(spyOnIn.called).to.equal(true);
+        expect(spyTwo.called).to.equal(true);
     });
 
     it('should emit receivePlayerTwo on sendPlayerTwo event', () => {
@@ -934,8 +924,41 @@ describe('SocketManagerService', () => {
                 return fakeIn;
             },
         } as unknown as io.Server;
-        const spy = Sinon.spy(fakeSocket, 'to');
+        const spy = sinon.spy(fakeSocket, 'to');
         service.handleSockets();
         expect(spy.calledWith('mike123')).to.equal(true);
+    });
+
+    it('should send easel', () => {
+        const letterTable: Letter[] = [];
+        const fakeSocket = {
+            // eslint-disable-next-line no-unused-vars
+            on: (eventName: string, callback: (letterTable: Letter[], roomId: string) => void) => {
+                if (eventName === 'sendEasel') {
+                    callback(letterTable, '1');
+                }
+            },
+            emit: (eventName: string, args: any[] | any) => {
+                return;
+            },
+            to: (roomId: string) => {
+                return fakeIn;
+            },
+        };
+
+        service['sio'] = {
+            on: (eventName: string, callback: (socket: any) => void) => {
+                if (eventName === 'connection') {
+                    callback(fakeSocket);
+                }
+            },
+
+            in: (roomId: string) => {
+                return fakeIn;
+            },
+        } as unknown as io.Server;
+        const spy = sinon.spy(fakeSocket, 'to');
+        service.handleSockets();
+        expect(spy.called).to.equal(true);
     });
 });

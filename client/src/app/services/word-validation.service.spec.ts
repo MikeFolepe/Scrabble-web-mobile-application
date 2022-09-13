@@ -227,7 +227,7 @@ describe('WordValidationService', () => {
         expect(validation.validation).toEqual(expectedResult.validation);
     });
 
-    it('third test Paul', async () => {
+    it('Should set the priorCurrentWords', async () => {
         service['newPlayedWords'].set('nrteu', ['A1', 'A2', 'A3', 'A4', 'A5']);
         service['playedWords'].set('ma', ['B1', 'B2']);
         const isEaselSize = false;

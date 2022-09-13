@@ -1,4 +1,4 @@
-import { Level } from '@common/level';
+import { AiType } from "./ai-name";
 
 export enum StartingPlayer {
     Player1,
@@ -11,7 +11,7 @@ export class GameSettings {
         public startingPlayer: StartingPlayer,
         public timeMinute: string,
         public timeSecond: string,
-        public level: Level,
+        public level: AiType,
         public randomBonus: string,
         public bonusPositions: string,
         public dictionary: string,

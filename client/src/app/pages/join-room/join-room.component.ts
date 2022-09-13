@@ -1,8 +1,11 @@
+// JUSTIFICATION: The '_' are native to _MatPaginatorIntl attributes
+/* eslint-disable no-underscore-dangle */
+/* eslint-disable prettier/prettier */
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { PageEvent } from '@angular/material/paginator';
+import { MatPaginatorIntl, PageEvent } from '@angular/material/paginator';
 import { ERROR_MESSAGE_DELAY } from '@app/classes/constants';
-import { JoinDialogComponent } from '@app/modules/initialize-game/join-dialog/join-dialog.component';
+import { NameSelectorComponent } from '@app/modules/initialize-game/name-selector/name-selector.component';
 import { ClientSocketService } from '@app/services/client-socket.service';
 import { PlayerIndex } from '@common/player-index';
 import { Room, State } from '@common/room';
@@ -21,17 +24,20 @@ export class JoinRoomComponent implements OnInit {
     isRoomAvailable: boolean;
     isRandomButtonAvailable: boolean;
 
-    constructor(private clientSocketService: ClientSocketService, public dialog: MatDialog) {
+    // JUSTIFICATION : must name service as it is named in MatPaginatorIntl
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    constructor(private clientSocketService: ClientSocketService, public dialog: MatDialog, public _MatPaginatorIntl: MatPaginatorIntl) {
         this.rooms = [];
         this.roomItemIndex = 0;
-        this.pageSize = 2; // 2 rooms per page
+        // 2 rooms per page
+        this.pageSize = 2;
         this.shouldDisplayNameError = false;
         this.shouldDisplayJoinError = false;
         this.isRoomAvailable = false;
         this.isRandomButtonAvailable = false;
         this.clientSocketService.socket.connect();
-        this.clientSocketService.socket.emit('getRoomsConfiguration', this.clientSocketService.gameType);
-        this.clientSocketService.socket.emit('getRoomAvailable', this.clientSocketService.gameType);
+        this.clientSocketService.socket.emit('getRoomsConfiguration');
+        this.clientSocketService.socket.emit('getRoomAvailable');
         // Method for button and others
         this.receiveRoomAvailable();
         this.receiveRandomPlacement();
@@ -43,6 +49,25 @@ export class JoinRoomComponent implements OnInit {
         this.receiveRoomAvailable();
         this.handleRoomUnavailability();
         this.receiveRandomPlacement();
+
+        this._MatPaginatorIntl.itemsPerPageLabel = 'Salons par page';
+        this._MatPaginatorIntl.firstPageLabel = 'Première page';
+        this._MatPaginatorIntl.lastPageLabel = 'Dernière page';
+        this._MatPaginatorIntl.nextPageLabel = 'Page suivante';
+        this._MatPaginatorIntl.previousPageLabel = 'Page précédente';
+
+        // This function is not crucial for our application, it's important to have some texts in french
+        // as we are missing, we did not cover these lines in the tests.
+        const frenchRangeLabel = (page: number, pageSize: number, length: number) => {
+            if (length === 0 || pageSize === 0) return `0 de ${length}`;
+            length = Math.max(length, 0);
+            const startIndex = page * pageSize;
+            // If the start index exceeds the list length, do not try and fix the end index to the end.
+            const endIndex = startIndex < length ? Math.min(startIndex + pageSize, length) : startIndex + pageSize;
+            return `${startIndex + 1} - ${endIndex} de ${length}`;
+        };
+
+        this._MatPaginatorIntl.getRangeLabel = frenchRangeLabel;
     }
 
     onPageChange(event: PageEvent): void {
@@ -56,7 +81,7 @@ export class JoinRoomComponent implements OnInit {
 
     join(room: Room): void {
         this.dialog
-            .open(JoinDialogComponent, { disableClose: true })
+            .open(NameSelectorComponent, { disableClose: true })
             .afterClosed()
             .subscribe((playerName: string) => {
                 // if user closes the dialog box without input nothing
@@ -69,13 +94,13 @@ export class JoinRoomComponent implements OnInit {
                     }, ERROR_MESSAGE_DELAY);
                     return;
                 }
-                this.clientSocketService.socket.emit('newRoomCustomer', playerName, room.id, this.clientSocketService.gameType);
+                this.clientSocketService.socket.emit('newRoomCustomer', playerName, room.id);
             });
     }
 
     placeRandomly(): void {
         this.dialog
-            .open(JoinDialogComponent, { disableClose: true })
+            .open(NameSelectorComponent, { disableClose: true })
             .afterClosed()
             .subscribe((playerName: string) => {
                 // if user closes the dialog box without input nothing
@@ -85,16 +110,16 @@ export class JoinRoomComponent implements OnInit {
     }
     receiveRandomPlacement(): void {
         this.clientSocketService.socket.on('receiveCustomerOfRandomPlacement', (customerName: string, roomId: string) => {
-            this.clientSocketService.socket.emit('newRoomCustomer', customerName, roomId, this.clientSocketService.gameType);
+            this.clientSocketService.socket.emit('newRoomCustomer', customerName, roomId);
         });
     }
 
     receiveRoomAvailable(): void {
-        this.clientSocketService.socket.on('roomAvailable', (numberOfRooms: number) => {
-            if (numberOfRooms === 0) {
+        this.clientSocketService.socket.on('roomAvailable', (numberOfRooms: number[]) => {
+            if (numberOfRooms[this.clientSocketService.gameType] === 0) {
                 this.isRoomAvailable = false;
                 return;
-            } else if (numberOfRooms === 1) {
+            } else if (numberOfRooms[this.clientSocketService.gameType] === 1) {
                 this.isRoomAvailable = true;
                 this.isRandomButtonAvailable = false;
             } else {
@@ -114,8 +139,8 @@ export class JoinRoomComponent implements OnInit {
         });
     }
     private configureRooms(): void {
-        this.clientSocketService.socket.on('roomConfiguration', (rooms: Room[]) => {
-            this.rooms = rooms;
+        this.clientSocketService.socket.on('roomConfiguration', (rooms: Room[][]) => {
+            this.rooms = rooms[this.clientSocketService.gameType];
         });
     }
 }

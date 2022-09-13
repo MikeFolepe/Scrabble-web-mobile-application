@@ -19,7 +19,6 @@ export class ChatboxService {
     private message: string;
     private messageType: MessageType;
     private command: string;
-    private endGameEasel: string;
 
     private readonly notTurnErrorMessage;
 
@@ -35,16 +34,14 @@ export class ChatboxService {
     ) {
         this.message = '';
         this.command = '';
-        this.endGameEasel = '';
         this.notTurnErrorMessage = "ERREUR : Ce n'est pas ton tour";
     }
 
     sendPlayerMessage(message: string): void {
         this.messageType = MessageType.Player;
         this.message = message;
-        if (!this.isValid()) {
-            this.sendMessageService.displayMessageByType(this.message, MessageType.Error);
-        }
+        if (!this.isValid()) this.sendMessageService.displayMessageByType(this.message, MessageType.Error);
+
         switch (this.command) {
             case 'debug': {
                 this.executeDebug();
@@ -74,17 +71,8 @@ export class ChatboxService {
                 break;
             }
         }
-        this.command = ''; // reset value for next message
-    }
-
-    displayFinalMessage(indexPlayer: number): void {
-        this.sendMessageService.displayMessageByType('Fin de partie - lettres restantes', MessageType.System);
-        for (const letter of this.playerService.players[indexPlayer].letterTable) {
-            this.endGameEasel += letter.value;
-        }
-        this.sendMessageService.displayMessageByType(this.playerService.players[indexPlayer].name + ' : ' + this.endGameEasel, MessageType.System);
-        // Clear the string
-        this.endGameEasel = '';
+        // reset value for next message
+        this.command = '';
     }
 
     private executeDebug(): void {
@@ -133,12 +121,10 @@ export class ChatboxService {
             };
             const orientation = positionSplitted[2] === 'h' ? Orientation.Horizontal : Orientation.Vertical;
 
-            if (await this.placeLetterService.placeCommand(position, orientation, messageSplitted[2], PLAYER_ONE_INDEX)) {
-                this.sendMessageService.displayMessageByType(this.message, this.messageType);
-            }
-        } else {
-            this.sendMessageService.displayMessageByType(this.notTurnErrorMessage, MessageType.Error);
+            await this.placeLetterService.placeCommand(position, orientation, messageSplitted[2], PLAYER_ONE_INDEX);
+            return;
         }
+        this.sendMessageService.displayMessageByType(this.notTurnErrorMessage, MessageType.Error);
     }
 
     private executeReserve(): void {
@@ -184,7 +170,8 @@ export class ChatboxService {
     private isValid(): boolean {
         if (this.message[0] !== '!') {
             this.sendMessageService.displayMessageByType(this.message, this.messageType);
-            return true; // If it's a normal message, it's always valid
+            // If it's a normal message, it's always valid
+            return true;
         }
         // If it's a command, we call the validation
         return this.isCommandValid() && this.isSyntaxValid();

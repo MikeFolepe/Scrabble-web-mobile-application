@@ -23,9 +23,9 @@ export class SocketManagerService {
         this.sio.on('connection', (socket) => {
             this.onCreateRoom(socket);
 
-            socket.on('getRoomsConfiguration', (gameType: GameType) => {
+            socket.on('getRoomsConfiguration', () => {
                 // getRoomsConfigurations only alerts the asker about the rooms configurations
-                socket.emit('roomConfiguration', this.roomManagerService.rooms[gameType]);
+                socket.emit('roomConfiguration', this.roomManagerService.rooms);
             });
 
             this.onNewRoomPlayer(socket);
@@ -53,6 +53,10 @@ export class SocketManagerService {
                 }
             });
 
+            socket.on('sendEasel', (letterTable: Letter[], roomId: string) => {
+                socket.to(roomId).emit('receiveOpponentEasel', letterTable);
+            });
+
             socket.on('updatePlayedWords', (playedWords: string, roomId: string) => {
                 socket.to(roomId).emit('receivePlayedWords', playedWords);
             });
@@ -73,19 +77,19 @@ export class SocketManagerService {
                 socket.to(roomId).emit('receiveActions', actions);
             });
 
-            socket.on('deleteGame', (roomId: string, gameType: GameType) => {
+            socket.on('deleteGame', (roomId: string) => {
                 this.roomManagerService.deleteRoom(roomId);
-                this.sio.emit('roomConfiguration', this.roomManagerService.rooms[gameType]);
+                this.sio.emit('roomConfiguration', this.roomManagerService.rooms);
                 // Send number of rooms available
-                this.sio.emit('roomAvailable', this.roomManagerService.getNumberOfRoomInWaitingState(gameType));
+                this.sio.emit('roomAvailable', this.roomManagerService.getNumberOfRoomInWaitingState());
                 this.sio.socketsLeave(roomId);
             });
 
             // Receive the Endgame from the give up game or the natural EndGame by easel or by actions
             this.onEndGameByGiveUp(socket);
 
-            socket.on('sendEndGame', (isEndGame: boolean, roomId: string) => {
-                this.sio.in(roomId).emit('receiveEndGame', isEndGame);
+            socket.on('sendEndGame', (isEndGame: boolean, letterTable: Letter[], roomId: string) => {
+                socket.to(roomId).emit('receiveEndGame', isEndGame, letterTable);
                 this.sio.in(roomId).emit('stopTimer');
             });
 
@@ -95,15 +99,16 @@ export class SocketManagerService {
 
             // Method handler by click on placement aléatoire
             socket.on('newRoomCustomerOfRandomPlacement', (customerName: string, gameType: GameType) => {
-                const room = this.roomManagerService.findRoomInWaitingState(customerName, gameType) as Room;
+                const room = this.roomManagerService.findRoomInWaitingState(customerName, gameType);
                 if (room === undefined) return;
                 socket.emit('receiveCustomerOfRandomPlacement', customerName, room.id);
             });
 
             // Method to get to update the room available when you access join-room page
-            socket.on('getRoomAvailable', (gameType: GameType) => {
-                this.sio.emit('roomAvailable', this.roomManagerService.getNumberOfRoomInWaitingState(gameType));
+            socket.on('getRoomAvailable', () => {
+                this.sio.emit('roomAvailable', this.roomManagerService.getNumberOfRoomInWaitingState());
             });
+
             socket.on('disconnect', () => {
                 const room = this.roomManagerService.find(this.roomManagerService.findRoomIdOf(socket.id));
                 const roomId = this.roomManagerService.findRoomIdOf(socket.id);
@@ -136,14 +141,14 @@ export class SocketManagerService {
             // give the client his roomId to communicate later with server
             socket.emit('yourRoomId', roomId);
             // room creation alerts all clients on the new rooms configurations
-            this.sio.emit('roomConfiguration', this.roomManagerService.rooms[gameType]);
+            this.sio.emit('roomConfiguration', this.roomManagerService.rooms);
             // Send number of rooms available
-            this.sio.emit('roomAvailable', this.roomManagerService.getNumberOfRoomInWaitingState(gameType));
+            this.sio.emit('roomAvailable', this.roomManagerService.getNumberOfRoomInWaitingState());
         });
     }
 
     onNewRoomPlayer(socket: io.Socket): void {
-        socket.on('newRoomCustomer', (playerName: string, roomId: string, gameType: GameType) => {
+        socket.on('newRoomCustomer', (playerName: string, roomId: string) => {
             if (this.roomManagerService.isNotAvailable(roomId)) {
                 // block someone else entry from dialog window
                 socket.emit('roomAlreadyToken');
@@ -152,7 +157,7 @@ export class SocketManagerService {
             this.roomManagerService.addCustomer(playerName, roomId);
             this.roomManagerService.setSocket(this.roomManagerService.find(roomId) as Room, socket.id);
             this.roomManagerService.setState(roomId, State.Playing);
-            this.sio.emit('roomConfiguration', this.roomManagerService.rooms[gameType]);
+            this.sio.emit('roomConfiguration', this.roomManagerService.rooms);
             socket.join(roomId);
             this.sio.in(roomId).emit('yourRoomId', roomId);
             socket.emit('yourGameSettings', this.roomManagerService.formatGameSettingsForCustomerIn(roomId));
@@ -160,7 +165,7 @@ export class SocketManagerService {
             this.sio.in(roomId).emit('goToGameView');
             this.sio.in(roomId).emit('startTimer');
             // Send number of rooms available
-            this.sio.emit('roomAvailable', this.roomManagerService.getNumberOfRoomInWaitingState(gameType));
+            this.sio.emit('roomAvailable', this.roomManagerService.getNumberOfRoomInWaitingState());
         });
     }
 
@@ -179,7 +184,7 @@ export class SocketManagerService {
     }
 
     onEndGameByGiveUp(socket: io.Socket): void {
-        socket.on('sendEndGameByGiveUp', (isGiveUp: boolean, roomId: string, gameType: GameType) => {
+        socket.on('sendEndGameByGiveUp', (isGiveUp: boolean, roomId: string) => {
             socket
                 .to(roomId)
                 .emit(
@@ -187,7 +192,7 @@ export class SocketManagerService {
                     isGiveUp,
                     this.roomManagerService.getWinnerName(roomId, this.roomManagerService.findLooserIndex(socket.id)),
                 );
-            this.sio.emit('roomConfiguration', this.roomManagerService.rooms[gameType]);
+            this.sio.emit('roomConfiguration', this.roomManagerService.rooms);
             this.sio.socketsLeave(roomId);
         });
     }

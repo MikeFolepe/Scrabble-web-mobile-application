@@ -1,13 +1,11 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { EASEL_SIZE, RESERVE } from '@app/classes/constants';
+import { EASEL_SIZE, INVALID_INDEX, RESERVE } from '@app/classes/constants';
 import { ClientSocketService } from '@app/services/client-socket.service';
 import { Letter } from '@common/letter';
 @Injectable({
     providedIn: 'root',
 })
 export class LetterService implements OnDestroy {
-    // Property witch return total number of letters available
-    randomElement: number;
     reserve: Letter[];
     reserveSize: number;
 
@@ -30,27 +28,34 @@ export class LetterService implements OnDestroy {
 
     // Returns a random letter from the reserve if reserve is not empty
     getRandomLetter(): Letter {
-        if (this.reserveSize === 0) {
-            // Return an empty letter
-            return {
-                value: '',
-                quantity: 0,
-                points: 0,
-                isSelectedForSwap: false,
-                isSelectedForManipulation: false,
-            };
+        const emptyLetter: Letter = {
+            value: '',
+            quantity: 0,
+            points: 0,
+            isSelectedForSwap: false,
+            isSelectedForManipulation: false,
+        };
+
+        if (this.reserveSize === 0) return emptyLetter;
+
+        const completeReserve: Letter[] = [];
+        for (const letterToAdd of this.reserve) {
+            for (let i = 0; i < letterToAdd.quantity; i++) {
+                completeReserve.push(letterToAdd);
+            }
         }
-        let letter: Letter;
-        do {
-            this.randomElement = Math.floor(Math.random() * this.reserve.length);
-            letter = this.reserve[this.randomElement];
-        } while (letter.quantity === 0);
+
+        const randomIndex = Math.floor(Math.random() * completeReserve.length);
+        const randomLetter = completeReserve[randomIndex];
 
         // Update reserve
-        letter.quantity--;
+        const reserveIndex = this.reserve.indexOf(randomLetter);
+
+        if (reserveIndex === INVALID_INDEX) return emptyLetter;
+        this.reserve[reserveIndex].quantity--;
         this.reserveSize--;
         this.clientSocketService.socket.emit('sendReserve', this.reserve, this.reserveSize, this.clientSocketService.roomId);
-        return letter;
+        return randomLetter;
     }
 
     addLetterToReserve(letter: string): void {
@@ -92,7 +97,7 @@ export class LetterService implements OnDestroy {
         return tab;
     }
 
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         this.reserve = JSON.parse(JSON.stringify(RESERVE));
         let size = 0;
         for (const letter of this.reserve) {

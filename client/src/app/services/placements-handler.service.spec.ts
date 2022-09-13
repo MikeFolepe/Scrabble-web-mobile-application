@@ -1,13 +1,15 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable dot-notation */
-import { TestBed } from '@angular/core/testing';
-import { PlacementsHandlerService } from './placements-handler.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { BOARD_COLUMNS, BOARD_ROWS, RESERVE } from '@app/classes/constants';
 import { Orientation } from '@app/classes/scrabble-board-pattern';
-import { BOARD_COLUMNS, BOARD_ROWS } from '@app/classes/constants';
+import { Player } from '@app/models/player.model';
+import { Letter } from '@common/letter';
 import { Vec2 } from '@common/vec2';
 import { Socket } from 'socket.io-client';
+import { PlacementsHandlerService } from './placements-handler.service';
 
 describe('PlacementsHandlerService', () => {
     let service: PlacementsHandlerService;
@@ -23,6 +25,15 @@ describe('PlacementsHandlerService', () => {
             imports: [HttpClientTestingModule, RouterTestingModule],
         });
         service = TestBed.inject(PlacementsHandlerService);
+
+        const letterA: Letter = RESERVE[0];
+        const letterB: Letter = RESERVE[1];
+        const letterC: Letter = RESERVE[2];
+        const letterD: Letter = RESERVE[3];
+
+        const firstPlayerEasel = [letterA, letterA, letterB, letterB, letterC, letterC, letterD];
+        const firstPlayer = new Player(1, 'Player 1', firstPlayerEasel);
+        service['playerService'].addPlayer(firstPlayer);
     });
 
     it('should be created', () => {
@@ -111,5 +122,45 @@ describe('PlacementsHandlerService', () => {
         const direction = 999;
         service.goToNextPosition(position, orientation, direction);
         expect(position).toEqual({ x: 7, y: 7 });
+    });
+
+    it('first word placed on central case should be valid', () => {
+        // central case H8
+        const position: Vec2 = { x: 7, y: 7 };
+        let orientation = Orientation.Horizontal;
+        const word = 'office';
+        expect(service.isFirstWordValid(position, orientation, word)).toBeTrue();
+        orientation = Orientation.Vertical;
+        expect(service.isFirstWordValid(position, orientation, word)).toBeTrue();
+    });
+
+    it('first word not placed on central case should be invalid', () => {
+        const position: Vec2 = { x: 2, y: 9 };
+        const orientation = Orientation.Vertical;
+        const word = 'stage';
+        expect(service.isFirstWordValid(position, orientation, word)).toBeFalse();
+    });
+
+    it('isLetterInEasel should return true for a letter in the easel', () => {
+        const indexLetters: number[] = [];
+        const indexPlayer = 0;
+        const letter = 'a';
+        expect(service.isLetterInEasel(letter, indexPlayer, indexLetters)).toBeTrue();
+        expect(service.isLetterInEasel(letter, indexPlayer, indexLetters)).toBeTrue();
+    });
+
+    it('isLetterInEasel should return false for a letter not in the easel', () => {
+        const indexLetters: number[] = [];
+        const indexPlayer = 0;
+        const letter = 'f';
+        expect(service.isLetterInEasel(letter, indexPlayer, indexLetters)).toBeFalse();
+    });
+
+    it('isLetterInEasel should return false for an identical letter that is only present once in the easel ', () => {
+        const indexLetters: number[] = [];
+        const indexPlayer = 0;
+        const letter = 'd';
+        expect(service.isLetterInEasel(letter, indexPlayer, indexLetters)).toBeTrue();
+        expect(service.isLetterInEasel(letter, indexPlayer, indexLetters)).toBeFalse();
     });
 });

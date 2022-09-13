@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { EASEL_SIZE, INVALID_INDEX, PLAYER_ONE_INDEX } from '@app/classes/constants';
-import { Letter } from '@common/letter';
 import { PlayerService } from '@app/services/player.service';
+import { Letter } from '@common/letter';
 
 @Injectable({
     providedIn: 'root',
@@ -16,35 +16,20 @@ export class ManipulateService {
         this.usedLetters.fill(false, 0, EASEL_SIZE);
     }
 
-    // TODO changer le nom de la fonction
     onKeyPress(event: KeyboardEvent): void {
         switch (event.key) {
-            case 'ArrowLeft': {
+            case 'ArrowUp': {
                 event.preventDefault();
                 this.shiftUp();
                 break;
             }
-            case 'ArrowRight': {
+            case 'ArrowDown': {
                 event.preventDefault();
                 this.shiftDown();
                 break;
             }
             default: {
-                // TODO mettre le code de default dans une fonction privée
-                if (event.key === 'Shift') return; // Pressing Shift doesn't unselect all so we can press Shift + 8 to select a '*'
-                if (/([a-zA-Z]|[*])+/g.test(event.key) && event.key.length === 1) {
-                    // TODO letterPressed n'est pas le nom adéquat pour exprimer un index. Peut-être mieux letterPressedIndex
-                    const letterPressed = this.indexToSelect(event.key, PLAYER_ONE_INDEX);
-                    if (letterPressed === INVALID_INDEX) {
-                        this.usedLetters.fill(false, 0, this.usedLetters.length);
-                        this.unselectAll();
-                        break;
-                    }
-                    this.handleManipulationSelection(letterPressed);
-                    break;
-                }
-                this.usedLetters.fill(false, 0, this.usedLetters.length);
-                this.unselectAll();
+                this.selectToManipulate(event);
                 break;
             }
         }
@@ -53,6 +38,23 @@ export class ManipulateService {
     onMouseWheelTick(event: WheelEvent): void {
         if (event.deltaY < 0) this.shiftUp();
         else if (event.deltaY > 0) this.shiftDown();
+    }
+
+    selectToManipulate(event: KeyboardEvent): void {
+        // Pressing Shift doesn't unselect all so we can press Shift + 8 to select a '*'
+        if (event.key === 'Shift') return;
+        if (/([a-zA-Z]|[*])+/g.test(event.key) && event.key.length === 1) {
+            const letterPressedIndex = this.indexToSelect(event.key, PLAYER_ONE_INDEX);
+            if (letterPressedIndex === INVALID_INDEX) {
+                this.usedLetters.fill(false, 0, this.usedLetters.length);
+                this.unselectAll();
+                return;
+            }
+            this.handleManipulationSelection(letterPressedIndex);
+            return;
+        }
+        this.usedLetters.fill(false, 0, this.usedLetters.length);
+        this.unselectAll();
     }
 
     selectWithClick(indexClicked: number): void {
@@ -81,11 +83,13 @@ export class ManipulateService {
             if (this.letterEaselTab[this.usedLetters.indexOf(true)].value !== letterToSelect.toUpperCase())
                 this.usedLetters.fill(false, 0, this.usedLetters.length);
         }
+
         indexCurrentLetter = this.playerService.indexLetterInEasel(letterToSelect, 0, indexPlayer);
         // If we select the same letter 2 times, we verify that we're not using the same index in the easel
         while (this.usedLetters[indexCurrentLetter] && indexCurrentLetter !== INVALID_INDEX) {
             indexCurrentLetter = this.playerService.indexLetterInEasel(letterToSelect, indexCurrentLetter + 1, indexPlayer);
         }
+
         if (indexCurrentLetter === INVALID_INDEX) {
             this.usedLetters.fill(false, 0, this.usedLetters.length);
             // We find the first occurrence of the respective letter
@@ -93,6 +97,7 @@ export class ManipulateService {
         }
 
         if (indexCurrentLetter !== INVALID_INDEX) this.usedLetters[indexCurrentLetter] = true;
+
         return indexCurrentLetter;
     }
 
@@ -101,16 +106,14 @@ export class ManipulateService {
         if (indexSelected === INVALID_INDEX) return;
         if (indexSelected === 0) {
             // Manipulate 1st index
-            if (this.letterEaselTab[indexSelected].value !== this.letterEaselTab[this.letterEaselTab.length - 1].value) {
+            if (this.letterEaselTab[indexSelected].value !== this.letterEaselTab[this.letterEaselTab.length - 1].value)
                 this.usedLetters[indexSelected] = false;
-            }
+
             this.usedLetters[this.letterEaselTab.length - 1] = true;
             this.swapPositions(indexSelected, this.letterEaselTab.length - 1);
             // Set all letters before swap used
             for (let i = 0; i < this.letterEaselTab.length - 1; i++) {
-                if (this.letterEaselTab[i].value === this.letterEaselTab[this.letterEaselTab.length - 1].value) {
-                    this.usedLetters[i] = true;
-                }
+                if (this.letterEaselTab[i].value === this.letterEaselTab[this.letterEaselTab.length - 1].value) this.usedLetters[i] = true;
             }
             return;
         }
@@ -134,9 +137,8 @@ export class ManipulateService {
             }
             return;
         }
-        if (this.letterEaselTab[indexSelected].value !== this.letterEaselTab[indexSelected + 1].value) {
-            this.usedLetters[indexSelected] = false;
-        }
+        if (this.letterEaselTab[indexSelected].value !== this.letterEaselTab[indexSelected + 1].value) this.usedLetters[indexSelected] = false;
+
         // The letter we shift down is now used
         this.usedLetters[indexSelected + 1] = true;
         this.swapPositions(indexSelected, indexSelected + 1);
@@ -175,6 +177,12 @@ export class ManipulateService {
             letter.isSelectedForSwap = false;
         }
         this.enableScrolling();
+    }
+
+    unselectManipulation(): void {
+        for (const letter of this.letterEaselTab) {
+            letter.isSelectedForManipulation = false;
+        }
     }
 
     disableScrolling(): void {

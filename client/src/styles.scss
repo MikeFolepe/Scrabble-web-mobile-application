@@ -133,3 +133,40 @@ header {
     border-top-right-radius: 5px;
     border-top-left-radius: 5px;
 }
+
+.not-selectionnable {
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Old versions of Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
+}
+
+.window {
+    font: 1.3rem Inconsolata, monospace;
+    color: white;
+    text-shadow: 0 0 5px #c8c8c8;
+    background-color: rgba(0, 0, 0, 0.6);
+    border-radius: 6px;
+}
+
+#logo-scrabble {
+    margin-top: 30px;
+    width: 400px;
+    height: 80px;
+    pointer-events: none;
+}
+
+snack-bar-container.mat-snack-bar-container {
+    color: black !important;
+    background-color: white !important;
+    border-color: white !important;
+    width: 100% !important;
+    height: 100% !important;
+    font-weight: bold !important;
+}
+
+div.mat-simple-snackbar-action {
+    color: black !important;
+}

@@ -5,7 +5,6 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { GRID_CASE_SIZE, INVALID_INDEX } from '@app/classes/constants';
-import { MessageType } from '@app/classes/enum';
 import { Orientation } from '@app/classes/scrabble-board-pattern';
 import { Vec2 } from '@common/vec2';
 import { BoardHandlerService } from './board-handler.service';
@@ -26,7 +25,6 @@ describe('BoardHandlerService', () => {
         service['placeLetterService'].placeWithKeyboard = jasmine.createSpy().and.returnValue(Promise.resolve(true));
         service['skipTurnService'].isTurn = true;
         spyOn(service['placeLetterService'], 'removePlacedLetter');
-        spyOn(service['sendMessageService'], 'displayMessageByType');
     });
 
     it('should be created', () => {
@@ -139,7 +137,7 @@ describe('BoardHandlerService', () => {
         expect(service['isFirstCasePicked']).toBeFalse();
     });
 
-    it('pressing Enter with a valid word placed should display the respective message ', async () => {
+    it('pressing Enter with a valid word placed should reset to initial values multiple variables ', async () => {
         service['placeLetterService'].validateKeyboardPlacement = jasmine.createSpy().and.returnValue(Promise.resolve(true));
         service['currentCase'] = { x: 7, y: 7 };
         service['firstCase'] = { x: 7, y: 7 };
@@ -152,7 +150,9 @@ describe('BoardHandlerService', () => {
             service.buttonDetect(keyboardEvent);
         }
         await service.confirmPlacement();
-        expect(service['sendMessageService'].displayMessageByType).toHaveBeenCalledWith('!placer h8h Frite', MessageType.Player);
+        expect(service.word).toEqual('');
+        expect(service['isFirstCaseLocked']).toBeFalse();
+        expect(service['isFirstCasePicked']).toBeFalse();
     });
 
     it('pressing Enter with an invalid word placed should cancel the placement', async () => {
@@ -186,7 +186,9 @@ describe('BoardHandlerService', () => {
             await service['placeLetter'](letterToPlace);
         }
         await service.confirmPlacement();
-        expect(service['sendMessageService'].displayMessageByType).toHaveBeenCalledWith('!placer h7h elite', MessageType.Player);
+        expect(service.word).toEqual('');
+        expect(service['isFirstCaseLocked']).toBeFalse();
+        expect(service['isFirstCasePicked']).toBeFalse();
     });
 
     it('placing horizontally out of bounds letters following already placed letters should not be placed', async () => {
@@ -208,7 +210,9 @@ describe('BoardHandlerService', () => {
         await service['placeLetter'](wordToPlace[2]);
 
         await service.confirmPlacement();
-        expect(service['sendMessageService'].displayMessageByType).toHaveBeenCalledWith('!placer h11h e', MessageType.Player);
+        expect(service.word).toEqual('');
+        expect(service['isFirstCaseLocked']).toBeFalse();
+        expect(service['isFirstCasePicked']).toBeFalse();
     });
 
     it('placing vertically out of bounds letters following already placed letters should not be placed', async () => {
@@ -231,7 +235,9 @@ describe('BoardHandlerService', () => {
         await service['placeLetter'](wordToPlace[2]);
 
         await service.confirmPlacement();
-        expect(service['sendMessageService'].displayMessageByType).toHaveBeenCalledWith('!placer k8v e', MessageType.Player);
+        expect(service.word).toEqual('');
+        expect(service['isFirstCaseLocked']).toBeFalse();
+        expect(service['isFirstCasePicked']).toBeFalse();
     });
 
     it('pressing the button enter with a word placed should call confirmPlacement', () => {

@@ -3,9 +3,12 @@ import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { BestScoresComponent } from '@app/pages/best-scores/best-scores.component';
 import { ClientSocketService } from '@app/services/client-socket.service';
+import { EndGameService } from '@app/services/end-game.service';
 import { GameSettingsService } from '@app/services/game-settings.service';
+import { GiveUpHandlerService } from '@app/services/give-up-handler.service';
 import { LetterService } from '@app/services/letter.service';
 import { PlaceLetterService } from '@app/services/place-letter.service';
+import { WordValidationService } from '@app/services/word-validation.service';
 import { GameType } from '@common/game-type';
 
 @Component({
@@ -27,13 +30,14 @@ export class MainPageComponent {
         private clientSocketService: ClientSocketService,
         private letterService: LetterService,
         private placeLetterService: PlaceLetterService,
+        private giveUpHandlerService: GiveUpHandlerService,
+        private endGameService: EndGameService,
+        private wordValidationService: WordValidationService,
     ) {
         this.selectedGameTypeIndex = 0;
         this.gameType = ['Scrabble classique', 'Scrabble LOG2990'];
         this.gameModes = ['Jouer une partie en solo', 'Créer une partie multijoueur', 'Joindre une partie multijoueur'];
-        this.letterService.ngOnDestroy();
-        this.placeLetterService.ngOnDestroy();
-        this.gameSettingsService.ngOnDestroy();
+        this.resetServices();
     }
 
     routeToGameMode(): void {
@@ -54,13 +58,23 @@ export class MainPageComponent {
                 break;
             }
             case this.gameModes[2]: {
+                this.gameSettingsService.isSoloMode = false;
                 this.router.navigate(['join-room']);
                 break;
             }
         }
     }
 
-    openBestScoresDialog() {
+    openBestScoresDialog(): void {
         this.bestScoresDialog.open(BestScoresComponent, { disableClose: true });
+    }
+
+    resetServices() {
+        this.giveUpHandlerService.isGivenUp = false;
+        this.endGameService.actionsLog = [];
+        this.wordValidationService.ngOnDestroy();
+        this.letterService.ngOnDestroy();
+        this.placeLetterService.ngOnDestroy();
+        this.gameSettingsService.ngOnDestroy();
     }
 }
