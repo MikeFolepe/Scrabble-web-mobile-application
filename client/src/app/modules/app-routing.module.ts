@@ -4,12 +4,14 @@ import { AdminPageComponent } from '@app/pages/admin-page/admin-page.component';
 import { JoinRoomComponent } from '@app/pages/join-room/join-room.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { PageNotFoundComponent } from '@app/pages/page-not-found/page-not-found.component';
+import { PrototypeChatBoxComponent } from '@app/pages/prototype-chat-box/prototype-chat-box.component';
 import { WaitingRoomComponent } from '@app/pages/waiting-room/waiting-room.component';
 import { GameViewComponent } from './game-view/game-view/game-view.component';
 import { FormComponent } from './initialize-game/form/form.component';
 
 const routes: Routes = [
-    { path: '', redirectTo: '/home', pathMatch: 'full' },
+    // { path: '', redirectTo: '/home', pathMatch: 'full' },
+    { path: '', component: PrototypeChatBoxComponent},
     { path: 'home', component: MainPageComponent },
     { path: 'solo-game-ai', component: FormComponent },
     { path: 'multiplayer-mode', component: FormComponent },

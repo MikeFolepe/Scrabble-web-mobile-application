@@ -16,7 +16,7 @@ export class ClientSocketService {
 
     constructor(private gameSettingsService: GameSettingsService, private router: Router) {
         this.socket = io(environment.serverUrl);
-        this.initializeRoomId();
+        // this.initializeRoomId();
         this.initializeGameSettings();
         this.routeToGameView();
     }

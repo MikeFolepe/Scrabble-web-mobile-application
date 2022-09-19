@@ -17,6 +17,7 @@ import { AdminPageComponent } from './pages/admin-page/admin-page.component';
 import { ClickOutsideModule } from 'ng-click-outside';
 import { EditDictionaryDialogComponent } from './pages/admin-page/edit-dictionary-dialog/edit-dictionary-dialog.component';
 import { BestScoresComponent } from './pages/best-scores/best-scores.component';
+import { PrototypeChatBoxComponent } from './pages/prototype-chat-box/prototype-chat-box.component';
 
 /**
  * Main module that is used in main.ts.
@@ -34,6 +35,7 @@ import { BestScoresComponent } from './pages/best-scores/best-scores.component';
         AdminPageComponent,
         EditDictionaryDialogComponent,
         BestScoresComponent,
+        PrototypeChatBoxComponent,
     ],
     imports: [
         AppMaterialModule,
