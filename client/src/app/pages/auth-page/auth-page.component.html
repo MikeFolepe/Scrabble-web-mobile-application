@@ -1,0 +1,73 @@
+<app-background></app-background>
+  <div class="login">
+      <img id="logo-scrabble" src="https://bit.ly/3m206ss" class="not-selectionnable" alt="Logo Scrabble" />
+      <div *ngIf ="hasAccount">
+        <h2 class="login-header"></h2>
+        <form [formGroup]="authForm" class="login-container">
+          <p [ngClass]="{ 'has-error': isSubmitted && formControls.email.errors }">
+            <input type="email" placeholder="Nom d'utilisateur" formControlName="email">
+          </p>
+          <div *ngIf="isSubmitted && formControls.email.errors" class="help-block">
+            <div *ngIf="formControls.email.errors.required">Veuillez entrer votre nom d'utilisateur</div>
+          </div>
+          <p [ngClass]="{ 'has-error': isSubmitted && formControls.password.errors }">
+            <input type="password" placeholder="Mot de passe" formControlName="password">
+          </p>
+          <div *ngIf="isSubmitted && formControls.password.errors" class="help-block">
+            <div *ngIf="formControls.password.errors.required">Veuillez entrer votre mot de passe.</div>
+          </div>
+
+          <button class="forgottenPassword" (click)="test()">Mot de passe oublié?</button>
+
+          <div id = "buttons">
+                
+                <input type="submit" value="Se Connecter" (click)="signIn()">
+                <button class="newAccount" (click)="createAccount()">Nouveau? Créer un compte.</button>
+          </div>
+        </form>
+      </div>
+
+      
+      <div *ngIf = "!hasAccount">
+
+        <h2 class="login-header"></h2>
+        <form [formGroup]="authForm" class="login-container">
+          <p>
+            <!-- copilot, i want to ask the user to upload a picture and display it on the form-->
+            <input type="file" placeholder="Photo de profil" formControlName="photo">
+            <!-- display the picture on the form once uploaded-->
+            
+
+
+          </p>
+          <p [ngClass]="{ 'has-error': isSubmitted && formControls.email.errors }">
+            <input type="email" placeholder="Nom d'utilisateur" formControlName="email">
+          </p>
+          <div *ngIf="isSubmitted && formControls.email.errors" class="help-block">
+            <div *ngIf="formControls.email.errors.required">Veuillez entrer votre nom d'utilisateur</div>
+          </div>
+
+          <!-- copilot, i want to have an input for the user to enter his email with a placeholder-->
+          <p [ngClass]="{ 'has-error': isSubmitted && formControls.email.errors }">
+            <input type="email" placeholder="Adresse courriel" formControlName="email">
+          </p>
+
+          <p [ngClass]="{ 'has-error': isSubmitted && formControls.password.errors }">
+            <input type="password" placeholder="Mot de passe" formControlName="password">
+          </p>
+          <div *ngIf="isSubmitted && formControls.password.errors" class="help-block">
+            <div *ngIf="formControls.password.errors.required">Veuillez entrer votre mot de passe.</div>
+          </div>
+
+          <p [ngClass]="{ 'has-error': isSubmitted && formControls.password.errors }">
+
+            <input type="password" placeholder="Veuillez confirmer votre mot de passe" formControlName="password2">
+
+          </p>
+
+          <div class = "createAccount"> 
+                <input type="submit" value="Créer un compte" (click)="signIn()">
+          </div>
+        </form>
+      </div>
+</div>
