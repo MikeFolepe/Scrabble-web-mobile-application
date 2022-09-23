@@ -1,13 +1,13 @@
 import { Logger, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { AI_SCHEMA } from '@app/databaseModel/database/ai';
+import { AI_SCHEMA } from '@app/model/database/ai';
 import { DateService } from '@app/services/date/date.service';
 import { ChatGateway } from '@app/gateways/chat/chat.gateway';
 import { ExampleService } from '@app/services/example/example.service';
 import { AdminController } from './controllers/admin/adminstrator.controller';
 import { AdministratorService } from './services/admin/administrator.service';
-import { ChatboxGateway } from './app/gateways/chatbox.gateway';
+import { ChatboxGateway } from './gateways/chat/chatbox.gateway';
 
 @Module({
     imports: [
