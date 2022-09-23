@@ -7,6 +7,7 @@ import { ChatGateway } from '@app/gateways/chat/chat.gateway';
 import { ExampleService } from '@app/services/example/example.service';
 import { AdminController } from './controllers/admin/adminstrator.controller';
 import { AdministratorService } from './services/admin/administrator.service';
+import { ChatboxGateway } from './app/gateways/chatbox.gateway';
 
 @Module({
     imports: [
@@ -24,6 +25,6 @@ import { AdministratorService } from './services/admin/administrator.service';
         ]),
     ],
     controllers: [AdminController],
-    providers: [ChatGateway, AdministratorService, DateService, ExampleService, Logger],
+    providers: [ChatGateway, AdministratorService, DateService, ExampleService, Logger, ChatboxGateway],
 })
 export class AppModule {}
