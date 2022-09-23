@@ -12,3 +12,7 @@ coverage/
 /node_modules
 .vscode/launch.json
 client/karma.conf.js
+
+build/
+
+dist/

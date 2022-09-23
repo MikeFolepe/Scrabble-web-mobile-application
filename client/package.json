@@ -1,7 +1,7 @@
 {
   "name": "client",
   "version": "1.0.0",
-  "main": "electron-app/electron-main.js",
+  "main": "electron-main.js",
   "scripts": {
     "start": "ng serve --open",
     "build": "ng build --base-href ./",
@@ -13,7 +13,7 @@
     "lint": "ng lint --format stylish",
     "lint:fix": "npm run lint -- --fix",
     "start:electron": "ng build --base-href ./ && electron .",
-    "build:electron": "ng build && electron-packager . --asar --ignore=/node_modules --ignore=/e2e --ignore=/src --overwrite --out=./build" 
+    "build:electron": "ng build && electron-packager . --asar --ignore=/node_modules --ignore=/e2e --ignore=/src --overwrite --out=./build"
   },
   "private": true,
   "dependencies": {
