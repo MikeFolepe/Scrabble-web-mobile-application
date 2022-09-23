@@ -1,3 +1,4 @@
+import { Message } from '@common/message';
 import { MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 // import { RoomManagerService } from '../services/room-manager/room-manager.service';
 import { Server } from 'socket.io';
@@ -29,7 +30,7 @@ export class ChatboxGateway {
     // }
 
     @SubscribeMessage('sendRoomMessage')
-    handleMessage(@MessageBody() message: string): void {
+    handleMessage(@MessageBody() message: Message): void {
         this.server.emit('receiveRoomMessage', message);
     }
 

@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
@@ -46,6 +47,10 @@ class ChatActivity : AppCompatActivity() {
         SocketHandler.establishConnection()
         chatSocket = SocketHandler.getSocket()
         setupChatBox()
+
+        chatSocket.on("receiveRoomMessage"){ message->
+            addMessage(message[0] as String)
+        }
     }
 
     private fun setupChatBox() {
@@ -73,8 +78,8 @@ class ChatActivity : AppCompatActivity() {
         val message = Message(messageInput.text.toString(), currentUser)
 
         if(validateMessage(messageInput.text.toString())) {
-            chatSocket.emit("send-message", message)
-            addMessage(message)
+            chatSocket.emit("sendRoomMessage", message.message)
+            addMessage(message.message)
             messageInput.setText("")
         } else messageInput.error = "Le message ne peut pas être vide"
     }
@@ -83,9 +88,10 @@ class ChatActivity : AppCompatActivity() {
         return message.isNotBlank()
     }
 
-    private fun addMessage(message: Message) {
+    private fun addMessage(message: String) {
         val messagesList = findViewById<ListView>(R.id.chat_box)
-        messages.add(message)
+        Log.d("times", "timmemmms" );
+        messages.add( Message(message, "etienne"))
         // Scroll to bottom if last message received is visible
         if(messagesList.lastVisiblePosition + 1 == messagesList.adapter.count - 1) messagesList.setSelection(messagesList.adapter.count - 1)
         // Else send notif of new message and don't scroll down since the use is looking through old messages
