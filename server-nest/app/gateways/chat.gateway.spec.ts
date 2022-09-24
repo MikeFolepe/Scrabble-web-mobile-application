@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ChatGateway } from '@app/gateways/chat/chat.gateway';
+import { ChatGateway } from '@app/gateways/chat.gateway';
 import { Logger } from '@nestjs/common';
 import { SinonStubbedInstance, createStubInstance, match, stub } from 'sinon';
 import { Socket, Server, BroadcastOperator } from 'socket.io';

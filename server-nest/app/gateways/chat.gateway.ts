@@ -28,7 +28,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
     @SubscribeMessage('sendRoomMessage')
     handleMessage(@MessageBody() message: string): void {
-        console.log('times');
         this.server.emit('receiveRoomMessage', message);
     }
 

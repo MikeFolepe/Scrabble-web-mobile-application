@@ -1,12 +1,8 @@
 import { Logger, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { AI_SCHEMA } from '@app/model/database/ai';
-import { DateService } from '@app/services/date/date.service';
-import { ChatGateway } from '@app/gateways/chat/chat.gateway';
-import { AdminController } from './controllers/admin/adminstrator.controller';
-import { AdministratorService } from './services/admin/administrator.service';
-import { ChatboxGateway } from './gateways/chat/chatbox.gateway';
+import { AdminModule } from './admin/admin.module';
+import { ChatGatewayModule } from './gateways/chat.gateway.module';
 
 @Module({
     imports: [
@@ -18,12 +14,9 @@ import { ChatboxGateway } from './gateways/chat/chatbox.gateway';
                 uri: config.get<string>('DATABASE_CONNECTION_STRING'), // Loaded from .env
             }),
         }),
-        MongooseModule.forFeature([
-            { name: 'AiBeginnerName', schema: AI_SCHEMA },
-            { name: 'AiExpertName', schema: AI_SCHEMA },
-        ]),
+        AdminModule,
+        ChatGatewayModule,
     ],
-    controllers: [AdminController],
-    providers: [ChatGateway, AdministratorService, DateService, Logger, ChatboxGateway],
+    providers: [Logger],
 })
 export class AppModule {}

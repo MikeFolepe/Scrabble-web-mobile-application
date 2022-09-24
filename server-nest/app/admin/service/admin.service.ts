@@ -3,11 +3,10 @@ import { Dictionary } from '@common/dictionary';
 import { Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Ai, AiDocument } from '@app/model/database/ai';
+import { Ai, AiDocument } from '@app/model/ai.schema';
 import * as fileSystem from 'fs';
-
 @Injectable()
-export class AdministratorService {
+export class AdminService {
     aiModels: Map<AiType, Model<AiDocument>>;
     private dictionaries: Dictionary[];
 

@@ -1,3 +1,4 @@
+import { ChatGatewayModule } from '../../../server-nest/app/gateways/chat.gateway.module';
 import { AppRoutingModule } from '@app/modules/app-routing.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BrowserModule } from '@angular/platform-browser';
@@ -36,6 +37,7 @@ import { BestScoresComponent } from './pages/best-scores/best-scores.component';
         BestScoresComponent,
     ],
     imports: [
+        ChatGatewayModule,
         AppMaterialModule,
         AppRoutingModule,
         BrowserAnimationsModule,
