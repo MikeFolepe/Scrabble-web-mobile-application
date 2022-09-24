@@ -37,7 +37,6 @@ import { BestScoresComponent } from './pages/best-scores/best-scores.component';
         BestScoresComponent,
     ],
     imports: [
-        ChatGatewayModule,
         AppMaterialModule,
         AppRoutingModule,
         BrowserAnimationsModule,
