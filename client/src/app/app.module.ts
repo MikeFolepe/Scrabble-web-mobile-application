@@ -1,4 +1,3 @@
-import { ChatGatewayModule } from '../../../server-nest/app/gateways/chat.gateway.module';
 import { AppRoutingModule } from '@app/modules/app-routing.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BrowserModule } from '@angular/platform-browser';
