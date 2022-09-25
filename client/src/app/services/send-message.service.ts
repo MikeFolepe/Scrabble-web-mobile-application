@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { PLAYER_ONE_INDEX, TWO_SECOND_DELAY } from '@app/classes/constants';
+import { TWO_SECOND_DELAY } from '@app/classes/constants';
 import { MessageType } from '@app/classes/enum';
+import { ChatEvents } from '@common/chat.gateway.events';
+import { AuthService } from './auth.service';
 import { ClientSocketService } from './client-socket.service';
-import { GameSettingsService } from './game-settings.service';
 import { PlayerService } from './player.service';
 
 @Injectable({
@@ -13,11 +14,7 @@ export class SendMessageService {
     messageType: MessageType;
     private displayMessage: () => void;
 
-    constructor(
-        private clientSocketService: ClientSocketService,
-        private gameSettingsService: GameSettingsService,
-        private playerService: PlayerService,
-    ) {
+    constructor(private clientSocketService: ClientSocketService, private playerService: PlayerService, private authService: AuthService) {
         this.receiveMessageFromOpponent();
         // To display message in real time in chat box
         this.receiveConversionMessage();
@@ -31,14 +28,25 @@ export class SendMessageService {
     displayMessageByType(message: string, messageType: MessageType): void {
         this.message = message;
         this.messageType = messageType;
-        if (this.messageType === MessageType.Player)
-            this.sendMessageToOpponent(this.message, this.gameSettingsService.gameSettings.playersNames[PLAYER_ONE_INDEX]);
+        if (this.messageType === MessageType.Player) this.sendMessageToOpponent(this.message, this.authService.currentUser.pseudonym);
 
         this.displayMessage();
     }
 
     sendMessageToOpponent(message: string, myName: string): void {
-        this.clientSocketService.socket.emit('sendRoomMessage', 'Message de ' + myName + ' : ' + message, this.clientSocketService.roomId);
+        this.clientSocketService.socket.emit(
+            ChatEvents.RoomMessage,
+            'Message de ' +
+                myName +
+                ' : ' +
+                message +
+                '                                 ' +
+                new Date().getHours().toString() +
+                ':' +
+                new Date().getMinutes().toString() +
+                ':' +
+                new Date().getHours().toString(),
+        );
     }
 
     // Function to send message of conversion to all players in the room
