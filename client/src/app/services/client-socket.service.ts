@@ -3,8 +3,7 @@ import { Router } from '@angular/router';
 import { GameSettingsService } from '@app/services/game-settings.service';
 import { GameSettings } from '@common/game-settings';
 import { GameType } from '@common/game-type';
-import { io, Socket } from 'socket.io-client';
-import { environment } from 'src/environments/environment';
+import { Socket } from 'socket.io-client';
 
 @Injectable({
     providedIn: 'root',
@@ -15,10 +14,9 @@ export class ClientSocketService {
     gameType: GameType;
 
     constructor(private gameSettingsService: GameSettingsService, private router: Router) {
-        this.socket = io(environment.serverUrl);
-        this.initializeRoomId();
-        this.initializeGameSettings();
-        this.routeToGameView();
+        // this.initializeRoomId();
+        // this.initializeGameSettings();
+        // this.routeToGameView();
     }
 
     routeToGameView(): void {

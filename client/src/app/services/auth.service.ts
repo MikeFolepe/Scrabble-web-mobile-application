@@ -3,18 +3,19 @@ import { User } from '@common/user';
 import { Router } from '@angular/router';
 
 import { ClientSocketService } from './client-socket.service';
-import { environment } from 'src/environments/environment';
 import { CommunicationService } from './communication.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChatEvents } from '@common/chat.gateway.events';
 import { ErrorHandlerService } from './error-handler.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ERROR_MESSAGE_DELAY } from '@app/classes/constants';
+import { io } from 'socket.io-client';
 @Injectable({
     providedIn: 'root',
 })
 export class AuthService {
     currentUser: User;
+    serverUrl: string;
     constructor(
         private clientSocketService: ClientSocketService,
         private router: Router,
@@ -24,15 +25,22 @@ export class AuthService {
     ) {}
 
     signIn(userData: User) {
-        environment.serverUrl = userData.ipAddress;
+        this.serverUrl = userData.ipAddress;
+        this.communicationService.baseUrl = this.serverUrl + '/api';
+
         this.communicationService.connectUser(userData).subscribe(
             (valid: boolean) => {
                 if (valid) {
                     this.currentUser = userData;
+                    this.clientSocketService.socket = io(this.serverUrl);
                     this.clientSocketService.socket.connect();
                     this.clientSocketService.socket.emit(ChatEvents.JoinRoom);
                     localStorage.setItem('ACCESS_TOKEN', 'access_token');
                     this.router.navigate(['/chat']);
+                    this.clientSocketService.socket.on(ChatEvents.SocketId, (socketId: string) => {
+                        this.currentUser.socketId = socketId;
+                        this.clientSocketService.socket.emit(ChatEvents.UpdateUserSocket, this.currentUser);
+                    });
                 } else {
                     this.displayMessage('Cet utilisateur est déjà connecté');
                 }

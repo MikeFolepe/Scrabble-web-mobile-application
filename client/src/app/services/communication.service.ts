@@ -7,17 +7,15 @@ import { PlayerScore } from '@common/player';
 import { User } from '@common/user';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { environment } from 'src/environments/environment';
 
 @Injectable({
     providedIn: 'root',
 })
 export class CommunicationService {
-    private readonly baseUrl: string;
+    baseUrl: string;
     private wordsToValidate: string[];
 
     constructor(private readonly http: HttpClient) {
-        this.baseUrl = environment.serverUrl + '/api';
         this.wordsToValidate = [];
     }
 

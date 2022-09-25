@@ -5,6 +5,10 @@ import { User } from './../../../../common/user';
 export class UsersService {
     activeUsers: User[];
 
+    constructor() {
+        this.activeUsers = [];
+    }
+
     async addUser(userData: User): Promise<void> {
         this.activeUsers.push(userData);
     }

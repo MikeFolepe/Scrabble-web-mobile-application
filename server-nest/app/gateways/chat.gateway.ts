@@ -3,6 +3,8 @@ import { WebSocketGateway, WebSocketServer, SubscribeMessage, OnGatewayConnectio
 import { Server, Socket } from 'socket.io';
 import { DELAY_BEFORE_EMITTING_TIME, PRIVATE_ROOM_ID, WORD_MIN_LENGTH } from './chat.gateway.constants';
 import { ChatEvents } from './../../../common/chat.gateway.events';
+import { UsersService } from '@app/users/service/users.service';
+import { User } from '@common/user';
 @WebSocketGateway({ cors: true })
 @Injectable()
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit {
@@ -10,7 +12,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
     private readonly room = PRIVATE_ROOM_ID;
 
-    constructor(private readonly logger: Logger) {}
+    constructor(private readonly logger: Logger, private userService: UsersService) {}
 
     @SubscribeMessage(ChatEvents.Message)
     message(_: Socket, message: string) {
@@ -40,6 +42,17 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         }
     }
 
+    @SubscribeMessage(ChatEvents.UpdateUserSocket)
+    updateUser(_: Socket, user: User) {
+        // Seulement un membre de la salle peut envoyer un message aux autres
+
+        for (const activeUser of this.userService.activeUsers) {
+            if (activeUser.pseudonym === user.pseudonym) {
+                activeUser.socketId = user.socketId;
+            }
+        }
+    }
+
     afterInit() {
         setInterval(() => {
             this.emitTime();
@@ -47,12 +60,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
     handleConnection(socket: Socket) {
+        socket.emit(ChatEvents.SocketId, socket.id);
         this.logger.log(`Connexion par l'utilisateur avec id : ${socket.id}`);
         // message initial
-        socket.emit(ChatEvents.Hello, 'Hello World!');
     }
-
     handleDisconnect(socket: Socket) {
+        const index = this.userService.activeUsers.findIndex((user) => user.socketId === socket.id);
+        this.userService.activeUsers.splice(index, 1);
         this.logger.log(`Déconnexion par l'utilisateur avec id : ${socket.id}`);
     }
 
