@@ -1,17 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
-import {
-    WebSocketGateway,
-    WebSocketServer,
-    SubscribeMessage,
-    OnGatewayConnection,
-    OnGatewayDisconnect,
-    OnGatewayInit,
-    MessageBody,
-} from '@nestjs/websockets';
+import { WebSocketGateway, WebSocketServer, SubscribeMessage, OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { DELAY_BEFORE_EMITTING_TIME, PRIVATE_ROOM_ID, WORD_MIN_LENGTH } from './chat.gateway.constants';
-import { ChatEvents } from './chat.gateway.events';
-
+import { ChatEvents } from './../../../common/chat.gateway.events';
 @WebSocketGateway({ cors: true })
 @Injectable()
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit {
@@ -24,11 +15,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     @SubscribeMessage(ChatEvents.Message)
     message(_: Socket, message: string) {
         this.logger.log(`Message reçu : ${message}`);
-    }
-
-    @SubscribeMessage('sendRoomMessage')
-    handleMessage(@MessageBody() message: string): void {
-        this.server.emit('receiveRoomMessage', message);
     }
 
     @SubscribeMessage(ChatEvents.Validate)

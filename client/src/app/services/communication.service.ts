@@ -4,6 +4,7 @@ import { AiPlayer, AiPlayerDB, AiType } from '@common/ai-name';
 import { Dictionary } from '@common/dictionary';
 import { GameType } from '@common/game-type';
 import { PlayerScore } from '@common/player';
+import { User } from '@common/user';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
@@ -87,6 +88,12 @@ export class CommunicationService {
     downloadDictionary(fileName: string): Observable<any> {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return this.http.get<any>(`${this.baseUrl}/admin/download/${fileName}`);
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    connectUser(userData: User): Observable<boolean> {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return this.http.post<boolean>(`${this.baseUrl}/auth/connect`, userData);
     }
 
     private handleError<T>(request: string, result?: T): (error: Error) => Observable<T> {

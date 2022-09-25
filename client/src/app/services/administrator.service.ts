@@ -11,6 +11,7 @@ import { Dictionary } from '@common/dictionary';
 import dictionarySchema from '@common/dictionarySchema.json';
 import Ajv from 'ajv';
 import { saveAs } from 'file-saver';
+import { ErrorHandlerService } from './error-handler.service';
 
 @Injectable({
     providedIn: 'root',
@@ -22,14 +23,17 @@ export class AdministratorService {
     currentDictionary: Dictionary;
     fileInput: ElementRef;
     file: File | null;
-    serverError: string;
     isResetting: boolean;
     ajv: Ajv;
 
-    constructor(private communicationService: CommunicationService, public snackBar: MatSnackBar, public dialog: MatDialog) {
+    constructor(
+        private communicationService: CommunicationService,
+        public snackBar: MatSnackBar,
+        public dialog: MatDialog,
+        public errorHandler: ErrorHandlerService,
+    ) {
         this.ajv = new Ajv();
         this.file = null;
-        this.serverError = '';
         this.isResetting = false;
     }
 
@@ -38,14 +42,14 @@ export class AdministratorService {
             (aiBeginners: AiPlayerDB[]) => {
                 this.aiBeginner = aiBeginners;
             },
-            (error: HttpErrorResponse) => this.handleRequestError(error),
+            (error: HttpErrorResponse) => this.errorHandler.handleRequestError(error),
         );
 
         this.communicationService.getAiPlayers(AiType.expert).subscribe(
             (aiExperts: AiPlayerDB[]) => {
                 this.aiExpert = aiExperts;
             },
-            (error: HttpErrorResponse) => this.handleRequestError(error),
+            (error: HttpErrorResponse) => this.errorHandler.handleRequestError(error),
         );
     }
 
@@ -298,19 +302,6 @@ export class AdministratorService {
         )
             return true;
         return false;
-    }
-
-    private handleRequestError(error: HttpErrorResponse): void {
-        this.displayServerError(`Nous n'avons pas pu accéder au serveur, erreur : ${error.message}`);
-    }
-
-    private displayServerError(uploadMessage: string): void {
-        if (this.serverError.length) return; // There is already a message occurring
-        this.serverError = uploadMessage;
-        this.file = null;
-        setTimeout(() => {
-            this.serverError = '';
-        }, ERROR_MESSAGE_DELAY);
     }
 
     private resetAiPlayers(): void {

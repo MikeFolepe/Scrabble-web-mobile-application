@@ -40,23 +40,27 @@
           </div> -->
 
           <!-- <button class="forgottenPassword" (click)="test()">Mot de passe oublié?</button> -->
-          
+
           <div id = "buttons">
-                
+
                 <input type="submit" value="Se Connecter" (click)="signIn()">
                 <!-- <button class="newAccount" (click)="createAccount()">Nouveau? Créer un compte.</button> -->
-          </div> 
+          </div>
         </form>
       <!-- </div> -->
+         <div class="alert" *ngIf="authService.errorHandler.serverError.length">
+        {{ authService.errorHandler.serverError }}
+        </div>
 
-      
+
+
       <!-- <div *ngIf = "!hasAccount">
 
         <h2 class="login-header"></h2>
         <form [formGroup]="authForm" class="login-container">
           <p>
             <input type="file" placeholder="Photo de profil" formControlName="photo">
-            
+
 
 
           </p>
@@ -84,7 +88,7 @@
 
           </p>
 
-          <div class = "createAccount"> 
+          <div class = "createAccount">
                 <input type="submit" value="Créer un compte" (click)="signIn()">
           </div>
         </form>

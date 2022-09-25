@@ -3,6 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AdminModule } from './admin/admin.module';
 import { ChatGatewayModule } from './gateways/chat.gateway.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
     imports: [
@@ -16,6 +17,7 @@ import { ChatGatewayModule } from './gateways/chat.gateway.module';
         }),
         AdminModule,
         ChatGatewayModule,
+        AuthModule,
     ],
     providers: [Logger],
 })

@@ -17,7 +17,7 @@ const routes: Routes = [
     { path: '', component: AuthPageComponent },
     { path: 'auth', component: AuthPageComponent },
     { path: 'home', component: MainPageComponent, canActivate: [AuthGuard] },
-    { path: 'chat', component: PrototypeChatBoxComponent, canActivate: [AuthGuard]},
+    { path: 'chat', component: PrototypeChatBoxComponent, canActivate: [AuthGuard] },
     { path: 'solo-game-ai', component: FormComponent },
     { path: 'multiplayer-mode', component: FormComponent },
     { path: 'waiting-room', component: WaitingRoomComponent },
