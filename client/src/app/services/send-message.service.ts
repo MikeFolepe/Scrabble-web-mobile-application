@@ -70,7 +70,7 @@ export class SendMessageService {
     }
 
     receiveMessageFromOpponent(): void {
-        this.clientSocketService.socket.on('receiveRoomMessage', (message: string) => {
+        this.clientSocketService.socket.on(ChatEvents.RoomMessage, (message: string) => {
             this.sendOpponentMessage(message);
         });
     }
