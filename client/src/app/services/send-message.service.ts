@@ -26,27 +26,25 @@ export class SendMessageService {
     }
 
     displayMessageByType(message: string, messageType: MessageType): void {
-        this.message = message;
+        this.message =
+            this.authService.currentUser.pseudonym +
+            ' : ' +
+            message +
+            '                                 ' +
+            new Date().getHours().toString() +
+            ':' +
+            new Date().getMinutes().toString() +
+            ':' +
+            new Date().getHours().toString();
+
         this.messageType = messageType;
-        if (this.messageType === MessageType.Player) this.sendMessageToOpponent(this.message, this.authService.currentUser.pseudonym);
+        if (this.messageType === MessageType.Player) this.sendMessageToOpponent(this.message);
 
         this.displayMessage();
     }
 
-    sendMessageToOpponent(message: string, myName: string): void {
-        this.clientSocketService.socket.emit(
-            ChatEvents.RoomMessage,
-            'Message de ' +
-                myName +
-                ' : ' +
-                message +
-                '                                 ' +
-                new Date().getHours().toString() +
-                ':' +
-                new Date().getMinutes().toString() +
-                ':' +
-                new Date().getHours().toString(),
-        );
+    sendMessageToOpponent(message: string): void {
+        this.clientSocketService.socket.emit(ChatEvents.RoomMessage, message);
     }
 
     // Function to send message of conversion to all players in the room
