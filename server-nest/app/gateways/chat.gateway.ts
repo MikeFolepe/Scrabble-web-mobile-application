@@ -1,3 +1,4 @@
+import { Message } from '@app/model/message';
 import { UsersService } from '@app/users/service/users.service';
 import { User } from '@common/user';
 import { Injectable, Logger } from '@nestjs/common';
@@ -35,9 +36,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
     @SubscribeMessage(ChatEvents.RoomMessage)
-    roomMessage(socket: Socket, message: string) {
+    roomMessage(socket: Socket, message: Message) {
+        console.log(message);
+        const messageObject = new Message(message.message, message.messageUser);
+        const messageString = JSON.stringify(messageObject);
         // Seulement un membre de la salle peut envoyer un message aux autres
-        socket.to(this.room).emit(ChatEvents.RoomMessage, message);
+        socket.to(this.room).emit(ChatEvents.RoomMessage, messageString);
     }
 
     @SubscribeMessage(ChatEvents.UpdateUserSocket)

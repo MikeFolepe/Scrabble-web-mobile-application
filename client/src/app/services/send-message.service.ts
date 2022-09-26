@@ -5,6 +5,7 @@ import { ChatEvents } from '@common/chat.gateway.events';
 import { AuthService } from './auth.service';
 import { ClientSocketService } from './client-socket.service';
 import { PlayerService } from './player.service';
+import { Message } from '@app/classes/message';
 
 @Injectable({
     providedIn: 'root',
@@ -38,12 +39,13 @@ export class SendMessageService {
             new Date().getHours().toString();
 
         this.messageType = messageType;
-        if (this.messageType === MessageType.Player) this.sendMessageToOpponent(this.message);
+        const messageObject = new Message(message, this.authService.currentUser.pseudonym)
+        if (this.messageType === MessageType.Player) this.sendMessageToOpponent(messageObject);
 
         this.displayMessage();
     }
 
-    sendMessageToOpponent(message: string): void {
+    sendMessageToOpponent(message: Message): void {
         this.clientSocketService.socket.emit(ChatEvents.RoomMessage, message);
     }
 
@@ -69,7 +71,8 @@ export class SendMessageService {
 
     receiveMessageFromOpponent(): void {
         this.clientSocketService.socket.on(ChatEvents.RoomMessage, (message: string) => {
-            this.sendOpponentMessage(message);
+            const messageObject = JSON.parse(message);
+            this.sendOpponentMessage(messageObject.messageUser + ' : ' + messageObject.message);
         });
     }
 

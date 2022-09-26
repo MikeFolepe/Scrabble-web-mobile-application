@@ -9,11 +9,11 @@ object SocketHandler {
     lateinit var chatSocket: Socket
 
     @Synchronized
-    fun setSocket() {
+    fun setSocket(serverIp: String) {
         try {
-// "http://10.0.2.2:3000" --> emulator
+// "http://10.0.2.2:3000" --> emulator http://10.0.2.2:3000
 //  physical phone/tablet --> ip address plus :3000
-            chatSocket = IO.socket("http://10.0.2.2:3000")
+            chatSocket = IO.socket(serverIp)
         } catch (e: URISyntaxException) {
 
         }
