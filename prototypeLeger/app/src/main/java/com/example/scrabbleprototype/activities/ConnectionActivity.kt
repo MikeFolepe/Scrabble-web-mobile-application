@@ -9,6 +9,7 @@ import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
+import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.model.SocketHandler
@@ -27,6 +28,7 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import java.lang.Exception
 import kotlin.coroutines.CoroutineContext
 
 
@@ -52,6 +54,8 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
         connectionButton.setOnClickListener {
             onConnection()
         }
+        val serverIpText = findViewById<EditText>(R.id.server_ip)
+        serverIpText.setText(resources.getString(R.string.mobile_server_ip))
 
         client = HttpClient() {
             install(ContentNegotiation) {
@@ -84,28 +88,34 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
             val user = User(serverIp, username, null)
 
             val response = postAuthentication(user)
-
-            if(response.status == HttpStatusCode.OK) {
-                if(response.body()) {
-                    users.currentUser = username
-                    joinChat(serverIp, user)
-                }
-                else {
-                    val userAlreadyConnectedNotif = Snackbar.make(findViewById(android.R.id.content), "Cet utlisateur est déjà connecté", BaseTransientBottomBar.LENGTH_LONG)
-                    userAlreadyConnectedNotif.show()
-                }
-            }
-            else if(response.status == HttpStatusCode.NotFound) {
-                serverStatusNotif.show()
-            }
-            else serverStatusNotif.show()
+            if(response != null) {
+                if (response.status == HttpStatusCode.OK) {
+                    if (response.body()) {
+                        users.currentUser = username
+                        joinChat(serverIp, user)
+                    } else {
+                        val userAlreadyConnectedNotif = Snackbar.make(
+                            findViewById(android.R.id.content),
+                            "Cet utlisateur est déjà connecté",
+                            BaseTransientBottomBar.LENGTH_LONG
+                        )
+                        userAlreadyConnectedNotif.show()
+                    }
+                } else if (response.status == HttpStatusCode.NotFound) serverStatusNotif.show()
+                else serverStatusNotif.show()
+            } else serverStatusNotif.show()
         }
     }
 
-    suspend fun postAuthentication(user: User): HttpResponse {
-        val response: HttpResponse = client.post(user.ipAddress + "/api/auth/connect") {
-            contentType(ContentType.Application.Json)
-            setBody(user)
+    suspend fun postAuthentication(user: User): HttpResponse? {
+        var response: HttpResponse?
+        try{
+            response = client.post(user.ipAddress + "/api/auth/connect") {
+                contentType(ContentType.Application.Json)
+                setBody(user)
+            }
+        } catch(e: Exception) {
+            response = null
         }
         return response
     }

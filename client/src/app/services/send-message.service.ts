@@ -32,14 +32,14 @@ export class SendMessageService {
             ' : ' +
             message +
             '                                 ' +
-            new Date().getHours().toString() +
+            new Date().getHours().toString().padStart(2, '0') +
             ':' +
-            new Date().getMinutes().toString() +
+            new Date().getMinutes().toString().padStart(2, '0') +
             ':' +
-            new Date().getHours().toString();
+            new Date().getSeconds().toString().padStart(2, '0');
 
         this.messageType = messageType;
-        const messageObject = new Message(message, this.authService.currentUser.pseudonym)
+        const messageObject = new Message(message, this.authService.currentUser.pseudonym);
         if (this.messageType === MessageType.Player) this.sendMessageToOpponent(messageObject);
 
         this.displayMessage();

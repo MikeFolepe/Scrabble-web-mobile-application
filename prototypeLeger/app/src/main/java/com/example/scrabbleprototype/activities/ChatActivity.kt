@@ -95,6 +95,8 @@ class ChatActivity : AppCompatActivity() {
         messages.add(message)
 
         runOnUiThread {
+            val adapter = messagesList.adapter as ChatAdapter
+            adapter.notifyDataSetChanged()
             // If the user see the last message -> scroll down
             if(messagesList.lastVisiblePosition + 2 >= messagesList.adapter.count) messagesList.setSelection(messagesList.adapter.count - 1)
             // Else send notif of new message and don't scroll down since the use is looking through old messages
