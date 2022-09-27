@@ -5,6 +5,7 @@ import { ChatEvents } from '@common/chat.gateway.events';
 import { ClientSocketService } from './client-socket.service';
 import { PlayerService } from './player.service';
 import { Message } from '@app/classes/message';
+import { AuthService } from './auth.service';
 
 @Injectable({
     providedIn: 'root',
@@ -14,7 +15,7 @@ export class SendMessageService {
     messageType: MessageType;
     private displayMessage: () => void;
 
-    constructor(private clientSocketService: ClientSocketService, private playerService: PlayerService, private authSer) {
+    constructor(private clientSocketService: ClientSocketService, private playerService: PlayerService, private authService: AuthService) {
         this.receiveMessageFromOpponent();
         // To display message in real time in chat box
         this.receiveConversionMessage();
