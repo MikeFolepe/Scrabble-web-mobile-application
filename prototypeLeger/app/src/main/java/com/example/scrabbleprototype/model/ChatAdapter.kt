@@ -44,8 +44,7 @@ class ChatAdapter(context: Context, @LayoutRes private val layoutResource: Int, 
         val message = view.findViewById<TextView>(R.id.message)
 
         messageUser.text = _messages[position].messageUser
-        val timestampFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
-        messageTime.text = timestampFormat.format(_messages[position].messageTime)
+        messageTime.text = _messages[position].messageTime
         message.text = _messages[position].message
 
         return view

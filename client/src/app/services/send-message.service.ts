@@ -4,6 +4,7 @@ import { MessageType } from '@app/classes/enum';
 import { ChatEvents } from '@common/chat.gateway.events';
 import { ClientSocketService } from './client-socket.service';
 import { PlayerService } from './player.service';
+import { Message } from '@app/classes/message';
 
 @Injectable({
     providedIn: 'root',
@@ -13,7 +14,7 @@ export class SendMessageService {
     messageType: MessageType;
     private displayMessage: () => void;
 
-    constructor(private clientSocketService: ClientSocketService, private playerService: PlayerService) {
+    constructor(private clientSocketService: ClientSocketService, private playerService: PlayerService, private authSer) {
         this.receiveMessageFromOpponent();
         // To display message in real time in chat box
         this.receiveConversionMessage();
@@ -25,15 +26,25 @@ export class SendMessageService {
     }
 
     displayMessageByType(message: string, messageType: MessageType): void {
-        this.message = message;
+        this.message =
+            this.authService.currentUser.pseudonym +
+            ' : ' +
+            message +
+            '                                 ' +
+            new Date().getHours().toString().padStart(2, '0') +
+            ':' +
+            new Date().getMinutes().toString().padStart(2, '0') +
+            ':' +
+            new Date().getSeconds().toString().padStart(2, '0');
 
         this.messageType = messageType;
-        if (this.messageType === MessageType.Player) this.sendMessageToOpponent(this.message);
+        const messageObject = new Message(message, this.authService.currentUser.pseudonym);
+        if (this.messageType === MessageType.Player) this.sendMessageToOpponent(messageObject);
 
         this.displayMessage();
     }
 
-    sendMessageToOpponent(message: string): void {
+    sendMessageToOpponent(message: Message): void {
         this.clientSocketService.socket.emit(ChatEvents.RoomMessage, message);
     }
 
@@ -59,7 +70,8 @@ export class SendMessageService {
 
     receiveMessageFromOpponent(): void {
         this.clientSocketService.socket.on(ChatEvents.RoomMessage, (message: string) => {
-            this.sendOpponentMessage(message);
+            const messageObject = JSON.parse(message);
+            this.sendOpponentMessage(messageObject.messageUser + ' : ' + messageObject.message);
         });
     }
 
