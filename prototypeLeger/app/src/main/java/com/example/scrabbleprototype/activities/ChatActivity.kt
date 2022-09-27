@@ -46,9 +46,10 @@ class ChatActivity : AppCompatActivity() {
         SocketHandler.setSocket()
         SocketHandler.establishConnection()
         chatSocket = SocketHandler.getSocket()
+        chatSocket.emit("joinRoom")
         setupChatBox()
 
-        chatSocket.on("receiveRoomMessage"){ message->
+        chatSocket.on("roomMessage"){ message->
             addMessage(message[0] as String)
         }
     }
@@ -78,7 +79,7 @@ class ChatActivity : AppCompatActivity() {
         val message = Message(messageInput.text.toString(), currentUser)
 
         if(validateMessage(messageInput.text.toString())) {
-            chatSocket.emit("sendRoomMessage", message.message)
+            chatSocket.emit("roomMessage", message.message )
             addMessage(message.message)
             messageInput.setText("")
         } else messageInput.error = "Le message ne peut pas être vide"

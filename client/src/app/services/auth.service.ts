@@ -25,7 +25,7 @@ export class AuthService {
     ) {}
 
     signIn(userData: User) {
-        this.serverUrl = userData.ipAddress;
+        this.serverUrl = 'http://' + userData.ipAddress;
         this.communicationService.baseUrl = this.serverUrl + '/api';
 
         this.communicationService.connectUser(userData).subscribe(

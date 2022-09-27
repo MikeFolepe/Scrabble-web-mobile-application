@@ -13,7 +13,7 @@ object SocketHandler {
         try {
 // "http://10.0.2.2:3000" --> emulator
 //  physical phone/tablet --> ip address plus :3000
-            chatSocket = IO.socket("http://10.0.2.2:3000")
+            chatSocket = IO.socket("http://10.200.46.204:3000")
         } catch (e: URISyntaxException) {
 
         }

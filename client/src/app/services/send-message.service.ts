@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { TWO_SECOND_DELAY } from '@app/classes/constants';
 import { MessageType } from '@app/classes/enum';
 import { ChatEvents } from '@common/chat.gateway.events';
-import { AuthService } from './auth.service';
 import { ClientSocketService } from './client-socket.service';
 import { PlayerService } from './player.service';
 
@@ -14,7 +13,7 @@ export class SendMessageService {
     messageType: MessageType;
     private displayMessage: () => void;
 
-    constructor(private clientSocketService: ClientSocketService, private playerService: PlayerService, private authService: AuthService) {
+    constructor(private clientSocketService: ClientSocketService, private playerService: PlayerService) {
         this.receiveMessageFromOpponent();
         // To display message in real time in chat box
         this.receiveConversionMessage();
@@ -26,16 +25,7 @@ export class SendMessageService {
     }
 
     displayMessageByType(message: string, messageType: MessageType): void {
-        this.message =
-            this.authService.currentUser.pseudonym +
-            ' : ' +
-            message +
-            '                                 ' +
-            new Date().getHours().toString() +
-            ':' +
-            new Date().getMinutes().toString() +
-            ':' +
-            new Date().getHours().toString();
+        this.message = message;
 
         this.messageType = messageType;
         if (this.messageType === MessageType.Player) this.sendMessageToOpponent(this.message);
