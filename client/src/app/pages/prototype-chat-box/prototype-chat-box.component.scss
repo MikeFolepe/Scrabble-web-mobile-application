@@ -7,8 +7,22 @@
     text-shadow: 0 0 5px #c8c8c8;
     display: flex;
     flex-direction: column;
-    width: 400px;
-    height: 400px;
+    width: 350px;
+    height: 900px;
+}
+
+.input-bar {
+    display: flex;
+    flex-direction: row;
+}
+
+.send-button {
+    cursor: pointer;
+    padding: 10px 40px;
+    font-size: 16px;
+    color: white;
+    border-radius: 5px;
+    background-color: gray;
 }
 
 h2 {
@@ -50,6 +64,7 @@ h2 {
 
 input[type='text'] {
     font-size: 16px;
+    flex-grow: 5;
     background-color: transparent;
     caret-color: white;
     color: white;
@@ -75,4 +90,39 @@ input[type='text']:focus {
 
 .errorStyle {
     color: #ff0000;
+}
+
+.help-block {
+    color: rgb(184, 33, 33);
+    background-color: #e08c8c;
+    border-color: rgb(184, 33, 33);
+    border-width: 10px;
+    padding: 2px;
+    width: 400px;
+    align-content: center;
+  }
+
+
+
+#discBtn {
+    background: rgb(0,128,77);
+    border-radius: 10px;
+    border-color: rgb(35,80,31);
+    color: white;
+    cursor: pointer;
+    height: 50px;
+    width: 400px;
+    font-size: 16px;
+
+}
+
+.btnPos {
+    margin-top: 24px;
+    margin-bottom: 24px;
+    display:flex;
+    flex-direction:column;
+    align-content : center;
+    justify-content: center;
+    align-items: center;
+    gap: 24px;
 }

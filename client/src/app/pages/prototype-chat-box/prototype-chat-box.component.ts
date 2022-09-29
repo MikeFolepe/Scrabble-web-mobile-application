@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { DEFAULT_CHAT_HEIGHT, LOG2990_CHAT_HEIGHT } from '@app/classes/constants';
 import { MessageType } from '@app/classes/enum';
 import { ChatboxService } from '@app/services/chatbox.service';
@@ -6,6 +6,9 @@ import { EndGameService } from '@app/services/end-game.service';
 import { GameSettingsService } from '@app/services/game-settings.service';
 import { SendMessageService } from '@app/services/send-message.service';
 import { GameType } from '@common/game-type';
+import { ClientSocketService } from '@app/services/client-socket.service';
+import { ChatEvents } from '@common/chat.gateway.events';
+import { AuthService } from '@app/services/auth.service';
 @Component({
     selector: 'app-prototype-chat-box',
     templateUrl: './prototype-chat-box.component.html',
@@ -13,8 +16,10 @@ import { GameType } from '@common/game-type';
 })
 export class PrototypeChatBoxComponent implements OnInit {
     @ViewChild('scrollMe') private myScrollContainer: ElementRef;
+    @ViewChild('input') private inputBar: ElementRef;
 
     message: string;
+    validMessage: boolean = true;
     listMessages: string[];
     listTypes: MessageType[];
 
@@ -28,15 +33,26 @@ export class PrototypeChatBoxComponent implements OnInit {
         public endGameService: EndGameService,
         // private boardHandlerService: BoardHandlerService,
         private gameSettingsService: GameSettingsService,
+        private clientsSocket: ClientSocketService,
+        public authService: AuthService,
     ) {
         this.message = '';
         this.listMessages = [];
         this.listTypes = [];
+        this.clientsSocket.socket.on(ChatEvents.GetMessages, (messages: string[]) => {
+            for (const message of messages) {
+                const messageObject = JSON.parse(message);
+                if (messageObject.messageUser !== this.authService.currentUser.pseudonym) this.listTypes.push(MessageType.Opponent);
+                else this.listTypes.push(MessageType.Player);
+                this.listMessages.push(messageObject.messageUser + ' [' + messageObject.messageTime + ']' + ' : ' + messageObject.message);
+            }
+            this.scrollToBottom();
+        });
     }
 
     // Disable the current placement on the board when a click occurs in the chatbox
-    @HostListener('mouseup', ['$event'])
-    @HostListener('contextmenu', ['$event'])
+    // @HostListener('mouseup', ['$event'])
+    // @HostListener('contextmenu', ['$event'])
     // clickInChatBox(): void {
     //     this.boardHandlerService.cancelPlacement();
     // }
@@ -53,9 +69,26 @@ export class PrototypeChatBoxComponent implements OnInit {
     handleKeyEvent(event: KeyboardEvent): void {
         if (event.key === 'Enter') {
             event.preventDefault();
-            this.chatBoxService.sendPlayerMessage(this.message);
+            if (this.isMessageNotEmpty(this.message)) {
+                this.validMessage = true;
+                this.chatBoxService.sendPlayerMessage(this.message);
+            } else this.validMessage = false;
             this.scrollToBottom();
         }
+    }
+
+    sendMessage() {
+        if (this.isMessageNotEmpty(this.message)) {
+            this.validMessage = true;
+            this.chatBoxService.sendPlayerMessage(this.message);
+        } else this.validMessage = false;
+        this.scrollToBottom();
+        this.inputBar.nativeElement.focus();
+    }
+
+    isMessageNotEmpty(message: string): boolean {
+        if (message === null) return false;
+        return /\S/.test(message);
     }
 
     displayMessageByType(): void {

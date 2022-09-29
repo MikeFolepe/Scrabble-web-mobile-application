@@ -1,4 +1,6 @@
-<div id="chat-box" class="chat-box">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<div class="chat-box">
     <div class="fake-menu">
         <div class="fake-buttons fake-close"></div>
         <div class="fake-buttons fake-minimize"></div>
@@ -22,11 +24,26 @@
         </p>
     </div>
 
-    <input
+    <div id="input-bar" class="input-bar">
+        <input
         type="text"
         placeholder="Veuillez entrer un message ou une commande"
         maxlength="512"
         [(ngModel)]="message"
         (keypress)="handleKeyEvent($event)"
-    />
+        #input/>
+        <button type="button" id="send-button" class="send-button" (click)="sendMessage()">
+            <i class="fa fa-send-o"></i>
+        </button>
+    </div>
 </div>
+<div *ngIf="!validMessage" class="help-block">
+    <div>Le message ne peut pas être vide</div>
+</div>
+
+<div class="btnPos">
+    <button id = "discBtn" (click)="this.authService.logout()">Se Deconnecter</button>
+    <!-- <button class="newAccount" (click)="createAccount()">Nouveau? Créer un compte.</button> -->
+</div>
+
+

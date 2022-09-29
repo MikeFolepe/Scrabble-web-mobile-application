@@ -29,14 +29,14 @@ export class SendMessageService {
     displayMessageByType(message: string, messageType: MessageType): void {
         this.message =
             this.authService.currentUser.pseudonym +
-            ' : ' +
-            message +
-            '                                 ' +
+            ' [' +
             new Date().getHours().toString().padStart(2, '0') +
             ':' +
             new Date().getMinutes().toString().padStart(2, '0') +
             ':' +
-            new Date().getSeconds().toString().padStart(2, '0');
+            new Date().getSeconds().toString().padStart(2, '0') +
+            '] : ' +
+            message;
 
         this.messageType = messageType;
         const messageObject = new Message(message, this.authService.currentUser.pseudonym);
@@ -72,7 +72,7 @@ export class SendMessageService {
     receiveMessageFromOpponent(): void {
         this.clientSocketService.socket.on(ChatEvents.RoomMessage, (message: string) => {
             const messageObject = JSON.parse(message);
-            this.sendOpponentMessage(messageObject.messageUser + ' : ' + messageObject.message);
+            this.sendOpponentMessage(messageObject.messageUser + ' [' + messageObject.messageTime + ']' + ' : ' + messageObject.message);
         });
     }
 

@@ -18,8 +18,10 @@ import com.example.scrabbleprototype.model.Users
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import io.socket.client.Socket
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import org.json.JSONArray
 import org.json.JSONObject
 
 class ChatActivity : AppCompatActivity() {
@@ -47,12 +49,17 @@ class ChatActivity : AppCompatActivity() {
             v?.onTouchEvent(event) ?: true
         }
 
-        setupChatBox()
-
         chatSocket.on("roomMessage"){ response ->
             val message = Json.decodeFromString(Message.serializer(), response[0] as String)
             addMessage(message)
         }
+        chatSocket.on("getMessages") { response ->
+            val messageArray: JSONArray = response[0] as JSONArray
+            for(i in 0 until messageArray.length()) {
+                addMessage(Json.decodeFromString(Message.serializer(), messageArray.get(i).toString()))
+            }
+        }
+        setupChatBox()
     }
 
     private fun setupChatBox() {
@@ -73,6 +80,7 @@ class ChatActivity : AppCompatActivity() {
             }
             false
         })
+        getOldMessages()
     }
 
     private fun sendMessage() {
@@ -105,6 +113,10 @@ class ChatActivity : AppCompatActivity() {
                 newMessageNotif.show()
             }
         }
+    }
+
+    fun getOldMessages() {
+        chatSocket.emit("getMessages")
     }
 
     private fun hideKeyboard() {

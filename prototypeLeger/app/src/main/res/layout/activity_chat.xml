@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:clickable="true"
             android:drawableLeft="@drawable/ic_baseline_arrow_back_ios_24"
-            android:text="Menu"
+            android:text="Déconnexion"
             android:textSize="18dp"
             android:textColor="@color/black"
             android:padding="10dp"/>
@@ -33,7 +33,7 @@
             android:textColor="@color/black"
             android:layout_gravity="center"
             />
-        
+
         <ListView
             android:id="@+id/chat_box"
             android:layout_marginTop="20dp"
