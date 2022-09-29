@@ -2,9 +2,10 @@ import { Injectable } from '@angular/core';
 import { TWO_SECOND_DELAY } from '@app/classes/constants';
 import { MessageType } from '@app/classes/enum';
 import { ChatEvents } from '@common/chat.gateway.events';
-import { AuthService } from './auth.service';
 import { ClientSocketService } from './client-socket.service';
 import { PlayerService } from './player.service';
+import { Message } from '@app/classes/message';
+import { AuthService } from './auth.service';
 
 @Injectable({
     providedIn: 'root',
@@ -28,22 +29,23 @@ export class SendMessageService {
     displayMessageByType(message: string, messageType: MessageType): void {
         this.message =
             this.authService.currentUser.pseudonym +
-            ' : ' +
-            message +
-            '                                 ' +
-            new Date().getHours().toString() +
+            ' [' +
+            new Date().getHours().toString().padStart(2, '0') +
             ':' +
-            new Date().getMinutes().toString() +
+            new Date().getMinutes().toString().padStart(2, '0') +
             ':' +
-            new Date().getHours().toString();
+            new Date().getSeconds().toString().padStart(2, '0') +
+            '] : ' +
+            message;
 
         this.messageType = messageType;
-        if (this.messageType === MessageType.Player) this.sendMessageToOpponent(this.message);
+        const messageObject = new Message(message, this.authService.currentUser.pseudonym);
+        if (this.messageType === MessageType.Player) this.sendMessageToOpponent(messageObject);
 
         this.displayMessage();
     }
 
-    sendMessageToOpponent(message: string): void {
+    sendMessageToOpponent(message: Message): void {
         this.clientSocketService.socket.emit(ChatEvents.RoomMessage, message);
     }
 
@@ -69,7 +71,8 @@ export class SendMessageService {
 
     receiveMessageFromOpponent(): void {
         this.clientSocketService.socket.on(ChatEvents.RoomMessage, (message: string) => {
-            this.sendOpponentMessage(message);
+            const messageObject = JSON.parse(message);
+            this.sendOpponentMessage(messageObject.messageUser + ' [' + messageObject.messageTime + ']' + ' : ' + messageObject.message);
         });
     }
 

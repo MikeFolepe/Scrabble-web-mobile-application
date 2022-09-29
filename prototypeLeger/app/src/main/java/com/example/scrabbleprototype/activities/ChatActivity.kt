@@ -2,7 +2,6 @@ package com.example.scrabbleprototype.activities
 
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent
@@ -10,6 +9,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.model.ChatAdapter
 import com.example.scrabbleprototype.model.Message
@@ -18,12 +18,17 @@ import com.example.scrabbleprototype.model.Users
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import io.socket.client.Socket
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import org.json.JSONArray
+import org.json.JSONObject
 
 class ChatActivity : AppCompatActivity() {
 
     val messages = mutableListOf<Message>()
     val currentUser = Users.currentUser
-    lateinit var chatSocket: Socket
+    var chatSocket = SocketHandler.getSocket()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,6 +36,7 @@ class ChatActivity : AppCompatActivity() {
 
         val returnButton = findViewById<TextView>(R.id.return_button)
         returnButton.setOnClickListener {
+            SocketHandler.closeConnection()
             startActivity(Intent(this@ChatActivity, ConnectionActivity::class.java))
         }
 
@@ -43,14 +49,17 @@ class ChatActivity : AppCompatActivity() {
             v?.onTouchEvent(event) ?: true
         }
 
-        SocketHandler.setSocket()
-        SocketHandler.establishConnection()
-        chatSocket = SocketHandler.getSocket()
-        setupChatBox()
-
-        chatSocket.on("receiveRoomMessage"){ message->
-            addMessage(message[0] as String)
+        chatSocket.on("roomMessage"){ response ->
+            val message = Json.decodeFromString(Message.serializer(), response[0] as String)
+            addMessage(message)
         }
+        chatSocket.on("getMessages") { response ->
+            val messageArray: JSONArray = response[0] as JSONArray
+            for(i in 0 until messageArray.length()) {
+                addMessage(Json.decodeFromString(Message.serializer(), messageArray.get(i).toString()))
+            }
+        }
+        setupChatBox()
     }
 
     private fun setupChatBox() {
@@ -71,6 +80,7 @@ class ChatActivity : AppCompatActivity() {
             }
             false
         })
+        getOldMessages()
     }
 
     private fun sendMessage() {
@@ -78,8 +88,8 @@ class ChatActivity : AppCompatActivity() {
         val message = Message(messageInput.text.toString(), currentUser)
 
         if(validateMessage(messageInput.text.toString())) {
-            chatSocket.emit("sendRoomMessage", message.message)
-            addMessage(message.message)
+            chatSocket.emit("roomMessage", JSONObject(Json.encodeToString(message)))
+            addMessage(message)
             messageInput.setText("")
         } else messageInput.error = "Le message ne peut pas être vide"
     }
@@ -88,21 +98,29 @@ class ChatActivity : AppCompatActivity() {
         return message.isNotBlank()
     }
 
-    private fun addMessage(message: String) {
+    private fun addMessage(message: Message) {
         val messagesList = findViewById<ListView>(R.id.chat_box)
-        Log.d("times", "timmemmms" );
-        messages.add( Message(message, "etienne"))
-        // Scroll to bottom if last message received is visible
-        if(messagesList.lastVisiblePosition + 1 == messagesList.adapter.count - 1) messagesList.setSelection(messagesList.adapter.count - 1)
-        // Else send notif of new message and don't scroll down since the use is looking through old messages
-        else {
-            val newMessageNotif = Snackbar.make(findViewById(android.R.id.content), "Nouveau Message!", BaseTransientBottomBar.LENGTH_LONG)
-            newMessageNotif.show()
+        messages.add(message)
+
+        runOnUiThread {
+            val adapter = messagesList.adapter as ChatAdapter
+            adapter.notifyDataSetChanged()
+            // If the user see the last message -> scroll down
+            if(messagesList.lastVisiblePosition + 2 >= messagesList.adapter.count) messagesList.setSelection(messagesList.adapter.count - 1)
+            // Else send notif of new message and don't scroll down since the use is looking through old messages
+            else {
+                val newMessageNotif = Snackbar.make(findViewById(android.R.id.content), "Nouveau Message!", BaseTransientBottomBar.LENGTH_LONG)
+                newMessageNotif.show()
+            }
         }
+    }
+
+    fun getOldMessages() {
+        chatSocket.emit("getMessages")
     }
 
     private fun hideKeyboard() {
         val imm = this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(this.currentFocus!!.windowToken, 0)
+        if(this.currentFocus?.windowToken != null) imm.hideSoftInputFromWindow(this.currentFocus!!.windowToken, 0)
     }
 }

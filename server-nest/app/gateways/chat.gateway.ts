@@ -1,3 +1,4 @@
+import { Message } from '@app/model/message';
 import { UsersService } from '@app/users/service/users.service';
 import { User } from '@common/user';
 import { Injectable, Logger } from '@nestjs/common';
@@ -10,6 +11,7 @@ import { DELAY_BEFORE_EMITTING_TIME, PRIVATE_ROOM_ID, WORD_MIN_LENGTH } from './
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit {
     @WebSocketServer() private server: Server;
 
+    messages: string[] = [];
     private readonly room = PRIVATE_ROOM_ID;
 
     constructor(private readonly logger: Logger, private userService: UsersService) {}
@@ -35,9 +37,18 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
     @SubscribeMessage(ChatEvents.RoomMessage)
-    roomMessage(socket: Socket, message: string) {
+    roomMessage(socket: Socket, message: Message) {
+        console.log(message);
+        const messageObject = new Message(message.message, message.messageUser);
+        const messageString = JSON.stringify(messageObject);
+        this.messages.push(messageString);
         // Seulement un membre de la salle peut envoyer un message aux autres
-        socket.to(this.room).emit(ChatEvents.RoomMessage, message);
+        socket.to(this.room).emit(ChatEvents.RoomMessage, messageString);
+    }
+
+    @SubscribeMessage(ChatEvents.GetMessages)
+    getMessages(socket: Socket) {
+        socket.emit(ChatEvents.GetMessages, this.messages);
     }
 
     @SubscribeMessage(ChatEvents.UpdateUserSocket)

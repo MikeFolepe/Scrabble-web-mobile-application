@@ -25,7 +25,7 @@ export class AuthService {
     ) {}
 
     signIn(userData: User) {
-        this.serverUrl = userData.ipAddress;
+        this.serverUrl = 'http://' + userData.ipAddress;
         this.communicationService.baseUrl = this.serverUrl + '/api';
 
         this.communicationService.connectUser(userData).subscribe(
@@ -35,6 +35,7 @@ export class AuthService {
                     this.clientSocketService.socket = io(this.serverUrl);
                     this.clientSocketService.socket.connect();
                     this.clientSocketService.socket.emit(ChatEvents.JoinRoom);
+                    this.clientSocketService.socket.emit(ChatEvents.GetMessages);
                     localStorage.setItem('ACCESS_TOKEN', 'access_token');
                     this.router.navigate(['/chat']);
                     this.clientSocketService.socket.on(ChatEvents.SocketId, (socketId: string) => {
@@ -50,10 +51,13 @@ export class AuthService {
             },
         );
     }
+
     isLoggedIn() {
         return true;
     }
     logout() {
+        this.clientSocketService.socket.disconnect();
+        this.router.navigate(['/auth']);
         localStorage.removeItem('ACCESS_TOKEN');
     }
 

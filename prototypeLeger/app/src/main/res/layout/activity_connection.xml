@@ -68,8 +68,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:inputType="number|numberDecimal"
-                android:digits="0123456789."/>
+                android:inputType="text" />
         </LinearLayout>
 
         <Button
