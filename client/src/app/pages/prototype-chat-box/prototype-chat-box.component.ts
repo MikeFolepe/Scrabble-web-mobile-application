@@ -35,7 +35,7 @@ export class PrototypeChatBoxComponent implements OnInit {
     }
 
     // Disable the current placement on the board when a click occurs in the chatbox
-    @HostListener('mouseup', ['$event'])
+    // @HostListener('mouseup', ['$event'])
     @HostListener('contextmenu', ['$event'])
     // clickInChatBox(): void {
     //     this.boardHandlerService.cancelPlacement();

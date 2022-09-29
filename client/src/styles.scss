@@ -59,6 +59,11 @@ $indigo-pink-theme: mat.define-light-theme(
     @include mat.all-component-colors($purple-green-theme);
 }
 
+.center{
+    display: flex;
+    justify-content: center;
+}
+
 /* You can add global styles to this file, and also import other style files */
 
 html {

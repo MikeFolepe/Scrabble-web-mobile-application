@@ -6,7 +6,7 @@
     </div>
 
     <h2>Boite de communication</h2>
-
+    
     <div class="display" #scrollMe>
         <p
             id="list-display"
@@ -28,5 +28,5 @@
         maxlength="512"
         [(ngModel)]="message"
         (keypress)="handleKeyEvent($event)"
-    />
+        />
 </div>
