@@ -64,6 +64,7 @@ export class PrototypeChatBoxComponent implements OnInit {
         this.sendSystemMessage(
             "Affichez la liste des commandes disponibles en tapant la commande '!aide', puis en appuyant sur la touche 'Entrée' de votre clavier.",
         );
+        this.sendMessageService.receiveMessageFromOpponent();
     }
 
     handleKeyEvent(event: KeyboardEvent): void {

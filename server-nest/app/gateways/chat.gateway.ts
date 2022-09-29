@@ -42,8 +42,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         const messageObject = new Message(message.message, message.messageUser);
         const messageString = JSON.stringify(messageObject);
         this.messages.push(messageString);
+        this.server.to(this.room).emit(ChatEvents.RoomMessage, messageString);
         // Seulement un membre de la salle peut envoyer un message aux autres
-        socket.to(this.room).emit(ChatEvents.RoomMessage, messageString);
+        // socket.to(this.room).emit(ChatEvents.RoomMessage, messageString);
     }
 
     @SubscribeMessage(ChatEvents.GetMessages)

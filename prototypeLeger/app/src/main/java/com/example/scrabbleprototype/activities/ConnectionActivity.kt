@@ -79,12 +79,14 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
     }
 
     fun onConnection() {
-        val username = findViewById<EditText>(R.id.username).text.toString()
-        val serverIp = findViewById<EditText>(R.id.server_ip).text.toString()
+        val usernameInput = findViewById<EditText>(R.id.username);
+        val username = usernameInput.text.toString()
+        val serverIpInput = findViewById<EditText>(R.id.server_ip)
+        val serverIp = serverIpInput.text.toString()
+        val serverError = "Ce serveur est déconnecté"
 
         //validate username and ip
         launch {
-            val serverStatusNotif = Snackbar.make(findViewById(android.R.id.content), "Ce serveur est déconnecté", BaseTransientBottomBar.LENGTH_LONG)
             val user = User(serverIp, username, null)
 
             val response = postAuthentication(user)
@@ -94,16 +96,11 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
                         users.currentUser = username
                         joinChat(serverIp, user)
                     } else {
-                        val userAlreadyConnectedNotif = Snackbar.make(
-                            findViewById(android.R.id.content),
-                            "Cet utlisateur est déjà connecté",
-                            BaseTransientBottomBar.LENGTH_LONG
-                        )
-                        userAlreadyConnectedNotif.show()
+                        usernameInput.error = "Cet utilisateur est déjà connecté"
                     }
-                } else if (response.status == HttpStatusCode.NotFound) serverStatusNotif.show()
-                else serverStatusNotif.show()
-            } else serverStatusNotif.show()
+                } else if (response.status == HttpStatusCode.NotFound) serverIpInput.error = serverError
+                else serverIpInput.error = serverError
+            } else serverIpInput.error = serverError
         }
     }
 

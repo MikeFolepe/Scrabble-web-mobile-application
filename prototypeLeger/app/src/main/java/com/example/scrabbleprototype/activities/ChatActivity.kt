@@ -89,7 +89,6 @@ class ChatActivity : AppCompatActivity() {
 
         if(validateMessage(messageInput.text.toString())) {
             chatSocket.emit("roomMessage", JSONObject(Json.encodeToString(message)))
-            addMessage(message)
             messageInput.setText("")
         } else messageInput.error = "Le message ne peut pas être vide"
     }

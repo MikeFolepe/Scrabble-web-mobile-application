@@ -16,7 +16,7 @@ export class SendMessageService {
     private displayMessage: () => void;
 
     constructor(private clientSocketService: ClientSocketService, private playerService: PlayerService, private authService: AuthService) {
-        this.receiveMessageFromOpponent();
+        // this.receiveMessageFromOpponent();
         // To display message in real time in chat box
         this.receiveConversionMessage();
     }
@@ -27,22 +27,11 @@ export class SendMessageService {
     }
 
     displayMessageByType(message: string, messageType: MessageType): void {
-        this.message =
-            this.authService.currentUser.pseudonym +
-            ' [' +
-            new Date().getHours().toString().padStart(2, '0') +
-            ':' +
-            new Date().getMinutes().toString().padStart(2, '0') +
-            ':' +
-            new Date().getSeconds().toString().padStart(2, '0') +
-            '] : ' +
-            message;
-
         this.messageType = messageType;
         const messageObject = new Message(message, this.authService.currentUser.pseudonym);
         if (this.messageType === MessageType.Player) this.sendMessageToOpponent(messageObject);
 
-        this.displayMessage();
+        // this.displayMessage();
     }
 
     sendMessageToOpponent(message: Message): void {
@@ -72,7 +61,12 @@ export class SendMessageService {
     receiveMessageFromOpponent(): void {
         this.clientSocketService.socket.on(ChatEvents.RoomMessage, (message: string) => {
             const messageObject = JSON.parse(message);
-            this.sendOpponentMessage(messageObject.messageUser + ' [' + messageObject.messageTime + ']' + ' : ' + messageObject.message);
+            const messageString = messageObject.messageUser + ' [' + messageObject.messageTime + ']' + ' : ' + messageObject.message;
+            if (messageObject.messageUser === this.authService.currentUser.pseudonym) {
+                this.messageType = MessageType.Player;
+                this.message = messageString;
+                this.displayMessage();
+            } else this.sendOpponentMessage(messageString);
         });
     }
 
