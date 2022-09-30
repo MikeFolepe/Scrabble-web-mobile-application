@@ -82,8 +82,18 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
         val usernameInput = findViewById<EditText>(R.id.username);
         val username = usernameInput.text.toString()
         val serverIpInput = findViewById<EditText>(R.id.server_ip)
-        val serverIp = serverIpInput.text.toString()
+        val serverIp = resources.getString(R.string.http) + serverIpInput.text.toString()
+        Log.d("ipserver", serverIp)
         val serverError = "Ce serveur est déconnecté"
+
+        if(username.isEmpty())  {
+            usernameInput.error = "Le pseudonyme ne peut pas être vide"
+            return
+        }
+        if(serverIpInput.text.isEmpty()) {
+            serverIpInput.error = "Le IP du serveur ne peut pas être vide"
+            return
+        }
 
         //validate username and ip
         launch {

@@ -8,7 +8,7 @@ import { EndGameService } from '@app/services/end-game.service';
 import { GameSettingsService } from '@app/services/game-settings.service';
 import { SendMessageService } from '@app/services/send-message.service';
 import { ChatEvents } from '@common/chat.gateway.events';
-import { GameType } from '@common/game-type';
+
 @Component({
     selector: 'app-prototype-chat-box',
     templateUrl: './prototype-chat-box.component.html',
@@ -59,11 +59,7 @@ export class PrototypeChatBoxComponent implements OnInit {
     ngOnInit(): void {
         this.sendMessageService.displayBound(this.displayMessageByType.bind(this));
         this.initializeChatHeight();
-        const gameType = this.gameSettingsService.gameType === GameType.Classic ? 'Classique' : 'LOG2990';
-        this.sendSystemMessage('Début de la partie, mode ' + gameType + '.');
-        this.sendSystemMessage(
-            "Affichez la liste des commandes disponibles en tapant la commande '!aide', puis en appuyant sur la touche 'Entrée' de votre clavier.",
-        );
+        this.sendSystemMessage('Bienvenue sur le prototype');
         this.sendMessageService.receiveMessageFromOpponent();
     }
 

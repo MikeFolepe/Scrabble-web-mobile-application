@@ -106,11 +106,6 @@ class ChatActivity : AppCompatActivity() {
             adapter.notifyDataSetChanged()
             // If the user see the last message -> scroll down
             if(messagesList.lastVisiblePosition + 2 >= messagesList.adapter.count) messagesList.setSelection(messagesList.adapter.count - 1)
-            // Else send notif of new message and don't scroll down since the use is looking through old messages
-            else {
-                val newMessageNotif = Snackbar.make(findViewById(android.R.id.content), "Nouveau Message!", BaseTransientBottomBar.LENGTH_LONG)
-                newMessageNotif.show()
-            }
         }
     }
 
