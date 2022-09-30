@@ -3,6 +3,7 @@ import { User } from './../../../../common/user';
 
 @Injectable()
 export class UsersService {
+    // TODO: Set users to private and define new functions : setSocketId and disconnectUser
     activeUsers: User[];
 
     constructor() {
