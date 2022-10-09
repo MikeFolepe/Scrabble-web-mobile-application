@@ -41,7 +41,7 @@ export class AuthService {
                     this.clientSocketService.socket.emit(ChatEvents.JoinRoom);
                     this.clientSocketService.socket.emit(ChatEvents.GetMessages);
                     localStorage.setItem('ACCESS_TOKEN', 'access_token');
-                    this.router.navigate(['/chat']);
+                    this.router.navigate(['/game']);
                 } else {
                     this.displayMessage('Cet utilisateur est déjà connecté');
                 }
