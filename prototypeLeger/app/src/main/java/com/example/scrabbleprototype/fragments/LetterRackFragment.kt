@@ -18,11 +18,6 @@ import com.example.scrabbleprototype.objects.LetterRack
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [LetterRackFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class LetterRackFragment : Fragment() {
 
     val letterRack = LetterRack.letters
