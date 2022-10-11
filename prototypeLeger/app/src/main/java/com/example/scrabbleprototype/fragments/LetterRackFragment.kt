@@ -6,17 +6,14 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.activities.GameActivity
+import com.example.scrabbleprototype.model.Letter
 import com.example.scrabbleprototype.model.LetterRackAdapter
 import com.example.scrabbleprototype.objects.LetterRack
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
 class LetterRackFragment : Fragment() {
 
@@ -36,10 +33,20 @@ class LetterRackFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        setupLetterRack(view)
+    }
+
+    private fun setupLetterRack(view: View) {
         val letterRackView = view.findViewById<RecyclerView>(R.id.letter_rack)
         val horizontalLayoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false)
         letterRackView.layoutManager = horizontalLayoutManager
         val letterRackAdapter = LetterRackAdapter(letterRack)
         letterRackView.adapter = letterRackAdapter
+
+        letterRackAdapter.onLetterClick = { position ->
+            // GESTION DU CHEVALET ICI
+            Toast.makeText(activity, "Lettre sélectionnée : " + letterRack[position], Toast.LENGTH_LONG).show()
+        }
     }
 }

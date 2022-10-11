@@ -8,21 +8,23 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
 
-class LetterRackAdapter(private val letters: Array<String>) :
+class LetterRackAdapter(private var letterRack: Array<String>) :
     RecyclerView.Adapter<LetterRackAdapter.ViewHolder>() {
+
+    var onLetterClick: ((position: Int) -> Unit)? = null
 
     /**
      * Provide a reference to the type of views that you are using
      * (custom ViewHolder).
      */
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val letter: TextView
 
         init {
             // Define click listener for the ViewHolder's View.
             letter = view.findViewById(R.id.letter)
-            letter.setOnClickListener {
-                Toast.makeText(view.context, "position : " + layoutPosition, Toast.LENGTH_LONG).show()
+            view.setOnClickListener {
+                onLetterClick?.invoke(layoutPosition)
             }
         }
     }
@@ -41,10 +43,15 @@ class LetterRackAdapter(private val letters: Array<String>) :
 
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
-        viewHolder.letter.text = letters[position]
+        viewHolder.letter.text = letterRack[position]
     }
 
     // Return the size of your dataset (invoked by the layout manager)
-    override fun getItemCount() = letters.size
+    override fun getItemCount() = letterRack.size
+
+    fun updateData(letterRack: Array<String>) {
+        var letters = letterRack
+        this.notifyDataSetChanged()
+    }
 
 }
