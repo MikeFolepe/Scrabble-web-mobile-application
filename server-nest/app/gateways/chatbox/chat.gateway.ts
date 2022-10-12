@@ -8,15 +8,15 @@ import { Room, State } from '@common/room';
 import { User } from '@common/user';
 import { Vec2 } from '@common/vec2';
 import { Injectable, Logger } from '@nestjs/common';
-import { OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { DELAY_OF_DISCONNECT } from '../classes/constants';
-import { ChatEvents } from './../../../common/chat.gateway.events';
-import { DELAY_BEFORE_EMITTING_TIME, PRIVATE_ROOM_ID, WORD_MIN_LENGTH } from './chat.gateway.constants';
-import { RoomManagerService } from './services/room-manager/room-manager.service';
+import { DELAY_OF_DISCONNECT } from '../../classes/constants';
+import { DELAY_BEFORE_EMITTING_TIME, PRIVATE_ROOM_ID, WORD_MIN_LENGTH } from '../chatbox/chat.gateway.constants';
+import { RoomManagerService } from '../services/room-manager/room-manager.service';
+import { ChatEvents } from './../../../../common/chat.gateway.events';
 @WebSocketGateway({ cors: true })
 @Injectable()
-export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit {
+export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @WebSocketServer() private server: Server;
 
     messages: string[] = [];

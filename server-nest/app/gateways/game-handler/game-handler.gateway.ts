@@ -11,7 +11,7 @@ import { Logger } from '@nestjs/common';
 import { OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { DELAY_OF_DISCONNECT } from '../../classes/constants';
-import { DELAY_BEFORE_EMITTING_TIME, PRIVATE_ROOM_ID, WORD_MIN_LENGTH } from '../chat.gateway.constants';
+import { DELAY_BEFORE_EMITTING_TIME, PRIVATE_ROOM_ID, WORD_MIN_LENGTH } from '../chatbox/chat.gateway.constants';
 import { RoomManagerService } from '../services/room-manager/room-manager.service';
 import { ChatEvents } from './../../../../common/chat.gateway.events';
 
