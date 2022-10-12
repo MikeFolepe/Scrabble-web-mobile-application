@@ -40,6 +40,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/give_up_button"
                 android:layout_marginRight="10dp"
+                android:textColor="@color/white"
                 android:background="@drawable/red_shadow_button"
                 android:textAllCaps="false"/>
 

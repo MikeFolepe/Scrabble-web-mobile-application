@@ -15,4 +15,7 @@
     <string name="skip_turn_button">Passer son tour</string>
     <string name="give_up_button">Abandonner</string>
     <string name="chatbox_hint">Entre ton message ici</string>
+    <string name="info_pannel">Panneau d\'information</string>
+    <string name="swap_button">Échanger</string>
+    <string name="cancel_button">Annuler</string>
 </resources>

@@ -8,7 +8,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
 
-class LetterRackAdapter(private var letterRack: Array<String>) :
+class LetterRackAdapter(private var letterRack: ArrayList<Letter>) :
     RecyclerView.Adapter<LetterRackAdapter.ViewHolder>() {
 
     var onLetterClick: ((position: Int) -> Unit)? = null
@@ -43,13 +43,13 @@ class LetterRackAdapter(private var letterRack: Array<String>) :
 
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
-        viewHolder.letter.text = letterRack[position]
+        viewHolder.letter.text = letterRack[position].value.toString()
     }
 
     // Return the size of your dataset (invoked by the layout manager)
     override fun getItemCount() = letterRack.size
 
-    fun updateData(letterRack: Array<String>) {
+    fun updateData(letterRack: ArrayList<Letter>) {
         var letters = letterRack
         this.notifyDataSetChanged()
     }

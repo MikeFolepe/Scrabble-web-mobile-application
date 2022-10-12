@@ -8,9 +8,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.scrabbleprototype.R
-import com.example.scrabbleprototype.fragments.ChatFragment
-import com.example.scrabbleprototype.fragments.GameButtonsFragment
-import com.example.scrabbleprototype.fragments.LetterRackFragment
+import com.example.scrabbleprototype.fragments.*
 
 class GameActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,6 +32,8 @@ class GameActivity : AppCompatActivity() {
         fragmentTransaction.add(R.id.letter_rack_frame, LetterRackFragment())
         fragmentTransaction.add(R.id.game_buttons_frame, GameButtonsFragment())
         fragmentTransaction.add(R.id.chatbox_frame, ChatFragment())
+        fragmentTransaction.add(R.id.info_pannel_frame, InformationPannelFragment())
+        fragmentTransaction.add(R.id.board_frame, BoardFragment())
         fragmentTransaction.addToBackStack(null)
         fragmentTransaction.commit()
     }

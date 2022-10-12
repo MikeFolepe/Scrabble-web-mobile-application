@@ -1,7 +1,7 @@
 package com.example.scrabbleprototype.model
 
 object Constants {
-     private val RESERVE = arrayOf(
+    val RESERVE = arrayOf(
         Letter('A', 9, 1, false, false),
         Letter('B', 2, 3, false, false),
         Letter('C', 2,3,false,false),
@@ -30,14 +30,5 @@ object Constants {
         Letter('Z', 1, 10, false, false),
         Letter('*', 2, 0, false, false)
     );
-
-    fun getLetterFromReserve(askedLetter: Char) : Letter {
-        for(letter in RESERVE) {
-            if (letter.value == askedLetter)
-                return letter
-        }
-        return RESERVE[-1]
-    }
-    //test
-
 }
+

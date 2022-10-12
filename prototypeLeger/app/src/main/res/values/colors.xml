@@ -17,4 +17,8 @@
     <color name="dark_green">#011910</color>
     <color name="gray">#8d8d8d</color>
     <color name="light_green">#c3f1e1</color>
+    <color name="navy_blue">#3C5291</color>
+    <color name="dark_navy_blue">#212E52</color>
+    <color name="test">#42000000</color>
+    <color name="dark_tan">#84643B</color>
 </resources>
