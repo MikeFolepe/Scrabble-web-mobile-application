@@ -49,8 +49,8 @@ class LetterRackAdapter(private var letterRack: ArrayList<Letter>) :
     // Return the size of your dataset (invoked by the layout manager)
     override fun getItemCount() = letterRack.size
 
-    fun updateData(letterRack: ArrayList<Letter>) {
-        var letters = letterRack
+    fun updateData(newLetterRack: ArrayList<Letter>) {
+        letterRack = newLetterRack
         this.notifyDataSetChanged()
     }
 
