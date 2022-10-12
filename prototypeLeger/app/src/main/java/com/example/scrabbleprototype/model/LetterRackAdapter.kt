@@ -8,7 +8,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
 
-class LetterRackAdapter(private val letters: Array<String>) :
+class LetterRackAdapter(private val letters: ArrayList<Char>) :
     RecyclerView.Adapter<LetterRackAdapter.ViewHolder>() {
 
     /**
@@ -33,6 +33,7 @@ class LetterRackAdapter(private val letters: Array<String>) :
         val view = LayoutInflater.from(viewGroup.context)
             .inflate(R.layout.letter_rack_item, viewGroup, false)
 
+
         return ViewHolder(view)
     }
 
@@ -41,7 +42,7 @@ class LetterRackAdapter(private val letters: Array<String>) :
 
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
-        viewHolder.letter.text = letters[position]
+        viewHolder.letter.text = letters[position].toString()
     }
 
     // Return the size of your dataset (invoked by the layout manager)

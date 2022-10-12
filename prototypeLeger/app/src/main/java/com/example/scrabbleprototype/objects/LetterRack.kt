@@ -1,5 +1,10 @@
 package com.example.scrabbleprototype.objects
 
+import com.example.scrabbleprototype.model.Letter
+
 object LetterRack {
-    val letters = arrayOf("A", "B", "C", "D", "E", "F", "G")
+
+    val letters = ArrayList<Letter>(7)
+    val lettersVal = ArrayList<Char>(7)
+
 }
