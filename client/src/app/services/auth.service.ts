@@ -42,6 +42,7 @@ export class AuthService {
                     this.clientSocketService.socket.emit(ChatEvents.GetMessages);
                     localStorage.setItem('ACCESS_TOKEN', 'access_token');
                     this.router.navigate(['/home']);
+                    this.clientSocketService.initialize();
                 } else {
                     this.displayMessage('Cet utilisateur est déjà connecté');
                 }

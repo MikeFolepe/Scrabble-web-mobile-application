@@ -13,10 +13,12 @@ export class ClientSocketService {
     roomId: string;
     gameType: GameType;
 
-    constructor(private gameSettingsService: GameSettingsService, private router: Router) {
-        // this.initializeRoomId();
-        // this.initializeGameSettings();
-        // this.routeToGameView();
+    constructor(private gameSettingsService: GameSettingsService, private router: Router) {}
+
+    initialize(): void {
+        this.initializeRoomId();
+        this.initializeGameSettings();
+        this.routeToGameView();
     }
 
     routeToGameView(): void {
@@ -33,7 +35,6 @@ export class ClientSocketService {
 
     initializeGameSettings(): void {
         this.socket.on('yourGameSettings', (gameSettingsFromServer: GameSettings) => {
-            console.log(gameSettingsFromServer);
             this.gameSettingsService.gameSettings = gameSettingsFromServer;
         });
     }

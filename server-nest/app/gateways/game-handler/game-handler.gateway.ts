@@ -40,7 +40,7 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
             this.server.emit('roomConfiguration', this.roomManagerService.rooms);
             socket.join(roomId);
             this.server.in(roomId).emit('yourRoomId', roomId);
-            socket.emit('yourGameSettings', this.roomManagerService.formatGameSettingsForCustomerIn(roomId));
+            this.server.in(roomId).emit('yourGameSettings', this.roomManagerService.formatGameSettingsForCustomerIn(roomId));
             socket.to(roomId).emit('yourGameSettings', this.roomManagerService.getGameSettings(roomId));
             this.server.in(roomId).emit('goToGameView');
             this.server.in(roomId).emit('startTimer');
@@ -170,6 +170,7 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
             socket.join(roomId);
             // give the client his roomId to communicate later with server
             socket.emit('yourRoomId', roomId);
+            Logger.log(roomId);
             // room creation alerts all clients on the new rooms configurations
             this.server.emit('roomConfiguration', this.roomManagerService.rooms);
             // Send number of rooms available
