@@ -24,6 +24,7 @@ class LetterRackFragment : Fragment() {
     private val letterInfo = LetterRack.letters
     private val reserve = Constants.RESERVE
     private val hashMap = hashMapOf<Char, Letter>()
+    private val letterPos = hashMapOf<Int, Letter>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,12 +61,29 @@ class LetterRackFragment : Fragment() {
         letterRackAdapter.onLetterClick = { position ->
             // GESTION DU CHEVALET ICI
             Toast.makeText(activity, "Lettre sélectionnée : " + letterRack[position], Toast.LENGTH_LONG).show()
+            letterPos[position] = letterInfo[position]
         }
     }
 
     private fun setupSwapButton(view : View) {
         val swapButton = view.findViewById<Button>(R.id.swap_button)
         swapButton.setOnClickListener {
+
+            println(letterRack)
+
+            for((position, letter) in letterPos) {
+                letter.quantity = letter.quantity.toInt() + 1
+                val newLetterFromRes = findRandomLetterFromRes()
+                while (newLetterFromRes.quantity == 0) {
+                    val newLetterFromRes = findRandomLetterFromRes()
+                }
+                letterRack[position] = newLetterFromRes.value
+                newLetterFromRes.quantity = newLetterFromRes.quantity.toInt() - 1
+            }
+            letterPos.clear()
+            println(letterRack)
+
+            //le letterRack est updaté au niveau du code, il faut maintenant update au niveau de la vue.
 
         }
     }
