@@ -13,7 +13,7 @@ import { DELAY_BEFORE_EMITTING_TIME, PRIVATE_ROOM_ID } from '../chatbox/chat.gat
 import { RoomManagerService } from '../services/room-manager/room-manager.service';
 import { ChatEvents } from './../../../../common/chat.gateway.events';
 
-@WebSocketGateway()
+@WebSocketGateway({ namespace: 'game-handler' })
 export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @WebSocketServer() private server: Server;
 
