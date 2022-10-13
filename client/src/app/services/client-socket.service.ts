@@ -33,6 +33,7 @@ export class ClientSocketService {
 
     initializeGameSettings(): void {
         this.socket.on('yourGameSettings', (gameSettingsFromServer: GameSettings) => {
+            console.log(gameSettingsFromServer);
             this.gameSettingsService.gameSettings = gameSettingsFromServer;
         });
     }
