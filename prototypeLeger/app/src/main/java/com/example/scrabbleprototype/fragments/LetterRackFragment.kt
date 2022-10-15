@@ -67,21 +67,24 @@ class LetterRackFragment : Fragment() {
 
     private fun setupSwapButton(view : View) {
         val swapButton = view.findViewById<Button>(R.id.swap_button)
+        val letterRackView = view.findViewById<RecyclerView>(R.id.letter_rack)
         swapButton.setOnClickListener {
-
-            println(letterRack)
 
             for((position, letter) in letterPos) {
                 letter.quantity = letter.quantity.toInt() + 1
-                val newLetterFromRes = findRandomLetterFromRes()
+                var newLetterFromRes = findRandomLetterFromRes()
                 while (newLetterFromRes.quantity == 0) {
-                    val newLetterFromRes = findRandomLetterFromRes()
+                    newLetterFromRes = findRandomLetterFromRes()
                 }
                 letterRack[position] = newLetterFromRes.value
+                letterInfo[position] = newLetterFromRes
                 newLetterFromRes.quantity = newLetterFromRes.quantity.toInt() - 1
+                val letterRackAdapter = letterRackView.adapter
+                if (letterRackAdapter != null) {
+                    letterRackAdapter.notifyDataSetChanged()
+                }
             }
             letterPos.clear()
-            println(letterRack)
 
             //le letterRack est updaté au niveau du code, il faut maintenant update au niveau de la vue.
 

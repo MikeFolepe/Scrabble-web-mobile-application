@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/board_case"
+    android:layout_width="30dp"
+    android:layout_height="30dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/board_case_border"
+    app:cardCornerRadius="0dp">
+
+    <TextView
+        android:id="@+id/bonus_layer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textSize="7sp"
+        android:textColor="@color/white" />
+
+    <LinearLayout
+        android:id="@+id/letter_layer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/letter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:layout_gravity="center_horizontal"
+            android:textColor="@color/teal"
+            android:layout_weight="1"
+            android:textStyle="bold"
+            android:layout_marginTop="2dp" />
+        <TextView
+            android:id="@+id/letter_score"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/teal"
+            android:textSize="8sp"
+            android:layout_gravity="end"
+            android:textStyle="bold"
+            android:layout_marginEnd="3dp"
+            android:layout_marginBottom="2dp"/>
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/placement_layer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/board_case_border"/>
+
+</androidx.cardview.widget.CardView>
+
