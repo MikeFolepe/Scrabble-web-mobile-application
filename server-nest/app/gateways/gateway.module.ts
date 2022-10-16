@@ -9,4 +9,4 @@ import { RoomManagerService } from './services/room-manager/room-manager.service
     controllers: [],
     providers: [ChatGateway, Logger, RoomManagerService, GameHandlerGateway],
 })
-export class ChatGatewayModule {}
+export class GatewayModule {}
