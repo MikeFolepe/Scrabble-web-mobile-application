@@ -1,10 +1,14 @@
 package com.example.scrabbleprototype.model
 
+import android.content.ClipDescription
+import android.util.Log
+import android.view.DragEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -36,6 +40,46 @@ class BoardAdapter(private var board: ArrayList<Letter>) :
         // Create a new view, which defines the UI of the list item
         val view = LayoutInflater.from(viewGroup.context)
             .inflate(R.layout.board_item, viewGroup, false)
+
+        view.setOnDragListener { v, e ->
+            when(e.action) {
+                DragEvent.ACTION_DRAG_STARTED -> {
+                    return@setOnDragListener e.clipDescription.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)
+                }
+                DragEvent.ACTION_DRAG_ENTERED -> {
+                    // Can modify view here to show that the view is being dragged
+                    return@setOnDragListener true
+                }
+                DragEvent.ACTION_DRAG_EXITED -> {
+                    // Modify view style back to DRAG_STARTED DragEvent
+                    return@setOnDragListener true
+                }
+                DragEvent.ACTION_DROP -> {
+                    val item: Clipdata.Item = e.clipData.getItemAt(0)
+                    val dragData = item.text // La data de la lettre qui a été dragged
+
+                    // Case du board ou la lettre a été drop
+                    val case = board[getAdapterPosition()]
+                    // TODO Ajoute la lettre a la case avec le dragData
+
+                    notifyItemChanged(getAdapterPosition())
+                    true
+                }
+                DragEvent.ACTION_DRAG_ENDED -> {
+                    when(e.result()) {
+                        true ->
+                            Toast.makeText(this, "DROP SUCCESSFUL", Toast.LENGTH_LONG)
+                        else ->
+                            Toast.makeText(this, "DROP DIDN'T WORK", Toast.LENGTH_LONG)
+                    }.show()
+                    true
+                }
+                else -> {
+                    Log.d("dragdrop", "Unknown Action type received by the drag listener")
+                    false
+                }
+            }
+        }
 
         return ViewHolder(view)
     }

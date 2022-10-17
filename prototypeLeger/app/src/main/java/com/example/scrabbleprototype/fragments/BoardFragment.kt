@@ -58,4 +58,6 @@ class BoardFragment : Fragment() {
             board.add(Letter(' ', 0, 0, false, false))
         }
     }
+
+
 }

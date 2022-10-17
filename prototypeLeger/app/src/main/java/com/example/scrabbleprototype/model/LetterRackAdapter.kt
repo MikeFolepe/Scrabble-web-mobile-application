@@ -1,10 +1,15 @@
 package com.example.scrabbleprototype.model
 
+import android.content.ClipData
+import android.content.ClipDescription
+import android.os.Build
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
 
@@ -35,6 +40,24 @@ class LetterRackAdapter(private var letterRack: ArrayList<Letter>) :
         val view = LayoutInflater.from(viewGroup.context)
             .inflate(R.layout.letter_rack_item, viewGroup, false)
 
+        view.setOnTouchListener(object : View.OnTouchListener {
+            override fun onTouch(v: View?, event: MotionEvent): Boolean {
+                when (event.action) {
+                    MotionEvent.ACTION_DOWN -> {
+                        val data: ClipData = ClipData.newPlainText("", "")
+                        val shadowBuilder: View.DragShadowBuilder = View.DragShadowBuilder(v)
+
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                            v?.startDragAndDrop(data, shadowBuilder, null, 0)
+                        } else {
+                            v?.startDrag(data, shadowBuilder, null, 0)
+                        }
+                        return true
+                    }
+                }
+                return false
+            }
+        })
         return ViewHolder(view)
     }
 
