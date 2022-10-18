@@ -3,6 +3,7 @@ package com.example.scrabbleprototype.model
 import android.content.ClipData
 import android.content.ClipDescription
 import android.os.Build
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -12,6 +13,7 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
+import org.w3c.dom.Text
 
 class LetterRackAdapter(private var letterRack: ArrayList<Letter>) :
     RecyclerView.Adapter<LetterRackAdapter.ViewHolder>() {
@@ -40,17 +42,23 @@ class LetterRackAdapter(private var letterRack: ArrayList<Letter>) :
         val view = LayoutInflater.from(viewGroup.context)
             .inflate(R.layout.letter_rack_item, viewGroup, false)
 
+
         view.setOnTouchListener(object : View.OnTouchListener {
             override fun onTouch(v: View?, event: MotionEvent): Boolean {
                 when (event.action) {
                     MotionEvent.ACTION_DOWN -> {
-                        val data: ClipData = ClipData.newPlainText("", "")
+                        //val data: ClipData = ClipData.newPlainText("", "")
+                        val letterTouched = v?.findViewById<TextView>(R.id.letter)?.text
+                        Log.d("dragdrop", letterTouched.toString())
+                        val item = ClipData.Item(letterTouched)
+                        val dragData = ClipData(letterTouched, arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN), item)
+
                         val shadowBuilder: View.DragShadowBuilder = View.DragShadowBuilder(v)
 
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                            v?.startDragAndDrop(data, shadowBuilder, null, 0)
+                            v?.startDragAndDrop(dragData, shadowBuilder, null, 0)
                         } else {
-                            v?.startDrag(data, shadowBuilder, null, 0)
+                            v?.startDrag(dragData, shadowBuilder, null, 0)
                         }
                         return true
                     }
