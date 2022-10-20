@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { TWO_SECOND_DELAY } from '@app/classes/constants';
 import { MessageType } from '@app/classes/enum';
+import { Message } from '@app/classes/message';
 import { ChatEvents } from '@common/chat.gateway.events';
+import { AuthService } from './auth.service';
 import { ClientSocketService } from './client-socket.service';
 import { PlayerService } from './player.service';
-import { Message } from '@app/classes/message';
-import { AuthService } from './auth.service';
 
 @Injectable({
     providedIn: 'root',
@@ -35,7 +35,7 @@ export class SendMessageService {
     }
 
     sendMessageToOpponent(message: Message): void {
-        this.clientSocketService.socket.emit(ChatEvents.RoomMessage, message);
+        this.clientSocketService.socket.emit(ChatEvents.RoomMessage, message, this.clientSocketService.roomId);
     }
 
     // Function to send message of conversion to all players in the room

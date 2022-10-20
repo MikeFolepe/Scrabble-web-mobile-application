@@ -2,8 +2,10 @@ import { Logger, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AdminModule } from './admin/admin.module';
-import { ChatGatewayModule } from './gateways/chat.gateway.module';
+import { GatewayModule } from './gateways/gateway.module';
 import { AuthModule } from './auth/auth.module';
+import { GameController } from './game/controllers/game/game.controller';
+import { WordValidationService } from './game/services/word-validation.service';
 
 @Module({
     imports: [
@@ -16,9 +18,10 @@ import { AuthModule } from './auth/auth.module';
             }),
         }),
         AdminModule,
-        ChatGatewayModule,
+        GatewayModule,
         AuthModule,
     ],
-    providers: [Logger],
+    providers: [Logger, WordValidationService],
+    controllers: [GameController],
 })
 export class AppModule {}

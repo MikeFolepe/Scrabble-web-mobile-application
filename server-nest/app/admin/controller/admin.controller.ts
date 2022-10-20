@@ -1,8 +1,8 @@
+import { AdminService } from '@app/admin/service/admin.service';
 import { AiType } from '@common/ai-name';
 import { Body, Controller, Get, HttpStatus, Post, Res } from '@nestjs/common';
 import { ApiCreatedResponse, ApiNotFoundResponse } from '@nestjs/swagger';
 import { Response } from 'express';
-import { AdminService } from '@app/admin/service/admin.service';
 
 @Controller('admin')
 export class AdminController {
@@ -58,5 +58,9 @@ export class AdminController {
         } catch (error) {
             response.status(HttpStatus.NOT_FOUND).send(error.message);
         }
+    }
+    @Get('/dictionaries')
+    getDictionnary(@Res() response) {
+        response.status(HttpStatus.OK).send(this.adminService.getDictionaries());
     }
 }
