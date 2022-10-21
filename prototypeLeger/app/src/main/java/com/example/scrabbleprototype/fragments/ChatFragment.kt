@@ -23,7 +23,7 @@ class ChatFragment : Fragment() {
 
     val messages = mutableListOf<Message>()
     val currentUser = Users.currentUser
-    var chatSocket = SocketHandler.getSocket()
+    var chatSocket = SocketHandler.getPlayerSocket()
     lateinit var activityContext: Context
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -130,11 +130,11 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
     }
 
     fun joinChat(serverIp: String, user: User) {
-        val intent = Intent(this, GameActivity::class.java)
+        val intent = Intent(this, HomeMenuActivity::class.java)
 
-        SocketHandler.setSocket(serverIp)
+        SocketHandler.setPlayerSocket(serverIp)
         SocketHandler.establishConnection()
-        chatSocket = SocketHandler.getSocket()
+        chatSocket = SocketHandler.getPlayerSocket()
 
         chatSocket.emit("joinRoom")
         chatSocket.on("socketId") { response ->
