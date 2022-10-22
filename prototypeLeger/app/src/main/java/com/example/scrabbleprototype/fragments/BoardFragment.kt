@@ -12,12 +12,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.model.BoardAdapter
 import com.example.scrabbleprototype.model.Letter
+import com.example.scrabbleprototype.model.LetterRackAdapter
 import com.example.scrabbleprototype.objects.Board
+import com.example.scrabbleprototype.objects.LetterRack
 
 
 class BoardFragment : Fragment() {
 
     var board = Board.cases
+    var letterRack = LetterRack.letters
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,6 +53,11 @@ class BoardFragment : Fragment() {
             board[position] = Letter('A', 5, 5, false, false)
             boardAdapter.notifyItemChanged(position)
             Toast.makeText(activity, "Case sélectionnée : " + board[position].value, Toast.LENGTH_LONG).show()
+        }
+        boardAdapter.onPlacement = { letterRackPosition ->
+            letterRack.removeAt(letterRackPosition)
+            val letterRackAdapter = activity?.findViewById<RecyclerView>(R.id.letter_rack)?.adapter
+            letterRackAdapter?.notifyDataSetChanged()
         }
     }
 

@@ -1,7 +1,11 @@
 package com.example.scrabbleprototype.fragments
 
+import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Bundle
+import android.os.IBinder
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -17,6 +21,7 @@ import com.example.scrabbleprototype.model.Constants
 import com.example.scrabbleprototype.model.Letter
 import com.example.scrabbleprototype.model.LetterRackAdapter
 import com.example.scrabbleprototype.objects.LetterRack
+import com.example.scrabbleprototype.services.SwapLetterService
 
 class LetterRackFragment : Fragment() {
 
@@ -26,8 +31,43 @@ class LetterRackFragment : Fragment() {
     private val hashMap = hashMapOf<Char, Letter>()
     private val letterPos = hashMapOf<Int, Letter>()
 
+    private lateinit var swapLetterService: SwapLetterService
+    private var swapLetterBound: Boolean = false
+
+    lateinit var activityContext: Context
+
+    private val connection = object: ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            val binder = service as SwapLetterService.LocalBinder
+            swapLetterService = binder.getService()
+            swapLetterBound = true
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+            swapLetterBound = false
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Intent(activityContext, SwapLetterService::class.java).also { intent ->
+            activityContext.bindService(intent, connection, Context.BIND_AUTO_CREATE)
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        activityContext.unbindService(connection)
+        swapLetterBound = false
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        activityContext = context
     }
 
     override fun onCreateView(
@@ -40,7 +80,6 @@ class LetterRackFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         setupLetterRack(view)
         setupSwapButton(view)
         initializeLetterRack()
@@ -69,7 +108,6 @@ class LetterRackFragment : Fragment() {
         val swapButton = view.findViewById<Button>(R.id.swap_button)
         val letterRackView = view.findViewById<RecyclerView>(R.id.letter_rack)
         swapButton.setOnClickListener {
-
             for((position, letter) in letterPos) {
                 letter.quantity = letter.quantity.toInt() + 1
                 var newLetterFromRes = findRandomLetterFromRes()
@@ -85,7 +123,7 @@ class LetterRackFragment : Fragment() {
                 }
             }
             letterPos.clear()
-
+            if(swapLetterBound) swapLetterService.testService()
             //le letterRack est updaté au niveau du code, il faut maintenant update au niveau de la vue.
 
         }

@@ -13,11 +13,13 @@ import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
+import com.example.scrabbleprototype.objects.LetterRack
 
 class BoardAdapter(private var board: ArrayList<Letter>) :
     RecyclerView.Adapter<BoardAdapter.ViewHolder>() {
 
     var onCaseClicked: ((position: Int) -> Unit)? = null
+    var onPlacement: ((letterRackPosition: Int) -> Unit)? = null
 
     /**
      * Provide a reference to the type of views that you are using
@@ -47,12 +49,16 @@ class BoardAdapter(private var board: ArrayList<Letter>) :
                         true
                     }
                     DragEvent.ACTION_DROP -> {
-                        val item = e.clipData.getItemAt(0)
-                        val dragData = item.text // La data de la lettre qui a été dragged
+                        val letterTouched = e.clipData.getItemAt(0)
+                        var letterQuantity = e.clipData.getItemAt(1)
+                        var letterScore = e.clipData.getItemAt(2)
+                        var positionTouched = e.clipData.getItemAt(3)
+                        val dragData = letterTouched.text // La data de la lettre qui a été dragged
 
                         // Case du board ou la lettre a été drop
-                        board[bindingAdapterPosition] = Letter(dragData.first(), 10, 10, false, false)
-                        // TODO Ajoute la lettre a la case avec le dragData
+                        board[bindingAdapterPosition] = Letter(dragData.first(), letterQuantity.text.toString().toInt(), letterScore.text.toString().toInt(), false, false)
+                        // Remove of letter dragged of letterRack
+                        onPlacement?.invoke(positionTouched.text.toString().toInt())
 
                         notifyItemChanged(bindingAdapterPosition)
                         true

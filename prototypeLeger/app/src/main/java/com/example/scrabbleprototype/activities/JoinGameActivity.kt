@@ -1,15 +1,15 @@
 package com.example.scrabbleprototype.activities
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
-import com.example.scrabbleprototype.model.GameListAdapter
-import com.example.scrabbleprototype.model.Message
-import com.example.scrabbleprototype.model.Room
-import com.example.scrabbleprototype.model.SocketHandler
+import com.example.scrabbleprototype.model.*
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -24,24 +24,10 @@ class JoinGameActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_join_game)
 
-        playerSocket.connect()
-        Log.d("room", playerSocket.isActive.toString())
         setupGameList()
     }
 
     private fun setupGameList() {
-        playerSocket.on("roomConfiguration"){ response ->
-            Log.d("room", "test")
-            var roomsAvailable = response[0] as JSONArray
-            for(i in 0 until roomsAvailable.length()) {
-                Log.d("room", roomsAvailable[i].toString())
-            }
-            roomsAvailable = roomsAvailable[0] as JSONArray
-            for(i in 0 until roomsAvailable.length()) {
-                // TODO
-                //rooms.add(Json.decodeFromString(Room.serializer(), roomsAvailable.get(i).toString()))
-            }
-        }
 
         val gameListView = findViewById<RecyclerView>(R.id.available_games_list)
         val verticalLayoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
@@ -50,7 +36,47 @@ class JoinGameActivity : AppCompatActivity() {
         gameListView.adapter = gameListAdapter
         gameListAdapter.updateData(rooms)
 
-        Log.d("room", "emit")
+        gameListAdapter.onJoinGame = { position ->
+            joinGame(position)
+        }
+        receiveRooms(gameListAdapter)
+        handleRoomUnavailability()
+        routeToGameView()
+    }
+
+    private fun joinGame(position: Int) {
+        Log.d("room", rooms[position].id)
+        playerSocket.emit("newRoomCustomer", Users.currentUser, rooms[position].id)
+    }
+
+    private fun receiveRooms(gameListAdapter: GameListAdapter) {
+        playerSocket.on("roomConfiguration"){ response ->
+            var roomsAvailable = response[0] as JSONArray
+            for(i in 0 until roomsAvailable.length()) {
+                Log.d("room", roomsAvailable[i].toString())
+            }
+            roomsAvailable = roomsAvailable[0] as JSONArray
+            for(i in 0 until roomsAvailable.length()) {
+                val mapper = jacksonObjectMapper()
+                val roomToAdd = mapper.readValue(roomsAvailable.get(i).toString(), Room::class.java)
+                rooms.add(roomToAdd)
+            }
+            runOnUiThread {
+                gameListAdapter.updateData(rooms)
+            }
+        }
         playerSocket.emit("getRoomsConfiguration")
+    }
+
+    private fun handleRoomUnavailability() {
+        playerSocket.on("roomAlreadyToken") {
+            Toast.makeText(this, "Il est impossible de joindre cette partie", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun routeToGameView() {
+        playerSocket.on("goToGameView") {
+            startActivity(Intent(this, GameActivity::class.java))
+        }
     }
 }

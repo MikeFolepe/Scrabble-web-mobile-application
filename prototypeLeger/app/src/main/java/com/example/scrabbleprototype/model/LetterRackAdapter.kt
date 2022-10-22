@@ -26,10 +26,12 @@ class LetterRackAdapter(private var letterRack: ArrayList<Letter>) :
      */
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val letter: TextView
+        val letterScore: TextView
 
         init {
             // Define click listener for the ViewHolder's View.
             letter = view.findViewById(R.id.letter)
+            letterScore = view.findViewById(R.id.letter_score)
             view.setOnClickListener {
                 onLetterClick?.invoke(layoutPosition)
             }
@@ -42,30 +44,6 @@ class LetterRackAdapter(private var letterRack: ArrayList<Letter>) :
         val view = LayoutInflater.from(viewGroup.context)
             .inflate(R.layout.letter_rack_item, viewGroup, false)
 
-
-        view.setOnTouchListener(object : View.OnTouchListener {
-            override fun onTouch(v: View?, event: MotionEvent): Boolean {
-                when (event.action) {
-                    MotionEvent.ACTION_DOWN -> {
-                        //val data: ClipData = ClipData.newPlainText("", "")
-                        val letterTouched = v?.findViewById<TextView>(R.id.letter)?.text
-                        Log.d("dragdrop", letterTouched.toString())
-                        val item = ClipData.Item(letterTouched)
-                        val dragData = ClipData(letterTouched, arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN), item)
-
-                        val shadowBuilder: View.DragShadowBuilder = View.DragShadowBuilder(v)
-
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                            v?.startDragAndDrop(dragData, shadowBuilder, null, 0)
-                        } else {
-                            v?.startDrag(dragData, shadowBuilder, null, 0)
-                        }
-                        return true
-                    }
-                }
-                return false
-            }
-        })
         return ViewHolder(view)
     }
 
@@ -75,6 +53,34 @@ class LetterRackAdapter(private var letterRack: ArrayList<Letter>) :
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
         viewHolder.letter.text = letterRack[position].value.toString()
+        viewHolder.letterScore.text = letterRack[position].point.toString()
+
+        viewHolder.itemView.setOnLongClickListener { v ->
+            //val data: ClipData = ClipData.newPlainText("", "")
+            // val letterTouched = v?.findViewById<TextView>(R.id.letter)?.text
+
+            val letterTouched = ClipData.Item(letterRack[viewHolder.layoutPosition].value.toString())
+            val letterQuantity = ClipData.Item(letterRack[viewHolder.layoutPosition].quantity.toString())
+            val letterScore = ClipData.Item(letterRack[viewHolder.layoutPosition].point.toString())
+            val positionTouched = ClipData.Item(viewHolder.layoutPosition.toString())
+            val dragData = ClipData(
+                letterRack[viewHolder.layoutPosition].value.toString(),
+                arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN),
+                letterTouched
+            )
+            dragData.addItem(letterQuantity)
+            dragData.addItem(letterScore)
+            dragData.addItem(positionTouched)
+
+            val shadowBuilder: View.DragShadowBuilder = View.DragShadowBuilder(v)
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                v?.startDragAndDrop(dragData, shadowBuilder, null, 0)
+            } else {
+                v?.startDrag(dragData, shadowBuilder, null, 0)
+            }
+            true
+        }
     }
 
     // Return the size of your dataset (invoked by the layout manager)
