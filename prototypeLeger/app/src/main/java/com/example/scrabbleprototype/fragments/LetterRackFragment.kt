@@ -25,7 +25,6 @@ import com.example.scrabbleprototype.services.SwapLetterService
 
 class LetterRackFragment : Fragment() {
 
-    private val letterRack = LetterRack.lettersVal
     private val letterInfo = LetterRack.letters
     private val reserve = Constants.RESERVE
     private val hashMap = hashMapOf<Char, Letter>()
@@ -99,7 +98,7 @@ class LetterRackFragment : Fragment() {
 
         letterRackAdapter.onLetterClick = { position ->
             // GESTION DU CHEVALET ICI
-            Toast.makeText(activity, "Lettre sélectionnée : " + letterRack[position], Toast.LENGTH_LONG).show()
+            Toast.makeText(activity, "Lettre sélectionnée : " + letterInfo[position].value, Toast.LENGTH_LONG).show()
             letterPos[position] = letterInfo[position]
         }
     }
@@ -108,36 +107,18 @@ class LetterRackFragment : Fragment() {
         val swapButton = view.findViewById<Button>(R.id.swap_button)
         val letterRackView = view.findViewById<RecyclerView>(R.id.letter_rack)
         swapButton.setOnClickListener {
-            for((position, letter) in letterPos) {
-                letter.quantity = letter.quantity.toInt() + 1
-                var newLetterFromRes = findRandomLetterFromRes()
-                while (newLetterFromRes.quantity == 0) {
-                    newLetterFromRes = findRandomLetterFromRes()
-                }
-                letterRack[position] = newLetterFromRes.value
-                letterInfo[position] = newLetterFromRes
-                newLetterFromRes.quantity = newLetterFromRes.quantity.toInt() - 1
-                val letterRackAdapter = letterRackView.adapter
-                if (letterRackAdapter != null) {
-                    letterRackAdapter.notifyDataSetChanged()
-                }
-            }
-            letterPos.clear()
-            if(swapLetterBound) swapLetterService.testService()
-            //le letterRack est updaté au niveau du code, il faut maintenant update au niveau de la vue.
-
+            if(swapLetterBound) swapLetterService.swapLetters(letterInfo, letterPos, letterRackView)
         }
     }
 
     private fun initializeLetterRack() {
         for (i in 0..6) {
 
-            val letterToAdd = findRandomLetterFromRes()
+            var letterToAdd = findRandomLetterFromRes()
             while (letterToAdd.quantity == 0) {
-                val letterToAdd = findRandomLetterFromRes()
+                letterToAdd = findRandomLetterFromRes()
             }
             letterInfo.add(letterToAdd)
-            letterRack.add(letterInfo[i].value)
 
             letterToAdd.quantity = letterToAdd.quantity.toInt() - 1
         }
