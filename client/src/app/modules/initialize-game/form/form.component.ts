@@ -41,7 +41,6 @@ export class FormComponent implements OnInit, OnDestroy {
             secondInput: new FormControl(this.gameSettingsService.gameSettings.timeSecond),
             levelInput: new FormControl('Débutant'),
             dictionaryInput: new FormControl(this.selectedDictionary.title, [Validators.required]),
-            randomBonus: new FormControl(this.gameSettingsService.gameSettings.randomBonus),
         });
         this.adminService.initializeAiPlayers();
     }
@@ -104,7 +103,6 @@ export class FormComponent implements OnInit, OnDestroy {
             this.form.controls.minuteInput.value,
             this.form.controls.secondInput.value,
             this.getLevel(),
-            this.form.controls.randomBonus.value,
             this.fileName,
             this.initializeObjective(),
         );

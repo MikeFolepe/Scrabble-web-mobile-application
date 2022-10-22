@@ -1,8 +1,8 @@
-import { AiType } from '@common/ai-name';
-import { StartingPlayer } from '@common/game-settings';
-import { Letter } from '@common/letter';
-import { Vec2 } from '@common/vec2';
+import { Vec2 } from './vec2'
 import { CustomRange } from './range';
+import {AiType} from './ai-name'
+import { Letter } from './letter';
+import { StartingPlayer } from './game-settings';
 
 export const DEFAULT_WIDTH = 750;
 export const DEFAULT_HEIGHT = 750;
@@ -120,9 +120,11 @@ export const DEFAULT_GAME_SETTINGS = {
     timeMinute: '01',
     timeSecond: '00',
     level: AiType.beginner,
+    randomBonus: 'Désactiver',
     dictionary: '',
     objectiveIds: [],
 };
+
 
 export const RESERVE: Letter[] = [
     {
@@ -315,3 +317,5 @@ export const RESERVE: Letter[] = [
         isSelectedForManipulation: false,
     },
 ];
+
+

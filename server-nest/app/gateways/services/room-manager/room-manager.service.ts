@@ -65,7 +65,6 @@ export class RoomManagerService {
             gameSettings.timeMinute,
             gameSettings.timeSecond,
             gameSettings.level,
-            gameSettings.randomBonus,
             gameSettings.dictionary,
             [gameSettings.objectiveIds[ObjectiveTypes.Public], temp],
         );

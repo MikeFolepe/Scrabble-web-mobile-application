@@ -1,4 +1,4 @@
-import { WordValidationService } from '@app/game/services/word-validation.service';
+import { WordValidationService } from '@app/game/services/word-validation/word-validation.service';
 import { Controller, Get, HttpStatus, Post, Req, Res } from '@nestjs/common';
 import { Response } from 'express';
 import * as fileSystem from 'fs';
