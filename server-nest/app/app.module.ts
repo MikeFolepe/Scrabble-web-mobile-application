@@ -4,7 +4,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AdminModule } from './admin/admin.module';
 import { ChatGatewayModule } from './gateways/chat.gateway.module';
 import { AuthModule } from './auth/auth.module';
-import { GameController } from './game/controllers/game/game.controller';
 
 @Module({
     imports: [
@@ -21,6 +20,5 @@ import { GameController } from './game/controllers/game/game.controller';
         AuthModule,
     ],
     providers: [Logger],
-    controllers: [GameController],
 })
 export class AppModule {}

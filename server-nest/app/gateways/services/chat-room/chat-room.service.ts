@@ -62,7 +62,6 @@ export class ChatRoomService {
             gameSettings.timeSecond,
             gameSettings.level,
             gameSettings.randomBonus,
-            gameSettings.bonusPositions,
             gameSettings.dictionary,
             [gameSettings.objectiveIds[ObjectiveTypes.Public], temp],
         );

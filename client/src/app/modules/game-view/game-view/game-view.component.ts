@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { DEFAULT_FONT_SIZE } from '@app/classes/constants';
+import { BONUS_POSITIONS, DEFAULT_FONT_SIZE } from '@app/classes/constants';
 import { GiveUpGameDialogComponent } from '@app/modules/game-view/give-up-game-dialog/give-up-game-dialog.component';
 import { BoardHandlerService } from '@app/services/board-handler.service';
 import { ChatboxService } from '@app/services/chatbox.service';
@@ -44,10 +44,8 @@ export class GameViewComponent implements OnInit {
 
     ngOnInit(): void {
         // this.objectiveService.initializeObjectives();
-        const mapBonus = new Map<string, string>();
-        JSON.parse(this.gameSettingsService.gameSettings.bonusPositions).map((element: string[]) => {
-            mapBonus.set(element[0], element[1]);
-        });
+        const mapBonus = BONUS_POSITIONS;
+
         this.gridService.bonusPositions = mapBonus;
     }
 

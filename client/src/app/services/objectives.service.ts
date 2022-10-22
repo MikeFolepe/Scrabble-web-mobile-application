@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import { Injectable, OnDestroy } from '@angular/core';
-import { ONE_MINUTE } from '@app/classes/constants';
+import { BONUS_POSITIONS, ONE_MINUTE } from '@app/classes/constants';
 import {
     CORNER_POSITIONS,
     LETTERS_FOR_OBJ5,
@@ -18,7 +18,6 @@ import { EndGameService } from './end-game.service';
 import { GameSettingsService } from './game-settings.service';
 import { PlacementsHandlerService } from './placements-handler.service';
 import { PlayerService } from './player.service';
-import { RandomBonusesService } from './random-bonuses.service';
 import { WordValidationService } from './word-validation.service';
 
 @Injectable({
@@ -37,7 +36,6 @@ export class ObjectivesService implements OnDestroy {
         private playerService: PlayerService,
         private clientSocketService: ClientSocketService,
         private gameSettingsService: GameSettingsService,
-        private randomBonusesService: RandomBonusesService,
         private placementsService: PlacementsHandlerService,
         private endGameService: EndGameService,
     ) {
@@ -164,7 +162,7 @@ export class ObjectivesService implements OnDestroy {
     validateObjectiveSix(id: number): void {
         if (this.extendedWords.length === 0) return;
         for (const position of this.placementsService.extendingPositions) {
-            if (this.randomBonusesService.bonusPositions.has(position)) this.addObjectiveScore(id);
+            if (BONUS_POSITIONS.has(position)) this.addObjectiveScore(id);
         }
     }
 

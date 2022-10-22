@@ -1,12 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { BONUS_POSITIONS, DEFAULT_DICTIONARY_INDEX, INVALID_INDEX, PLAYER_ONE_INDEX } from '@app/classes/constants';
+import { DEFAULT_DICTIONARY_INDEX, INVALID_INDEX, PLAYER_ONE_INDEX } from '@app/classes/constants';
 import { NUMBER_OF_OBJECTIVES, NUMBER_OF_PUBLIC_OBJECTIVES, OBJECTIVES } from '@app/classes/objectives';
 import { AdministratorService } from '@app/services/administrator.service';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameSettingsService } from '@app/services/game-settings.service';
-import { RandomBonusesService } from '@app/services/random-bonuses.service';
 import { AiType } from '@common/ai-name';
 import { Dictionary } from '@common/dictionary';
 import { GameSettings, StartingPlayer } from '@common/game-settings';
@@ -27,7 +26,6 @@ export class FormComponent implements OnInit, OnDestroy {
     constructor(
         public gameSettingsService: GameSettingsService,
         private router: Router,
-        private randomBonusService: RandomBonusesService,
         private communicationService: CommunicationService,
         public adminService: AdministratorService,
     ) {
@@ -82,10 +80,6 @@ export class FormComponent implements OnInit, OnDestroy {
         this.dictionaries = await this.communicationService.getDictionaries().toPromise();
     }
 
-    private getRightBonusPositions(): string {
-        const bonusPositions = this.form.controls.randomBonus.value === 'Activer' ? this.randomBonusService.shuffleBonusPositions() : BONUS_POSITIONS;
-        return JSON.stringify(Array.from(bonusPositions));
-    }
 
     private chooseStartingPlayer(): StartingPlayer {
         return Math.floor((Math.random() * Object.keys(StartingPlayer).length) / 2);
@@ -111,7 +105,6 @@ export class FormComponent implements OnInit, OnDestroy {
             this.form.controls.secondInput.value,
             this.getLevel(),
             this.form.controls.randomBonus.value,
-            this.getRightBonusPositions(),
             this.fileName,
             this.initializeObjective(),
         );

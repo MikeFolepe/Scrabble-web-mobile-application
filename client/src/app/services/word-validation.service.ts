@@ -1,8 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { ALL_EASEL_BONUS, BOARD_COLUMNS, BOARD_ROWS, RESERVE } from '@app/classes/constants';
+import { ALL_EASEL_BONUS, BOARD_COLUMNS, BOARD_ROWS, BONUS_POSITIONS, RESERVE } from '@app/classes/constants';
 import { ScoreValidation } from '@app/classes/validation-score';
 import { CommunicationService } from '@app/services/communication.service';
-import { RandomBonusesService } from '@app/services/random-bonuses.service';
 import { ClientSocketService } from './client-socket.service';
 
 @Injectable({
@@ -22,11 +21,7 @@ export class WordValidationService implements OnDestroy {
     private validationState: boolean;
     private foundWords: string[];
 
-    constructor(
-        private httpServer: CommunicationService,
-        private randomBonusService: RandomBonusesService,
-        private clientSocketService: ClientSocketService,
-    ) {
+    constructor(private httpServer: CommunicationService, private clientSocketService: ClientSocketService) {
         this.newWords = new Array<string>();
         this.playedWords = new Map<string, string[]>();
         this.newPlayedWords = new Map<string, string[]>();
@@ -35,7 +30,7 @@ export class WordValidationService implements OnDestroy {
         this.currentWords = new Map<string, string[]>();
         this.priorPlayedWords = new Map<string, string[]>();
         this.newPositions = new Array<string>();
-        this.bonusesPositions = new Map<string, string>(this.randomBonusService.bonusPositions);
+        this.bonusesPositions = BONUS_POSITIONS;
         this.validationState = false;
         this.foundWords = new Array<string>();
         this.receivePlayedWords();
@@ -244,7 +239,7 @@ export class WordValidationService implements OnDestroy {
         this.currentWords = new Map<string, string[]>();
         this.priorPlayedWords = new Map<string, string[]>();
         this.newPositions = new Array<string>();
-        this.bonusesPositions = new Map<string, string>(this.randomBonusService.bonusPositions);
+        this.bonusesPositions = BONUS_POSITIONS;
         this.validationState = false;
         this.foundWords = new Array<string>();
     }

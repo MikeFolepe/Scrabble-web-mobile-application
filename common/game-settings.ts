@@ -13,7 +13,6 @@ export class GameSettings {
         public timeSecond: string,
         public level: AiType,
         public randomBonus: string,
-        public bonusPositions: string,
         public dictionary: string,
         public objectiveIds: number[][] = [[], []],
     ) {}
