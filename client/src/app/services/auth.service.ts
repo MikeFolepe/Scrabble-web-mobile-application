@@ -1,15 +1,15 @@
 import { Injectable } from '@angular/core';
-import { User } from '@common/user';
 import { Router } from '@angular/router';
+import { User } from '@common/user';
 
-import { ClientSocketService } from './client-socket.service';
-import { CommunicationService } from './communication.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChatEvents } from '@common/chat.gateway.events';
-import { ErrorHandlerService } from './error-handler.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ERROR_MESSAGE_DELAY } from '@app/classes/constants';
+import { ChatEvents } from '@common/chat.gateway.events';
 import { io } from 'socket.io-client';
+import { ClientSocketService } from './client-socket.service';
+import { CommunicationService } from './communication.service';
+import { ErrorHandlerService } from './error-handler.service';
 @Injectable({
     providedIn: 'root',
 })
@@ -32,7 +32,7 @@ export class AuthService {
             (valid: boolean) => {
                 if (valid) {
                     this.currentUser = userData;
-                    this.clientSocketService.socket = io(this.serverUrl);
+                    this.clientSocketService.socket = io(this.serverUrl + '/game-handler');
                     this.clientSocketService.socket.on(ChatEvents.SocketId, (socketId: string) => {
                         this.currentUser.socketId = socketId;
                         this.clientSocketService.socket.emit(ChatEvents.UpdateUserSocket, this.currentUser);
@@ -41,7 +41,8 @@ export class AuthService {
                     this.clientSocketService.socket.emit(ChatEvents.JoinRoom);
                     this.clientSocketService.socket.emit(ChatEvents.GetMessages);
                     localStorage.setItem('ACCESS_TOKEN', 'access_token');
-                    this.router.navigate(['/game']);
+                    this.router.navigate(['/home']);
+                    this.clientSocketService.initialize();
                 } else {
                     this.displayMessage('Cet utilisateur est déjà connecté');
                 }

@@ -28,7 +28,7 @@ class ChatActivity : AppCompatActivity() {
 
     val messages = mutableListOf<Message>()
     val currentUser = Users.currentUser
-    var chatSocket = SocketHandler.getSocket()
+    var chatSocket = SocketHandler.getPlayerSocket()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

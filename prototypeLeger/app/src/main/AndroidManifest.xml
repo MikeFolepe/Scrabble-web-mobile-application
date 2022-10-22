@@ -15,15 +15,27 @@
         android:theme="@style/Theme.ScrabblePrototype"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+        <service
+            android:name=".services.SwapLetterService"
+            android:enabled="true"
+            android:exported="true"></service>
+
         <activity
-            android:name=".MainActivity"
+            android:name=".activities.JoinGameActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".LetterRackHandle"
+            android:name=".activities.CreateGameActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".activities.HomeMenuActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"

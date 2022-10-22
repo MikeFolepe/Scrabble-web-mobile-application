@@ -1,7 +1,11 @@
 package com.example.scrabbleprototype.fragments
 
+import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Bundle
+import android.os.IBinder
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -17,17 +21,52 @@ import com.example.scrabbleprototype.model.Constants
 import com.example.scrabbleprototype.model.Letter
 import com.example.scrabbleprototype.model.LetterRackAdapter
 import com.example.scrabbleprototype.objects.LetterRack
+import com.example.scrabbleprototype.services.SwapLetterService
 
 class LetterRackFragment : Fragment() {
 
-    private val letterRack = LetterRack.lettersVal
     private val letterInfo = LetterRack.letters
     private val reserve = Constants.RESERVE
     private val hashMap = hashMapOf<Char, Letter>()
     private val letterPos = hashMapOf<Int, Letter>()
 
+    private lateinit var swapLetterService: SwapLetterService
+    private var swapLetterBound: Boolean = false
+
+    lateinit var activityContext: Context
+
+    private val connection = object: ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            val binder = service as SwapLetterService.LocalBinder
+            swapLetterService = binder.getService()
+            swapLetterBound = true
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+            swapLetterBound = false
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Intent(activityContext, SwapLetterService::class.java).also { intent ->
+            activityContext.bindService(intent, connection, Context.BIND_AUTO_CREATE)
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        activityContext.unbindService(connection)
+        swapLetterBound = false
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        activityContext = context
     }
 
     override fun onCreateView(
@@ -40,7 +79,6 @@ class LetterRackFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         setupLetterRack(view)
         setupSwapButton(view)
         initializeLetterRack()
@@ -60,43 +98,27 @@ class LetterRackFragment : Fragment() {
 
         letterRackAdapter.onLetterClick = { position ->
             // GESTION DU CHEVALET ICI
-            Toast.makeText(activity, "Lettre sélectionnée : " + letterRack[position], Toast.LENGTH_LONG).show()
+            Toast.makeText(activity, "Lettre sélectionnée : " + letterInfo[position].value, Toast.LENGTH_LONG).show()
             letterPos[position] = letterInfo[position]
         }
     }
 
     private fun setupSwapButton(view : View) {
         val swapButton = view.findViewById<Button>(R.id.swap_button)
+        val letterRackView = view.findViewById<RecyclerView>(R.id.letter_rack)
         swapButton.setOnClickListener {
-
-            println(letterRack)
-
-            for((position, letter) in letterPos) {
-                letter.quantity = letter.quantity.toInt() + 1
-                val newLetterFromRes = findRandomLetterFromRes()
-                while (newLetterFromRes.quantity == 0) {
-                    val newLetterFromRes = findRandomLetterFromRes()
-                }
-                letterRack[position] = newLetterFromRes.value
-                newLetterFromRes.quantity = newLetterFromRes.quantity.toInt() - 1
-            }
-            letterPos.clear()
-            println(letterRack)
-
-            //le letterRack est updaté au niveau du code, il faut maintenant update au niveau de la vue.
-
+            if(swapLetterBound) swapLetterService.swapLetters(letterInfo, letterPos, letterRackView)
         }
     }
 
     private fun initializeLetterRack() {
         for (i in 0..6) {
 
-            val letterToAdd = findRandomLetterFromRes()
+            var letterToAdd = findRandomLetterFromRes()
             while (letterToAdd.quantity == 0) {
-                val letterToAdd = findRandomLetterFromRes()
+                letterToAdd = findRandomLetterFromRes()
             }
             letterInfo.add(letterToAdd)
-            letterRack.add(letterInfo[i].value)
 
             letterToAdd.quantity = letterToAdd.quantity.toInt() - 1
         }

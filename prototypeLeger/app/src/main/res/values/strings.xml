@@ -18,4 +18,21 @@
     <string name="info_pannel">Panneau d\'information</string>
     <string name="swap_button">Échanger</string>
     <string name="cancel_button">Annuler</string>
+    <string name="create_game_button">Créer une partie multijoueur</string>
+    <string name="join_game_button">Joindre une partie multijoueur</string>
+
+    // Create game form
+    <string name="game_settings">Paramètres de la partie</string>
+    <string name="player_info">Informations du joueur</string>
+    <string name="player_name_hint">Nom du joueur</string>
+    <string name="player_name_info">4–12 caractères \n Les 4 premiers caractères doivent être des lettres \n @#$%^&amp;*_ autorisés</string>
+    <string name="duration">Durée</string>
+    <string name="minute">Minute(s)</string>
+    <string name="seconde">Seconde(s)</string>
+    <string name="random_bonus">Bonus aléatoire</string>
+    <string name="disable">Désactiver</string>
+    <string name="enable">Activer</string>
+    <string name="back">Retour</string>
+    <string name="Continue">Continuer</string>
+
 </resources>
