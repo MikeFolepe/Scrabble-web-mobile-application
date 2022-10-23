@@ -1,16 +1,12 @@
-import { BOARD_COLUMNS, BOARD_ROWS, EASEL_SIZE, INVALID_INDEX, PLAYER_AI_INDEX, PLAYER_ONE_INDEX, THREE_SECONDS_DELAY } from '@app/classes/constants';
-import { MessageType } from '@app/classes/enum';
+import { BOARD_COLUMNS, BOARD_ROWS, EASEL_SIZE, INVALID_INDEX, PLAYER_AI_INDEX, THREE_SECONDS_DELAY } from '@app/classes/constants';
 import { Orientation } from '@app/classes/scrabble-board-pattern';
 import { ScoreValidation } from '@app/classes/validation-score';
-import { GridService } from '@app/services/grid.service';
 // eslint-disable-next-line import/no-unresolved
 import { Vec2 } from '@common/vec2';
+import { PlacementsHandlerService } from '../placement-handler/placement-handler.service';
 import { PlayerService } from '../player/player.service';
 import { WordValidationService } from '../word-validation.service';
 import { GameSettingsService } from './game-settings.service';
-import { PlacementsHandlerService } from './placements-handler.service';
-import { SendMessageService } from './send-message.service';
-import { SkipTurnService } from './skip-turn.service';
 
 export class PlaceLetterService {
     isFirstRound: boolean;
@@ -32,10 +28,8 @@ export class PlaceLetterService {
 
     constructor(
         private playerService: PlayerService,
-        private gridService: GridService,
-        private wordValidationService: WordValidationService,
-        private sendMessageService: SendMessageService,
-        private skipTurnService: SkipTurnService, // private clientSocketService: ClientSocketService // private gameSettingsService: GameSettingsService, // private endGameService: EndGameService,
+        // private gridService: GridService,
+        private wordValidationService: WordValidationService, // private skipTurnService: SkipTurnService, // private clientSocketService: ClientSocketService // private gameSettingsService: GameSettingsService, // private endGameService: EndGameService,
     ) {
         this.isFirstRound = true;
         this.scrabbleBoard = [];
@@ -50,7 +44,7 @@ export class PlaceLetterService {
             }
         }
         this.playerService.updateScrabbleBoard(this.scrabbleBoard);
-        this.receivePlacement();
+        // this.receivePlacement();
     }
 
     async placeCommand(position: Vec2, orientation: Orientation, word: string, indexPlayer = PLAYER_AI_INDEX): Promise<boolean> {
@@ -68,17 +62,17 @@ export class PlaceLetterService {
         // Reset the number of letters used from the easel for next placement
         this.numLettersUsedFromEasel = 0;
 
-        if (!this.isPossible(position, orientation, wordNoAccents, indexPlayer)) {
-            this.sendMessageService.displayMessageByType('ERREUR : Le placement est invalide', MessageType.Error);
-            return false;
-        }
+        // if (!this.isPossible(position, orientation, wordNoAccents, indexPlayer)) {
+        //     this.sendMessageService.displayMessageByType('ERREUR : Le placement est invalide', MessageType.Error);
+        //     return false;
+        // }
 
         // Placing all letters of the word
         for (let i = 0; i < wordNoAccents.length; i++) {
             if (!this.placeLetter(currentPosition, wordNoAccents[i], orientation, i, indexPlayer)) {
                 // If the placement of one letter is invalid, we erase all letters placed
                 this.handleInvalidPlacement(position, orientation, wordNoAccents, indexPlayer);
-                this.sendMessageService.displayMessageByType('ERREUR : Le placement est invalide', MessageType.Error);
+                // this.sendMessageService.displayMessageByType('ERREUR : Le placement est invalide', MessageType.Error);
                 return false;
             }
             this.placementsService.goToNextPosition(currentPosition, orientation);
@@ -136,19 +130,19 @@ export class PlaceLetterService {
 
         if (finalResult.validation) {
             // this.endGameService.addActionsLog('placerSucces');
-            this.clientSocketService.socket.emit('sendActions', this.endGameService.actionsLog, this.clientSocketService.roomId);
+            // this.clientSocketService.socket.emit('sendActions', this.endGameService.actionsLog, this.clientSocketService.roomId);
             this.handleValidPlacement(finalResult, indexPlayer);
-            this.skipTurnService.switchTurn();
+            // this.skipTurnService.switchTurn();
             return true;
         }
-        this.endGameService.addActionsLog('placerEchec');
-        this.clientSocketService.socket.emit('sendActions', this.endGameService.actionsLog, this.clientSocketService.roomId);
+        // this.endGameService.addActionsLog('placerEchec');
+        // this.clientSocketService.socket.emit('sendActions', this.endGameService.actionsLog, this.clientSocketService.roomId);
         this.handleInvalidPlacement(position, orientation, word, indexPlayer);
-        this.sendMessageService.displayMessageByType('ERREUR : Un ou des mots formés sont invalides', MessageType.Error);
-        setTimeout(() => {
-            if (this.gameSettingsService.isSoloMode && indexPlayer === PLAYER_ONE_INDEX) this.skipTurnService.switchTurn();
-            else if (!this.gameSettingsService.isSoloMode) this.skipTurnService.switchTurn();
-        }, THREE_SECONDS_DELAY);
+        // this.sendMessageService.displayMessageByType('ERREUR : Un ou des mots formés sont invalides', MessageType.Error);
+        // setTimeout(() => {
+        //     if (this.gameSettingsService.isSoloMode && indexPlayer === PLAYER_ONE_INDEX) this.skipTurnService.switchTurn();
+        //     // else if (!this.gameSettingsService.isSoloMode) this.skipTurnService.switchTurn();
+        // }, THREE_SECONDS_DELAY);
         return false;
     }
 
@@ -162,9 +156,9 @@ export class PlaceLetterService {
                 return await this.validatePlacement(position, orientation, word, indexPlayer);
             }
             this.handleInvalidPlacement(position, orientation, word, indexPlayer);
-            this.sendMessageService.displayMessageByType('ERREUR : Un ou des mots formés sont invalides', MessageType.Error);
+            // this.sendMessageService.displayMessageByType('ERREUR : Un ou des mots formés sont invalides', MessageType.Error);
             setTimeout(() => {
-                this.skipTurnService.switchTurn();
+                // this.skipTurnService.switchTurn();
             }, THREE_SECONDS_DELAY);
             return false;
         }
@@ -172,7 +166,7 @@ export class PlaceLetterService {
         if (this.isWordTouchingOthers(position, orientation, word)) return await this.validatePlacement(position, orientation, word, indexPlayer);
 
         this.handleInvalidPlacement(position, orientation, word, indexPlayer);
-        this.sendMessageService.displayMessageByType('ERREUR : Le placement est invalide', MessageType.Error);
+        // this.sendMessageService.displayMessageByType('ERREUR : Le placement est invalide', MessageType.Error);
         return false;
     }
 
@@ -190,21 +184,21 @@ export class PlaceLetterService {
     }
 
     handleValidPlacement(finalResult: ScoreValidation, indexPlayer: number): void {
-        this.displayValid(indexPlayer);
+        // this.displayValid(indexPlayer);
         this.playerService.addScore(finalResult.score, indexPlayer);
         this.playerService.updateScrabbleBoard(this.scrabbleBoard);
         this.playerService.refillEasel(indexPlayer);
         this.isFirstRound = false;
-        if (!this.gameSettingsService.isSoloMode) {
-            this.clientSocketService.socket.emit(
-                'sendPlacement',
-                this.scrabbleBoard,
-                this.startPosition,
-                this.orientation,
-                this.word,
-                this.clientSocketService.roomId,
-            );
-        }
+        // if (!this.gameSettingsService.isSoloMode) {
+        //     this.clientSocketService.socket.emit(
+        //         'sendPlacement',
+        //         this.scrabbleBoard,
+        //         this.startPosition,
+        //         this.orientation,
+        //         this.word,
+        //         this.clientSocketService.roomId,
+        //     );
+        // }
     }
 
     removePlacedLetter(position: Vec2, letter: string, indexPlayer: number) {
@@ -286,42 +280,42 @@ export class PlaceLetterService {
         return isWordTouching;
     }
 
-    displayValid(indexPlayer: number): void {
-        const column = (this.startPosition.x + 1).toString();
-        const row: string = String.fromCharCode(this.startPosition.y + 'a'.charCodeAt(0));
-        const charOrientation = this.orientation === Orientation.Horizontal ? 'h' : 'v';
-        if (indexPlayer === 0)
-            this.sendMessageService.displayMessageByType('!placer ' + row + column + charOrientation + ' ' + this.word, MessageType.Player);
-        else if (this.gameSettingsService.isSoloMode)
-            this.sendMessageService.displayMessageByType(
-                this.playerService.players[PLAYER_AI_INDEX].name + ' : ' + '!placer ' + row + column + charOrientation + ' ' + this.word,
-                MessageType.Opponent,
-            );
-    }
+    // displayValid(indexPlayer: number): void {
+    //     const column = (this.startPosition.x + 1).toString();
+    //     const row: string = String.fromCharCode(this.startPosition.y + 'a'.charCodeAt(0));
+    //     const charOrientation = this.orientation === Orientation.Horizontal ? 'h' : 'v';
+    // if (indexPlayer === 0)
+    //     // this.sendMessageService.displayMessageByType('!placer ' + row + column + charOrientation + ' ' + this.word, MessageType.Player);
+    // else if (this.gameSettingsService.isSoloMode)
+    //     this.sendMessageService.displayMessageByType(
+    //         this.playerService.players[PLAYER_AI_INDEX].name + ' : ' + '!placer ' + row + column + charOrientation + ' ' + this.word,
+    //         MessageType.Opponent,
+    //     );
+    // }
 
-    ngOnDestroy() {
-        this.isFirstRound = true;
-        this.scrabbleBoard = [];
-        this.validLetters = [];
-        this.isEaselSize = false;
-        this.numLettersUsedFromEasel = 0;
-        this.isRow = false;
-        for (let i = 0; i < BOARD_ROWS; i++) {
-            this.scrabbleBoard[i] = [];
-            for (let j = 0; j < BOARD_COLUMNS; j++) {
-                this.scrabbleBoard[i][j] = '';
-            }
-        }
-    }
+    // ngOnDestroy() {
+    //     this.isFirstRound = true;
+    //     this.scrabbleBoard = [];
+    //     this.validLetters = [];
+    //     this.isEaselSize = false;
+    //     this.numLettersUsedFromEasel = 0;
+    //     this.isRow = false;
+    //     for (let i = 0; i < BOARD_ROWS; i++) {
+    //         this.scrabbleBoard[i] = [];
+    //         for (let j = 0; j < BOARD_COLUMNS; j++) {
+    //             this.scrabbleBoard[i][j] = '';
+    //         }
+    //     }
+    // }
 
-    private receivePlacement(): void {
-        this.clientSocketService.socket.on(
-            'receivePlacement',
-            (scrabbleBoard: string[][], startPosition: Vec2, orientation: Orientation, word: string) => {
-                this.placeByOpponent(scrabbleBoard, startPosition, orientation, word);
-            },
-        );
-    }
+    // private receivePlacement(): void {
+    //     this.clientSocketService.socket.on(
+    //         'receivePlacement',
+    //         (scrabbleBoard: string[][], startPosition: Vec2, orientation: Orientation, word: string) => {
+    //             this.placeByOpponent(scrabbleBoard, startPosition, orientation, word);
+    //         },
+    //     );
+    // }
 
     private placeByOpponent(scrabbleBoard: string[][], startPosition: Vec2, orientation: Orientation, word: string): void {
         const currentPosition = { x: startPosition.x, y: startPosition.y };
