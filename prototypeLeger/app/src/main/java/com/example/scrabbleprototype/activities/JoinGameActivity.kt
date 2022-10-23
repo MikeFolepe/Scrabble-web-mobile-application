@@ -57,8 +57,8 @@ class JoinGameActivity : AppCompatActivity() {
             }
             roomsAvailable = roomsAvailable[0] as JSONArray
             for(i in 0 until roomsAvailable.length()) {
-                val mapper = jacksonObjectMapper()
-                val roomToAdd = mapper.readValue(roomsAvailable.get(i).toString(), Room::class.java)
+               val mapper = jacksonObjectMapper()
+               val roomToAdd = mapper.readValue(roomsAvailable.get(i).toString(), Room::class.java)
                 rooms.add(roomToAdd)
             }
             runOnUiThread {
