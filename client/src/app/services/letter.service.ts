@@ -1,17 +1,14 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { EASEL_SIZE, INVALID_INDEX, RESERVE } from '@app/classes/constants';
-import { ClientSocketService } from '@app/services/client-socket.service';
 import { Letter } from '@common/letter';
-@Injectable({
-    providedIn: 'root',
-})
+@Injectable({})
 export class LetterService implements OnDestroy {
     reserve: Letter[];
     reserveSize: number;
 
-    constructor(private clientSocketService: ClientSocketService) {
+    constructor() {
         this.reserve = JSON.parse(JSON.stringify(RESERVE));
-        this.receiveReserve();
+        // this.receiveReserve();
         let size = 0;
         for (const letter of this.reserve) {
             size += letter.quantity;
@@ -19,12 +16,12 @@ export class LetterService implements OnDestroy {
         this.reserveSize = size;
     }
 
-    receiveReserve(): void {
-        this.clientSocketService.socket.on('receiveReserve', (reserve: Letter[], reserveSize: number) => {
-            this.reserve = reserve;
-            this.reserveSize = reserveSize;
-        });
-    }
+    // receiveReserve(): void {
+    //     this.clientSocketService.socket.on('receiveReserve', (reserve: Letter[], reserveSize: number) => {
+    //         this.reserve = reserve;
+    //         this.reserveSize = reserveSize;
+    //     });
+    // }
 
     // Returns a random letter from the reserve if reserve is not empty
     getRandomLetter(): Letter {
@@ -54,7 +51,7 @@ export class LetterService implements OnDestroy {
         if (reserveIndex === INVALID_INDEX) return emptyLetter;
         this.reserve[reserveIndex].quantity--;
         this.reserveSize--;
-        this.clientSocketService.socket.emit('sendReserve', this.reserve, this.reserveSize, this.clientSocketService.roomId);
+        // this.clientSocketService.socket.emit('sendReserve', this.reserve, this.reserveSize, this.clientSocketService.roomId);
         return randomLetter;
     }
 
@@ -63,7 +60,7 @@ export class LetterService implements OnDestroy {
             if (letter.toUpperCase() === letterReserve.value) {
                 letterReserve.quantity++;
                 this.reserveSize++;
-                this.clientSocketService.socket.emit('sendReserve', this.reserve, this.reserveSize, this.clientSocketService.roomId);
+                // this.clientSocketService.socket.emit('sendReserve', this.reserve, this.reserveSize, this.clientSocketService.roomId);
                 return;
             }
         }
