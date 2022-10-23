@@ -13,6 +13,5 @@ export class GameSettings {
         public timeSecond: string,
         public level: AiType,
         public dictionary: string,
-        public objectiveIds: number[][] = [[], []],
     ) {}
 }

@@ -5,10 +5,10 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginatorIntl, PageEvent } from '@angular/material/paginator';
 import { ERROR_MESSAGE_DELAY } from '@app/classes/constants';
+import { Room, State } from '@app/classes/room';
 import { NameSelectorComponent } from '@app/modules/initialize-game/name-selector/name-selector.component';
 import { ClientSocketService } from '@app/services/client-socket.service';
 import { PlayerIndex } from '@common/player-index';
-import { Room, State } from '@common/room';
 
 @Component({
     selector: 'app-join-room',
@@ -105,7 +105,7 @@ export class JoinRoomComponent implements OnInit {
             .subscribe((playerName: string) => {
                 // if user closes the dialog box without input nothing
                 if (playerName === null) return;
-                this.clientSocketService.socket.emit('newRoomCustomerOfRandomPlacement', playerName, this.clientSocketService.gameType);
+                this.clientSocketService.socket.emit('newRoomCustomerOfRandomPlacement', playerName);
             });
     }
     receiveRandomPlacement(): void {
@@ -115,11 +115,11 @@ export class JoinRoomComponent implements OnInit {
     }
 
     receiveRoomAvailable(): void {
-        this.clientSocketService.socket.on('roomAvailable', (numberOfRooms: number[]) => {
-            if (numberOfRooms[this.clientSocketService.gameType] === 0) {
+        this.clientSocketService.socket.on('roomAvailable', (numberOfRooms: number) => {
+            if (numberOfRooms === 0) {
                 this.isRoomAvailable = false;
                 return;
-            } else if (numberOfRooms[this.clientSocketService.gameType] === 1) {
+            } else if (numberOfRooms === 1) {
                 this.isRoomAvailable = true;
                 this.isRandomButtonAvailable = false;
             } else {
@@ -139,8 +139,10 @@ export class JoinRoomComponent implements OnInit {
         });
     }
     private configureRooms(): void {
-        this.clientSocketService.socket.on('roomConfiguration', (rooms: Room[][]) => {
-            this.rooms = rooms[this.clientSocketService.gameType];
+        this.clientSocketService.socket.on('roomConfiguration', (rooms) => {
+            for(const room of rooms) {
+                this.rooms.push(new Room(room.id, room.gameSettings, room.state, room.socketIds));
+            }
         });
     }
 }

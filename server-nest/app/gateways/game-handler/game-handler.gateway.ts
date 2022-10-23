@@ -1,10 +1,9 @@
 /* eslint-disable no-restricted-imports */
+import { Room, State } from '@app/classes/room';
 import { UsersService } from '@app/users/service/users.service';
 import { GameSettings } from '@common/game-settings';
-import { GameType } from '@common/game-type';
 import { Letter } from '@common/letter';
 import { PlayerIndex } from '@common/player-index';
-import { Room, State } from '@common/room';
 import { Vec2 } from '@common/vec2';
 import { Logger } from '@nestjs/common';
 import { OnGatewayConnection, OnGatewayDisconnect, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
@@ -153,8 +152,8 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
         });
 
         // Method handler by click on placement aléatoire
-        socket.on('newRoomCustomerOfRandomPlacement', (customerName: string, gameType: GameType) => {
-            const room = this.roomManagerService.findRoomInWaitingState(customerName, gameType);
+        socket.on('newRoomCustomerOfRandomPlacement', (customerName: string) => {
+            const room = this.roomManagerService.findRoomInWaitingState(customerName);
             if (room === undefined) return;
             socket.emit('receiveCustomerOfRandomPlacement', customerName, room.id);
         });
@@ -166,10 +165,10 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
     }
 
     onCreateRoom(socket: Socket): void {
-        socket.on('createRoom', (gameSettings: GameSettings, gameType: GameType) => {
+        socket.on('createRoom', (gameSettings: GameSettings) => {
             Logger.log('wefww');
             const roomId = this.roomManagerService.createRoomId(gameSettings.playersNames[PlayerIndex.OWNER], socket.id);
-            this.roomManagerService.createRoom(socket.id, roomId, gameSettings, gameType);
+            this.roomManagerService.createRoom(socket.id, roomId, gameSettings);
             socket.join(roomId);
             // give the client his roomId to communicate later with server
             socket.emit('yourRoomId', roomId);

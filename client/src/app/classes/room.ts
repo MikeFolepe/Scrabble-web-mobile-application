@@ -1,6 +1,4 @@
 import { GameSettings } from '@common/game-settings';
-import { PlayerIndex } from '@common/player-index';
-
 export enum State {
     Playing,
     Waiting,
@@ -13,11 +11,10 @@ export class Room {
     state: State;
     socketIds: string[];
 
-    constructor(roomId: string, socketId: string, gameSettings: GameSettings, state: State = State.Waiting) {
-        this.id = roomId;
-        this.socketIds = [];
-        this.socketIds[PlayerIndex.OWNER] = socketId;
+    constructor(id: string, gameSettings: GameSettings, state: State, socketIds: string[]){
+        this.id = id;
         this.gameSettings = gameSettings;
         this.state = state;
+        this.socketIds = socketIds;
     }
 }

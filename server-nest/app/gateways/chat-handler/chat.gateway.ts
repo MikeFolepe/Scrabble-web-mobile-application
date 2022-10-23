@@ -1,20 +1,19 @@
 /* eslint-disable no-restricted-imports */
+import { DELAY_OF_DISCONNECT } from '@app/classes/constants';
+import { Room, State } from '@app/classes/room';
+import { DELAY_BEFORE_EMITTING_TIME, PRIVATE_ROOM_ID, WORD_MIN_LENGTH } from '@app/gateways/chatbox/chat.gateway.constants';
+import { RoomManagerService } from '@app/gateways/services/room-manager/room-manager.service';
 import { Message } from '@app/model/message';
 import { UsersService } from '@app/users/service/users.service';
+import { ChatEvents } from '@common/chat.gateway.events';
 import { GameSettings } from '@common/game-settings';
-import { GameType } from '@common/game-type';
 import { Letter } from '@common/letter';
 import { PlayerIndex } from '@common/player-index';
-import { Room, State } from '@common/room';
 import { User } from '@common/user';
 import { Vec2 } from '@common/vec2';
 import { Injectable, Logger } from '@nestjs/common';
 import { OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { DELAY_OF_DISCONNECT } from '@app/classes/constants';
-import { ChatEvents } from '@common/chat.gateway.events';
-import { DELAY_BEFORE_EMITTING_TIME, PRIVATE_ROOM_ID, WORD_MIN_LENGTH } from '@app/gateways/chatbox/chat.gateway.constants';
-import { RoomManagerService } from '@app/gateways/services/room-manager/room-manager.service';
 @WebSocketGateway({ cors: true })
 @Injectable()
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit {
@@ -201,8 +200,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         });
 
         // Method handler by click on placement aléatoire
-        socket.on('newRoomCustomerOfRandomPlacement', (customerName: string, gameType: GameType) => {
-            const room = this.roomManagerService.findRoomInWaitingState(customerName, gameType);
+        socket.on('newRoomCustomerOfRandomPlacement', (customerName: string) => {
+            const room = this.roomManagerService.findRoomInWaitingState(customerName);
             if (room === undefined) return;
             socket.emit('receiveCustomerOfRandomPlacement', customerName, room.id);
         });
@@ -214,10 +213,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
     onCreateRoom(socket: Socket): void {
-        socket.on('createRoom', (gameSettings: GameSettings, gameType: GameType) => {
+        socket.on('createRoom', (gameSettings: GameSettings) => {
             Logger.log('wefww');
             const roomId = this.roomManagerService.createRoomId(gameSettings.playersNames[PlayerIndex.OWNER], socket.id);
-            this.roomManagerService.createRoom(socket.id, roomId, gameSettings, gameType);
+            this.roomManagerService.createRoom(socket.id, roomId, gameSettings);
             socket.join(roomId);
             // give the client his roomId to communicate later with server
             socket.emit('yourRoomId', roomId);

@@ -10,18 +10,9 @@ import { LetterEaselComponent } from '@app/modules/game-view/letter-easel/letter
 import { ScrabbleBoardComponent } from '@app/modules/game-view/scrabble-board/scrabble-board.component';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { SharedModule } from '@app/modules/shared/shared.module';
-import { ObjectivesComponent } from './objectives/objectives.component';
 
 @NgModule({
-    declarations: [
-        GameViewComponent,
-        ScrabbleBoardComponent,
-        InformationPanelComponent,
-        LetterEaselComponent,
-        FontSizeComponent,
-        ChatboxComponent,
-        ObjectivesComponent,
-    ],
+    declarations: [GameViewComponent, ScrabbleBoardComponent, InformationPanelComponent, LetterEaselComponent, FontSizeComponent, ChatboxComponent],
     imports: [CommonModule, AppRoutingModule, FormsModule, SharedModule, AppMaterialModule],
     exports: [GameViewComponent],
     bootstrap: [GameViewComponent],

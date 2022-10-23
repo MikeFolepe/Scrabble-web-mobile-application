@@ -37,7 +37,7 @@ export class WaitingRoomComponent implements OnInit {
                 this.waitBeforeChangeStatus(0, connexionSuccess);
                 const waitingMessage = "En attente d'un joueur...";
                 this.waitBeforeChangeStatus(TWO_SECOND_DELAY, waitingMessage);
-                this.clientSocket.socket.emit('createRoom', this.gameSettingsService.gameSettings, this.clientSocket.gameType);
+                this.clientSocket.socket.emit('createRoom', this.gameSettingsService.gameSettings);
             } else {
                 this.status = 'Erreur de connexion... Veuillez réessayer';
                 this.isWaiting = false;

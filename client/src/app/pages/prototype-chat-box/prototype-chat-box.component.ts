@@ -1,11 +1,9 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { DEFAULT_CHAT_HEIGHT, LOG2990_CHAT_HEIGHT } from '@app/classes/constants';
 import { MessageType } from '@app/classes/enum';
 import { AuthService } from '@app/services/auth.service';
 import { ChatboxService } from '@app/services/chatbox.service';
 import { ClientSocketService } from '@app/services/client-socket.service';
 import { EndGameService } from '@app/services/end-game.service';
-import { GameSettingsService } from '@app/services/game-settings.service';
 import { SendMessageService } from '@app/services/send-message.service';
 import { ChatEvents } from '@common/chat.gateway.events';
 
@@ -32,7 +30,6 @@ export class PrototypeChatBoxComponent implements OnInit {
         private sendMessageService: SendMessageService,
         public endGameService: EndGameService,
         // private boardHandlerService: BoardHandlerService,
-        private gameSettingsService: GameSettingsService,
         private clientsSocket: ClientSocketService,
         public authService: AuthService,
     ) {
@@ -58,7 +55,6 @@ export class PrototypeChatBoxComponent implements OnInit {
     // }
     ngOnInit(): void {
         this.sendMessageService.displayBound(this.displayMessageByType.bind(this));
-        this.initializeChatHeight();
         this.sendSystemMessage('Bienvenue sur le prototype');
         this.sendMessageService.receiveMessageFromOpponent();
     }
@@ -113,11 +109,4 @@ export class PrototypeChatBoxComponent implements OnInit {
         }, 1);
     }
 
-    initializeChatHeight(): void {
-        const chatBox = document.getElementById('chat-box');
-        if (chatBox) {
-            if (this.gameSettingsService.gameType) chatBox.style.height = LOG2990_CHAT_HEIGHT + 'vh';
-            else chatBox.style.height = DEFAULT_CHAT_HEIGHT + 'vh';
-        }
-    }
 }
