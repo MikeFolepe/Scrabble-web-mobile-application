@@ -1,5 +1,6 @@
 package com.example.scrabbleprototype.activities
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -46,6 +47,7 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
         job.cancel()
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_connection)
@@ -128,11 +130,11 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
     }
 
     fun joinChat(serverIp: String, user: User) {
-        val intent = Intent(this, ChatActivity::class.java)
+        val intent = Intent(this, HomeMenuActivity::class.java)
 
-        SocketHandler.setSocket(serverIp)
+        SocketHandler.setPlayerSocket(serverIp)
         SocketHandler.establishConnection()
-        chatSocket = SocketHandler.getSocket()
+        chatSocket = SocketHandler.getPlayerSocket()
 
         chatSocket.emit("joinRoom")
         chatSocket.on("socketId") { response ->

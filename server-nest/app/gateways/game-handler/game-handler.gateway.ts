@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-imports */
 import { UsersService } from '@app/users/service/users.service';
 import { GameSettings } from '@common/game-settings';
 import { GameType } from '@common/game-type';
@@ -27,6 +28,7 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
             this.emitTime();
         }, DELAY_BEFORE_EMITTING_TIME);
     }
+
     onNewRoomPlayer(socket: Socket): void {
         socket.on('newRoomCustomer', (playerName: string, roomId: string) => {
             if (this.roomManagerService.isNotAvailable(roomId)) {
@@ -62,6 +64,7 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
             this.server.socketsLeave(roomId);
         });
     }
+
     sendWinnerName(socket: Socket, roomId: string): void {
         setTimeout(() => {
             socket
