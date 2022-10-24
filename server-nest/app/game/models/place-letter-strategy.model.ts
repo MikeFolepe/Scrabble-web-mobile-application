@@ -1,31 +1,83 @@
+/* eslint-disable max-lines */
 import { BEGINNER_POINTING_RANGE, BOARD_COLUMNS, BOARD_ROWS, CENTRAL_CASE_POSITION, INVALID_INDEX, PLAYER_AI_INDEX } from '@app/classes/constants';
 import { CustomRange } from '@app/classes/range';
 import { BoardPattern, Orientation, PatternInfo, PossibleWords } from '@app/classes/scrabble-board-pattern';
-import { PlayerAIService } from '@app/services/player-ai.service';
 import { AiType } from '@common/ai-name';
+import { EASEL_SIZE, MIN_RESERVE_SIZE_TO_SWAP } from '@common/constants';
+import { GameSettings } from '@common/game-settings';
+import { Vec2 } from '@common/vec2';
+import { LetterService } from '../services/letter/letter.service';
+import { PlaceLetterService } from '../services/place-letter/place-letter.service';
+import { PlayerService } from '../services/player/player.service';
+import { WordValidationService } from '../word-validation.service';
 import { PlayerAI } from './player-ai.model';
 
 export class PlaceLetterStrategy {
     dictionary: string[];
     pointingRange: CustomRange;
+    playerService: PlayerService;
+    gameSettings: GameSettings;
+    placeLetterService: PlaceLetterService;
+    letterService: LetterService;
+    wordValidation: WordValidationService;
     private board: string[][][];
     private isFirstRoundAi: boolean;
-    constructor() {
+    constructor(
+        playerService: PlayerService,
+        gameSettings: GameSettings,
+        placeLetterService: PlaceLetterService,
+        letterService: LetterService,
+        wordValidation: WordValidationService,
+    ) {
         this.dictionary = [];
         this.pointingRange = BEGINNER_POINTING_RANGE;
         this.board = [];
         this.isFirstRoundAi = true;
+        this.playerService = playerService;
+        this.gameSettings = gameSettings;
+        this.placeLetterService = placeLetterService;
+        this.letterService = letterService;
+        this.wordValidation = wordValidation;
+    }
+    placeWordOnBoard(scrabbleBoard: string[][], word: string, start: Vec2, orientation: Orientation): string[][] {
+        for (let j = 0; orientation === Orientation.Horizontal && j < word.length; j++) {
+            scrabbleBoard[start.x][start.y + j] = word[j];
+        }
+
+        for (let i = 0; orientation === Orientation.Vertical && i < word.length; i++) {
+            scrabbleBoard[start.x + i][start.y] = word[i];
+        }
+
+        return scrabbleBoard;
+    }
+    async calculatePoints(allPossibleWords: PossibleWords[]): Promise<PossibleWords[]> {
+        for (const word of allPossibleWords) {
+            const start: Vec2 = word.orientation ? { x: word.startIndex, y: word.line } : { x: word.line, y: word.startIndex };
+            const orientation: Orientation = word.orientation;
+            const currentBoard = JSON.parse(JSON.stringify(this.placeLetterService.scrabbleBoard));
+            const updatedBoard = this.placeWordOnBoard(currentBoard, word.word, start, orientation);
+            const scoreValidation = await this.wordValidation.validateAllWordsOnBoard(
+                updatedBoard,
+                word.word.length === EASEL_SIZE + 1,
+                word.orientation === Orientation.Horizontal,
+                false,
+            );
+            word.point = scoreValidation.validation ? scoreValidation.score : 0;
+        }
+        allPossibleWords = allPossibleWords.filter((word) => word.point > 0);
+        return allPossibleWords;
+    }
+    filterByRange(allPossibleWords: PossibleWords[], pointingRange: CustomRange): PossibleWords[] {
+        return allPossibleWords.filter((word) => word.point >= pointingRange.min && word.point <= pointingRange.max);
     }
 
-    async execute(playerAiService: PlayerAIService): Promise<void> {
-        const playerAi = playerAiService.playerService.players[PLAYER_AI_INDEX] as PlayerAI;
-        const level = playerAiService.gameSettingsService.gameSettings.level;
-        const isFirstRound = playerAiService.placeLetterService.isFirstRound;
-        const scrabbleBoard = playerAiService.placeLetterService.scrabbleBoard;
+    async execute(): Promise<void> {
+        const playerAi = this.playerService.players[PLAYER_AI_INDEX] as PlayerAI;
+        const level = this.gameSettings.level;
+        const isFirstRound = this.placeLetterService.isFirstRound;
+        const scrabbleBoard = this.placeLetterService.scrabbleBoard;
         if (this.isFirstRoundAi) {
-            this.dictionary = await playerAiService.communicationService
-                .getGameDictionary(playerAiService.gameSettingsService.gameSettings.dictionary)
-                .toPromise();
+            this.dictionary = await communicationService.getGameDictionary(gameSettingsService.gameSettings.dictionary).toPromise();
             this.isFirstRoundAi = false;
         }
         let allPossibleWords: PossibleWords[];
@@ -48,33 +100,107 @@ export class PlaceLetterStrategy {
         }
 
         // Step5: Add the earning points to all words and update the
-        allPossibleWords = await playerAiService.calculatePoints(allPossibleWords);
+        allPossibleWords = await this.calculatePoints(allPossibleWords);
         // Step6: Sort the words
-        playerAiService.sortDecreasingPoints(allPossibleWords);
-        matchingPointingRangeWords = playerAiService.filterByRange(allPossibleWords, this.pointingRange);
+        this.sortDecreasingPoints(allPossibleWords);
+        matchingPointingRangeWords = this.filterByRange(allPossibleWords, this.pointingRange);
         // Step7: Place one word between all the words that have passed the steps
-        if (level === AiType.expert) await this.computeResults(allPossibleWords, playerAiService);
-        if (level === AiType.beginner) await this.computeResults(matchingPointingRangeWords, playerAiService, false);
+        if (level === AiType.expert) await this.computeResults(allPossibleWords);
+        if (level === AiType.beginner) await this.computeResults(matchingPointingRangeWords, false);
 
         // Step8: Alert the debug about the alternatives
-        playerAiService.debugService.receiveAIDebugPossibilities(allPossibleWords);
+        // playerAiService.debugService.receiveAIDebugPossibilities(allPossibleWords);
     }
 
-    private async computeResults(possibilities: PossibleWords[], playerAiService: PlayerAIService, isExpertLevel = true): Promise<void> {
+    swap(isExpertLevel: boolean): boolean {
+        const playerAi = this.playerService.players[PLAYER_AI_INDEX] as PlayerAI;
+        const lettersToSwap: string[] = [];
+
+        // No swap possible
+        if (this.letterService.reserveSize === 0) {
+            // this.skip(true);
+            return false;
+        }
+        // According to game mode some cases might not be possible according to rules
+        if (!isExpertLevel && this.letterService.reserveSize < MIN_RESERVE_SIZE_TO_SWAP) {
+            // this.skip(true);
+            return false;
+        }
+
+        // Set the number of letter to be changed
+        let numberOfLetterToChange: number;
+        do {
+            numberOfLetterToChange = this.generateRandomNumber(Math.min(playerAi.letterTable.length + 1, this.letterService.reserveSize + 1));
+        } while (numberOfLetterToChange === 0);
+
+        if (isExpertLevel) numberOfLetterToChange = Math.min(playerAi.letterTable.length, this.letterService.reserveSize);
+
+        // Choose the index of letters to be changed
+        const indexOfLetterToBeChanged: number[] = [];
+        while (indexOfLetterToBeChanged.length < numberOfLetterToChange) {
+            const candidate = this.generateRandomNumber(playerAi.letterTable.length);
+            if (indexOfLetterToBeChanged.indexOf(candidate) === INVALID_INDEX) indexOfLetterToBeChanged.push(candidate);
+        }
+
+        for (const index of indexOfLetterToBeChanged) {
+            lettersToSwap.push(playerAi.letterTable[index].value.toLowerCase());
+        }
+
+        // For each letter chosen to be changed : 1. add it to reserve ; 2.get new letter
+        for (const index of indexOfLetterToBeChanged) {
+            this.letterService.addLetterToReserve(playerAi.letterTable[index].value);
+            playerAi.letterTable[index] = this.letterService.getRandomLetter();
+        }
+
+        // Alert the context about the operation performed
+        // this.sendMessageService.displayMessageByType(
+        //     this.playerService.players[PLAYER_AI_INDEX].name + ' : ' + '!échanger ' + lettersToSwap,
+        //     MessageType.Opponent,
+        // );
+
+        // Switch turn
+        // this.endGameService.actionsLog.push('echanger');
+        // this.skip(false);
+        return true;
+    }
+
+    generateRandomNumber(maxValue: number): number {
+        // Number [0, maxValue[
+        return Math.floor(Number(Math.random()) * maxValue);
+    }
+
+    sortDecreasingPoints(allPossibleWords: PossibleWords[]): void {
+        allPossibleWords.sort(this.sortDecreasing);
+    }
+    sortDecreasing = (word1: PossibleWords, word2: PossibleWords) => {
+        const equalSortNumbers = 0;
+        const greaterSortNumber = 1;
+        const lowerSortNumber = -1;
+
+        if (word1.point === word2.point) return equalSortNumbers;
+        return word1.point < word2.point ? greaterSortNumber : lowerSortNumber;
+    };
+    async place(word: PossibleWords): Promise<void> {
+        const startPos = word.orientation ? { x: word.line, y: word.startIndex } : { x: word.startIndex, y: word.line };
+        if (await this.placeLetterService.placeCommand(startPos, word.orientation, word.word)) return;
+        // this.skip(false);
+    }
+
+    private async computeResults(possibilities: PossibleWords[], isExpertLevel = true): Promise<void> {
         if (possibilities.length === 0) {
-            playerAiService.swap(isExpertLevel);
+            this.swap(isExpertLevel);
             return;
         }
 
         let wordIndex = 0;
         if (isExpertLevel) {
-            await playerAiService.place(possibilities[wordIndex]);
+            await this.place(possibilities[wordIndex]);
             possibilities.splice(0, 1);
             return;
         }
 
-        wordIndex = playerAiService.generateRandomNumber(possibilities.length);
-        await playerAiService.place(possibilities[wordIndex]);
+        wordIndex = this.generateRandomNumber(possibilities.length);
+        await this.place(possibilities[wordIndex]);
         possibilities.splice(wordIndex, 1);
     }
 

@@ -1,18 +1,32 @@
-import { PlayerAIService } from '@app/services/player-ai.service';
+import { GameSettings } from '@common/game-settings';
 import { Letter } from '@common/letter';
+import { LetterService } from '../services/letter/letter.service';
+import { PlaceLetterService } from '../services/place-letter/place-letter.service';
+import { PlayerService } from '../services/player/player.service';
+import { WordValidationService } from '../word-validation.service';
 import { PlaceLetterStrategy } from './place-letter-strategy.model';
 import { Player } from './player.model';
 
 export class PlayerAI extends Player {
     private strategy: PlaceLetterStrategy;
 
-    constructor(id: number, name: string, letterTable: Letter[], public playerAiService: PlayerAIService, score: number = 0) {
+    constructor(
+        id: number,
+        name: string,
+        letterTable: Letter[],
+        score: number = 0,
+        playerService: PlayerService,
+        gameSetting: GameSettings,
+        placeLetterService: PlaceLetterService,
+        letterService: LetterService,
+        wordValidation: WordValidationService,
+    ) {
         super(id, name, letterTable, score);
-        this.strategy = new PlaceLetterStrategy();
+        this.strategy = new PlaceLetterStrategy(playerService, gameSetting, placeLetterService, letterService, wordValidation);
     }
 
     play(): void {
-        this.strategy.execute(this.playerAiService);
+        this.strategy.execute();
     }
 
     getEasel(): string {

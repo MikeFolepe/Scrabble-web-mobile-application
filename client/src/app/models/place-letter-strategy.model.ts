@@ -17,15 +17,13 @@ export class PlaceLetterStrategy {
         this.isFirstRoundAi = true;
     }
 
-    async execute(playerAiService: PlayerAIService): Promise<void> {
-        const playerAi = playerAiService.playerService.players[PLAYER_AI_INDEX] as PlayerAI;
-        const level = playerAiService.gameSettingsService.gameSettings.level;
-        const isFirstRound = playerAiService.placeLetterService.isFirstRound;
-        const scrabbleBoard = playerAiService.placeLetterService.scrabbleBoard;
+    async execute(): Promise<void> {
+        const playerAi = playerService.players[PLAYER_AI_INDEX] as PlayerAI;
+        const level = gameSettingsService.gameSettings.level;
+        const isFirstRound = placeLetterService.isFirstRound;
+        const scrabbleBoard = placeLetterService.scrabbleBoard;
         if (this.isFirstRoundAi) {
-            this.dictionary = await playerAiService.communicationService
-                .getGameDictionary(playerAiService.gameSettingsService.gameSettings.dictionary)
-                .toPromise();
+            this.dictionary = await communicationService.getGameDictionary(gameSettingsService.gameSettings.dictionary).toPromise();
             this.isFirstRoundAi = false;
         }
         let allPossibleWords: PossibleWords[];
