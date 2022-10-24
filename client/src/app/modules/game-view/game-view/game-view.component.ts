@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { DEFAULT_FONT_SIZE } from '@app/classes/constants';
 import { GiveUpGameDialogComponent } from '@app/modules/game-view/give-up-game-dialog/give-up-game-dialog.component';
@@ -19,7 +19,7 @@ import { SkipTurnService } from '@app/services/skip-turn.service';
     templateUrl: './game-view.component.html',
     styleUrls: ['./game-view.component.scss'],
 })
-export class GameViewComponent implements OnInit {
+export class GameViewComponent {
     fontSize: number;
 
     constructor(
@@ -42,15 +42,6 @@ export class GameViewComponent implements OnInit {
         // this.objectiveService.ngOnDestroy();
     }
 
-    ngOnInit(): void {
-        // this.objectiveService.initializeObjectives();
-        const mapBonus = new Map<string, string>();
-        JSON.parse(this.gameSettingsService.gameSettings.bonusPositions).map((element: string[]) => {
-            mapBonus.set(element[0], element[1]);
-        });
-        this.gridService.bonusPositions = mapBonus;
-    }
-
     handleFontSizeEvent(fontSizeEvent: number): void {
         this.fontSize = fontSizeEvent;
         this.playerService.updateFontSize(this.fontSize);
@@ -64,7 +55,7 @@ export class GameViewComponent implements OnInit {
             if (!decision) return;
             // if decision is true the EndGame occurred
             this.sendMessageService.sendConversionMessage();
-            this.clientSocketService.socket.emit('sendEndGameByGiveUp', decision, this.clientSocketService.roomId, this.clientSocketService.gameType);
+            this.clientSocketService.socket.emit('sendEndGameByGiveUp', decision, this.clientSocketService.roomId);
         });
     }
 

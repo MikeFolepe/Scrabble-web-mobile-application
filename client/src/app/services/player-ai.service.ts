@@ -13,7 +13,6 @@ import { GameSettingsService } from './game-settings.service';
 import { LetterService } from './letter.service';
 import { PlaceLetterService } from './place-letter.service';
 import { PlayerService } from './player.service';
-import { RandomBonusesService } from './random-bonuses.service';
 import { SendMessageService } from './send-message.service';
 import { SkipTurnService } from './skip-turn.service';
 import { WordValidationService } from './word-validation.service';
@@ -33,7 +32,6 @@ export class PlayerAIService {
         public chatBoxService: ChatboxService,
         public debugService: DebugService,
         public sendMessageService: SendMessageService,
-        public randomBonusService: RandomBonusesService,
         public wordValidationService: WordValidationService,
         public gameSettingsService: GameSettingsService,
         public communicationService: CommunicationService,
