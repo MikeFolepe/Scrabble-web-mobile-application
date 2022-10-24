@@ -45,6 +45,7 @@ class CreateGameActivity : AppCompatActivity() {
     }
 
     suspend fun postAuthentication(user: User): HttpResponse? {
+        /*
         var response: HttpResponse?
         try{
             response = client.post(user.ipAddress + "/api/auth/connect") {
@@ -54,7 +55,8 @@ class CreateGameActivity : AppCompatActivity() {
         } catch(e: Exception) {
             response = null
         }
-        return response
+        return response*/
+        return null
     }
 
     private fun handleMinutesSelection(minutesSpinner: Spinner) {
