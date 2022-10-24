@@ -18,7 +18,8 @@ import org.json.JSONArray
 class JoinGameActivity : AppCompatActivity() {
 
     var rooms = arrayListOf<Room>()
-    val playerSocket = SocketHandler.getPlayerSocket()
+    val socketHandler = SocketHandler
+    val playerSocket = socketHandler.getPlayerSocket()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +48,7 @@ class JoinGameActivity : AppCompatActivity() {
     private fun joinGame(position: Int) {
         Log.d("room", rooms[position].id)
         playerSocket.emit("newRoomCustomer", Users.currentUser, rooms[position].id)
+        socketHandler.roomId = rooms[position].id
     }
 
     private fun receiveRooms(gameListAdapter: GameListAdapter) {

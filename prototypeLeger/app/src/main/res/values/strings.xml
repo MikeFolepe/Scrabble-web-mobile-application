@@ -35,4 +35,7 @@
     <string name="back">Retour</string>
     <string name="Continue">Continuer</string>
 
+    //Game view
+    <string name="timer_display">Temps restant au tour : </string>
+
 </resources>

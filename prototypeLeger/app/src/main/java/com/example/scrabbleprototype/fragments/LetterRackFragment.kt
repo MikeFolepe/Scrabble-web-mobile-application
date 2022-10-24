@@ -41,7 +41,6 @@ class LetterRackFragment : Fragment() {
             swapLetterService = binder.getService()
             swapLetterBound = true
         }
-
         override fun onServiceDisconnected(name: ComponentName?) {
             swapLetterBound = false
         }

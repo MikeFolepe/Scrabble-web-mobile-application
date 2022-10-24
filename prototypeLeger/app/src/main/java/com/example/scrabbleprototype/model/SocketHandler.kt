@@ -7,6 +7,7 @@ import java.net.URISyntaxException
 object SocketHandler {
 
     lateinit var socket: Socket
+    var roomId: String = ""
 
     @Synchronized
     fun setPlayerSocket(serverIp: String) {

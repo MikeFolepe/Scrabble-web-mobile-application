@@ -107,6 +107,7 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
         socket.on('switchTurn', (turn: boolean, roomId: string) => {
             if (turn) {
                 socket.to(roomId).emit('turnSwitched', turn);
+                this.logger.log('Emit du start timer');
                 this.server.in(roomId).emit('startTimer');
             }
         });
