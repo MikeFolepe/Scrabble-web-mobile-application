@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { BestScoresComponent } from '@app/pages/best-scores/best-scores.component';
-import { ClientSocketService } from '@app/services/client-socket.service';
 import { EndGameService } from '@app/services/end-game.service';
 import { GameSettingsService } from '@app/services/game-settings.service';
 import { GiveUpHandlerService } from '@app/services/give-up-handler.service';
@@ -27,7 +26,6 @@ export class MainPageComponent {
         public gameSettingsService: GameSettingsService,
         private router: Router,
         public bestScoresDialog: MatDialog,
-        private clientSocketService: ClientSocketService,
         private letterService: LetterService,
         private placeLetterService: PlaceLetterService,
         private giveUpHandlerService: GiveUpHandlerService,
@@ -42,10 +40,6 @@ export class MainPageComponent {
 
     routeToGameMode(): void {
         // Update game type and game mode, then route
-        this.selectedGameType = this.gameType[this.selectedGameTypeIndex];
-        const gameTypeIndex = this.gameType[0] === this.selectedGameType ? 0 : 1;
-        this.gameSettingsService.gameType = gameTypeIndex;
-        this.clientSocketService.gameType = gameTypeIndex;
         switch (this.selectedGameMode) {
             case this.gameModes[0]: {
                 this.gameSettingsService.isSoloMode = true;

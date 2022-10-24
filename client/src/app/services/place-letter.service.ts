@@ -10,7 +10,6 @@ import { Vec2 } from '@common/vec2';
 import { ClientSocketService } from './client-socket.service';
 import { EndGameService } from './end-game.service';
 import { GameSettingsService } from './game-settings.service';
-import { ObjectivesService } from './objectives.service';
 import { PlacementsHandlerService } from './placements-handler.service';
 import { SendMessageService } from './send-message.service';
 import { SkipTurnService } from './skip-turn.service';
@@ -42,7 +41,6 @@ export class PlaceLetterService implements OnDestroy {
         private clientSocketService: ClientSocketService,
         private gameSettingsService: GameSettingsService,
         private endGameService: EndGameService,
-        private objectivesService: ObjectivesService,
         private placementsService: PlacementsHandlerService,
     ) {
         this.isFirstRound = true;
@@ -146,10 +144,6 @@ export class PlaceLetterService implements OnDestroy {
             this.endGameService.addActionsLog('placerSucces');
             this.clientSocketService.socket.emit('sendActions', this.endGameService.actionsLog, this.clientSocketService.roomId);
             this.handleValidPlacement(finalResult, indexPlayer);
-            const lastLetters = this.placementsService.getLastLettersPlaced(this.startPosition, this.orientation, this.word, this.validLetters);
-            this.objectivesService.playerIndex = indexPlayer;
-            this.objectivesService.extendedWords = this.placementsService.getExtendedWords(this.orientation, this.scrabbleBoard, lastLetters);
-            this.objectivesService.checkObjectivesCompletion();
             this.skipTurnService.switchTurn();
             return true;
         }

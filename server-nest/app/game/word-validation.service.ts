@@ -1,46 +1,36 @@
-import { Injectable, OnDestroy } from '@angular/core';
-import { ALL_EASEL_BONUS, BOARD_COLUMNS, BOARD_ROWS, BONUS_POSITIONS, RESERVE } from '@app/classes/constants';
-import { ScoreValidation } from '@app/classes/validation-score';
-import { CommunicationService } from '@app/services/communication.service';
-import { ClientSocketService } from './client-socket.service';
+import { ALL_EASEL_BONUS, BOARD_COLUMNS, BOARD_ROWS, BONUS_POSITIONS, RESERVE } from '@common/constants';
+import { ScoreValidation } from '@common/validation-score';
+import * as fileSystem from 'fs';
 
-@Injectable({
-    providedIn: 'root',
-})
-export class WordValidationService implements OnDestroy {
-    fileName: string;
+export class WordValidationService {
     playedWords: Map<string, string[]>;
-    lastPlayedWords: Map<string, string[]>;
-    priorCurrentWords: Map<string, string[]>;
-    currentWords: Map<string, string[]>;
-    priorPlayedWords: Map<string, string[]>;
     private newWords: string[];
     private newPlayedWords: Map<string, string[]>;
     private newPositions: string[];
     private bonusesPositions: Map<string, string>;
-    private validationState: boolean;
     private foundWords: string[];
+    private dictionary: string[];
 
-    constructor(private httpServer: CommunicationService, private clientSocketService: ClientSocketService) {
+    constructor(dictFile: string) {
         this.newWords = new Array<string>();
         this.playedWords = new Map<string, string[]>();
         this.newPlayedWords = new Map<string, string[]>();
-        this.lastPlayedWords = new Map<string, string[]>();
-        this.priorCurrentWords = new Map<string, string[]>();
-        this.currentWords = new Map<string, string[]>();
-        this.priorPlayedWords = new Map<string, string[]>();
         this.newPositions = new Array<string>();
-        this.bonusesPositions = BONUS_POSITIONS;
-        this.validationState = false;
+        this.bonusesPositions = new Map<string, string>(BONUS_POSITIONS);
         this.foundWords = new Array<string>();
-        this.receivePlayedWords();
+        this.dictionary = JSON.parse(fileSystem.readFileSync(`./dictionaries/${dictFile}`, 'utf8')).words;
     }
 
-    receivePlayedWords(): void {
-        this.clientSocketService.socket.on('receivePlayedWords', (playedWords: string) => {
-            this.playedWords = new Map<string, string[]>(JSON.parse(playedWords));
-        });
+    isValidInDictionary(word: string): boolean {
+        if (word.length < 2) return false;
+        for (const item of this.dictionary) {
+            if (word === item) {
+                return true;
+            }
+        }
+        return false;
     }
+
     findWords(words: string[]): string[] {
         return words
             .toString()
@@ -195,52 +185,26 @@ export class WordValidationService implements OnDestroy {
         this.passThroughAllRowsOrColumns(scrabbleBoard, isRow);
         this.passThroughAllRowsOrColumns(scrabbleBoard, !isRow);
 
-        this.validationState = await this.httpServer.validationPost(this.newPlayedWords, this.fileName).toPromise();
-        if (!this.validationState) {
-            this.newPlayedWords.clear();
-            return { validation: this.validationState, score: scoreTotal };
+        for (const word of this.newPlayedWords.keys()) {
+            const lowerCaseWord = word.toLowerCase();
+            if (!this.isValidInDictionary(lowerCaseWord)) {
+                this.newPlayedWords.clear();
+                return { validation: false, score: scoreTotal };
+            }
         }
         scoreTotal += this.calculateTotalScore(scoreTotal, this.newPlayedWords);
 
         if (isEaselSize) scoreTotal += ALL_EASEL_BONUS;
-
         if (!isPermanent) {
             this.newPlayedWords.clear();
-            return { validation: this.validationState, score: scoreTotal };
+            return { validation: false, score: scoreTotal };
         }
 
         this.removeBonuses(this.newPlayedWords);
 
-        for (const word of this.currentWords.keys()) this.priorCurrentWords.set(word, this.currentWords.get(word) as string[]);
-
-        this.lastPlayedWords.clear();
-        for (const word of this.newPlayedWords.keys()) {
-            this.lastPlayedWords.set(word, this.newPlayedWords.get(word) as string[]);
-            this.currentWords.set(word, this.newPlayedWords.get(word) as string[]);
-        }
-
-        this.priorPlayedWords.clear();
-        for (const word of this.playedWords.keys()) this.priorPlayedWords.set(word, this.playedWords.get(word) as string[]);
-
         for (const word of this.newPlayedWords.keys()) this.addToPlayedWords(word, this.newPlayedWords.get(word) as string[], this.playedWords);
-
-        this.clientSocketService.socket.emit('updatePlayedWords', JSON.stringify(Array.from(this.playedWords)), this.clientSocketService.roomId);
-
         this.newPlayedWords.clear();
-        return { validation: this.validationState, score: scoreTotal };
-    }
 
-    ngOnDestroy() {
-        this.newWords = new Array<string>();
-        this.playedWords = new Map<string, string[]>();
-        this.newPlayedWords = new Map<string, string[]>();
-        this.lastPlayedWords = new Map<string, string[]>();
-        this.priorCurrentWords = new Map<string, string[]>();
-        this.currentWords = new Map<string, string[]>();
-        this.priorPlayedWords = new Map<string, string[]>();
-        this.newPositions = new Array<string>();
-        this.bonusesPositions = BONUS_POSITIONS;
-        this.validationState = false;
-        this.foundWords = new Array<string>();
+        return { validation: true, score: scoreTotal };
     }
 }

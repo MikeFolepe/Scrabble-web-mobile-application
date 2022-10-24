@@ -10,9 +10,7 @@ import {
 import { PlayerAI } from '@app/models/player-ai.model';
 import { ClientSocketService } from '@app/services/client-socket.service';
 import { GameSettingsService } from '@app/services/game-settings.service';
-import { CommunicationService } from './communication.service';
 import { EndGameService } from './end-game.service';
-import { ObjectivesService } from './objectives.service';
 import { PlayerService } from './player.service';
 import { SendMessageService } from './send-message.service';
 
@@ -33,9 +31,7 @@ export class SkipTurnService {
         private endGameService: EndGameService,
         private clientSocket: ClientSocketService,
         private playerService: PlayerService,
-        private objectivesService: ObjectivesService,
         private sendMessageService: SendMessageService,
-        private communicationService: CommunicationService,
     ) {
         this.receiveNewTurn();
         this.receiveStartFromServer();
@@ -97,7 +93,6 @@ export class SkipTurnService {
             if (this.seconds === 0 && this.minutes !== 0) {
                 this.minutes = this.minutes - 1;
                 this.seconds = 59;
-                this.updateActiveTime();
             } else if (this.seconds === 0 && this.minutes === 0) {
                 if (this.isTurn || this.gameSettingsService.isSoloMode) {
                     this.endGameService.actionsLog.push('AucuneAction');
@@ -106,7 +101,6 @@ export class SkipTurnService {
                 }
             } else {
                 this.seconds = this.seconds - 1;
-                this.updateActiveTime();
             }
         }, ONE_SECOND_DELAY);
     }
@@ -116,15 +110,6 @@ export class SkipTurnService {
         this.minutes = 0;
         this.seconds = 0;
     }
-
-    updateActiveTime() {
-        if (this.isTurn && this.objectivesService.activeTimeRemaining[PLAYER_ONE_INDEX] > 0)
-            this.objectivesService.activeTimeRemaining[PLAYER_ONE_INDEX]--;
-
-        if (!this.isTurn && this.objectivesService.activeTimeRemaining[PLAYER_TWO_INDEX] > 0)
-            this.objectivesService.activeTimeRemaining[PLAYER_TWO_INDEX]--;
-    }
-
     checkEndGame(): void {
         if (this.endGameService.isEndGame) return;
         this.endGameService.checkEndGame();
@@ -136,7 +121,6 @@ export class SkipTurnService {
             this.sendMessageService.displayFinalMessage(PLAYER_ONE_INDEX);
             this.sendMessageService.displayFinalMessage(PLAYER_TWO_INDEX);
             this.shouldNotBeDisplayed = true;
-            this.communicationService.addPlayersScores(this.endGameService.playersScores, this.gameSettingsService.gameType).subscribe();
         }
     }
 }
