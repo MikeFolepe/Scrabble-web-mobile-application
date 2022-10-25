@@ -4,12 +4,12 @@ import * as fileSystem from 'fs';
 
 export class WordValidationService {
     playedWords: Map<string, string[]>;
+    dictionary: string[];
     private newWords: string[];
     private newPlayedWords: Map<string, string[]>;
     private newPositions: string[];
     private bonusesPositions: Map<string, string>;
     private foundWords: string[];
-    private dictionary: string[];
 
     constructor(dictFile: string) {
         this.newWords = new Array<string>();
@@ -20,7 +20,9 @@ export class WordValidationService {
         this.foundWords = new Array<string>();
         this.dictionary = JSON.parse(fileSystem.readFileSync(`./dictionaries/${dictFile}`, 'utf8')).words;
     }
-
+    receivePlayedWords(playedWords: string): void {
+        this.playedWords = new Map<string, string[]>(JSON.parse(playedWords));
+    }
     isValidInDictionary(word: string): boolean {
         if (word.length < 2) return false;
         for (const item of this.dictionary) {

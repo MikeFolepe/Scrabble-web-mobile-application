@@ -88,7 +88,11 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
         });
         this.onNewRoomPlayer(socket);
         socket.on('sendPlacement', (scrabbleBoard: string[][], startPosition: Vec2, orientation: string, word: string, roomId: string) => {
-            socket.to(roomId).emit('receivePlacement', scrabbleBoard, startPosition, orientation, word);
+            const room = this.roomManagerService.find(roomId) as Room;
+            room.placeLetter.scrabbleBoard = scrabbleBoard;
+            room.playerAi.play();
+            console.log(scrabbleBoard === room.playerAi.strategy.placeLetterService.scrabbleBoard);
+            socket.to(roomId).emit('receivePlacement', room.placeLetter.scrabbleBoard);
         });
 
         socket.on('sendReserve', (reserve: Letter[], reserveSize: number, roomId: string) => {
@@ -169,6 +173,19 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
             Logger.log('wefww');
             const roomId = this.roomManagerService.createRoomId(gameSettings.playersNames[PlayerIndex.OWNER], socket.id);
             this.roomManagerService.createRoom(socket.id, roomId, gameSettings);
+            this.roomManagerService.addCustomer('ok', roomId);
+            // this.roomManagerService.setSocket(this.roomManagerService.find(roomId) as Room, socket.id);
+            this.roomManagerService.setState(roomId, State.Playing);
+            this.server.emit('roomConfiguration', this.roomManagerService.rooms);
+            // socket.join(roomId);
+            // this.server.in(roomId).emit('yourRoomId', roomId);
+            this.server.in(roomId).emit('yourGameSettings', this.roomManagerService.formatGameSettingsForCustomerIn(roomId));
+            socket.to(roomId).emit('yourGameSettings', this.roomManagerService.getGameSettings(roomId));
+            // this.server.in(roomId).emit('goToGameView');
+            // this.server.in(roomId).emit('startTimer');
+            // Send number of rooms available
+            this.server.emit('roomAvailable', this.roomManagerService.getNumberOfRoomInWaitingState());
+            const room = this.roomManagerService.find(roomId) as Room;
             socket.join(roomId);
             // give the client his roomId to communicate later with server
             socket.emit('yourRoomId', roomId);
@@ -176,7 +193,9 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
             // room creation alerts all clients on the new rooms configurations
             this.server.emit('roomConfiguration', this.roomManagerService.rooms);
             // Send number of rooms available
-            this.server.emit('roomAvailable', this.roomManagerService.getNumberOfRoomInWaitingState());
+            // this.server.emit('roomAvailable', this.roomManagerService.getNumberOfRoomInWaitingState());
+            this.server.in(roomId).emit('goToGameView');
+            this.server.in(roomId).emit('startTimer');
         });
     }
 

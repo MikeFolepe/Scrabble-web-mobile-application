@@ -13,6 +13,7 @@ export class PlaceLetterService {
     lastPlacedWord: string;
     scrabbleBoard: string[][];
 
+    playerService: PlayerService;
     private startPosition: Vec2;
     private orientation: Orientation;
     private word: string;
@@ -23,7 +24,6 @@ export class PlaceLetterService {
     // Number of letters used from the easel to form the word
     private numLettersUsedFromEasel: number;
     private isRow: boolean;
-    playerService: PlayerService;
 
     constructor(
         // private playerService: PlayerService,
@@ -42,8 +42,8 @@ export class PlaceLetterService {
                 this.scrabbleBoard[i][j] = '';
             }
         }
-        this.playerService.updateScrabbleBoard(this.scrabbleBoard);
         this.playerService = new PlayerService();
+        this.playerService.updateScrabbleBoard(this.scrabbleBoard);
         // this.receivePlacement();
     }
 

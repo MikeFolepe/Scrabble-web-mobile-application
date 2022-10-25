@@ -1,7 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { EASEL_SIZE, INVALID_INDEX, RESERVE } from '@app/classes/constants';
 import { Letter } from '@common/letter';
-@Injectable({})
+@Injectable({ providedIn: 'root' })
 export class LetterService implements OnDestroy {
     reserve: Letter[];
     reserveSize: number;

@@ -1,8 +1,7 @@
 /* eslint-disable max-lines */
-import { BEGINNER_POINTING_RANGE, BOARD_COLUMNS, BOARD_ROWS, CENTRAL_CASE_POSITION, INVALID_INDEX, PLAYER_AI_INDEX } from '@app/classes/constants';
+import { BEGINNER_POINTING_RANGE, BOARD_COLUMNS, BOARD_ROWS, CENTRAL_CASE_POSITION, INVALID_INDEX } from '@app/classes/constants';
 import { CustomRange } from '@app/classes/range';
 import { BoardPattern, Orientation, PatternInfo, PossibleWords } from '@app/classes/scrabble-board-pattern';
-import { AiType } from '@common/ai-name';
 import { EASEL_SIZE, MIN_RESERVE_SIZE_TO_SWAP } from '@common/constants';
 import { GameSettings } from '@common/game-settings';
 import { Vec2 } from '@common/vec2';
@@ -11,6 +10,7 @@ import { PlaceLetterService } from '../services/place-letter/place-letter.servic
 import { PlayerService } from '../services/player/player.service';
 import { WordValidationService } from '../word-validation.service';
 import { PlayerAI } from './player-ai.model';
+import { Player } from './player.model';
 
 export class PlaceLetterStrategy {
     dictionary: string[];
@@ -20,10 +20,12 @@ export class PlaceLetterStrategy {
     placeLetterService: PlaceLetterService;
     letterService: LetterService;
     wordValidation: WordValidationService;
+    player: Player;
     private board: string[][][];
     private isFirstRoundAi: boolean;
     constructor(
         playerService: PlayerService,
+        player: Player,
         gameSettings: GameSettings,
         placeLetterService: PlaceLetterService,
         letterService: LetterService,
@@ -38,6 +40,7 @@ export class PlaceLetterStrategy {
         this.placeLetterService = placeLetterService;
         this.letterService = letterService;
         this.wordValidation = wordValidation;
+        this.player = player;
     }
     placeWordOnBoard(scrabbleBoard: string[][], word: string, start: Vec2, orientation: Orientation): string[][] {
         for (let j = 0; orientation === Orientation.Horizontal && j < word.length; j++) {
@@ -72,12 +75,13 @@ export class PlaceLetterStrategy {
     }
 
     async execute(): Promise<void> {
-        const playerAi = this.playerService.players[PLAYER_AI_INDEX] as PlayerAI;
+        const playerAi = this.playerService.players[0] as PlayerAI;
         const level = this.gameSettings.level;
         const isFirstRound = this.placeLetterService.isFirstRound;
         const scrabbleBoard = this.placeLetterService.scrabbleBoard;
+        // console.log(scrabbleBoard);
         if (this.isFirstRoundAi) {
-            this.dictionary = await communicationService.getGameDictionary(gameSettingsService.gameSettings.dictionary).toPromise();
+            this.dictionary = this.wordValidation.dictionary;
             this.isFirstRoundAi = false;
         }
         let allPossibleWords: PossibleWords[];
@@ -105,15 +109,15 @@ export class PlaceLetterStrategy {
         this.sortDecreasingPoints(allPossibleWords);
         matchingPointingRangeWords = this.filterByRange(allPossibleWords, this.pointingRange);
         // Step7: Place one word between all the words that have passed the steps
-        if (level === AiType.expert) await this.computeResults(allPossibleWords);
-        if (level === AiType.beginner) await this.computeResults(matchingPointingRangeWords, false);
+        // if (level === AiType.expert) await this.computeResults(allPossibleWords);
+        await this.computeResults(matchingPointingRangeWords, false);
 
         // Step8: Alert the debug about the alternatives
         // playerAiService.debugService.receiveAIDebugPossibilities(allPossibleWords);
     }
 
     swap(isExpertLevel: boolean): boolean {
-        const playerAi = this.playerService.players[PLAYER_AI_INDEX] as PlayerAI;
+        const playerAi = this.playerService.players[0] as PlayerAI;
         const lettersToSwap: string[] = [];
 
         // No swap possible
@@ -181,6 +185,7 @@ export class PlaceLetterStrategy {
         return word1.point < word2.point ? greaterSortNumber : lowerSortNumber;
     };
     async place(word: PossibleWords): Promise<void> {
+        console.log('ads');
         const startPos = word.orientation ? { x: word.line, y: word.startIndex } : { x: word.startIndex, y: word.line };
         if (await this.placeLetterService.placeCommand(startPos, word.orientation, word.word)) return;
         // this.skip(false);
@@ -297,7 +302,7 @@ export class PlaceLetterStrategy {
                 const amountOfLetterPresent: number = (
                     this.board[wordObject.orientation][wordObject.line].toString().replace(regex2, '').match(regex1) || []
                 ).length;
-                const playerAmount: number = player.getLetterQuantityInEasel(letter);
+                const playerAmount = 0;
 
                 if (amountOfLetterNeeded > playerAmount + amountOfLetterPresent) {
                     // Not add the words that need more letter than available

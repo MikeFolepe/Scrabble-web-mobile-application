@@ -8,7 +8,7 @@ import { PlaceLetterStrategy } from './place-letter-strategy.model';
 import { Player } from './player.model';
 
 export class PlayerAI extends Player {
-    private strategy: PlaceLetterStrategy;
+    strategy: PlaceLetterStrategy;
 
     constructor(
         id: number,
@@ -16,13 +16,14 @@ export class PlayerAI extends Player {
         letterTable: Letter[],
         score: number = 0,
         playerService: PlayerService,
+        player: Player,
         gameSetting: GameSettings,
         placeLetterService: PlaceLetterService,
         letterService: LetterService,
         wordValidation: WordValidationService,
     ) {
         super(id, name, letterTable, score);
-        this.strategy = new PlaceLetterStrategy(playerService, gameSetting, placeLetterService, letterService, wordValidation);
+        this.strategy = new PlaceLetterStrategy(playerService, player, gameSetting, placeLetterService, letterService, wordValidation);
     }
 
     play(): void {

@@ -9,7 +9,7 @@ import {
     INVALID_INDEX,
     PLAYER_TWO_INDEX,
     RESERVE,
-    WHITE_LETTER_INDEX,
+    WHITE_LETTER_INDEX
 } from '@app/classes/constants';
 import { Player } from '@app/models/player.model';
 import { GridService } from '@app/services/grid.service';
