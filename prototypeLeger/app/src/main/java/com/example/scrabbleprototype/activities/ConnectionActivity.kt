@@ -106,6 +106,7 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
                 if (response.status == HttpStatusCode.OK) {
                     if (response.body()) {
                         users.currentUser = username
+                        users.ipAddress = serverIp
                         joinChat(serverIp, user)
                     } else {
                         usernameInput.error = "Cet utilisateur est déjà connecté"
