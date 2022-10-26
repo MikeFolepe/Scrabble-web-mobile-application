@@ -72,17 +72,16 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
                 val stringBody: String = response.body();
                 val mapper = jacksonObjectMapper()
                 Log.d("dico", stringBody)
-                val dictionary:List<Dictionary> = mapper.readValue(stringBody, object: TypeReference<List<Dictionary>>() {})
+                val dictionary: List<Dictionary> = mapper.readValue(stringBody, object: TypeReference<List<Dictionary>>() {})
                 Log.d("dico", dictionary.toString())
-                    for (i in 0 until dictionary.size) {
-                        val dicoToAdd = mapper.readValue(dictionary.get(i).toString(), Dictionary::class.java)
-                       dictionariesTitle.add(dicoToAdd.title)
-                   }
-                    }
-            Log.d("dico", dictionariesTitle.toString())
+                for (i in 0 until dictionary.size) {
+                       dictionariesTitle.add(dictionary[i].title)
+                }
             }
+            Log.d("dico", dictionariesTitle.toString())
+        }
 
-        //dicoSpinner.adapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, dictionary)
+        dicoSpinner.adapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, dictionariesTitle)
 
         handleMinutesSelection(minutesSpinner)
         handleSecondesSelection(secondsSpinner)
