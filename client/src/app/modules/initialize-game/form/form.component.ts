@@ -88,7 +88,8 @@ export class FormComponent implements OnInit, OnDestroy {
     }
 
     private chooseStartingPlayer(): StartingPlayer {
-        return Math.floor((Math.random() * Object.keys(StartingPlayer).length) / 2);
+        // return Math.floor((Math.random() * Object.keys(StartingPlayer).length) / 2);
+        return 0;
     }
 
     private chooseRandomAIName(levelInput: AiType): string {

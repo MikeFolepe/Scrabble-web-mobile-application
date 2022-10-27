@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.model.*
+import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -54,12 +55,10 @@ class JoinGameActivity : AppCompatActivity() {
     private fun receiveRooms(gameListAdapter: GameListAdapter) {
         playerSocket.on("roomConfiguration"){ response ->
             var roomsAvailable = response[0] as JSONArray
-            for(i in 0 until roomsAvailable.length()) {
-                Log.d("room", roomsAvailable[i].toString())
-            }
             roomsAvailable = roomsAvailable[0] as JSONArray
+            val mapper = jacksonObjectMapper()
+            //rooms = mapper.readValue(roomsAvailable, object: TypeReference<ArrayList<Room>>() {})
             for(i in 0 until roomsAvailable.length()) {
-                val mapper = jacksonObjectMapper()
                 val roomToAdd = mapper.readValue(roomsAvailable.get(i).toString(), Room::class.java)
                 rooms.add(roomToAdd)
             }

@@ -2,13 +2,14 @@ package com.example.scrabbleprototype.services
 
 import android.app.Service
 import android.content.Intent
-import android.os.Binder
-import android.os.CountDownTimer
-import android.os.IBinder
+import android.os.*
 import android.util.Log
-import com.example.scrabbleprototype.model.Constants
 import com.example.scrabbleprototype.model.SocketHandler
 import com.example.scrabbleprototype.objects.Player
+
+interface SkipTurnCallback {
+    fun updateTimeUI(currentTime: Long)
+}
 
 class SkipTurnService : Service() {
 
@@ -20,6 +21,7 @@ class SkipTurnService : Service() {
     private lateinit var countdownTimer: CountDownTimer
 
     private val binder = LocalBinder()
+    private var skipTurnCallBack: SkipTurnCallback? = null
 
     inner class LocalBinder: Binder() {
         fun getService(): SkipTurnService = this@SkipTurnService
@@ -28,7 +30,12 @@ class SkipTurnService : Service() {
     override fun onBind(intent: Intent): IBinder {
         receiveNewTurn()
         receiveStartFromServer()
+        Log.d("timer", player.isTurn.toString() + "  OK")
         return binder
+    }
+
+    fun setCallbacks(callBack: SkipTurnCallback?) {
+        skipTurnCallBack = callBack
     }
 
     private fun receiveStartFromServer() {
@@ -36,7 +43,7 @@ class SkipTurnService : Service() {
             if(player.isTurn) {
                 Log.d("timer", "Started")
                 timeMs = 60000
-                updateTimeUI()
+                skipTurnCallBack?.updateTimeUI(timeMs)
                 startTimer(timeMs)
             }
         }
@@ -49,19 +56,20 @@ class SkipTurnService : Service() {
         }
     }
 
-    fun startTimer(startTime: Long, timeMs: Long ) {
+    fun startTimer(startTime: Long) {
+        Handler(Looper.getMainLooper()).post {
+            countdownTimer = object : CountDownTimer(startTime, 1000) {
+                override fun onFinish() {
+                    switchTimer()
+                }
 
-        countdownTimer = object : CountDownTimer(startTime, 1000) {
-            override fun onFinish() {
-                switchTimer()
+                override fun onTick(newTime: Long) {
+                    timeMs = newTime
+                    skipTurnCallBack?.updateTimeUI(timeMs)
+                }
             }
-
-            override fun onTick(newTime: Long) {
-                timeMs = newTime
-                updateTimeUI()
-            }
+            countdownTimer.start()
         }
-        countdownTimer.start()
     }
 
     fun switchTimer() {
@@ -75,6 +83,6 @@ class SkipTurnService : Service() {
     fun resetTimer() {
         countdownTimer.cancel()
         timeMs = 0
-        updateTimeUI()
+        skipTurnCallBack?.updateTimeUI(timeMs)
     }
 }

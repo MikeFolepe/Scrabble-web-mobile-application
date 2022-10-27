@@ -1,33 +1,47 @@
 package com.example.scrabbleprototype.fragments
 
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
+import android.database.DatabaseUtils
 import android.os.Bundle
+import android.os.IBinder
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import androidx.databinding.DataBindingUtil
 import com.example.scrabbleprototype.R
+import com.example.scrabbleprototype.databinding.FragmentGameButtonsBinding
+import com.example.scrabbleprototype.objects.Player
+import com.example.scrabbleprototype.services.SkipTurnService
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [GameButtonsFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class GameButtonsFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private val player = Player
+
+    private lateinit var skipTurnService: SkipTurnService
+    private var skipTurnBound: Boolean = false
+    private lateinit var activityContext: Context
+
+    private var _binding: FragmentGameButtonsBinding? = null
+    private val binding get() = _binding!!
+
+    private val connection = object: ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            val binder = service as SkipTurnService.LocalBinder
+            skipTurnService = binder.getService()
+            skipTurnBound = true
+        }
+        override fun onServiceDisconnected(name: ComponentName?) {
+            skipTurnBound = false
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
     }
 
     override fun onCreateView(
@@ -35,26 +49,45 @@ class GameButtonsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_game_buttons, container, false)
+        _binding = FragmentGameButtonsBinding.inflate(inflater, container, false)
+        binding.skipTurnButton.setOnClickListener {
+            skipTurn()
+        }
+        binding.playerTurn = player.isTurn
+        binding.playTurnButton.setOnClickListener {
+            Log.d("timer", binding.skipTurnButton.isEnabled.toString() + "BUTT")
+            Log.d("timer", player.isTurn.toString() + "WHY")
+            Log.d("timer", binding.playerTurn.toString() + "THIS")
+        }
+
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment GameButtonsFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            GameButtonsFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        activityContext = context
+    }
+
+    override fun onStop() {
+        super.onStop()
+        activityContext.unbindService(connection)
+        skipTurnBound = false
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        Intent(activityContext, SkipTurnService::class.java).also { intent ->
+            activityContext.bindService(intent, connection, Context.BIND_AUTO_CREATE)
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    private fun skipTurn() {
+        Log.d("timer", binding.skipTurnButton.isEnabled.toString() + "BUTT")
+        skipTurnService.switchTimer()
     }
 }
