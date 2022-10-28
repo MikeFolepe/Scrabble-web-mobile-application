@@ -15,10 +15,18 @@
         android:theme="@style/Theme.ScrabblePrototype"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+        <activity
+            android:name=".WaitingRoomActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+
         <service
             android:name=".services.SwapLetterService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
 
         <activity
             android:name=".activities.JoinGameActivity"
