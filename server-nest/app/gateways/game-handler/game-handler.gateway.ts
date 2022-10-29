@@ -89,6 +89,9 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
         });
         this.onNewRoomPlayer(socket);
         socket.on('sendPlacement', (scrabbleBoard: string[][], startPosition: Vec2, orientation: string, word: string, roomId: string) => {
+            this.logger.log(word);
+            this.logger.log(startPosition);
+            this.logger.log(orientation);
             socket.to(roomId).emit('receivePlacement', scrabbleBoard, startPosition, orientation, word);
         });
 

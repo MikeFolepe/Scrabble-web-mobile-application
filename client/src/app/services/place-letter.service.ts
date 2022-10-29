@@ -325,16 +325,11 @@ export class PlaceLetterService implements OnDestroy {
             }
         }
     }
-
     private receivePlacement(): void {
-        this.clientSocketService.socket.on(
-            'receivePlacement',
-            (scrabbleBoard: string[][], startPosition: Vec2, orientation: Orientation, word: string) => {
-                this.placeByOpponent(scrabbleBoard, startPosition, orientation, word);
-            },
-        );
+        this.clientSocketService.socket.on('receivePlacement', (scrabbleBoard: string, startPosition: string, orientation: string, word: string) => {
+            this.placeByOpponent(JSON.parse(scrabbleBoard), JSON.parse(startPosition), JSON.parse(orientation), word);
+        });
     }
-
     private placeByOpponent(scrabbleBoard: string[][], startPosition: Vec2, orientation: Orientation, word: string): void {
         const currentPosition = { x: startPosition.x, y: startPosition.y };
         this.scrabbleBoard = scrabbleBoard;

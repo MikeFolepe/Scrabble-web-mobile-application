@@ -25,10 +25,11 @@ import com.example.scrabbleprototype.services.SwapLetterService
 
 class LetterRackFragment : Fragment() {
 
-    private val letterInfo = LetterRack.letters
+    private val letterRack = LetterRack.letters
     private val reserve = Constants.RESERVE
-    private val hashMap = hashMapOf<Char, Letter>()
+    private val hashMap = hashMapOf<String, Letter>()
     private val letterPos = hashMapOf<Int, Letter>()
+    private lateinit var letterRackAdapter: LetterRackAdapter
 
     private lateinit var swapLetterService: SwapLetterService
     private var swapLetterBound: Boolean = false
@@ -40,6 +41,7 @@ class LetterRackFragment : Fragment() {
             val binder = service as SwapLetterService.LocalBinder
             swapLetterService = binder.getService()
             swapLetterBound = true
+            swapLetterService.refillRack(view?.findViewById(R.id.letter_rack))
         }
         override fun onServiceDisconnected(name: ComponentName?) {
             swapLetterBound = false
@@ -48,10 +50,6 @@ class LetterRackFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-    }
-
-    override fun onStart() {
-        super.onStart()
         Intent(activityContext, SwapLetterService::class.java).also { intent ->
             activityContext.bindService(intent, connection, Context.BIND_AUTO_CREATE)
         }
@@ -80,7 +78,6 @@ class LetterRackFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupLetterRack(view)
         setupSwapButton(view)
-        initializeLetterRack()
 
         for(element in reserve) {
             hashMap[element.value] = element
@@ -91,14 +88,13 @@ class LetterRackFragment : Fragment() {
         val letterRackView = view.findViewById<RecyclerView>(R.id.letter_rack)
         val horizontalLayoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false)
         letterRackView.layoutManager = horizontalLayoutManager
-        val letterRackAdapter = LetterRackAdapter(letterInfo)
+        letterRackAdapter = LetterRackAdapter(letterRack)
         letterRackView.adapter = letterRackAdapter
-        letterRackAdapter.updateData(letterInfo)
+        letterRackAdapter.updateData(letterRack)
 
         letterRackAdapter.onLetterClick = { position ->
-            // GESTION DU CHEVALET ICI
-            Toast.makeText(activity, "Lettre sélectionnée : " + letterInfo[position].value, Toast.LENGTH_LONG).show()
-            letterPos[position] = letterInfo[position]
+            Toast.makeText(activity, "Lettre sélectionnée : " + letterRack[position].value, Toast.LENGTH_LONG).show()
+            letterPos[position] = letterRack[position]
         }
     }
 
@@ -106,26 +102,7 @@ class LetterRackFragment : Fragment() {
         val swapButton = view.findViewById<Button>(R.id.swap_button)
         val letterRackView = view.findViewById<RecyclerView>(R.id.letter_rack)
         swapButton.setOnClickListener {
-            if(swapLetterBound) swapLetterService.swapLetters(letterInfo, letterPos, letterRackView)
+            if(swapLetterBound) swapLetterService.swapLetters(letterPos, letterRackView)
         }
     }
-
-    private fun initializeLetterRack() {
-        for (i in 0..6) {
-
-            var letterToAdd = findRandomLetterFromRes()
-            while (letterToAdd.quantity == 0) {
-                letterToAdd = findRandomLetterFromRes()
-            }
-            letterInfo.add(letterToAdd)
-
-            letterToAdd.quantity = letterToAdd.quantity.toInt() - 1
-        }
-
-    }
-
-    private fun findRandomLetterFromRes() : Letter {
-        return reserve[(0..25).shuffled().last()]
-    }
-
 }

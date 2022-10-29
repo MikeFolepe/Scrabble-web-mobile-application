@@ -59,8 +59,11 @@ export class InformationPanelComponent implements OnInit, OnDestroy {
     }
 
     initializePlayers(): void {
-        let player = new Player(1, this.gameSettingsService.gameSettings.playersNames[PLAYER_ONE_INDEX], this.letterService.getRandomLetters());
+        const player = new Player(1, this.gameSettingsService.gameSettings.playersNames[PLAYER_ONE_INDEX], this.letterService.getRandomLetters());
         this.playerService.addPlayer(player);
+        const player2 = new Player(2, 'CLIENT LÉGER', this.letterService.getRandomLetters());
+        this.playerService.addPlayer(player2);
+        /*
         if (this.gameSettingsService.isSoloMode) {
             player = new PlayerAI(
                 2,
@@ -72,6 +75,7 @@ export class InformationPanelComponent implements OnInit, OnDestroy {
             return;
         }
         this.clientSocketService.socket.emit('sendPlayerTwo', player.letterTable, this.clientSocketService.roomId);
+        */
     }
 
     initializeFirstTurn(): void {

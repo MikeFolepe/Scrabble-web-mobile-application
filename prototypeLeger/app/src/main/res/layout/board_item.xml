@@ -12,8 +12,10 @@
         android:id="@+id/bonus_layer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:textSize="7sp"
-        android:textColor="@color/white" />
+        android:textSize="9sp"
+        android:layout_margin="1dp"
+        android:textAlignment="center"
+        android:textColor="@color/black"/>
 
     <LinearLayout
         android:id="@+id/letter_layer"

@@ -52,19 +52,16 @@ class LetterRackAdapter(private var letterRack: ArrayList<Letter>) :
 
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
-        viewHolder.letter.text = letterRack[position].value.toString()
+        viewHolder.letter.text = letterRack[position].value
         viewHolder.letterScore.text = letterRack[position].point.toString()
 
         viewHolder.itemView.setOnLongClickListener { v ->
-            //val data: ClipData = ClipData.newPlainText("", "")
-            // val letterTouched = v?.findViewById<TextView>(R.id.letter)?.text
-
-            val letterTouched = ClipData.Item(letterRack[viewHolder.layoutPosition].value.toString())
+            val letterTouched = ClipData.Item(letterRack[viewHolder.layoutPosition].value)
             val letterQuantity = ClipData.Item(letterRack[viewHolder.layoutPosition].quantity.toString())
             val letterScore = ClipData.Item(letterRack[viewHolder.layoutPosition].point.toString())
             val positionTouched = ClipData.Item(viewHolder.layoutPosition.toString())
             val dragData = ClipData(
-                letterRack[viewHolder.layoutPosition].value.toString(),
+                letterRack[viewHolder.layoutPosition].value,
                 arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN),
                 letterTouched
             )

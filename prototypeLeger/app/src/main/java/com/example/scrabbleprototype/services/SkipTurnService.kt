@@ -4,6 +4,7 @@ import android.app.Service
 import android.content.Intent
 import android.os.*
 import android.util.Log
+import androidx.databinding.ObservableField
 import com.example.scrabbleprototype.model.SocketHandler
 import com.example.scrabbleprototype.objects.Player
 
@@ -30,7 +31,6 @@ class SkipTurnService : Service() {
     override fun onBind(intent: Intent): IBinder {
         receiveNewTurn()
         receiveStartFromServer()
-        Log.d("timer", player.isTurn.toString() + "  OK")
         return binder
     }
 
@@ -40,7 +40,7 @@ class SkipTurnService : Service() {
 
     private fun receiveStartFromServer() {
         playerSocket.on("startTimer") {
-            if(player.isTurn) {
+            if(player.getTurn()) {
                 Log.d("timer", "Started")
                 timeMs = 60000
                 skipTurnCallBack?.updateTimeUI(timeMs)
@@ -51,8 +51,8 @@ class SkipTurnService : Service() {
 
     private fun receiveNewTurn() {
         playerSocket.on("turnSwitched") { response ->
-            player.isTurn = response[0] as Boolean
-            Log.d("timer", player.isTurn.toString())
+            player.setTurn(response[0] as Boolean)
+            Log.d("timer", player.getTurn().toString())
         }
     }
 
@@ -76,8 +76,8 @@ class SkipTurnService : Service() {
         resetTimer()
         Thread.sleep(3000)
         Log.d("timer", "Emit du switch")
-        playerSocket.emit("switchTurn", player.isTurn, socketHandler.roomId)
-        player.isTurn = false
+        playerSocket.emit("switchTurn", player.getTurn(), socketHandler.roomId)
+        player.setTurn(false)
     }
 
     fun resetTimer() {

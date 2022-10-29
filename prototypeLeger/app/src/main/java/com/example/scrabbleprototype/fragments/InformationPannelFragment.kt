@@ -13,6 +13,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.databinding.ObservableField
 import androidx.fragment.app.findFragment
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.model.SocketHandler
@@ -25,7 +26,6 @@ import kotlin.math.min
 
 class InformationPannelFragment : Fragment(), SkipTurnCallback {
 
-    val socketHandler = SocketHandler
     val player = Player
 
     private var timeMs: Long = 0
@@ -41,7 +41,6 @@ class InformationPannelFragment : Fragment(), SkipTurnCallback {
 
     private val connection = object: ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            Log.d("timer", "Service init")
             val binder = service as SkipTurnService.LocalBinder
             skipTurnService = binder.getService()
             skipTurnBound = true
@@ -72,7 +71,7 @@ class InformationPannelFragment : Fragment(), SkipTurnCallback {
         updateTimeUI(timeMs)
         timeMs = 60000
         updateTimeUI(timeMs)
-        player.isTurn = true
+        player.setTurn(true)
     }
 
     override fun onStart() {
@@ -80,12 +79,10 @@ class InformationPannelFragment : Fragment(), SkipTurnCallback {
         Intent(activityContext, SkipTurnService::class.java).also { intent ->
             activityContext.bindService(intent, connection, Context.BIND_AUTO_CREATE)
         }
-        Log.d("timer", "intent")
     }
 
     override fun onStop() {
         super.onStop()
-        Log.d("timer", "stopped")
         skipTurnService.setCallbacks(null)
         activityContext.unbindService(connection)
         skipTurnBound = false

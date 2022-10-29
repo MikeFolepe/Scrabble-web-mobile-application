@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools">
     <data>
         <variable
-            name="playerTurn"
-            type="java.lang.Boolean" />
+            name="player"
+            type="com.example.scrabbleprototype.objects.Player" />
     </data>
 
     <FrameLayout
@@ -25,7 +25,7 @@
                 android:text="@string/play_button"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
-                android:background="@drawable/teal_shadow_button"
+                android:background="@drawable/button_selector"
                 android:textAllCaps="false"
                 android:textColor="@color/white"/>
             <LinearLayout
@@ -44,8 +44,9 @@
                     android:textAllCaps="false"
                     android:textColor="@color/white"
                     android:layout_weight="1"
-                    android:enabled="@{playerTurn}"
-                    android:background="@drawable/teal_shadow_button"/>
+                    android:enabled="@{player.turn}"
+                    android:background="@drawable/button_selector"
+                    android:foreground="@drawable/ripple"/>
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/give_up_button"
                     android:layout_width="wrap_content"

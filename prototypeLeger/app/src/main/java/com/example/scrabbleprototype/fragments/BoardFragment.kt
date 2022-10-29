@@ -7,20 +7,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
-import com.example.scrabbleprototype.model.BoardAdapter
-import com.example.scrabbleprototype.model.Letter
-import com.example.scrabbleprototype.model.LetterRackAdapter
+import com.example.scrabbleprototype.model.*
 import com.example.scrabbleprototype.objects.Board
 import com.example.scrabbleprototype.objects.LetterRack
+import com.example.scrabbleprototype.viewModel.PlacementViewModel
 
 
 class BoardFragment : Fragment() {
 
     var board = Board.cases
     var letterRack = LetterRack.letters
+
+    private val placementViewModel: PlacementViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,23 +51,22 @@ class BoardFragment : Fragment() {
         boardView.adapter = boardAdapter
         boardAdapter.updateData(board)
 
-        boardAdapter.onCaseClicked = { position ->
-            board[position] = Letter('A', 5, 5, false, false)
-            boardAdapter.notifyItemChanged(position)
-            Toast.makeText(activity, "Case sélectionnée : " + board[position].value, Toast.LENGTH_LONG).show()
-        }
-        boardAdapter.onPlacement = { letterRackPosition ->
+        boardAdapter.onPlacement = { letterRackPosition, boardPosition ->
+            placementViewModel.addLetter(boardPosition, board[boardPosition].value)
+
             letterRack.removeAt(letterRackPosition)
             val letterRackAdapter = activity?.findViewById<RecyclerView>(R.id.letter_rack)?.adapter
             letterRackAdapter?.notifyDataSetChanged()
+            Log.d("placing", letterRack.size.toString())
         }
     }
 
     private fun initializeBoard() {
         for(i in 0..224 ) {
-            board.add(Letter(' ', 0, 0, false, false))
+            board.add(Constants.EMPTY_LETTER)
         }
     }
+
 
 
 }
