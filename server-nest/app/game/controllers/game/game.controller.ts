@@ -13,9 +13,9 @@ export class GameController {
         response.status(HttpStatus.OK).send(words);
     }
 
-    @Post('/validateWords/:fileName')
-    validateWords(@Req() request, @Res() response: Response) {
-        const isValid = this.wordValidator.isValidInDictionary(request.body, request.params.fileName);
-        response.status(HttpStatus.OK).send(isValid);
-    }
+    // @Post('/validateWords/:fileName')
+    // validateWords(@Req() request, @Res() response: Response) {
+    //     const isValid = this.wordValidator.isValidInDictionary(request.body, request.params.fileName);
+    //     response.status(HttpStatus.OK).send(isValid);
+    // }
 }

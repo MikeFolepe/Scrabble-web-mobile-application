@@ -74,10 +74,10 @@ export class SendMessageService {
         setTimeout(() => {
             let endGameEasel = '';
             this.displayMessageByType('Fin de partie - lettres restantes', MessageType.System);
-            for (const letter of this.playerService.players[indexPlayer].letterTable) {
+            for (const letter of this.playerService.opponents[indexPlayer].letterTable) {
                 endGameEasel += letter.value;
             }
-            this.displayMessageByType(this.playerService.players[indexPlayer].name + ' : ' + endGameEasel, MessageType.System);
+            this.displayMessageByType(this.playerService.opponents[indexPlayer].name + ' : ' + endGameEasel, MessageType.System);
         }, TWO_SECOND_DELAY);
     }
 }

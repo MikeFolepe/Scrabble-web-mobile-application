@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { ONE_SECOND_DELAY, TWO_SECOND_DELAY } from '@app/classes/constants';
 import { ClientSocketService } from '@app/services/client-socket.service';
 import { GameSettingsService } from '@app/services/game-settings.service';
-import { PlayerIndex } from '@common/player-index';
 
 @Component({
     selector: 'app-waiting-room',
@@ -46,7 +45,7 @@ export class WaitingRoomComponent implements OnInit {
     }
 
     handleReloadErrors(): void {
-        if (this.gameSettingsService.gameSettings.playersNames[PlayerIndex.OWNER] === '') {
+        if (this.gameSettingsService.gameSettings.creatorName === '') {
             const errorMessage = 'Une erreur est survenue';
             this.waitBeforeChangeStatus(ONE_SECOND_DELAY, errorMessage);
             this.router.navigate(['home']);

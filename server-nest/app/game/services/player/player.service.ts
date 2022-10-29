@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-imports */
 import { Letter } from '@common/letter';
 import { DEFAULT_FONT_SIZE, EASEL_SIZE, FONT_SIZE_MAX, FONT_SIZE_MIN, INVALID_INDEX, RESERVE, WHITE_LETTER_INDEX } from '../../../classes/constants';
 import { Player } from '../../models/player.model';
@@ -6,16 +7,14 @@ import { LetterService } from '../letter/letter.service';
 export class PlayerService {
     fontSize: number;
     players: Player[];
-    letterService: LetterService;
-    private scrabbleBoard: string[][];
+    // private scrabbleBoard: string[][];
 
     private updateEasel: () => void;
 
-    constructor() {
+    constructor(public letterService: LetterService) {
         // private gridService: GridService, private clientSocketService: ClientSocketService
         this.fontSize = DEFAULT_FONT_SIZE;
         this.players = new Array<Player>();
-        this.letterService = new LetterService();
         // this.receiveScoreFromServer();
         // this.receiveOpponentEasel();
     }
@@ -48,9 +47,9 @@ export class PlayerService {
         return this.players[indexPlayer].letterTable;
     }
 
-    updateScrabbleBoard(scrabbleBoard: string[][]): void {
-        this.scrabbleBoard = scrabbleBoard;
-    }
+    // updateScrabbleBoard(scrabbleBoard: string[][]): void {
+    //     this.scrabbleBoard = scrabbleBoard;
+    // }
 
     updateFontSize(fontSize: number): void {
         if (fontSize < FONT_SIZE_MIN) {

@@ -86,11 +86,11 @@ export class ChatboxService {
     }
 
     private executeSwap(): void {
-        if (this.skipTurnService.isTurn) {
+        if (this.playerService.currentPlayer.isTurn) {
             const messageSplitted = this.message.split(/\s/);
 
             if (this.swapLetterService.swapCommand(messageSplitted[1], PLAYER_ONE_INDEX)) {
-                this.message = this.playerService.players[PLAYER_ONE_INDEX].name + ' : ' + this.message;
+                this.message = this.playerService.opponents[PLAYER_ONE_INDEX].name + ' : ' + this.message;
                 this.sendMessageService.displayMessageByType(this.message, this.messageType);
                 this.skipTurnService.switchTurn();
             }
@@ -100,7 +100,7 @@ export class ChatboxService {
     }
 
     private executeSkipTurn(): void {
-        if (this.skipTurnService.isTurn) {
+        if (this.playerService.currentPlayer.isTurn) {
             this.endGameService.addActionsLog('passer');
             this.sendMessageService.displayMessageByType(this.message, this.messageType);
             this.skipTurnService.switchTurn();
@@ -110,7 +110,7 @@ export class ChatboxService {
     }
 
     private async executePlace(): Promise<void> {
-        if (this.skipTurnService.isTurn) {
+        if (this.playerService.currentPlayer.isTurn) {
             const messageSplitted = this.message.split(/\s/);
             const positionSplitted = messageSplitted[1].split(/([0-9]+)/);
 

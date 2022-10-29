@@ -1,6 +1,6 @@
 import { Room, State } from '@app/classes/room';
+import { Player } from '@app/game/models/player.model';
 import { GameSettings, StartingPlayer } from '@common/game-settings';
-import { ObjectiveTypes } from '@common/objectives-type';
 import { PlayerIndex } from '@common/player-index';
 import { Injectable } from '@nestjs/common';
 import { OUT_BOUND_INDEX_OF_SOCKET } from '../../../classes/constants';
@@ -32,7 +32,8 @@ export class RoomManagerService {
     addCustomer(customerName: string, roomId: string): boolean {
         const room = this.find(roomId);
         if (room === undefined) return false;
-        room.gameSettings.playersNames[PlayerIndex.CUSTOMER] = customerName;
+        if (room.playerService.players.length === 4) return false;
+        room.playerService.players.push(new Player(customerName, room.letter.getRandomLetters()));
 
         return true;
     }
@@ -51,22 +52,22 @@ export class RoomManagerService {
         return room.gameSettings;
     }
 
-    formatGameSettingsForCustomerIn(roomId: string): GameSettings {
-        const room = this.find(roomId) as Room;
-        const gameSettings = room.gameSettings;
-        const playerNames: string[] = [gameSettings.playersNames[PlayerIndex.CUSTOMER], gameSettings.playersNames[PlayerIndex.OWNER]];
-        const startingPlayer = gameSettings.startingPlayer ? StartingPlayer.Player1 : StartingPlayer.Player2;
-        const formattedGameSettings = new GameSettings(
-            playerNames,
-            startingPlayer,
-            gameSettings.timeMinute,
-            gameSettings.timeSecond,
-            gameSettings.level,
-            gameSettings.dictionary,
-        );
+    // formatGameSettingsForCustomerIn(roomId: string): GameSettings {
+    //     const room = this.find(roomId) as Room;
+    //     const gameSettings = room.gameSettings;
+    //     const playerNames: string[] = [gameSettings.playersNames[PlayerIndex.CUSTOMER], gameSettings.playersNames[PlayerIndex.OWNER]];
+    //     const startingPlayer = gameSettings.startingPlayer ? StartingPlayer.Player1 : StartingPlayer.Player2;
+    //     const formattedGameSettings = new GameSettings(
+    //         playerNames,
+    //         startingPlayer,
+    //         gameSettings.timeMinute,
+    //         gameSettings.timeSecond,
+    //         gameSettings.level,
+    //         gameSettings.dictionary,
+    //     );
 
-        return formattedGameSettings;
-    }
+    //     return formattedGameSettings;
+    // }
 
     deleteRoom(roomId: string): void {
         this.rooms.forEach((room, roomIndex) => {
@@ -92,10 +93,10 @@ export class RoomManagerService {
         return OUT_BOUND_INDEX_OF_SOCKET;
     }
 
-    getWinnerName(roomId: string, indexOfLoser: number): string {
+    getWinnerName(roomId: string, indexOfLoser: number = 0): string {
         const room = this.find(roomId) as Room;
         if (room === undefined) return '';
-        return indexOfLoser === 0 ? room.gameSettings.playersNames[1] : room.gameSettings.playersNames[0];
+        return '';
     }
 
     isNotAvailable(roomId: string): boolean {
@@ -110,7 +111,7 @@ export class RoomManagerService {
     findRoomInWaitingState(customerName: string): Room | undefined {
         const roomWaiting: Room[] = [];
         for (const room of this.rooms) {
-            if (room.state === State.Waiting && room.gameSettings.playersNames[PlayerIndex.OWNER] !== customerName) {
+            if (room.state === State.Waiting && room.gameSettings.creatorName !== customerName) {
                 roomWaiting.push(room);
             }
         }

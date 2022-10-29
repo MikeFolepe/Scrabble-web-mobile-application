@@ -5,8 +5,8 @@ import { Orientation } from '@app/classes/scrabble-board-pattern';
 import { Vec2 } from '@common/vec2';
 import { GridService } from './grid.service';
 import { PlaceLetterService } from './place-letter.service';
-import { SkipTurnService } from './skip-turn.service';
 import { PlacementsHandlerService } from './placements-handler.service';
+import { PlayerService } from './player.service';
 
 @Injectable({
     providedIn: 'root',
@@ -23,7 +23,7 @@ export class BoardHandlerService {
     constructor(
         private gridService: GridService,
         private placeLetterService: PlaceLetterService,
-        private skipTurnService: SkipTurnService,
+        private playerService: PlayerService,
         private placementsService: PlacementsHandlerService,
     ) {
         this.currentCase = { x: INVALID_INDEX, y: INVALID_INDEX };
@@ -43,7 +43,7 @@ export class BoardHandlerService {
             }
             case 'Enter': {
                 if (this.word.length) {
-                    if (this.skipTurnService.isTurn) {
+                    if (this.playerService.currentPlayer.isTurn) {
                         this.confirmPlacement();
                         break;
                     }
@@ -56,7 +56,7 @@ export class BoardHandlerService {
                 break;
             }
             default: {
-                if (!this.skipTurnService.isTurn) break;
+                if (!this.playerService.currentPlayer.isTurn) break;
                 if (/([a-zA-Z\u00C0-\u00FF])+/g.test(event.key) && event.key.length === 1) {
                     // Removes accents from the letter to place
                     const letterNoAccents = event.key.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -104,7 +104,7 @@ export class BoardHandlerService {
     private async placeLetter(letter: string): Promise<void> {
         if (this.isFirstCasePicked && !this.isFirstCaseLocked) {
             // Placing the 1st letter
-            if (await this.placeLetterService.placeWithKeyboard(this.currentCase, letter, this.orientation, this.word.length, PLAYER_ONE_INDEX)) {
+            if (await this.placeLetterService.placeWithKeyboard(this.currentCase, letter, this.orientation, this.word.length)) {
                 this.placedLetters[this.word.length] = true;
                 this.word += letter;
                 this.isFirstCaseLocked = true;
@@ -113,7 +113,7 @@ export class BoardHandlerService {
         } else if (this.isFirstCaseLocked) {
             // Placing following letters
             this.goToNextCase(this.orientation);
-            if (await this.placeLetterService.placeWithKeyboard(this.currentCase, letter, this.orientation, this.word.length, PLAYER_ONE_INDEX)) {
+            if (await this.placeLetterService.placeWithKeyboard(this.currentCase, letter, this.orientation, this.word.length)) {
                 this.placedLetters[this.word.length] = true;
                 this.word += letter;
                 this.updateCaseDisplay();
@@ -128,7 +128,7 @@ export class BoardHandlerService {
         // Verify that letterToRemove isn't undefined
         if (letterToRemove) {
             this.word = this.word.slice(0, LAST_INDEX);
-            this.placeLetterService.removePlacedLetter(this.currentCase, letterToRemove, PLAYER_ONE_INDEX);
+            this.placeLetterService.removePlacedLetter(this.currentCase, letterToRemove);
         }
         // If there's still at least one letter to remove
         if (this.word.length) {

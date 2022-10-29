@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-imports */
 /* eslint-disable no-unused-vars */
 /* eslint-disable max-len */
 import { BOARD_COLUMNS, BOARD_ROWS, EASEL_SIZE, INVALID_INDEX, PLAYER_AI_INDEX, THREE_SECONDS_DELAY } from '@app/classes/constants';
@@ -5,15 +6,14 @@ import { Orientation } from '@app/classes/scrabble-board-pattern';
 import { ScoreValidation } from '@app/classes/validation-score';
 // eslint-disable-next-line import/no-unresolved
 import { Vec2 } from '@common/vec2';
-import { WordValidationService } from '../../word-validation.service';
 import { PlayerService } from '../player/player.service';
+import { WordValidationService } from '../word-validation/word-validation.service';
 
 export class PlaceLetterService {
     isFirstRound: boolean;
     lastPlacedWord: string;
     scrabbleBoard: string[][];
 
-    playerService: PlayerService;
     private startPosition: Vec2;
     private orientation: Orientation;
     private word: string;
@@ -28,7 +28,8 @@ export class PlaceLetterService {
     constructor(
         // private playerService: PlayerService,
         // private gridService: GridService,
-        private wordValidationService: WordValidationService, // private skipTurnService: SkipTurnService, // private clientSocketService: ClientSocketService // private gameSettingsService: GameSettingsService, // private endGameService: EndGameService,
+        private wordValidationService: WordValidationService,
+        private playerService: PlayerService, // private skipTurnService: SkipTurnService, // private clientSocketService: ClientSocketService // private gameSettingsService: GameSettingsService, // private endGameService: EndGameService,
     ) {
         this.isFirstRound = true;
         this.scrabbleBoard = [];
@@ -42,8 +43,7 @@ export class PlaceLetterService {
                 this.scrabbleBoard[i][j] = '';
             }
         }
-        this.playerService = new PlayerService();
-        this.playerService.updateScrabbleBoard(this.scrabbleBoard);
+        // this.playerService.updateScrabbleBoard(this.scrabbleBoard);
         // this.receivePlacement();
     }
 
@@ -186,7 +186,7 @@ export class PlaceLetterService {
     handleValidPlacement(finalResult: ScoreValidation, indexPlayer: number): void {
         // this.displayValid(indexPlayer);
         this.playerService.addScore(finalResult.score, indexPlayer);
-        this.playerService.updateScrabbleBoard(this.scrabbleBoard);
+        // this.playerService.updateScrabbleBoard(this.scrabbleBoard);
         this.playerService.refillEasel(indexPlayer);
         this.isFirstRound = false;
         // if (!this.gameSettingsService.isSoloMode) {

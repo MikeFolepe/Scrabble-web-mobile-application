@@ -115,7 +115,7 @@ export const BONUS_POSITIONS: Map<string, string> = new Map<string, string>([
 ]);
 
 export const DEFAULT_GAME_SETTINGS = {
-    playersNames: ['', ''],
+    creatorName: '',
     startingPlayer: StartingPlayer.Player1,
     timeMinute: '01',
     timeSecond: '00',

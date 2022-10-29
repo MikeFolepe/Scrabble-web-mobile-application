@@ -1,9 +1,10 @@
+/* eslint-disable no-restricted-imports */
 import { Direction } from '@app/classes/enum';
 import { Orientation } from '@app/classes/scrabble-board-pattern';
 import { Vec2 } from '@common/vec2';
 import { BOARD_COLUMNS, BOARD_ROWS, CENTRAL_CASE_POSITION, INVALID_INDEX } from '../../../classes/constants';
-import { WordValidationService } from '../../word-validation.service';
 import { PlayerService } from '../player/player.service';
+import { WordValidationService } from '../word-validation/word-validation.service';
 export class PlacementsHandlerService {
     lastLettersPlaced: Map<string, Vec2>;
     extendingPositions: string[];
@@ -13,7 +14,7 @@ export class PlacementsHandlerService {
     constructor(
         private wordValidationService: WordValidationService, // private clientSocketService: ClientSocketService,
     ) {
-        this.playerService = new PlayerService();
+        // this.playerService = new PlayerService();
         // this.receiveCurrentWords();
     }
 

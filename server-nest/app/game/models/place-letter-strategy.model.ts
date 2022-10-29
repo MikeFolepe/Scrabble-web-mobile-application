@@ -8,7 +8,7 @@ import { Vec2 } from '@common/vec2';
 import { LetterService } from '../services/letter/letter.service';
 import { PlaceLetterService } from '../services/place-letter/place-letter.service';
 import { PlayerService } from '../services/player/player.service';
-import { WordValidationService } from '../word-validation.service';
+import { WordValidationService } from '../services/word-validation/word-validation.service';
 import { PlayerAI } from './player-ai.model';
 import { Player } from './player.model';
 
