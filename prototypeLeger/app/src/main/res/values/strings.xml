@@ -24,14 +24,13 @@
     // Create game form
     <string name="game_settings">Paramètres de la partie</string>
     <string name="player_info">Informations du joueur</string>
-    <string name="player_name_hint">Nom du joueur</string>
-    <string name="player_name_info">4–12 caractères \n Les 4 premiers caractères doivent être des lettres \n @#$%^&amp;*_ autorisés</string>
     <string name="duration">Durée</string>
+    <string name="dictionary">Dictionnaire</string>
+    <string name="party_type">Type de partie</string>
     <string name="minute">Minute(s)</string>
     <string name="seconde">Seconde(s)</string>
-    <string name="random_bonus">Bonus aléatoire</string>
-    <string name="disable">Désactiver</string>
-    <string name="enable">Activer</string>
+    <string name="everyone">Public</string>
+    <string name="restricted">Privée</string>
     <string name="back">Retour</string>
     <string name="Continue">Continuer</string>
 
