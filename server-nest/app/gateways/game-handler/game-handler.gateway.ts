@@ -100,12 +100,6 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
         });
 
         this.onNewRoomPlayer(socket);
-        socket.on('sendPlacement', (scrabbleBoard: string[][], startPosition: Vec2, orientation: string, word: string, roomId: string) => {
-            const room = this.roomManagerService.find(roomId) as Room;
-            room.placeLetter.scrabbleBoard = scrabbleBoard;
-            socket.to(roomId).emit('receivePlacement', room.placeLetter.scrabbleBoard, startPosition, orientation, word);
-        });
-
         socket.on('sendReserve', (reserve: Letter[], reserveSize: number, roomId: string) => {
             socket.to(roomId).emit('receiveReserve', reserve, reserveSize);
         });
@@ -134,7 +128,6 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
                 this.server.in(roomId).emit('startTimer');
             }
 
-
             if (room.playerService.players[index] instanceof PlayerAI) {
                 await (room.playerService.players[index] as PlayerAI).play(index);
                 if (room.placeLetter.finalResult.validation) {
@@ -153,20 +146,6 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
             }
         });
 
-        socket.on('sendEasel', (letterTable: Letter[], roomId: string) => {
-            socket.to(roomId).emit('receiveOpponentEasel', letterTable);
-        });
-
-        socket.on('updatePlayedWords', (playedWords: string, roomId: string) => {
-            socket.to(roomId).emit('receivePlayedWords', playedWords);
-        });
-
-        socket.on('updateCurrentWords', (currentWords: string, priorCurrentWords: string, roomId: string) => {
-            socket.to(roomId).emit('receiveCurrentWords', currentWords, priorCurrentWords);
-        });
-        socket.on('updateScoreInfo', (score: number, indexPlayer: number, roomId: string) => {
-            socket.to(roomId).emit('receiveScoreInfo', score, indexPlayer);
-        });
 
         socket.on('objectiveAccomplished', (id: number, roomId: string) => {
             socket.to(roomId).emit('receiveObjectiveCompleted', id);
@@ -191,9 +170,6 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
             this.server.in(roomId).emit('stopTimer');
         });
 
-        socket.on('sendPlayerTwo', (letterTable: Letter[], roomId: string) => {
-            socket.to(roomId).emit('receivePlayerTwo', letterTable);
-        });
 
         // Method handler by click on placement aléatoire
         socket.on('newRoomCustomerOfRandomPlacement', (customerName: string) => {
