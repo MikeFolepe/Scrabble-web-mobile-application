@@ -15,13 +15,6 @@
         android:theme="@style/Theme.ScrabblePrototype"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
-        <activity
-            android:name=".WaitingRoomActivity"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
 
         <service
             android:name=".services.SwapLetterService"
@@ -59,6 +52,13 @@
         </activity>
         <activity
             android:name=".activities.ChatActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".activities.WaitingRoomActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"

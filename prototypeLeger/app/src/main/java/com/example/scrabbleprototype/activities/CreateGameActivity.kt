@@ -162,6 +162,8 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
         val continueGameButton = findViewById<Button>(R.id.continue_button)
         continueGameButton.setOnClickListener {
             createGame(this.gameSetting)
+            startActivity(Intent(this, WaitingRoomActivity::class.java))
+
         }
         val backButton = findViewById<Button>(R.id.back_button)
         backButton.setOnClickListener {
