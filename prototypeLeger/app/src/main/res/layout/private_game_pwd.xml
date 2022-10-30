@@ -40,7 +40,7 @@
                 android:layout_width="250dp"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:background="#bc214b"
+                android:background="@color/green"
                 android:minHeight="170dp">
 
                 <androidx.appcompat.widget.AppCompatEditText
@@ -63,7 +63,7 @@
                     android:id="@+id/popup_window_title"
                     android:layout_width="match_parent"
                     android:layout_height="45dp"
-                    android:background="#9E1C40"
+                    android:background="@color/green"
                     android:gravity="center"
                     android:text="Title"
                     android:textAlignment="center"
@@ -91,7 +91,7 @@
                         style="?android:attr/borderlessButtonStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="#851635"
+                        android:background="@color/green"
                         android:text="@string/back"
                         android:textAllCaps="false"
                         android:textColor="#FFFFFF"
@@ -105,7 +105,7 @@
                     style="?android:attr/borderlessButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="#851635"
+                    android:background="@color/dark_green"
                     android:text="@string/Continue"
                     android:textAllCaps="false"
                     android:textColor="#FFFFFF"
