@@ -1,5 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { BOARD_COLUMNS, BOARD_ROWS, EASEL_SIZE, INVALID_INDEX, PLAYER_AI_INDEX, PLAYER_ONE_INDEX, THREE_SECONDS_DELAY } from '@app/classes/constants';
+import { BOARD_COLUMNS, BOARD_ROWS, INVALID_INDEX, PLAYER_AI_INDEX, THREE_SECONDS_DELAY } from '@app/classes/constants';
 import { MessageType } from '@app/classes/enum';
 import { Orientation } from '@app/classes/scrabble-board-pattern';
 import { ScoreValidation } from '@app/classes/validation-score';
@@ -28,7 +28,7 @@ export class PlaceLetterService implements OnDestroy {
     // If the bonus to form a word with all the letters from the easel applies
     private isEaselSize: boolean;
     // Number of letters used from the easel to form the word
-    private numLettersUsedFromEasel: number;
+    // private numLettersUsedFromEasel: number;
     private isRow: boolean;
 
     constructor(
@@ -45,7 +45,7 @@ export class PlaceLetterService implements OnDestroy {
         this.scrabbleBoard = [];
         this.validLetters = [];
         this.isEaselSize = false;
-        this.numLettersUsedFromEasel = 0;
+        // this.numLettersUsedFromEasel = 0;
         this.isRow = false;
         for (let i = 0; i < BOARD_ROWS; i++) {
             this.scrabbleBoard[i] = [];
@@ -72,7 +72,7 @@ export class PlaceLetterService implements OnDestroy {
         // If the position is empty, we use a letter from the reserve
         this.scrabbleBoard[position.y][position.x] = letter;
         this.validLetters[indexLetterInWord] = false; // Here the letter is placed but not validated
-        this.numLettersUsedFromEasel++;
+        // this.numLettersUsedFromEasel++;
 
         if (letter === letter.toUpperCase()) {
             // If we put an upper-case letter (white letter), we remove a '*' from the easel
@@ -118,7 +118,7 @@ export class PlaceLetterService implements OnDestroy {
         // Placing the first word
         if (this.isFirstRound) {
             if (this.placementsService.isFirstWordValid(position, orientation, word)) {
-                return await this.validatePlacement(position, orientation, word, indexPlayer);
+                return await this.validatePlacement(position, orientation, word);
             }
             this.handleInvalidPlacement(position, orientation, word);
             this.sendMessageService.displayMessageByType('ERREUR : Un ou des mots formés sont invalides', MessageType.Error);
@@ -128,7 +128,7 @@ export class PlaceLetterService implements OnDestroy {
             return false;
         }
         // Placing the following words
-        if (this.isWordTouchingOthers(position, orientation, word)) return await this.validatePlacement(position, orientation, word, indexPlayer);
+        if (this.isWordTouchingOthers(position, orientation, word)) return await this.validatePlacement(position, orientation, word);
 
         this.handleInvalidPlacement(position, orientation, word);
         this.sendMessageService.displayMessageByType('ERREUR : Le placement est invalide', MessageType.Error);
@@ -263,7 +263,7 @@ export class PlaceLetterService implements OnDestroy {
         this.scrabbleBoard = [];
         this.validLetters = [];
         this.isEaselSize = false;
-        this.numLettersUsedFromEasel = 0;
+        // this.numLettersUsedFromEasel = 0;
         this.isRow = false;
         for (let i = 0; i < BOARD_ROWS; i++) {
             this.scrabbleBoard[i] = [];

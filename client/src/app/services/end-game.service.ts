@@ -90,7 +90,7 @@ export class EndGameService {
                 this.playerService.opponents[indexPlayer].score = 0;
             }
         }
-        if (this.playerService.opponents[indexPlayer] instanceof PlayerAI) return;
+        if (this.playerService.opponents[indexPlayer]) return;
 
         this.playersScores.push({
             score: this.playerService.opponents[indexPlayer].score,
@@ -123,6 +123,6 @@ export class EndGameService {
 
     isEndGameByEasel(): boolean {
         return this.letterService.reserveSize === 0;
-            // (this.playerService.isEaselEmpty(PLAYER_ONE_INDEX) || this.playerService.isEaselEmpty(PLAYER_AI_INDEX)));
+        // (this.playerService.isEaselEmpty(PLAYER_ONE_INDEX) || this.playerService.isEaselEmpty(PLAYER_AI_INDEX)));
     }
 }

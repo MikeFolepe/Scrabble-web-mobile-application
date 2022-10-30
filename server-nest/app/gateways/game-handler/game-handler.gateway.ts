@@ -1,6 +1,5 @@
 /* eslint-disable no-restricted-imports */
 import { Room, State } from '@app/classes/room';
-import { Player } from '@app/game/models/player.model';
 import { UsersService } from '@app/users/service/users.service';
 import { GameSettings } from '@common/game-settings';
 import { Letter } from '@common/letter';
@@ -54,7 +53,6 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
             this.server.emit('roomAvailable', this.roomManagerService.getNumberOfRoomInWaitingState());
             setTimeout(() => {
                 this.server.in(roomId).emit('startTimer');
-
             }, 3000);
         });
     }
@@ -102,8 +100,8 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
         socket.on('sendPlacement', (scrabbleBoard: string[][], startPosition: Vec2, orientation: string, word: string, roomId: string) => {
             const room = this.roomManagerService.find(roomId) as Room;
             room.placeLetter.scrabbleBoard = scrabbleBoard;
-            // room.playerAi.play();
-            // console.log(scrabbleBoard === room.playerAi.strategy.placeLetterService.scrabbleBoard);
+            room.aiPlayers.play();
+            console.log(scrabbleBoard === room.aiPlayers.strategy.placeLetterService.scrabbleBoard);
             socket.to(roomId).emit('receivePlacement', room.placeLetter.scrabbleBoard);
         });
 
@@ -233,6 +231,7 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
             this.server.emit('roomConfiguration', this.roomManagerService.rooms);
             // Send number of rooms available
             this.server.emit('roomAvailable', this.roomManagerService.getNumberOfRoomInWaitingState());
+            this.server.in(roomId).emit('goToGameView');
         });
     }
 

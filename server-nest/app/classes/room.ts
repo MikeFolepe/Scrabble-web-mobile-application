@@ -19,10 +19,11 @@ export class Room {
     socketIds: string[];
     wordValidation: WordValidationService;
     letter: LetterService;
-    aiPlayers: PlayerAI[];
+    aiPlayers: PlayerAI;
     placeLetter: PlaceLetterService;
     playerService: PlayerService;
     turnCounter: number;
+    player: Player;
 
     constructor(roomId: string, socketId: string, gameSettings: GameSettings, state: State = State.Waiting) {
         this.turnCounter = 0;
@@ -36,6 +37,19 @@ export class Room {
         this.playerService = new PlayerService(this.letter);
         this.placeLetter = new PlaceLetterService(this.wordValidation, this.playerService);
         this.playerService.players[0] = new Player(this.gameSettings.creatorName, this.letter.getRandomLetters());
+
+        this.player = new Player('ok, ', this.letter.reserve, 0);
+
+        this.aiPlayers = new PlayerAI(
+            'ok',
+            this.letter.getRandomLetters(),
+            this.playerService,
+            this.player,
+            this.gameSettings,
+            this.placeLetter,
+            this.letter,
+            this.wordValidation,
+        );
 
         // instancier placeLetterService avec wordValidation, instancier  world validation, instancier playerService           placer tout dans Ai
     }

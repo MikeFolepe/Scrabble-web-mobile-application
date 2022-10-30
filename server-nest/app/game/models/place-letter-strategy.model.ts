@@ -81,7 +81,7 @@ export class PlaceLetterStrategy {
         const scrabbleBoard = this.placeLetterService.scrabbleBoard;
         // console.log(scrabbleBoard);
         if (this.isFirstRoundAi) {
-            this.dictionary = this.wordValidation.dictionary;
+            // this.dictionary = this.wordValidation.dictionary;
             this.isFirstRoundAi = false;
         }
         let allPossibleWords: PossibleWords[];
