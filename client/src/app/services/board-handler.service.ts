@@ -85,7 +85,7 @@ export class BoardHandlerService {
 
     async confirmPlacement(): Promise<void> {
         // Validation of the placement
-        await this.placeLetterService.validateKeyboardPlacement(this.firstCase, this.orientation, this.word, PLAYER_ONE_INDEX);
+        await this.placeLetterService.validateKeyboardPlacement(this.firstCase, this.orientation, this.word);
         this.word = '';
         this.placedLetters = [];
         this.isFirstCasePicked = false;

@@ -74,7 +74,7 @@ export class PlaceLetterStrategy {
         return allPossibleWords.filter((word) => word.point >= pointingRange.min && word.point <= pointingRange.max);
     }
 
-    async execute(): Promise<void> {
+    async execute(index:number): Promise<void> {
         const playerAi = this.playerService.players[0] as PlayerAI;
         const level = this.gameSettings.level;
         const isFirstRound = this.placeLetterService.isFirstRound;
@@ -110,7 +110,7 @@ export class PlaceLetterStrategy {
         matchingPointingRangeWords = this.filterByRange(allPossibleWords, this.pointingRange);
         // Step7: Place one word between all the words that have passed the steps
         // if (level === AiType.expert) await this.computeResults(allPossibleWords);
-        await this.computeResults(matchingPointingRangeWords, false);
+        await this.computeResults(matchingPointingRangeWords, false, index);
 
         // Step8: Alert the debug about the alternatives
         // playerAiService.debugService.receiveAIDebugPossibilities(allPossibleWords);
@@ -184,14 +184,14 @@ export class PlaceLetterStrategy {
         if (word1.point === word2.point) return equalSortNumbers;
         return word1.point < word2.point ? greaterSortNumber : lowerSortNumber;
     };
-    async place(word: PossibleWords): Promise<void> {
+    async place(word: PossibleWords, index: number): Promise<void> {
         console.log('ads');
         const startPos = word.orientation ? { x: word.line, y: word.startIndex } : { x: word.startIndex, y: word.line };
-        if (await this.placeLetterService.placeCommand(startPos, word.orientation, word.word)) return;
+        if ((await this.placeLetterService.placeCommand(startPos, word.orientation, word.word), index)) return;
         // this.skip(false);
     }
 
-    private async computeResults(possibilities: PossibleWords[], isExpertLevel = true): Promise<void> {
+    private async computeResults(possibilities: PossibleWords[], isExpertLevel = true, index: number): Promise<void> {
         if (possibilities.length === 0) {
             this.swap(isExpertLevel);
             return;
@@ -199,13 +199,13 @@ export class PlaceLetterStrategy {
 
         let wordIndex = 0;
         if (isExpertLevel) {
-            await this.place(possibilities[wordIndex]);
+            await this.place(possibilities[wordIndex], index);
             possibilities.splice(0, 1);
             return;
         }
 
         wordIndex = this.generateRandomNumber(possibilities.length);
-        await this.place(possibilities[wordIndex]);
+        await this.place(possibilities[wordIndex], index);
         possibilities.splice(wordIndex, 1);
     }
 

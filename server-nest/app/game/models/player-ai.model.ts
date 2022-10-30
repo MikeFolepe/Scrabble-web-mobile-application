@@ -25,8 +25,8 @@ export class PlayerAI extends Player {
         this.strategy = new PlaceLetterStrategy(playerService, player, gameSetting, placeLetterService, letterService, wordValidation);
     }
 
-    play(): void {
-        this.strategy.execute();
+    async play(index: number): Promise<void> {
+        await this.strategy.execute(index);
     }
 
     getEasel(): string {

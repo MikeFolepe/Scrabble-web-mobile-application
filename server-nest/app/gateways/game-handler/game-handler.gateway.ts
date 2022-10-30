@@ -1,5 +1,7 @@
 /* eslint-disable no-restricted-imports */
 import { Room, State } from '@app/classes/room';
+import { Orientation } from '@app/classes/scrabble-board-pattern';
+import { PlayerAI } from '@app/game/models/player-ai.model';
 import { UsersService } from '@app/users/service/users.service';
 import { GameSettings } from '@common/game-settings';
 import { Letter } from '@common/letter';
@@ -24,6 +26,8 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
     //         this.emitTime();
     //     }, DELAY_BEFORE_EMITTING_TIME);
     // }
+
+    // TODO: set a socket id in player class to easily find the player
 
     onNewRoomPlayer(socket: Socket): void {
         socket.on('newRoomCustomer', (playerName: string, roomId: string) => {
@@ -117,19 +121,45 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
             socket.to(roomId).emit('receiveGameConverservernMessage', message);
         });
 
-        socket.on('switchTurn', (roomId: string, playerName: string) => {
+        socket.on('switchTurn', async (roomId: string, playerName: string) => {
             this.server.in(roomId).emit('stopTimer');
             const room = this.roomManagerService.find(roomId);
             room.turnCounter++;
             for (let i = 0; i < room.playerService.players.length; i++) {
-                if (room.playerService.players[i].name === playerName) {
-                    room.playerService.players[i].isTurn = false;
-                    this.server.in(roomId).emit('updatePlayerTurnToFalse', room.playerService.players[i].name);
-                }
+
                 if (i === room.turnCounter % room.playerService.players.length) {
                     room.playerService.players[i].isTurn = true;
                     this.server.in(roomId).emit('turnSwitched', room.playerService.players[i].name);
                     this.server.in(roomId).emit('startTimer');
+                }
+            }
+
+            const index = room.playerService.players.findIndex((curPlayer) => playerName === curPlayer.name);
+            if (room.playerService.players[index].name === playerName) {
+                room.playerService.players[index].isTurn = false;
+                this.server.in(roomId).emit('updatePlayerTurnToFalse', room.playerService.players[i].name);
+            }
+            if (index === room.turnCounter % room.playerService.players.length) {
+                room.playerService.players[index].isTurn = true;
+                this.server.in(roomId).emit('turnSwitched', room.playerService.players[i].name);
+                this.server.in(roomId).emit('startTimer');
+            }
+
+
+            if (room.playerService.players[index] instanceof PlayerAI) {
+                await (room.playerService.players[index] as PlayerAI).play(index);
+                if (room.placeLetter.finalResult.validation) {
+                    socket
+                        .to(roomId)
+                        .emit(
+                            'receivePlacement',
+                            room.placeLetter.scrabbleBoard,
+                            room.placeLetter.startPosition,
+                            room.placeLetter.orientation,
+                            room.placeLetter.word,
+                        );
+                    this.server.to(roomId).emit('updatePlayer', room.playerService.players[index]);
+                    this.server.to(roomId).emit('receiveReserve', room.letter.reserve, room.letter.reserveSize);
                 }
             }
         });
@@ -187,37 +217,38 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
         socket.on('getRoomAvailable', () => {
             this.server.emit('roomAvailable', this.roomManagerService.getNumberOfRoomInWaitingState());
         });
+
+        socket.on(
+            'validatePlacement',
+            async (
+                position: Vec2,
+                word: string,
+                orientation: Orientation,
+                isRow: boolean,
+                isEaselSize: boolean,
+                board: string[][],
+                roomId: string,
+                playerName: string,
+            ) => {
+                const room = this.roomManagerService.find(roomId);
+                const validationResult = await room.wordValidation.validateAllWordsOnBoard(board, isEaselSize, isRow);
+                if (validationResult.validation) {
+                    const index = room.playerService.players.findIndex((curPlayer) => playerName === curPlayer.name);
+                    room.placeLetter.handleValidPlacement(validationResult, index);
+                    room.placeLetter.scrabbleBoard = board;
+                    socket.emit('receiveSuccess');
+                    socket.to(roomId).emit('receivePlacement', board, position, orientation, word);
+                    this.server.to(roomId).emit('updatePlayer', room.playerService.players[index]);
+                    this.server.to(roomId).emit('receiveReserve', room.letter.reserve, room.letter.reserveSize);
+                } else {
+                    socket.emit('receiveFail', position, orientation, word);
+                }
+            },
+        );
     }
 
     onCreateRoom(socket: Socket): void {
         socket.on('createRoom', (gameSettings: GameSettings) => {
-            // Logger.log('wefww');
-            // const roomId = this.roomManagerService.createRoomId(gameSettings.playersNames[PlayerIndex.OWNER], socket.id);
-            // this.roomManagerService.createRoom(socket.id, roomId, gameSettings);
-            // this.roomManagerService.addCustomer('ok', roomId);
-            // // this.roomManagerService.setSocket(this.roomManagerService.find(roomId) as Room, socket.id);
-            // this.roomManagerService.setState(roomId, State.Playing);
-            // this.server.emit('roomConfiguration', this.roomManagerService.rooms);
-            // // socket.join(roomId);
-            // // this.server.in(roomId).emit('yourRoomId', roomId);
-            // this.server.in(roomId).emit('yourGameSettings', this.roomManagerService.formatGameSettingsForCustomerIn(roomId));
-            // socket.to(roomId).emit('yourGameSettings', this.roomManagerService.getGameSettings(roomId));
-            // // this.server.in(roomId).emit('goToGameView');
-            // // this.server.in(roomId).emit('startTimer');
-            // // Send number of rooms available
-            // this.server.emit('roomAvailable', this.roomManagerService.getNumberOfRoomInWaitingState());
-            // const room = this.roomManagerService.find(roomId) as Room;
-            // socket.join(roomId);
-            // // give the client his roomId to communicate later with server
-            // socket.emit('yourRoomId', roomId);
-            // Logger.log(roomId);
-            // // room creation alerts all clients on the new rooms configurations
-            // this.server.emit('roomConfiguration', this.roomManagerService.rooms);
-            // // Send number of rooms available
-            // // this.server.emit('roomAvailable', this.roomManagerService.getNumberOfRoomInWaitingState());
-            // this.server.in(roomId).emit('goToGameView');
-            // this.server.in(roomId).emit('startTimer');
-
             const roomId = this.roomManagerService.createRoomId(gameSettings.creatorName, socket.id);
             this.roomManagerService.createRoom(socket.id, roomId, gameSettings);
             socket.join(roomId);
