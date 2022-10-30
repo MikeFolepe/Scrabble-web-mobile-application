@@ -6,7 +6,6 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -17,18 +16,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.databinding.FragmentGameButtonsBinding
 import com.example.scrabbleprototype.model.Constants
-import com.example.scrabbleprototype.model.Orientation
-import com.example.scrabbleprototype.model.SocketHandler
-import com.example.scrabbleprototype.model.Vec2
 import com.example.scrabbleprototype.objects.Board
 import com.example.scrabbleprototype.objects.LetterRack
-import com.example.scrabbleprototype.objects.Player
+import com.example.scrabbleprototype.objects.Players
 import com.example.scrabbleprototype.services.PlaceService
 import com.example.scrabbleprototype.services.SkipTurnService
 import com.example.scrabbleprototype.services.SwapLetterService
 import com.example.scrabbleprototype.viewModel.PlacementViewModel
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 
 class GameButtonsFragment : Fragment() {
     private val board = Board.cases
@@ -119,7 +113,7 @@ class GameButtonsFragment : Fragment() {
         binding.skipTurnButton.setOnClickListener {
             skipTurn()
         }
-        binding.player = Player
+        binding.player = Players.currentPlayer
     }
 
     private fun setupPlayButton() {

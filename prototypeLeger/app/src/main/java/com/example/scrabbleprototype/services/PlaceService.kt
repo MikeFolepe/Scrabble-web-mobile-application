@@ -5,16 +5,14 @@ import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import android.util.Log
-import com.example.scrabbleprototype.model.Constants
-import com.example.scrabbleprototype.model.Orientation
-import com.example.scrabbleprototype.model.SocketHandler
-import com.example.scrabbleprototype.model.Vec2
+import androidx.recyclerview.widget.RecyclerView
+import com.example.scrabbleprototype.model.*
 import com.example.scrabbleprototype.objects.Board
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 class PlaceService : Service() {
-    private var isFirstPlacement: Boolean = false
+    private var isFirstPlacement: Boolean = true
     private var board = Board.cases
     private var spaceBetweenEachLetter: Int = 1
     private var orientation: Orientation = Orientation.Horizontal
@@ -119,12 +117,29 @@ class PlaceService : Service() {
     }
 
     fun sendPlacement() {
+        isFirstPlacement = false
         Log.d("sendPlace", getWord(orientation))
         socket.emit("sendPlacement", Json.encodeToString(get2DBoard()),
             Json.encodeToString(get2DPosition(startPosition)),
             Json.encodeToString(orientation.ordinal),
             getWord(orientation),
             SocketHandler.roomId)
+    }
+
+    fun placeByOpponent(startPosition: Vec2, orientation: Orientation, word: String, boardView: RecyclerView) {
+        isFirstPlacement = false
+        var currentPosition = get1DPosition(startPosition.y, startPosition.x)
+        var spaceBetweenEachLetter = 1
+        if(orientation == Orientation.Vertical) spaceBetweenEachLetter = 15
+
+        for(letter in word) {
+            val letterFound = Constants.RESERVE.find { it.value == letter.uppercase() }
+                ?: return
+            val letterToPlace = Letter(letterFound.value, letterFound.quantity, letterFound.point, false, false)
+            board[currentPosition] = letterToPlace
+            boardView.adapter?.notifyItemChanged(currentPosition)
+            currentPosition += spaceBetweenEachLetter
+        }
     }
 
     private fun isBoardFilledAt(position: Int): Boolean {

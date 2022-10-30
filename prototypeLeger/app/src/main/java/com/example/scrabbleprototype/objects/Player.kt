@@ -3,17 +3,11 @@ package com.example.scrabbleprototype.objects
 import androidx.databinding.BaseObservable
 import androidx.databinding.Bindable
 import androidx.databinding.library.baseAdapters.BR
+import com.example.scrabbleprototype.model.Player
 
 
-object Player: BaseObservable() {
-    private var isTurn = false
+object Players: BaseObservable() {
 
-    @Bindable
-    fun getTurn(): Boolean { return isTurn }
-
-    @Bindable
-    fun setTurn(turn: Boolean) {
-        isTurn = turn
-        notifyPropertyChanged(BR.turn)
-    }
+    var currentPlayer: Player = Player()
+    var opponents  = arrayListOf<Player>()
 }

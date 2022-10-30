@@ -5,28 +5,20 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
-import android.os.CountDownTimer
 import android.os.IBinder
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.databinding.ObservableField
-import androidx.fragment.app.findFragment
 import com.example.scrabbleprototype.R
-import com.example.scrabbleprototype.model.SocketHandler
-import com.example.scrabbleprototype.objects.Player
+import com.example.scrabbleprototype.objects.Players
 import com.example.scrabbleprototype.services.SkipTurnCallback
-
 import com.example.scrabbleprototype.services.SkipTurnService
-import com.example.scrabbleprototype.services.SwapLetterService
-import kotlin.math.min
 
 class InformationPannelFragment : Fragment(), SkipTurnCallback {
 
-    val player = Player
+    val player = Players.currentPlayer
 
     private var timeMs: Long = 0
     private lateinit var timerText: TextView
@@ -94,10 +86,10 @@ class InformationPannelFragment : Fragment(), SkipTurnCallback {
             val seconds = (currentTime / 1000) % 60
             var minutesString = ""
             var secondsString = ""
-            if(minutes < 10) minutesString = "0$minutes"
-            else minutesString = "$minutes"
-            if(seconds < 10) secondsString = "0$seconds"
-            else secondsString = "$seconds"
+            minutesString = if(minutes < 10) "0$minutes"
+                            else "$minutes"
+            secondsString = if(seconds < 10) "0$seconds"
+                            else "$seconds"
 
             timerText.text = minutesString + ":" + secondsString
         }

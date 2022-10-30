@@ -6,7 +6,7 @@ import android.os.*
 import android.util.Log
 import androidx.databinding.ObservableField
 import com.example.scrabbleprototype.model.SocketHandler
-import com.example.scrabbleprototype.objects.Player
+import com.example.scrabbleprototype.objects.Players
 
 interface SkipTurnCallback {
     fun updateTimeUI(currentTime: Long)
@@ -16,7 +16,7 @@ class SkipTurnService : Service() {
 
     private val socketHandler = SocketHandler
     private val playerSocket = socketHandler.getPlayerSocket()
-    private val player = Player
+    private val player = Players.currentPlayer
 
     private var timeMs: Long = 0
     private lateinit var countdownTimer: CountDownTimer
