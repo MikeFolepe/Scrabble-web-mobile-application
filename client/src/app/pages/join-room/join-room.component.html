@@ -7,14 +7,13 @@
 <div *ngIf="!shouldDisplayNameError && !shouldDisplayJoinError">
     <div *ngFor="let room of rooms ? rooms.slice(roomItemIndex, roomItemIndex + pageSize) : []">
         <mat-card class="card">
-            <mat-card-title>{{ room.gameSettings.playersNames[0] }} </mat-card-title>
+            <mat-card-title>{{ room.gameSettings.creatorName }} </mat-card-title>
             <br />
             <mat-card-subtitle>
                 Minute : {{ room.gameSettings.timeMinute }}
                 <br />
                 Second : {{ room.gameSettings.timeSecond }}
                 <br />
-                Bonus aléatoire : {{ room.gameSettings.randomBonus }}
             </mat-card-subtitle>
             <mat-card-actions>
                 <span>Statut : </span>

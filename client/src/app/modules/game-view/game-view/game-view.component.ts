@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { DEFAULT_FONT_SIZE } from '@app/classes/constants';
 import { GiveUpGameDialogComponent } from '@app/modules/game-view/give-up-game-dialog/give-up-game-dialog.component';
@@ -19,7 +19,7 @@ import { SkipTurnService } from '@app/services/skip-turn.service';
     templateUrl: './game-view.component.html',
     styleUrls: ['./game-view.component.scss'],
 })
-export class GameViewComponent implements OnInit {
+export class GameViewComponent {
     fontSize: number;
 
     constructor(
@@ -30,7 +30,7 @@ export class GameViewComponent implements OnInit {
         public chatBoxService: ChatboxService,
         public boardHandlerService: BoardHandlerService,
         public skipTurnService: SkipTurnService,
-        private playerService: PlayerService,
+        public playerService: PlayerService,
         public dialog: MatDialog,
         public sendMessageService: SendMessageService,
         public giveUpHandlerService: GiveUpHandlerService,
@@ -38,22 +38,13 @@ export class GameViewComponent implements OnInit {
         private placeLetterService: PlaceLetterService,
     ) {
         this.fontSize = DEFAULT_FONT_SIZE;
-        this.giveUpHandlerService.receiveEndGameByGiveUp();
+        // this.giveUpHandlerService.receiveEndGameByGiveUp();
         // this.objectiveService.ngOnDestroy();
-    }
-
-    ngOnInit(): void {
-        // this.objectiveService.initializeObjectives();
-        const mapBonus = new Map<string, string>();
-        JSON.parse(this.gameSettingsService.gameSettings.bonusPositions).map((element: string[]) => {
-            mapBonus.set(element[0], element[1]);
-        });
-        this.gridService.bonusPositions = mapBonus;
     }
 
     handleFontSizeEvent(fontSizeEvent: number): void {
         this.fontSize = fontSizeEvent;
-        this.playerService.updateFontSize(this.fontSize);
+        // this.playerService.updateFontSize(this.fontSize);
     }
 
     confirmGiveUpGame(): void {
@@ -64,7 +55,7 @@ export class GameViewComponent implements OnInit {
             if (!decision) return;
             // if decision is true the EndGame occurred
             this.sendMessageService.sendConversionMessage();
-            this.clientSocketService.socket.emit('sendEndGameByGiveUp', decision, this.clientSocketService.roomId, this.clientSocketService.gameType);
+            this.clientSocketService.socket.emit('sendEndGameByGiveUp', decision, this.clientSocketService.roomId);
         });
     }
 
@@ -73,7 +64,7 @@ export class GameViewComponent implements OnInit {
         this.placeLetterService.ngOnDestroy();
         this.gridService.ngOnDestroy();
         this.endGameService.clearAllData();
-        this.playerService.clearPlayers();
+        // this.playerService.clearPlayers();
         this.gameSettingsService.ngOnDestroy();
         if (this.giveUpHandlerService.isGivenUp) this.clientSocketService.socket.emit('deleteGame', this.clientSocketService.roomId);
     }

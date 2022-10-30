@@ -1,16 +1,13 @@
 import { Injectable } from '@angular/core';
 import { MAX_NUMBER_OF_POSSIBILITY, PLAYER_ONE_INDEX } from '@app/classes/constants';
 import { MessageType } from '@app/classes/enum';
-import { Orientation } from '@app/classes/scrabble-board-pattern';
 import { DebugService } from '@app/services/debug.service';
 import { EndGameService } from '@app/services/end-game.service';
 import { LetterService } from '@app/services/letter.service';
-import { PlaceLetterService } from '@app/services/place-letter.service';
 import { PlayerService } from '@app/services/player.service';
 import { SendMessageService } from '@app/services/send-message.service';
 import { SkipTurnService } from '@app/services/skip-turn.service';
 import { SwapLetterService } from '@app/services/swap-letter.service';
-import { Vec2 } from '@common/vec2';
 
 @Injectable({
     providedIn: 'root',
@@ -25,7 +22,7 @@ export class ChatboxService {
     constructor(
         private playerService: PlayerService,
         private swapLetterService: SwapLetterService,
-        private placeLetterService: PlaceLetterService,
+        // private placeLetterService: PlaceLetterService,
         private debugService: DebugService,
         private sendMessageService: SendMessageService,
         public endGameService: EndGameService,
@@ -86,11 +83,11 @@ export class ChatboxService {
     }
 
     private executeSwap(): void {
-        if (this.skipTurnService.isTurn) {
+        if (this.playerService.currentPlayer.isTurn) {
             const messageSplitted = this.message.split(/\s/);
 
             if (this.swapLetterService.swapCommand(messageSplitted[1], PLAYER_ONE_INDEX)) {
-                this.message = this.playerService.players[PLAYER_ONE_INDEX].name + ' : ' + this.message;
+                this.message = this.playerService.opponents[PLAYER_ONE_INDEX].name + ' : ' + this.message;
                 this.sendMessageService.displayMessageByType(this.message, this.messageType);
                 this.skipTurnService.switchTurn();
             }
@@ -100,7 +97,7 @@ export class ChatboxService {
     }
 
     private executeSkipTurn(): void {
-        if (this.skipTurnService.isTurn) {
+        if (this.playerService.currentPlayer.isTurn) {
             this.endGameService.addActionsLog('passer');
             this.sendMessageService.displayMessageByType(this.message, this.messageType);
             this.skipTurnService.switchTurn();
@@ -110,18 +107,18 @@ export class ChatboxService {
     }
 
     private async executePlace(): Promise<void> {
-        if (this.skipTurnService.isTurn) {
-            const messageSplitted = this.message.split(/\s/);
-            const positionSplitted = messageSplitted[1].split(/([0-9]+)/);
+        if (this.playerService.currentPlayer.isTurn) {
+            // const messageSplitted = this.message.split(/\s/);
+            // const positionSplitted = messageSplitted[1].split(/([0-9]+)/);
 
             // Vector containing start position of the word to place
-            const position: Vec2 = {
-                x: Number(positionSplitted[1]) - 1,
-                y: positionSplitted[0].charCodeAt(0) - 'a'.charCodeAt(0),
-            };
-            const orientation = positionSplitted[2] === 'h' ? Orientation.Horizontal : Orientation.Vertical;
+            // const position: Vec2 = {
+            //     x: Number(positionSplitted[1]) - 1,
+            //     y: positionSplitted[0].charCodeAt(0) - 'a'.charCodeAt(0),
+            // };
+            // const orientation = positionSplitted[2] === 'h' ? Orientation.Horizontal : Orientation.Vertical;
 
-            await this.placeLetterService.placeCommand(position, orientation, messageSplitted[2], PLAYER_ONE_INDEX);
+            // await this.placeLetterService.placeCommand(position, orientation, messageSplitted[2], PLAYER_ONE_INDEX);
             return;
         }
         this.sendMessageService.displayMessageByType(this.notTurnErrorMessage, MessageType.Error);

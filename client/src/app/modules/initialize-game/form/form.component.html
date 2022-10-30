@@ -40,10 +40,6 @@
                 </mat-form-field>
                 <div *ngIf="selectedDictionary">{{ selectedDictionary.description }}.</div>
             </fieldset>
-            <fieldset *ngIf="!gameSettingsService.isRedirectedFromMultiplayerGame" class="form-section">
-                <legend>Bonus aléatoire</legend>
-                <app-random-bonus [formGroup]="form" [parentForm]="form"></app-random-bonus>
-            </fieldset>
         </fieldset>
     </form>
     <div class="buttons">
