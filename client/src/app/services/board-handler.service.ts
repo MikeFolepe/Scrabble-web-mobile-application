@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BOARD_COLUMNS, BOARD_ROWS, GRID_CASE_SIZE, INVALID_INDEX, LAST_INDEX, PLAYER_ONE_INDEX } from '@app/classes/constants';
+import { BOARD_COLUMNS, BOARD_ROWS, GRID_CASE_SIZE, INVALID_INDEX, LAST_INDEX } from '@app/classes/constants';
 import { MouseButton } from '@app/classes/enum';
 import { Orientation } from '@app/classes/scrabble-board-pattern';
 import { Vec2 } from '@common/vec2';
