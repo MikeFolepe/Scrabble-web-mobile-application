@@ -17,7 +17,7 @@ class HomeMenuActivity : AppCompatActivity() {
     private fun setupButtons() {
         val createGameButton = findViewById<Button>(R.id.create_game_button)
         createGameButton.setOnClickListener {
-            startActivity(Intent(this, WaitingRoomActivity::class.java))
+            startActivity(Intent(this, CreateGameActivity::class.java))
             }
         val joinGameButton = findViewById<Button>(R.id.join_games_button)
         joinGameButton.setOnClickListener {

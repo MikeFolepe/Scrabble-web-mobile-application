@@ -169,6 +169,14 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
         backButton.setOnClickListener {
             startActivity(Intent(this, HomeMenuActivity::class.java))
         }
+
+        val privateRadioButton = findViewById<Button>(R.id.private_game)
+        privateRadioButton.setOnClickListener {
+            val intent = Intent(this, PrivateGamePwd::class.java)
+            intent.putExtra("popuptitle", "Veuillez entrer un mot de passe")
+            startActivity(intent)
+
+        }
     }
 
     private fun createGame (gameSetting: GameSettings) {
