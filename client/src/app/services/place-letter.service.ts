@@ -53,6 +53,7 @@ export class PlaceLetterService implements OnDestroy {
 
         this.receiveFailure();
         this.receiveSuccess();
+        this.receivePlacement();
     }
 
     async placeWithKeyboard(position: Vec2, letter: string, orientation: Orientation, indexLetterInWord: number): Promise<boolean> {
