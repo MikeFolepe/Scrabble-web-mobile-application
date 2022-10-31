@@ -22,10 +22,7 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONArray
@@ -59,11 +56,11 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
                 json()
             }
         }
-        setupSpinners()
         setUpButtons()
+        launch { setupSpinners() }
     }
 
-    fun setupSpinners() {
+    suspend fun setupSpinners() {
         val minutesSpinner = findViewById<Spinner>(R.id.spinner_minutes)
         val secondsSpinner = findViewById<Spinner>(R.id.spinner_secondes)
         val dicoSpinner = findViewById<Spinner>(R.id.spinner_dictionary)
@@ -71,10 +68,11 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
         minutesSpinner.adapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, minutes)
         secondsSpinner.adapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, seconds)
 
-        launch {
-            val response = getDictionaries()
-            if(response != null) {
-                val stringBody: String = response.body();
+
+            val response = async{ getDictionaries()}
+            val dico = response.await()
+            if(dico != null) {
+                val stringBody: String = dico.body();
                 val mapper = jacksonObjectMapper()
                 val dictionary: List<Dictionary> = mapper.readValue(stringBody, object: TypeReference<List<Dictionary>>() {})
                 for (i in 0 until dictionary.size) {
@@ -82,7 +80,7 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
                 }
             }
             Log.d("dico", dictionariesTitle.toString())
-        }
+
         dicoSpinner!!.adapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, dictionariesTitle)
 
         handleMinutesSelection(minutesSpinner)
