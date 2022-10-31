@@ -37,8 +37,6 @@ export class PlayerService {
         this.updatePlayer();
     }
 
-
-
     clearPlayers(): void {
         this.opponents = [];
     }
@@ -120,6 +118,7 @@ export class PlayerService {
     private getExistingOpponents(): void {
         this.clientSocketService.socket.on('curOps', (players: Player[]) => {
             for (const player of players) {
+                console.log(player)
                 this.opponents.push(player);
             }
         });

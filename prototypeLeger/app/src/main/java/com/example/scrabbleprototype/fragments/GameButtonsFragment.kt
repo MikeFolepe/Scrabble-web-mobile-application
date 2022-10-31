@@ -110,13 +110,9 @@ class GameButtonsFragment : Fragment() {
         _binding = null
     }
 
-    private fun skipTurn() {
-        skipTurnService.switchTimer()
-    }
-
     private fun setupSkipButton() {
         binding.skipTurnButton.setOnClickListener {
-            skipTurn()
+            skipTurnService.switchTimer()
         }
         binding.player = Players.currentPlayer
     }

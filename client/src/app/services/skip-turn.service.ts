@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ONE_SECOND_DELAY, PLAYER_ONE_INDEX, PLAYER_TWO_INDEX, THREE_SECONDS_DELAY } from '@app/classes/constants';
+import { ONE_SECOND_DELAY, PLAYER_ONE_INDEX, PLAYER_TWO_INDEX } from '@app/classes/constants';
 import { Player } from '@app/models/player.model';
 import { ClientSocketService } from '@app/services/client-socket.service';
 import { GameSettingsService } from '@app/services/game-settings.service';
@@ -28,6 +28,7 @@ export class SkipTurnService {
         this.receiveNewTurn();
         this.receiveStartFromServer();
         this.receiveStopFromServer();
+        this.switchAiTurn();
         this.shouldNotBeDisplayed = false;
     }
 
@@ -63,14 +64,23 @@ export class SkipTurnService {
         });
     }
 
+    switchAiTurn(): void {
+        this.clientSocket.socket.on('switchAiTurn', (playerName: string) => {
+            this.clientSocket.socket.emit('switchTurn', this.clientSocket.roomId, playerName);
+        });
+    }
+
     switchTurn(): void {
         this.checkEndGame();
         if (this.endGameService.isEndGame) return;
         if (this.playerService.currentPlayer.isTurn) this.shouldNotBeDisplayed = true;
-        setTimeout(() => {
-            this.shouldNotBeDisplayed = false;
-            this.clientSocket.socket.emit('switchTurn', this.clientSocket.roomId, this.playerService.currentPlayer.name);
-        }, THREE_SECONDS_DELAY);
+        this.stopTimer();
+        if (this.playerService.currentPlayer.isTurn) {
+            setTimeout(() => {
+                this.shouldNotBeDisplayed = false;
+                this.clientSocket.socket.emit('switchTurn', this.clientSocket.roomId, this.playerService.currentPlayer.name);
+            }, ONE_SECOND_DELAY);
+        }
     }
 
     startTimer(): void {
@@ -83,7 +93,6 @@ export class SkipTurnService {
                 this.seconds = 59;
             } else if (this.seconds === 0 && this.minutes === 0) {
                 if (this.playerService.currentPlayer.isTurn) {
-                    this.stopTimer()
                     this.endGameService.actionsLog.push('AucuneAction');
                     this.clientSocket.socket.emit('sendActions', this.endGameService.actionsLog, this.clientSocket.roomId);
                     this.switchTurn();

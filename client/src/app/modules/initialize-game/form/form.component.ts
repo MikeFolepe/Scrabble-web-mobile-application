@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { DEFAULT_DICTIONARY_INDEX } from '@app/classes/constants';
 import { AdministratorService } from '@app/services/administrator.service';
 import { AuthService } from '@app/services/auth.service';
+import { ClientSocketService } from '@app/services/client-socket.service';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameSettingsService } from '@app/services/game-settings.service';
 import { AiType } from '@common/ai-name';
@@ -23,6 +24,7 @@ export class FormComponent implements OnInit, OnDestroy {
     fileName: string;
 
     constructor(
+        private clientSocket: ClientSocketService,
         public gameSettingsService: GameSettingsService,
         private router: Router,
         private communicationService: CommunicationService,
@@ -49,7 +51,8 @@ export class FormComponent implements OnInit, OnDestroy {
         await this.selectGameDictionary(this.selectedDictionary);
         if (this.isDictionaryDeleted) return;
         this.snapshotSettings();
-        const nextUrl = this.gameSettingsService.isSoloMode ? 'game' : 'waiting-room';
+        this.clientSocket.socket.emit('createRoom', this.gameSettingsService.gameSettings);
+        const nextUrl = 'waiting-room';
         this.router.navigate([nextUrl]);
     }
 

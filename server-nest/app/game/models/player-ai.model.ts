@@ -14,7 +14,6 @@ export class PlayerAI extends Player {
         name: string,
         letterTable: Letter[],
         playerService: PlayerService,
-        player: Player,
         gameSetting: GameSettings,
         placeLetterService: PlaceLetterService,
         letterService: LetterService,
@@ -22,7 +21,7 @@ export class PlayerAI extends Player {
         score: number = 0,
     ) {
         super(name, letterTable, score);
-        this.strategy = new PlaceLetterStrategy(playerService, player, gameSetting, placeLetterService, letterService, wordValidation);
+        this.strategy = new PlaceLetterStrategy(playerService, gameSetting, placeLetterService, letterService, wordValidation);
     }
 
     async play(index: number): Promise<void> {

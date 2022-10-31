@@ -11,7 +11,8 @@ export class ClientSocketService {
     socket: Socket;
     roomId: string;
 
-    constructor(private gameSettingsService: GameSettingsService, private router: Router) {}
+    constructor(private gameSettingsService: GameSettingsService, private router: Router) {
+    }
 
     initialize(): void {
         this.initializeRoomId();
@@ -22,11 +23,6 @@ export class ClientSocketService {
     routeToGameView(): void {
         this.socket.on('goToGameView', () => {
             this.router.navigate(['game']);
-        });
-    }
-
-    routeToWaitingRoom(): void {
-        this.socket.on('goToWaiting', () => {
         });
     }
 

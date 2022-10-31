@@ -97,9 +97,9 @@ export class PlaceLetterService implements OnDestroy {
             if (this.placementsService.isFirstWordValid(position, orientation, word)) {
                 this.clientSocketService.socket.emit(
                     'validatePlacement',
-                    position,
+                    JSON.stringify(position),
                     word,
-                    orientation,
+                    JSON.stringify(orientation),
                     this.isRow,
                     this.isEaselSize,
                     JSON.stringify(this.scrabbleBoard),
@@ -119,9 +119,9 @@ export class PlaceLetterService implements OnDestroy {
         if (this.isWordTouchingOthers(position, orientation, word)) {
             this.clientSocketService.socket.emit(
                 'validatePlacement',
-                position,
+                JSON.stringify(position),
                 word,
-                orientation,
+                JSON.stringify(orientation),
                 this.isRow,
                 this.isEaselSize,
                 JSON.stringify(this.scrabbleBoard),
@@ -262,6 +262,7 @@ export class PlaceLetterService implements OnDestroy {
 
     private receiveSuccess() {
         this.clientSocketService.socket.on('receiveSuccess', () => {
+            console.log("success")
             this.endGameService.addActionsLog('placerSucces');
             this.clientSocketService.socket.emit('sendActions', this.endGameService.actionsLog, this.clientSocketService.roomId);
             this.handleValidPlacement();
@@ -283,6 +284,7 @@ export class PlaceLetterService implements OnDestroy {
     }
     private receivePlacement(): void {
         this.clientSocketService.socket.on('receivePlacement', (scrabbleBoard: string, startPosition: string, orientation: string, word: string) => {
+            console.log("received")
             this.placeByOpponent(JSON.parse(scrabbleBoard), JSON.parse(startPosition), JSON.parse(orientation), word);
         });
     }

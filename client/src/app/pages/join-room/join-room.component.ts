@@ -4,11 +4,13 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginatorIntl, PageEvent } from '@angular/material/paginator';
+import { Router } from '@angular/router';
 import { ERROR_MESSAGE_DELAY } from '@app/classes/constants';
 import { Room, State } from '@app/classes/room';
 import { NameSelectorComponent } from '@app/modules/initialize-game/name-selector/name-selector.component';
 import { AuthService } from '@app/services/auth.service';
 import { ClientSocketService } from '@app/services/client-socket.service';
+import { PlayerService } from '@app/services/player.service';
 
 @Component({
     selector: 'app-join-room',
@@ -31,6 +33,9 @@ export class JoinRoomComponent implements OnInit {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         public _MatPaginatorIntl: MatPaginatorIntl,
         private authService: AuthService,
+        private router: Router,
+        public playerService: PlayerService,
+
     ) {
         this.rooms = [];
         this.roomItemIndex = 0;
@@ -40,20 +45,19 @@ export class JoinRoomComponent implements OnInit {
         this.shouldDisplayJoinError = false;
         this.isRoomAvailable = false;
         this.isRandomButtonAvailable = false;
-        this.clientSocketService.socket.connect();
-        this.clientSocketService.socket.emit('getRoomsConfiguration');
-        this.clientSocketService.socket.emit('getRoomAvailable');
+        //this.clientSocketService.socket.connect();
         // Method for button and others
-        this.receiveRoomAvailable();
-        this.receiveRandomPlacement();
-        this.clientSocketService.routeToGameView();
     }
 
     ngOnInit(): void {
         this.configureRooms();
-        this.receiveRoomAvailable();
         this.handleRoomUnavailability();
+        this.receiveRoomAvailable();
         this.receiveRandomPlacement();
+        this.clientSocketService.initialize();
+        this.confirm();
+        this.clientSocketService.socket.emit('getRoomsConfiguration');
+        this.clientSocketService.socket.emit('getRoomAvailable');
 
         this._MatPaginatorIntl.itemsPerPageLabel = 'Salons par page';
         this._MatPaginatorIntl.firstPageLabel = 'Première page';
@@ -93,7 +97,15 @@ export class JoinRoomComponent implements OnInit {
             }, ERROR_MESSAGE_DELAY);
             return;
         }
+        console.log(this.authService.currentUser.pseudonym + " " + room.id)
         this.clientSocketService.socket.emit('newRoomCustomer', this.authService.currentUser.pseudonym, room.id);
+    }
+
+    confirm(){
+        this.clientSocketService.socket.on('goToWaiting', ()=>{
+            console.log("gotowaiting")
+            this.router.navigate(['waiting-room']);
+        });
     }
 
     placeRandomly(): void {
@@ -130,6 +142,7 @@ export class JoinRoomComponent implements OnInit {
     private handleRoomUnavailability(): void {
         this.clientSocketService.socket.on('roomAlreadyToken', () => {
             this.shouldDisplayJoinError = true;
+            this.playerService.opponents =[];
             setTimeout(() => {
                 this.shouldDisplayJoinError = false;
             }, ERROR_MESSAGE_DELAY);
@@ -140,8 +153,10 @@ export class JoinRoomComponent implements OnInit {
         this.clientSocketService.socket.on('roomConfiguration', (rooms) => {
             this.rooms = [];
             for (const room of rooms) {
+                console.log(room);
                 this.rooms.push(new Room(room.id, room.gameSettings, room.state, room.socketIds));
             }
+            console.log("ROOMS : ", this.rooms)
         });
     }
 }

@@ -4,14 +4,17 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
-import android.os.Bundle
-import android.os.IBinder
+import android.os.*
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet.Constraint
 import com.example.scrabbleprototype.R
+import com.example.scrabbleprototype.model.SocketHandler
 import com.example.scrabbleprototype.objects.CurrentRoom
 import com.example.scrabbleprototype.objects.Players
 import com.example.scrabbleprototype.services.SkipTurnCallback
@@ -60,6 +63,10 @@ class InformationPannelFragment : Fragment(), SkipTurnCallback {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         timerText = view.findViewById(R.id.timer)
+
+        view.findViewById<ConstraintLayout>(R.id.info_pannel_layout).setOnClickListener {
+            skipTurnService.setCallbacks(this@InformationPannelFragment)
+        }
     }
 
     override fun onStart() {
@@ -86,7 +93,6 @@ class InformationPannelFragment : Fragment(), SkipTurnCallback {
                             else "$minutes"
             secondsString = if(seconds < 10) "0$seconds"
                             else "$seconds"
-
             timerText.text = minutesString + ":" + secondsString
         }
     }

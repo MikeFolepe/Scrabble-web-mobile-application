@@ -8,6 +8,7 @@ import android.util.Log
 import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.model.*
 import com.example.scrabbleprototype.objects.Board
+import com.example.scrabbleprototype.objects.CurrentRoom
 import com.example.scrabbleprototype.objects.Players
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -129,7 +130,7 @@ class PlaceService : Service() {
             false,
             false,
             Json.encodeToString(get2DBoard()),
-            SocketHandler.roomId,
+            CurrentRoom.myRoom.id,
             Json.encodeToString(Players.currentPlayer))
     }
 

@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.*
 import android.util.Log
 import androidx.databinding.ObservableField
+import com.example.scrabbleprototype.fragments.InformationPannelFragment
 import com.example.scrabbleprototype.model.SocketHandler
 import com.example.scrabbleprototype.objects.CurrentRoom
 import com.example.scrabbleprototype.objects.Players
@@ -20,7 +21,7 @@ class SkipTurnService : Service() {
     private val player = Players.currentPlayer
     private val opponents = Players.opponents
 
-    private var timeMs: Long = 0
+    var timeMs: Long = 0
     private lateinit var countdownTimer: CountDownTimer
 
     private val binder = LocalBinder()
@@ -46,6 +47,7 @@ class SkipTurnService : Service() {
                 Log.d("timer", "Started")
                 getTurnTime()
                 timeMs = 60000
+                if(skipTurnCallBack == null) Log.d("timer", "its null")
                 skipTurnCallBack?.updateTimeUI(timeMs)
                 startTimer(timeMs)
             }
@@ -55,7 +57,10 @@ class SkipTurnService : Service() {
     private fun receiveNewTurn() {
         socket.on("turnSwitched") { response ->
             val playerName = response[0] as String
-            if(player.name == playerName) player.setTurn(true)
+            if(player.name == playerName) {
+                player.setTurn(true)
+                Log.d("timer", "turn is true")
+            }
             else {
                 opponents.find { it.name == playerName }?.setTurn(true)
             }
@@ -87,7 +92,7 @@ class SkipTurnService : Service() {
         resetTimer()
         Thread.sleep(3000)
         Log.d("timer", "Emit du switch")
-        socket.emit("switchTurn", socketHandler.roomId, player.name)
+        socket.emit("switchTurn", CurrentRoom.myRoom.id, player.name)
         player.setTurn(false)
     }
 

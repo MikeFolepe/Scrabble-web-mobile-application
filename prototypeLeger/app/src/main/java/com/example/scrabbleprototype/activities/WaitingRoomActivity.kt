@@ -39,8 +39,9 @@ class WaitingRoomActivity : AppCompatActivity() {
     private fun setupStartGameButton() {
         val startGameButton = findViewById<Button>(R.id.start_game_button)
         startGameButton.setOnClickListener {
-            if(Players.opponents.size < Constants.MAX_OPPONENTS) {
-                Toast.makeText(this, "Il manque des joueurs pour commencer la partie", Toast.LENGTH_LONG).show()
+            Log.d("waiting", Players.currentPlayer.isCreator.toString())
+            if(Players.opponents.size < Constants.MAX_OPPONENTS || !Players.currentPlayer.isCreator) {
+                Toast.makeText(this, "La partie ne peut pas être commencée", Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             }
             socket.emit("startGame", CurrentRoom.myRoom.id)
@@ -72,6 +73,7 @@ class WaitingRoomActivity : AppCompatActivity() {
             Players.opponents.add(newOpponent)
             runOnUiThread {
                 playersWaiting.add(newOpponent)
+                Log.d("waiting", playersWaiting[playersWaiting.size - 1].name)
                 playersWaitingAdapter.notifyItemChanged(playersWaiting.size - 1)
             }
         }
