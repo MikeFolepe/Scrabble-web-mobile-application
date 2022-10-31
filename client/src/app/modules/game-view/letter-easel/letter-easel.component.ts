@@ -30,9 +30,7 @@ export class LetterEaselComponent implements OnInit {
         private manipulateService: ManipulateService,
         private skipTurnService: SkipTurnService,
         private endGameService: EndGameService,
-    ) {
-        this.letterEaselTab = [];
-    }
+    ) {}
 
     @HostListener('document:click', ['$event'])
     @HostListener('document:contextmenu', ['$event'])
@@ -62,8 +60,8 @@ export class LetterEaselComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.playerService.bindUpdateEasel(this.update.bind(this));
-        this.update();
+        // this.playerService.bindUpdateEasel(this.update.bind(this));
+        // this.update();
         this.manipulateService.sendEasel(this.letterEaselTab);
     }
 
@@ -90,7 +88,7 @@ export class LetterEaselComponent implements OnInit {
             }
         }
         // Display the respective message into the chatBox and pass the turn
-        const message = this.playerService.players[PLAYER_ONE_INDEX].name + ' : !échanger ' + lettersToSwap;
+        const message = this.playerService.currentPlayer + ' : !échanger ' + lettersToSwap;
         this.sendMessageService.displayMessageByType(message, MessageType.Player);
         this.endGameService.addActionsLog('echanger');
         this.skipTurnService.switchTurn();
@@ -106,7 +104,7 @@ export class LetterEaselComponent implements OnInit {
     isSwapButtonActive(): boolean {
         let isButtonActive = false;
         // Deactivated if it is not your turn
-        if (!this.skipTurnService.isTurn) return isButtonActive;
+        if (!this.playerService.currentPlayer.isTurn) return isButtonActive;
 
         // Deactivated if there's less than 7 letters in the reserve
         if (this.letterService.reserveSize < EASEL_SIZE) return isButtonActive;
@@ -127,9 +125,9 @@ export class LetterEaselComponent implements OnInit {
         return false;
     }
 
-    private update(): void {
-        this.letterEaselTab = this.playerService.getEasel(PLAYER_ONE_INDEX);
-    }
+    // private update(): void {
+    //     this.letterEaselTab = this.playerService.getEasel(PLAYER_ONE_INDEX);
+    // }
 
     private handleSwapSelection(indexLetter: number): void {
         this.manipulateService.unselectManipulation();

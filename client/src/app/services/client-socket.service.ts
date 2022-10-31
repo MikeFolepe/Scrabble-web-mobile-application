@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { GameSettingsService } from '@app/services/game-settings.service';
 import { GameSettings } from '@common/game-settings';
-import { GameType } from '@common/game-type';
 import { Socket } from 'socket.io-client';
 
 @Injectable({
@@ -11,9 +10,9 @@ import { Socket } from 'socket.io-client';
 export class ClientSocketService {
     socket: Socket;
     roomId: string;
-    gameType: GameType;
 
-    constructor(private gameSettingsService: GameSettingsService, private router: Router) {}
+    constructor(private gameSettingsService: GameSettingsService, private router: Router) {
+    }
 
     initialize(): void {
         this.initializeRoomId();

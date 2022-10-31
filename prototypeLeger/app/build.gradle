@@ -2,7 +2,10 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'org.jetbrains.kotlin.plugin.serialization' version '1.7.10'
+
 }
+
+apply plugin: "org.jetbrains.kotlin.kapt"
 
 android {
     namespace 'com.example.scrabbleprototype'
@@ -32,6 +35,7 @@ android {
         jvmTarget = '1.8'
     }
     buildFeatures {
+        dataBinding true
         viewBinding true
     }
 }

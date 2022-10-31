@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.model.*
 import com.example.scrabbleprototype.objects.CurrentRoom
+import com.example.scrabbleprototype.objects.Players
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -43,12 +44,13 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
         job.cancel()
     }
     var currentRoom = CurrentRoom;
-    var gameSetting: GameSettings = GameSettings(arrayListOf(Users.currentUser), StartingPlayer.Player1, "00", "00", AiType.beginner, "", "", "", arrayOf())
+    var gameSetting: GameSettings = GameSettings(Users.currentUser, StartingPlayer.Player1, "00", "00", AiType.beginner, "")
     val minutes = arrayListOf("00", "01", "02", "03")
     val seconds = arrayListOf("00", "30")
+    var dictionaries = listOf<Dictionary>()
     var dictionariesTitle =  arrayListOf<String>()
     lateinit var client: HttpClient
-    val playerSocket = SocketHandler.getPlayerSocket()
+    val socket = SocketHandler.getPlayerSocket()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,6 +61,7 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
                 json()
             }
         }
+        receiveMyPlayer()
         setupSpinners()
         setUpButtons()
     }
@@ -76,9 +79,9 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
             if(response != null) {
                 val stringBody: String = response.body();
                 val mapper = jacksonObjectMapper()
-                val dictionary: List<Dictionary> = mapper.readValue(stringBody, object: TypeReference<List<Dictionary>>() {})
-                for (i in 0 until dictionary.size) {
-                       dictionariesTitle.add(dictionary[i].title)
+                dictionaries = mapper.readValue(stringBody, object: TypeReference<List<Dictionary>>() {})
+                for (i in 0 until dictionaries.size) {
+                       dictionariesTitle.add(dictionaries[i].title)
                 }
             }
             Log.d("dico", dictionariesTitle.toString())
@@ -148,8 +151,8 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
                 position: Int,
                 id: Long
             ) {
-                gameSetting.dictionary = dictionariesTitle[position]
-                Log.d("dico", dictionariesTitle[position])
+                gameSetting.dictionary = dictionaries.find { it.title == dictionariesTitle[position] }!!.fileName
+                Log.d("dico", gameSetting.dictionary)
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -162,8 +165,6 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
         val continueGameButton = findViewById<Button>(R.id.continue_button)
         continueGameButton.setOnClickListener {
             createGame(this.gameSetting)
-            startActivity(Intent(this, WaitingRoomActivity::class.java))
-
         }
         val backButton = findViewById<Button>(R.id.back_button)
         backButton.setOnClickListener {
@@ -172,11 +173,20 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
     }
 
     private fun createGame (gameSetting: GameSettings) {
-        val gameType = 0;
-        playerSocket.on("yourRoomId") { response ->
-            var roomReceived = Room(response[0].toString(), arrayListOf(playerSocket.id()), gameSetting, State.Waiting)
+        socket.on("yourRoomId") { response ->
+            val roomReceived = Room(response[0].toString(), arrayListOf(socket.id()), gameSetting, State.Waiting)
             currentRoom.myRoom = roomReceived;
         }
-        playerSocket.emit("createRoom", JSONObject(Json.encodeToString(gameSetting)), Json.encodeToString(gameType))
+        gameSetting.dictionary = dictionaries.first().fileName
+        socket.emit("createRoom", JSONObject(Json.encodeToString(gameSetting)))
+    }
+
+    private fun receiveMyPlayer() {
+        socket.on("MyPlayer") { response ->
+            val mapper = jacksonObjectMapper()
+            Players.currentPlayer = mapper.readValue(response[0].toString(), Player::class.java)
+            Log.d("waiting11", Players.currentPlayer.name)
+            startActivity(Intent(this, WaitingRoomActivity::class.java))
+        }
     }
 }

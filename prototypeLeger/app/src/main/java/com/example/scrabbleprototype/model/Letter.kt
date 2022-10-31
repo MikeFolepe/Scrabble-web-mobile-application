@@ -1,6 +1,7 @@
 package com.example.scrabbleprototype.model
 
-class Letter(var value : Char, var quantity : Number, var point : Number, var isSelectedForSwap : Boolean, var isSelectedForManipulation : Boolean) {
+import kotlinx.serialization.Serializable
 
-}
+@Serializable
+class Letter(var value : String, var quantity : Int, var points : Int, var isSelectedForSwap : Boolean, var isSelectedForManipulation : Boolean) {}
 

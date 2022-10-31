@@ -11,6 +11,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="dark_gray">#63666A</color>
     <color name="light_blue">#8fb7dd</color>
+    <color name="light_cyan">#a9daea</color>
     <color name="tan">#d2b48c</color>
     <color name="red">#FF1A1A</color>
     <color name="dark_red">#7E0A0A</color>
@@ -22,4 +23,5 @@
     <color name="test">#42000000</color>
     <color name="dark_tan">#84643B</color>
     <color name="green">#009900</color>
+    <color name="light_red">#FFCCCC</color>
 </resources>

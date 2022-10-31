@@ -12,8 +12,10 @@
         android:id="@+id/bonus_layer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:textSize="7sp"
-        android:textColor="@color/white" />
+        android:textSize="9sp"
+        android:layout_margin="1dp"
+        android:textAlignment="center"
+        android:textColor="@color/black"/>
 
     <LinearLayout
         android:id="@+id/letter_layer"
@@ -26,14 +28,14 @@
             android:layout_height="wrap_content"
             android:textSize="15sp"
             android:layout_gravity="center_horizontal"
-            android:textColor="@color/teal"
+            android:textColor="@color/black"
             android:layout_weight="1"
             android:textStyle="bold" />
         <TextView
             android:id="@+id/letter_score"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/teal"
+            android:textColor="@color/black"
             android:textSize="8sp"
             android:layout_gravity="end"
             android:textStyle="bold"
