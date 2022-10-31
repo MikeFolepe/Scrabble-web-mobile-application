@@ -125,16 +125,8 @@ class LetterRackFragment : Fragment() {
                     opponentToUpdate?.letterTable = playerReceived.letterTable
                     opponentToUpdate?.score = playerReceived.score
                 }
-                for(let in LetterRack.letters) {
-                    Log.d("easelUpdate", let.value)
-                }
-
-                for(i in 0 until LetterRack.letters.size) {
-                    letterRackAdapter.notifyItemChanged(i)
-                }
                 letterRackAdapter = LetterRackAdapter(LetterRack.letters)
                 letterRackView.adapter = letterRackAdapter
-                letterRackAdapter.updateData(LetterRack.letters)
             }
         }
     }

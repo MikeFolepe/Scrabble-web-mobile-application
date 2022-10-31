@@ -95,14 +95,18 @@ class BoardFragment : Fragment() {
         boardView.adapter = boardAdapter
         boardAdapter.updateData(board)
 
-        boardAdapter.onPlacement = { letterRackPosition, boardPosition ->
+        boardAdapter.onPlacement = { startPosition, boardPosition ->
             placementViewModel.addLetter(boardPosition, board[boardPosition].value)
-            Log.d("removing", letterRackPosition.toString())
-            Log.d("removing", LetterRack.letters[letterRackPosition].value)
-            LetterRack.letters.removeAt(letterRackPosition)
-            val letterRackAdapter = activity?.findViewById<RecyclerView>(R.id.letter_rack)?.adapter
-            letterRackAdapter?.notifyDataSetChanged()
-            Log.d("placing", LetterRack.letters.size.toString())
+            // We drag from letter rack
+            if(startPosition < Constants.RACK_SIZE) {
+                LetterRack.letters.removeAt(startPosition)
+                val letterRackAdapter = activity?.findViewById<RecyclerView>(R.id.letter_rack)?.adapter
+                letterRackAdapter?.notifyDataSetChanged()
+            } else { // We drag from the board
+                board[startPosition] = Constants.EMPTY_LETTER
+                boardAdapter.notifyItemChanged(startPosition)
+                placementViewModel.removeLetter(startPosition)
+            }
         }
     }
 

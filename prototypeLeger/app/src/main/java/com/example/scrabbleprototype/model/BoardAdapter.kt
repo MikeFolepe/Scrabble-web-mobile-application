@@ -1,6 +1,8 @@
 package com.example.scrabbleprototype.model
 
+import android.content.ClipData
 import android.content.ClipDescription
+import android.os.Build
 import android.util.Log
 import android.view.DragEvent
 import android.view.LayoutInflater
@@ -34,6 +36,10 @@ class BoardAdapter(private var board: ArrayList<Letter>) :
             view.setOnClickListener {
                 onCaseClicked?.invoke(layoutPosition)
             }
+            setupDragListener(view)
+        }
+
+        private fun setupDragListener(view: View) {
             // Drag listener for board cases
             view.setOnDragListener { v, e ->
                 when(e.action) {
@@ -93,6 +99,7 @@ class BoardAdapter(private var board: ArrayList<Letter>) :
     // Replace the contents of a view (invoked by the layout manager)
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
 
+        setupTouchListener(viewHolder)
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
         val letterLayer =  viewHolder.case.findViewById<LinearLayout>(R.id.letter_layer)
@@ -106,6 +113,33 @@ class BoardAdapter(private var board: ArrayList<Letter>) :
             letterLayer.background = ContextCompat.getDrawable(viewHolder.case.context, R.drawable.tan)
             viewHolder.case.findViewById<TextView>(R.id.letter).text = board[position].value.uppercase()
             viewHolder.case.findViewById<TextView>(R.id.letter_score).text = board[position].points.toString()
+        }
+    }
+
+    private fun setupTouchListener(viewHolder: ViewHolder) {
+        viewHolder.itemView.setOnLongClickListener { v ->
+            Log.d("boardDrag", "touching")
+            val letterTouched = ClipData.Item(board[viewHolder.layoutPosition].value)
+            val letterQuantity = ClipData.Item(board[viewHolder.layoutPosition].quantity.toString())
+            val letterScore = ClipData.Item(board[viewHolder.layoutPosition].points.toString())
+            val positionTouched = ClipData.Item(viewHolder.layoutPosition.toString())
+            val dragData = ClipData(
+                board[viewHolder.layoutPosition].value,
+                arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN),
+                letterTouched
+            )
+            dragData.addItem(letterQuantity)
+            dragData.addItem(letterScore)
+            dragData.addItem(positionTouched)
+
+            val shadowBuilder: View.DragShadowBuilder = View.DragShadowBuilder(v)
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                v?.startDragAndDrop(dragData, shadowBuilder, null, 0)
+            } else {
+                v?.startDrag(dragData, shadowBuilder, null, 0)
+            }
+            true
         }
     }
 
