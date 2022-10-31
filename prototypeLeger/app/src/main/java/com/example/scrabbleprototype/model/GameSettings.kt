@@ -16,7 +16,5 @@ enum class AiType {
 }
 
 @Serializable
-class GameSettings(var playersNames: ArrayList<String>, var startingPlayer: StartingPlayer,
-                   var timeMinute: String, var timeSecond: String, var level: AiType, var randomBonus: String,
-                   var bonusPositions: String, var dictionary: String, var objectiveIds: Array<IntArray>) {
-}
+class GameSettings(var creatorName: String, var startingPlayer: StartingPlayer, var timeMinute: String,
+                   var timeSecond: String, var level: AiType, var dictionary: String) {}

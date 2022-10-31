@@ -29,7 +29,6 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 class BoardFragment : Fragment() {
 
     var board = Board.cases
-    var letterRack = LetterRack.letters
     private val socket = SocketHandler.getPlayerSocket()
 
     private lateinit var placeService: PlaceService
@@ -98,11 +97,12 @@ class BoardFragment : Fragment() {
 
         boardAdapter.onPlacement = { letterRackPosition, boardPosition ->
             placementViewModel.addLetter(boardPosition, board[boardPosition].value)
-
-            letterRack.removeAt(letterRackPosition)
+            Log.d("removing", letterRackPosition.toString())
+            Log.d("removing", LetterRack.letters[letterRackPosition].value)
+            LetterRack.letters.removeAt(letterRackPosition)
             val letterRackAdapter = activity?.findViewById<RecyclerView>(R.id.letter_rack)?.adapter
             letterRackAdapter?.notifyDataSetChanged()
-            Log.d("placing", letterRack.size.toString())
+            Log.d("placing", LetterRack.letters.size.toString())
         }
     }
 

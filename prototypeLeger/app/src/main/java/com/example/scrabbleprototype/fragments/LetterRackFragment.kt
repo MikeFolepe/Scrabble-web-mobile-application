@@ -17,19 +17,20 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.activities.GameActivity
-import com.example.scrabbleprototype.model.Constants
-import com.example.scrabbleprototype.model.Letter
-import com.example.scrabbleprototype.model.LetterRackAdapter
+import com.example.scrabbleprototype.model.*
 import com.example.scrabbleprototype.objects.LetterRack
+import com.example.scrabbleprototype.objects.Players
+import com.example.scrabbleprototype.objects.Reserve
 import com.example.scrabbleprototype.services.SwapLetterService
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 
 class LetterRackFragment : Fragment() {
 
-    private val letterRack = LetterRack.letters
-    private val reserve = Constants.RESERVE
+    private val reserve = Reserve.RESERVE
     private val hashMap = hashMapOf<String, Letter>()
     private val letterPos = hashMapOf<Int, Letter>()
     private lateinit var letterRackAdapter: LetterRackAdapter
+    private lateinit var letterRackView: RecyclerView
 
     private lateinit var swapLetterService: SwapLetterService
     private var swapLetterBound: Boolean = false
@@ -41,7 +42,6 @@ class LetterRackFragment : Fragment() {
             val binder = service as SwapLetterService.LocalBinder
             swapLetterService = binder.getService()
             swapLetterBound = true
-            swapLetterService.refillRack(view?.findViewById(R.id.letter_rack))
         }
         override fun onServiceDisconnected(name: ComponentName?) {
             swapLetterBound = false
@@ -76,6 +76,7 @@ class LetterRackFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        updatePlayer(view)
         setupLetterRack(view)
         setupSwapButton(view)
 
@@ -85,16 +86,19 @@ class LetterRackFragment : Fragment() {
     }
 
     private fun setupLetterRack(view: View) {
-        val letterRackView = view.findViewById<RecyclerView>(R.id.letter_rack)
+        Log.d("easelInit", Players.currentPlayer.letterTable[6].value)
+        LetterRack.letters = Players.currentPlayer.letterTable
+        Log.d("easelInit", LetterRack.letters[6].value)
+        letterRackView = view.findViewById<RecyclerView>(R.id.letter_rack)
         val horizontalLayoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false)
         letterRackView.layoutManager = horizontalLayoutManager
-        letterRackAdapter = LetterRackAdapter(letterRack)
+        letterRackAdapter = LetterRackAdapter(LetterRack.letters)
         letterRackView.adapter = letterRackAdapter
-        letterRackAdapter.updateData(letterRack)
+        letterRackAdapter.updateData(LetterRack.letters)
 
         letterRackAdapter.onLetterClick = { position ->
-            Toast.makeText(activity, "Lettre sélectionnée : " + letterRack[position].value, Toast.LENGTH_LONG).show()
-            letterPos[position] = letterRack[position]
+            Toast.makeText(activity, "Lettre sélectionnée : " + LetterRack.letters[position].value, Toast.LENGTH_LONG).show()
+            letterPos[position] = LetterRack.letters[position]
         }
     }
 
@@ -103,6 +107,35 @@ class LetterRackFragment : Fragment() {
         val letterRackView = view.findViewById<RecyclerView>(R.id.letter_rack)
         swapButton.setOnClickListener {
             if(swapLetterBound) swapLetterService.swapLetters(letterPos, letterRackView)
+        }
+    }
+
+    private fun updatePlayer(view: View) {
+        SocketHandler.getPlayerSocket().on("updatePlayer") { response ->
+            activity?.runOnUiThread {
+                val mapper = jacksonObjectMapper()
+                val playerReceived = mapper.readValue(response[0].toString(), Player::class.java)
+                Log.d("easelUpdate", playerReceived.name + " " + Players.currentPlayer.name)
+                if(Players.currentPlayer.name == playerReceived.name) {
+                    Players.currentPlayer.letterTable = playerReceived.letterTable
+                    Players.currentPlayer.score = playerReceived.score
+                    LetterRack.letters = Players.currentPlayer.letterTable
+                } else {
+                    val opponentToUpdate = Players.opponents.find { it.name == playerReceived.name }
+                    opponentToUpdate?.letterTable = playerReceived.letterTable
+                    opponentToUpdate?.score = playerReceived.score
+                }
+                for(let in LetterRack.letters) {
+                    Log.d("easelUpdate", let.value)
+                }
+
+                for(i in 0 until LetterRack.letters.size) {
+                    letterRackAdapter.notifyItemChanged(i)
+                }
+                letterRackAdapter = LetterRackAdapter(LetterRack.letters)
+                letterRackView.adapter = letterRackAdapter
+                letterRackAdapter.updateData(LetterRack.letters)
+            }
         }
     }
 }

@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.databinding.FragmentGameButtonsBinding
 import com.example.scrabbleprototype.model.Constants
+import com.example.scrabbleprototype.model.SocketHandler
 import com.example.scrabbleprototype.objects.Board
 import com.example.scrabbleprototype.objects.LetterRack
 import com.example.scrabbleprototype.objects.Players
@@ -27,6 +29,7 @@ import com.example.scrabbleprototype.viewModel.PlacementViewModel
 class GameButtonsFragment : Fragment() {
     private val board = Board.cases
     private val placementViewModel: PlacementViewModel by activityViewModels()
+    private val socket = SocketHandler.getPlayerSocket()
 
     private lateinit var skipTurnService: SkipTurnService
     private var skipTurnBound: Boolean = false
@@ -69,6 +72,8 @@ class GameButtonsFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         _binding = FragmentGameButtonsBinding.inflate(inflater, container, false)
+        receivePlacementFail()
+        receivePlacementSuccess()
         setupSkipButton()
         setupPlayButton()
         return binding.root
@@ -126,23 +131,42 @@ class GameButtonsFragment : Fragment() {
             val placementPositions = placementViewModel.currentPlacement.toList().sortedBy { (k, v) -> k }.toMap().keys.toIntArray()
             skipTurnService.switchTimer()
 
-            if(placeService.validatePlacement(placementPositions)) placeService.sendPlacement()
+            if(placeService.validatePlacement(placementPositions)) {
+                Log.d("placing", "PASSED")
+                placeService.sendPlacement()
+            }
             else handleInvalidPlacement()
-            placementViewModel.clearPlacement()
-            swapService.refillRack(activity?.findViewById(R.id.letter_rack))
         }
     }
 
     private fun handleInvalidPlacement() {
         val letterRackAdapter = activity?.findViewById<RecyclerView>(R.id.letter_rack)?.adapter
         val boardAdapter = activity?.findViewById<RecyclerView>(R.id.board)?.adapter
-        for(letter in placementViewModel.currentPlacement) {
-            val letterToRemove = board[letter.key]
-            board[letter.key] = Constants.EMPTY_LETTER
-            boardAdapter?.notifyItemChanged(letter.key)
 
-            LetterRack.letters.add(letterToRemove)
-            letterRackAdapter?.notifyItemChanged(LetterRack.letters.size - 1)
+        activity?.runOnUiThread {
+            for(letter in placementViewModel.currentPlacement) {
+                val letterToRemove = board[letter.key]
+                board[letter.key] = Constants.EMPTY_LETTER
+                boardAdapter?.notifyItemChanged(letter.key)
+
+                letterToRemove.value = letterToRemove.value.uppercase()
+                LetterRack.letters.add(letterToRemove)
+                letterRackAdapter?.notifyItemChanged(LetterRack.letters.size - 1)
+            }
+            placementViewModel.clearPlacement()
+        }
+    }
+
+    private fun receivePlacementSuccess() {
+        socket.on("receiveSuccess") { response ->
+            placeService.isFirstPlacement = false
+            activity?.runOnUiThread { placementViewModel.clearPlacement() }
+        }
+    }
+
+    private fun receivePlacementFail() {
+        socket.on("receiveFail") { response ->
+            handleInvalidPlacement()
         }
     }
 }

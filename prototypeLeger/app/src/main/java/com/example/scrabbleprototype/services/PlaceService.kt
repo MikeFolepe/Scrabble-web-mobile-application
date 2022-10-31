@@ -8,11 +8,12 @@ import android.util.Log
 import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.model.*
 import com.example.scrabbleprototype.objects.Board
+import com.example.scrabbleprototype.objects.Players
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 class PlaceService : Service() {
-    private var isFirstPlacement: Boolean = true
+    var isFirstPlacement: Boolean = true
     private var board = Board.cases
     private var spaceBetweenEachLetter: Int = 1
     private var orientation: Orientation = Orientation.Horizontal
@@ -69,6 +70,7 @@ class PlaceService : Service() {
                 }
             }
         }
+        Log.d("placing", "Continuous")
         return true
     }
 
@@ -88,6 +90,7 @@ class PlaceService : Service() {
         var boardLimit: Int = Constants.BOARD_HEIGHT * spaceBetweenEachLetter
         if(orientation == Orientation.Horizontal) boardLimit = startPosition + (Constants.BOARD_HEIGHT - get2DPosition(currentPosition).y)
 
+        startPosition = currentPosition
         // Form the word
         while(currentPosition < boardLimit && board[currentPosition].value.isNotEmpty()) {
             wordPlaced += board[currentPosition].value
@@ -113,17 +116,21 @@ class PlaceService : Service() {
                 if(!placementPosition.contains(position - spaceBetweenEachLetter)) isWordTouching = true
             }
         }
+        Log.d("placing", isWordTouching.toString())
         return isWordTouching
     }
 
     fun sendPlacement() {
-        isFirstPlacement = false
         Log.d("sendPlace", getWord(orientation))
-        socket.emit("sendPlacement", Json.encodeToString(get2DBoard()),
+        socket.emit("validatePlacement",
             Json.encodeToString(get2DPosition(startPosition)),
+            getWord(orientation).lowercase(),
             Json.encodeToString(orientation.ordinal),
-            getWord(orientation),
-            SocketHandler.roomId)
+            false,
+            false,
+            Json.encodeToString(get2DBoard()),
+            SocketHandler.roomId,
+            Json.encodeToString(Players.currentPlayer))
     }
 
     fun placeByOpponent(startPosition: Vec2, orientation: Orientation, word: String, boardView: RecyclerView) {
@@ -135,7 +142,7 @@ class PlaceService : Service() {
         for(letter in word) {
             val letterFound = Constants.RESERVE.find { it.value == letter.uppercase() }
                 ?: return
-            val letterToPlace = Letter(letterFound.value, letterFound.quantity, letterFound.point, false, false)
+            val letterToPlace = Letter(letterFound.value.lowercase(), letterFound.quantity, letterFound.points, false, false)
             board[currentPosition] = letterToPlace
             boardView.adapter?.notifyItemChanged(currentPosition)
             currentPosition += spaceBetweenEachLetter

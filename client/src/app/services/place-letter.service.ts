@@ -102,9 +102,9 @@ export class PlaceLetterService implements OnDestroy {
                     orientation,
                     this.isRow,
                     this.isEaselSize,
-                    this.scrabbleBoard,
+                    JSON.stringify(this.scrabbleBoard),
                     this.clientSocketService.roomId,
-                    this.playerService.currentPlayer.name,
+                    JSON.stringify(this.playerService.currentPlayer),
                 );
                 return;
             }
@@ -124,9 +124,9 @@ export class PlaceLetterService implements OnDestroy {
                 orientation,
                 this.isRow,
                 this.isEaselSize,
-                this.scrabbleBoard,
+                JSON.stringify(this.scrabbleBoard),
                 this.clientSocketService.roomId,
-                this.playerService.currentPlayer.name,
+                JSON.stringify(this.playerService.currentPlayer),
             );
             return;
         }
@@ -270,7 +270,8 @@ export class PlaceLetterService implements OnDestroy {
     }
 
     private receiveFailure() {
-        this.clientSocketService.socket.on('receiveFailure', (position: Vec2, orientation: Orientation, word: string) => {
+        this.clientSocketService.socket.on('receiveFail', (position: Vec2, orientation: Orientation, word: string) => {
+            console.log("invalid")
             this.endGameService.addActionsLog('placerEchec');
             this.clientSocketService.socket.emit('sendActions', this.endGameService.actionsLog, this.clientSocketService.roomId);
             this.handleInvalidPlacement(position, orientation, word);

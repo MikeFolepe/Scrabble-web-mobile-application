@@ -6,6 +6,7 @@ import android.os.*
 import android.util.Log
 import androidx.databinding.ObservableField
 import com.example.scrabbleprototype.model.SocketHandler
+import com.example.scrabbleprototype.objects.CurrentRoom
 import com.example.scrabbleprototype.objects.Players
 
 interface SkipTurnCallback {
@@ -15,8 +16,9 @@ interface SkipTurnCallback {
 class SkipTurnService : Service() {
 
     private val socketHandler = SocketHandler
-    private val playerSocket = socketHandler.getPlayerSocket()
+    private val socket = socketHandler.getPlayerSocket()
     private val player = Players.currentPlayer
+    private val opponents = Players.opponents
 
     private var timeMs: Long = 0
     private lateinit var countdownTimer: CountDownTimer
@@ -39,9 +41,10 @@ class SkipTurnService : Service() {
     }
 
     private fun receiveStartFromServer() {
-        playerSocket.on("startTimer") {
+        socket.on("startTimer") {
             if(player.getTurn()) {
                 Log.d("timer", "Started")
+                getTurnTime()
                 timeMs = 60000
                 skipTurnCallBack?.updateTimeUI(timeMs)
                 startTimer(timeMs)
@@ -50,9 +53,17 @@ class SkipTurnService : Service() {
     }
 
     private fun receiveNewTurn() {
-        playerSocket.on("turnSwitched") { response ->
-            player.setTurn(response[0] as Boolean)
-            Log.d("timer", player.getTurn().toString())
+        socket.on("turnSwitched") { response ->
+            val playerName = response[0] as String
+            if(player.name == playerName) player.setTurn(true)
+            else {
+                opponents.find { it.name == playerName }?.setTurn(true)
+            }
+        }
+
+        socket.on("updatePlayerTurnToFalse") { response ->
+            val opponentName = response[0] as String
+            opponents.find { it.name == opponentName }?.setTurn(false)
         }
     }
 
@@ -76,7 +87,7 @@ class SkipTurnService : Service() {
         resetTimer()
         Thread.sleep(3000)
         Log.d("timer", "Emit du switch")
-        playerSocket.emit("switchTurn", player.getTurn(), socketHandler.roomId)
+        socket.emit("switchTurn", socketHandler.roomId, player.name)
         player.setTurn(false)
     }
 
@@ -84,5 +95,9 @@ class SkipTurnService : Service() {
         countdownTimer.cancel()
         timeMs = 0
         skipTurnCallBack?.updateTimeUI(timeMs)
+    }
+
+    private fun getTurnTime() {
+        Log.d("turnTime", CurrentRoom.myRoom.gameSettings.timeMinute + " " + CurrentRoom.myRoom.gameSettings.timeSecond)
     }
 }

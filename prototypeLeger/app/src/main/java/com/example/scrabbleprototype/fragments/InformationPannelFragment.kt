@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.example.scrabbleprototype.R
+import com.example.scrabbleprototype.objects.CurrentRoom
 import com.example.scrabbleprototype.objects.Players
 import com.example.scrabbleprototype.services.SkipTurnCallback
 import com.example.scrabbleprototype.services.SkipTurnService
@@ -37,7 +38,6 @@ class InformationPannelFragment : Fragment(), SkipTurnCallback {
             skipTurnService = binder.getService()
             skipTurnBound = true
             skipTurnService.setCallbacks(this@InformationPannelFragment)
-            skipTurnService.startTimer(timeMs)
         }
         override fun onServiceDisconnected(name: ComponentName?) {
             skipTurnBound = false
@@ -60,10 +60,6 @@ class InformationPannelFragment : Fragment(), SkipTurnCallback {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         timerText = view.findViewById(R.id.timer)
-        updateTimeUI(timeMs)
-        timeMs = 60000
-        updateTimeUI(timeMs)
-        player.setTurn(true)
     }
 
     override fun onStart() {

@@ -83,6 +83,7 @@ export class SkipTurnService {
                 this.seconds = 59;
             } else if (this.seconds === 0 && this.minutes === 0) {
                 if (this.playerService.currentPlayer.isTurn) {
+                    this.stopTimer()
                     this.endGameService.actionsLog.push('AucuneAction');
                     this.clientSocket.socket.emit('sendActions', this.endGameService.actionsLog, this.clientSocket.roomId);
                     this.switchTurn();

@@ -56,7 +56,7 @@ class BoardAdapter(private var board: ArrayList<Letter>) :
                         val dragData = letterTouched.text // La data de la lettre qui a été dragged
 
                         // Add letter dropped to board
-                        board[bindingAdapterPosition] = Letter(dragData.first().toString(), letterQuantity, letterScore, false, false)
+                        board[bindingAdapterPosition] = Letter(dragData.first().toString().lowercase(), letterQuantity, letterScore, false, false)
                         // Remove letter dragged of letterRack
                         onPlacement?.invoke(positionTouched, bindingAdapterPosition)
 
@@ -104,8 +104,8 @@ class BoardAdapter(private var board: ArrayList<Letter>) :
             letterLayer.findViewById<TextView>(R.id.letter_score).text = ""
         } else {
             letterLayer.background = ContextCompat.getDrawable(viewHolder.case.context, R.drawable.tan)
-            viewHolder.case.findViewById<TextView>(R.id.letter).text = board[position].value.toString()
-            viewHolder.case.findViewById<TextView>(R.id.letter_score).text = board[position].point.toString()
+            viewHolder.case.findViewById<TextView>(R.id.letter).text = board[position].value.uppercase()
+            viewHolder.case.findViewById<TextView>(R.id.letter_score).text = board[position].points.toString()
         }
     }
 
