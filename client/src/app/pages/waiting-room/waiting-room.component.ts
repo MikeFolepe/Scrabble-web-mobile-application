@@ -1,8 +1,10 @@
+import { PlayerService } from '@app/services/player.service';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ONE_SECOND_DELAY, TWO_SECOND_DELAY } from '@app/classes/constants';
 import { ClientSocketService } from '@app/services/client-socket.service';
 import { GameSettingsService } from '@app/services/game-settings.service';
+import { ERROR_MESSAGE_DELAY } from '@common/constants';
 
 @Component({
     selector: 'app-waiting-room',
@@ -12,8 +14,14 @@ import { GameSettingsService } from '@app/services/game-settings.service';
 export class WaitingRoomComponent implements OnInit {
     status: string;
     isWaiting: boolean;
+    shouldDisplayStartError: boolean;
 
-    constructor(private router: Router, private gameSettingsService: GameSettingsService, private clientSocket: ClientSocketService) {
+    constructor(
+        private router: Router,
+        private gameSettingsService: GameSettingsService,
+        private clientSocket: ClientSocketService,
+        public playerService: PlayerService,
+    ) {
         this.status = '';
         this.isWaiting = true;
         this.clientSocket.routeToGameView();
@@ -61,6 +69,24 @@ export class WaitingRoomComponent implements OnInit {
 
     deleteGame(): void {
         this.clientSocket.socket.emit('deleteGame', this.clientSocket.roomId);
+    }
+
+    startGame(): void {
+        // let aiCount = 0;
+        // for (const player of this.playerService.opponents) {
+        //     if (player instanceof PlayerAI) {
+        //         aiCount++;
+        //     }
+        // }
+
+        if (this.playerService.opponents.length < 3) {
+            this.shouldDisplayStartError = true;
+            setTimeout(() => {
+                this.shouldDisplayStartError = false;
+            }, ERROR_MESSAGE_DELAY);
+            return;
+        }
+        this.clientSocket.socket.emit('startGame', this.clientSocket.roomId);
     }
 
     routeToGameView(): void {

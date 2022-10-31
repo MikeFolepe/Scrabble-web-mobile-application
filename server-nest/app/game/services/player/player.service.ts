@@ -19,8 +19,6 @@ export class PlayerService {
         this.updateEasel = fn;
     }
 
-
-
     addPlayer(user: Player): void {
         this.players.push(user);
     }

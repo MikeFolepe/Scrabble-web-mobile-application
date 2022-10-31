@@ -1,3 +1,4 @@
+import { PlayerAI } from './../../../game/models/player-ai.model';
 import { Room, State } from '@app/classes/room';
 import { Player } from '@app/game/models/player.model';
 import { GameSettings, StartingPlayer } from '@common/game-settings';
@@ -32,6 +33,15 @@ export class RoomManagerService {
     addCustomer(customerName: string, roomId: string): boolean {
         const room = this.find(roomId);
         if (room === undefined) return false;
+        // eslint-disable-next-line @typescript-eslint/prefer-for-of
+        // for (let i = 0; i < room.playerService.players.length; i++) {
+        //     if (room.playerService.players[i] instanceof PlayerAI) {
+        //         const humanPlayer = new Player(customerName, room.playerService.players[i].letterTable);
+        //         room.playerService.players[i] = humanPlayer;
+        //         return true;
+        //     }
+        // }
+
         if (room.playerService.players.length === 4) return false;
         room.playerService.players.push(new Player(customerName, room.letter.getRandomLetters()));
 

@@ -104,7 +104,7 @@ export class PlaceLetterService implements OnDestroy {
                     this.isEaselSize,
                     this.scrabbleBoard,
                     this.clientSocketService.roomId,
-                    this.playerService.currentPlayer.name,
+                    this.playerService.currentPlayer,
                 );
                 return;
             }
@@ -126,7 +126,7 @@ export class PlaceLetterService implements OnDestroy {
                 this.isEaselSize,
                 this.scrabbleBoard,
                 this.clientSocketService.roomId,
-                this.playerService.currentPlayer.name,
+                this.playerService.currentPlayer,
             );
             return;
         }

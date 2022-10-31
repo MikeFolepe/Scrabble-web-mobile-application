@@ -6,6 +6,53 @@
     <mat-spinner *ngIf="isWaiting" mode="indeterminate"></mat-spinner>
 </mat-card>
 
+<div id="right-bar">
+    <div id="virtual-names" class="window">
+        <div class="fake-menu">
+            <div class="fake-buttons fake-close"></div>
+            <div class="fake-buttons fake-minimize"></div>
+            <div class="fake-buttons fake-zoom"></div>
+        </div>
+        <h2>
+            Joueurs dans la salle 
+            <hr />
+        </h2>
+        <div class="window-content">
+            <div class="list">
+                <div class="beginner">
+                    <p class="name-title">Moi</p>
+                    <hr />
+                    <div class="name-container">
+                        <div class="item">
+                            <p class="ai-name">{{ playerService.currentPlayer.name }}</p>
+                
+                        </div>
+                    </div>
+                </div>
+                <div class="separator"></div>
+                <div class="expert">
+                    <p class="name-title">Adversaires</p>
+                    <hr />
+                    <div class="name-container">
+                        <div class="item" *ngFor="let player of playerService.opponents">
+                            <p class="ai-name">{{ player.name }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 <button mat-raised-button id="submit-button" color="primary" (click)="routeToGameView()">Jouer contre le joueur virtuel</button>
 
 <button mat-raised-button color="warn" id="submit-button-1" (click)="deleteGame()" routerLink="/solo-game-ai">Annuler</button>
+
+<button [disabled] = "!playerService.currentPlayer.isCreator" mat-raised-button color="primary" id="submit-button-1" (click)="startGame()">Commencer</button>
+
+
+<div *ngIf="shouldDisplayStartError">
+    <mat-card class="error-message"><span class="warning">Erreur</span> : Impossible de commencer: il y'a plus de 2 joueurs virtuels ou il n'ya pas 4 joueurs </mat-card>
+</div>

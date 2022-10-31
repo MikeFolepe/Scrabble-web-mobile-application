@@ -20,12 +20,10 @@ export class PlaceLetterStrategy {
     placeLetterService: PlaceLetterService;
     letterService: LetterService;
     wordValidation: WordValidationService;
-    player: Player;
     private board: string[][][];
     private isFirstRoundAi: boolean;
     constructor(
         playerService: PlayerService,
-        player: Player,
         gameSettings: GameSettings,
         placeLetterService: PlaceLetterService,
         letterService: LetterService,
@@ -40,7 +38,6 @@ export class PlaceLetterStrategy {
         this.placeLetterService = placeLetterService;
         this.letterService = letterService;
         this.wordValidation = wordValidation;
-        this.player = player;
     }
     placeWordOnBoard(scrabbleBoard: string[][], word: string, start: Vec2, orientation: Orientation): string[][] {
         for (let j = 0; orientation === Orientation.Horizontal && j < word.length; j++) {
@@ -74,8 +71,8 @@ export class PlaceLetterStrategy {
         return allPossibleWords.filter((word) => word.point >= pointingRange.min && word.point <= pointingRange.max);
     }
 
-    async execute(index:number): Promise<void> {
-        const playerAi = this.playerService.players[0] as PlayerAI;
+    async execute(index: number): Promise<void> {
+        const playerAi = this.playerService.players[index] as PlayerAI;
         const level = this.gameSettings.level;
         const isFirstRound = this.placeLetterService.isFirstRound;
         const scrabbleBoard = this.placeLetterService.scrabbleBoard;

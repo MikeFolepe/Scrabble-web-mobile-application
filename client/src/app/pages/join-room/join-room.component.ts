@@ -4,11 +4,13 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginatorIntl, PageEvent } from '@angular/material/paginator';
+import { Router } from '@angular/router';
 import { ERROR_MESSAGE_DELAY } from '@app/classes/constants';
 import { Room, State } from '@app/classes/room';
 import { NameSelectorComponent } from '@app/modules/initialize-game/name-selector/name-selector.component';
 import { AuthService } from '@app/services/auth.service';
 import { ClientSocketService } from '@app/services/client-socket.service';
+import { PlayerService } from '@app/services/player.service';
 
 @Component({
     selector: 'app-join-room',
@@ -31,6 +33,9 @@ export class JoinRoomComponent implements OnInit {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         public _MatPaginatorIntl: MatPaginatorIntl,
         private authService: AuthService,
+        private router: Router,
+        public playerService: PlayerService,
+
     ) {
         this.rooms = [];
         this.roomItemIndex = 0;
@@ -47,6 +52,7 @@ export class JoinRoomComponent implements OnInit {
         this.receiveRoomAvailable();
         this.receiveRandomPlacement();
         this.clientSocketService.routeToGameView();
+        this.confirm();
     }
 
     ngOnInit(): void {
@@ -82,6 +88,12 @@ export class JoinRoomComponent implements OnInit {
 
     computeRoomState(state: State): string {
         return state === State.Waiting ? 'En attente' : 'Indisponible';
+    }
+
+    confirm(){
+        this.clientSocketService.socket.on('goToWaiting', ()=>{
+            this.router.navigate(['waiting-room']);
+        });
     }
 
     join(room: Room): void {
@@ -130,6 +142,7 @@ export class JoinRoomComponent implements OnInit {
     private handleRoomUnavailability(): void {
         this.clientSocketService.socket.on('roomAlreadyToken', () => {
             this.shouldDisplayJoinError = true;
+            this.playerService.opponents =[];
             setTimeout(() => {
                 this.shouldDisplayJoinError = false;
             }, ERROR_MESSAGE_DELAY);
