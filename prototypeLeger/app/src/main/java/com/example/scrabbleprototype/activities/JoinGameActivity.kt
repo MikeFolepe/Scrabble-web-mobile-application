@@ -36,6 +36,7 @@ class JoinGameActivity : AppCompatActivity() {
         receiveMyPlayer()
         receiveNewOpponent()
         receiveGameSettings()
+        routeToWaitingRoom()
         setupGameList()
     }
 
@@ -114,6 +115,12 @@ class JoinGameActivity : AppCompatActivity() {
     private fun routeToGameView() {
         socket.on("goToGameView") {
             startActivity(Intent(this, GameActivity::class.java))
+        }
+    }
+
+    private fun routeToWaitingRoom() {
+        socket.on("goToWaiting") {
+            startActivity(Intent(this, WaitingRoomActivity::class.java))
         }
     }
 }

@@ -8,6 +8,8 @@ object Constants {
     val BOARD_SIZE = 225
     val RACK_SIZE = 7
 
+    val MAX_OPPONENTS = 3
+
     val EMPTY_LETTER = Letter("", 0, 0, false, false)
 
     val RESERVE = arrayOf(

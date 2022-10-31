@@ -39,10 +39,12 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
             const room = this.roomManagerService.find(roomId);
             const players = room.playerService.players;
             socket.emit('curOps', players);
+            if (!this.roomManagerService.addCustomer(playerName, roomId)) {
+                socket.emit('roomAlreadyToken');
+                return;
+            }
 
-            this.roomManagerService.addCustomer(playerName, roomId);
             this.roomManagerService.setSocket(this.roomManagerService.find(roomId) as Room, socket.id);
-            this.roomManagerService.setState(roomId, State.Playing);
             this.server.emit('roomConfiguration', this.roomManagerService.rooms);
             socket.join(roomId);
             this.server.in(roomId).emit('yourRoomId', roomId);
@@ -51,12 +53,17 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
             // emit to opponents
             socket.in(roomId).emit('Opponent', player);
             this.server.in(roomId).emit('yourGameSettings', this.roomManagerService.getGameSettings(roomId));
+            socket.emit("goToWaiting")
+        });
+
+        socket.on('startGame', (roomId: string) => {
+            const room = this.roomManagerService.find(roomId);
+            this.server.in(roomId).emit('yourRoomId', roomId);
+            this.roomManagerService.setState(roomId, State.Playing);
             this.server.in(roomId).emit('goToGameView');
-            this.server.emit('receiveReserve', room.letter.reserve, room.letter.reserveSize);
-            // Send number of rooms available
+            this.server.to(roomId).emit('receiveReserve', room.letter.reserve, room.letter.reserveSize);
             this.server.emit('roomAvailable', this.roomManagerService.getNumberOfRoomInWaitingState());
             setTimeout(() => {
-                this.logger.log("on start premier tour")
                 this.server.in(roomId).emit('startTimer');
             }, 3000);
         });

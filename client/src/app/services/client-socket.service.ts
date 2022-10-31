@@ -25,6 +25,11 @@ export class ClientSocketService {
         });
     }
 
+    routeToWaitingRoom(): void {
+        this.socket.on('goToWaiting', () => {
+        });
+    }
+
     initializeRoomId(): void {
         this.socket.on('yourRoomId', (roomIdFromServer: string) => {
             this.roomId = roomIdFromServer;
