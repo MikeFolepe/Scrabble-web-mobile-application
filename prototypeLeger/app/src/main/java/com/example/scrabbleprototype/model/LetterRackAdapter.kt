@@ -2,12 +2,15 @@ package com.example.scrabbleprototype.model
 
 import android.content.ClipData
 import android.content.ClipDescription
+import android.content.Context
 import android.os.Build
 import android.util.Log
 import android.view.*
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
 import org.w3c.dom.Text
@@ -22,11 +25,13 @@ class LetterRackAdapter(private var letterRack: ArrayList<Letter>) :
      * (custom ViewHolder).
      */
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val letterLayout: LinearLayout
         val letter: TextView
         val letterScore: TextView
 
         init {
             // Define click listener for the ViewHolder's View.
+            letterLayout = view.findViewById(R.id.letter_layout)
             letter = view.findViewById(R.id.letter)
             letterScore = view.findViewById(R.id.letter_score)
             view.setOnClickListener {
@@ -88,7 +93,6 @@ class LetterRackAdapter(private var letterRack: ArrayList<Letter>) :
         // Create a new view, which defines the UI of the list item
         val view = LayoutInflater.from(viewGroup.context)
             .inflate(R.layout.letter_rack_item, viewGroup, false)
-        Log.d("rack", "createview")
         return ViewHolder(view)
     }
 
@@ -97,8 +101,15 @@ class LetterRackAdapter(private var letterRack: ArrayList<Letter>) :
 
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
+
+        if(letterRack[position].isEmpty())  {
+            viewHolder.letterLayout.background = ContextCompat.getDrawable(viewHolder.letterLayout.context, R.drawable.transparent)
+            viewHolder.letterScore.text = ""
+        } else {
+            viewHolder.letterLayout.background = ContextCompat.getDrawable(viewHolder.letterLayout.context, R.drawable.letter_background)
+            viewHolder.letterScore.text = letterRack[position].points.toString()
+        }
         viewHolder.letter.text = letterRack[position].value
-        viewHolder.letterScore.text = letterRack[position].points.toString()
         setupTouchListener(viewHolder)
     }
 
