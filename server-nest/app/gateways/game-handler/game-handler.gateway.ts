@@ -1,10 +1,8 @@
 import { Room, State } from '@app/classes/room';
-import { Orientation } from '@app/classes/scrabble-board-pattern';
 import { PlayerAI } from '@app/game/models/player-ai.model';
 import { UsersService } from '@app/users/service/users.service';
 import { GameSettings } from '@common/game-settings';
 import { Letter } from '@common/letter';
-import { Vec2 } from '@common/vec2';
 import { Logger } from '@nestjs/common';
 import { OnGatewayConnection, OnGatewayDisconnect, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
@@ -52,7 +50,7 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
             // emit to opponents
             socket.in(roomId).emit('Opponent', player);
             this.server.in(roomId).emit('yourGameSettings', this.roomManagerService.getGameSettings(roomId));
-            socket.emit("goToWaiting")
+            socket.emit('goToWaiting');
         });
 
         socket.on('startGame', (roomId: string) => {
@@ -122,13 +120,13 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
         socket.on('switchTurn', async (roomId: string, playerName: string) => {
             const room = this.roomManagerService.find(roomId);
             if (room === undefined) {
-                console.log("undegined")
+                console.log('undegined');
                 return;
             }
             room.turnCounter++;
 
             let index = room.playerService.players.findIndex((curPlayer) => playerName === curPlayer.name);
-            console.log(index)
+            console.log(index);
             room.playerService.players[index].isTurn = false;
             this.server.in(roomId).emit('updatePlayerTurnToFalse', room.playerService.players[index].name);
 
@@ -209,14 +207,17 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
             ) => {
                 const room = this.roomManagerService.find(roomId);
                 const validationResult = await room.wordValidation.validateAllWordsOnBoard(JSON.parse(board), isEaselSize, isRow);
-                const playerReceived = JSON.parse(player)
-                this.logger.log(validationResult)
-                this.logger.log(JSON.parse(orientation), isRow, isEaselSize, JSON.parse(position))
+                const playerReceived = JSON.parse(player);
+                this.logger.log(validationResult);
+                this.logger.log(JSON.parse(orientation), isRow, isEaselSize, JSON.parse(position));
                 if (validationResult.validation) {
                     const index = room.playerService.players.findIndex((curPlayer) => playerReceived.name === curPlayer.name);
                     room.playerService.players[index].letterTable = playerReceived.letterTable;
                     room.placeLetter.handleValidPlacement(validationResult, index);
                     room.placeLetter.scrabbleBoard = JSON.parse(board);
+                    console.log(room.placeLetter.scrabbleBoard);
+                    room.ai.play(0);
+                    console.log(room.placeLetter.scrabbleBoard);
                     socket.emit('receiveSuccess');
                     socket.to(roomId).emit('receivePlacement', board, position, orientation, word);
                     this.server.to(roomId).emit('updatePlayer', room.playerService.players[index]);

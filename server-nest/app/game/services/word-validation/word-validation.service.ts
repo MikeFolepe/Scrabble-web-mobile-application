@@ -188,7 +188,6 @@ export class WordValidationService {
         let scoreTotal = 0;
         this.passThroughAllRowsOrColumns(scrabbleBoard, isRow);
         this.passThroughAllRowsOrColumns(scrabbleBoard, !isRow);
-
         for (const word of this.newPlayedWords.keys()) {
             const lowerCaseWord = word.toLowerCase();
             if (!this.isValidInDictionary(lowerCaseWord)) {
@@ -208,7 +207,6 @@ export class WordValidationService {
 
         for (const word of this.newPlayedWords.keys()) this.addToPlayedWords(word, this.newPlayedWords.get(word) as string[], this.playedWords);
         this.newPlayedWords.clear();
-
         return { validation: true, score: scoreTotal };
     }
 }

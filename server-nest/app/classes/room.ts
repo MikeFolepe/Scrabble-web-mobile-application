@@ -22,7 +22,7 @@ export class Room {
     placeLetter: PlaceLetterService;
     playerService: PlayerService;
     turnCounter: number;
-
+    ai: PlayerAI;
     constructor(roomId: string, socketId: string, gameSettings: GameSettings, state: State = State.Waiting) {
         this.turnCounter = 0;
         this.id = roomId;
@@ -35,15 +35,15 @@ export class Room {
         this.playerService = new PlayerService(this.letter);
         this.placeLetter = new PlaceLetterService(this.wordValidation, this.playerService);
         this.playerService.players[0] = new Player(this.gameSettings.creatorName, this.letter.getRandomLetters(), 0, true, true);
-        // this.playerService.players[1] = new PlayerAI(
-        //     'BOT1',
-        //     this.letter.getRandomLetters(),
-        //     this.playerService,
-        //     this.gameSettings,
-        //     this.placeLetter,
-        //     this.letter,
-        //     this.wordValidation,
-        // );
+        this.ai = new PlayerAI(
+            'BOT1',
+            this.letter.getRandomLetters(),
+            this.playerService.players[0],
+            this.gameSettings,
+            this.placeLetter,
+            this.letter,
+            this.wordValidation,
+        );
 
         // this.playerService.players[2] = new PlayerAI(
         //     'BOT2',
@@ -63,9 +63,6 @@ export class Room {
         //     this.letter,
         //     this.wordValidation,
         // );
-
-
-
         // this.player = new Player('ok, ', this.letter.reserve, 0);
 
         // this.aiPlayers = new PlayerAI(

@@ -2,7 +2,6 @@ import { GameSettings } from '@common/game-settings';
 import { Letter } from '@common/letter';
 import { LetterService } from '../services/letter/letter.service';
 import { PlaceLetterService } from '../services/place-letter/place-letter.service';
-import { PlayerService } from '../services/player/player.service';
 import { WordValidationService } from '../services/word-validation/word-validation.service';
 import { PlaceLetterStrategy } from './place-letter-strategy.model';
 import { Player } from './player.model';
@@ -13,7 +12,7 @@ export class PlayerAI extends Player {
     constructor(
         name: string,
         letterTable: Letter[],
-        playerService: PlayerService,
+        player: Player,
         gameSetting: GameSettings,
         placeLetterService: PlaceLetterService,
         letterService: LetterService,
@@ -21,22 +20,12 @@ export class PlayerAI extends Player {
         score: number = 0,
     ) {
         super(name, letterTable, score);
-        this.strategy = new PlaceLetterStrategy(playerService, gameSetting, placeLetterService, letterService, wordValidation);
+        this.strategy = new PlaceLetterStrategy(letterTable, player, gameSetting, placeLetterService, letterService, wordValidation);
     }
 
     async play(index: number): Promise<void> {
         await this.strategy.execute(index);
     }
-
-    getEasel(): string {
-        let hand = '[';
-        for (const letter of this.letterTable) {
-            hand += letter.value;
-        }
-
-        return hand + ']';
-    }
-
     getLetterQuantityInEasel(character: string): number {
         let quantity = 0;
 
