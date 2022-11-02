@@ -14,13 +14,24 @@ import { ChatRoom } from '@common/chatRoom';
 export class JoinChatRoomsComponent implements OnInit {
 
   selectedChatRooms : string[];
+  searchedRoom : string;
 
   constructor(public joinChatRoomsDialogRef: MatDialogRef<JoinChatRoomsComponent>, public chatRoomService : ChatRoomService, public authService : AuthService, private clientSocketService : ClientSocketService, private chatRoomIndexService : ChatRoomIndexService) {
     this.selectedChatRooms = [];
+    this.searchedRoom = "";
   }
 
   ngOnInit(): void {
     // this.chatRooms = this.chatRoomService.chatRooms;
+  }
+
+  checkRoom(chatRoomName : string) {
+    for(let i = 0; i < this.searchedRoom.length; i++) {
+        if(this.searchedRoom[i] !== chatRoomName[i]) {
+            return false;
+        }
+    }
+    return true;
   }
 
   joinRoom() {
@@ -31,15 +42,19 @@ export class JoinChatRoomsComponent implements OnInit {
   }
 
   deleteChatRoom(index : any) {
-        console.log(this.chatRoomService.chatRooms[this.chatRoomIndexService.chatRoomIndex])
+        // console.log(this.chatRoomService.chatRooms[this.chatRoomIndexService.chatRoomIndex])
         this.chatRoomService.chatRooms.splice(index, 1);
         this.clientSocketService.socket.emit('deleteChatRoom', index);
   }
 
   alreadyInRoom(chatRoom : ChatRoom) : boolean {
     //find the user in the current room 
-    var foundUser = chatRoom.users.find((user) => user.pseudonym === this.authService.currentUser.pseudonym);
-    return Boolean(foundUser);
+    if(chatRoom.users) {
+      console.log(chatRoom.users);
+      var foundUser = chatRoom.users.find((user) => user.pseudonym === this.authService.currentUser.pseudonym);
+      return Boolean(foundUser);
+    }
+    return false;
   }
 
 

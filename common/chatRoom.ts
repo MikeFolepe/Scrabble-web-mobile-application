@@ -14,7 +14,6 @@ export class ChatRoom {
 
     constructor(roomId: string, creator: User, chatRoomName: string ) {
 
-
         this.chatRoomId = roomId;
         this.users.push(creator);
         this.currentMessage = new ChatRoomMessage('','','');

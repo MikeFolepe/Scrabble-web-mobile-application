@@ -5,7 +5,7 @@ import { User } from '@common/user';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { DELAY_BEFORE_EMITTING_TIME, PRIVATE_ROOM_ID, WORD_MIN_LENGTH } from '../chat-channel/chat.gateway.constants';
+import { DELAY_BEFORE_EMITTING_TIME, WORD_MIN_LENGTH } from '../chat-channel/chat.gateway.constants';
 import { ChatRoomService } from '../services/chat-room/chat-room.service';
 import { ChatEvents } from './../../../../common/chat.gateway.events';
 @WebSocketGateway({ cors: true })
@@ -14,9 +14,9 @@ export class ChatGateway {
     @WebSocketServer() private server: Server;
 
     messages: string[] = [];
-    private readonly room = PRIVATE_ROOM_ID;
 
-    constructor(private readonly logger: Logger, private userService: UsersService, private chatRoomService: ChatRoomService) {}
+    constructor(private readonly logger: Logger, private userService: UsersService, private chatRoomService: ChatRoomService) {
+    }
 
     @SubscribeMessage(ChatEvents.Message)
     message(_: Socket, message: string) {
@@ -60,6 +60,11 @@ export class ChatGateway {
         this.server.emit('updateChatRooms', this.chatRoomService.chatRooms);
     }
 
+    // @SubscribeMessage('joinMainRoom')
+    // joinMainRoom(@ConnectedSocket() socket, @MessageBody() user: User) {
+    //     this.chatRoomService.addCustomer(user[0], this.chatRoomService.chatRooms[0].chatRoomId);
+    //     socket.join(this.chatRoomService.chatRooms[0].chatRoomId);  
+    // }
 
     @SubscribeMessage('joinChatRoom')
     joinChatRoom(@ConnectedSocket() socket, @MessageBody() user: User, @MessageBody() roomNames:string[]) {
@@ -104,10 +109,6 @@ export class ChatGateway {
         this.server.emit(ChatEvents.MassMessage, `${socket.id} : ${message}`);
     }
 
-    @SubscribeMessage(ChatEvents.JoinRoom)
-    joinRoom(socket: Socket) {
-        socket.join(this.room);
-    }
 
     @SubscribeMessage(ChatEvents.RoomMessage)
     roomMessage(socket: Socket, message: Message) {
@@ -115,7 +116,6 @@ export class ChatGateway {
         const messageObject = new Message(message.message, message.messageUser);
         const messageString = JSON.stringify(messageObject);
         this.messages.push(messageString);
-        this.server.to(this.room).emit(ChatEvents.RoomMessage, messageString);
 
     }
 

@@ -40,6 +40,7 @@ export class AuthService {
                     this.clientSocketService.socket.connect();
                     this.clientSocketService.socket.emit(ChatEvents.JoinRoom);
                     this.clientSocketService.socket.emit(ChatEvents.GetMessages);
+                    // this.clientSocketService.socket.emit('joinMainRoom', this.currentUser);
                     localStorage.setItem('ACCESS_TOKEN', 'access_token');
                     this.router.navigate(['/home']);
                     this.clientSocketService.initialize();
