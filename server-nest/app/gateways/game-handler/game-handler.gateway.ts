@@ -63,7 +63,7 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
             this.server.emit('roomAvailable', this.roomManagerService.getNumberOfRoomInWaitingState());
             setTimeout(() => {
                 this.server.in(roomId).emit('startTimer');
-            }, 3000);
+            }, 5000);
         });
     }
 
@@ -137,6 +137,7 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
             room.playerService.players[index].isTurn = true;
             this.server.in(roomId).emit('turnSwitched', room.playerService.players[index].name);
             this.server.in(roomId).emit('startTimer');
+            this.server.in(roomId).emit('eraseStartingCase');
 
             if (room.playerService.players[index] instanceof PlayerAI) {
                 setTimeout(async () => {
@@ -209,9 +210,9 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
             ) => {
                 const room = this.roomManagerService.find(roomId);
                 const validationResult = await room.wordValidation.validateAllWordsOnBoard(JSON.parse(board), isEaselSize, isRow);
-                const playerReceived = JSON.parse(player)
-                this.logger.log(validationResult)
-                this.logger.log(JSON.parse(orientation), isRow, isEaselSize, JSON.parse(position))
+                const playerReceived = JSON.parse(player);
+                this.logger.log(validationResult);
+                this.logger.log(JSON.parse(orientation), isRow, isEaselSize, JSON.parse(position));
                 if (validationResult.validation) {
                     const index = room.playerService.players.findIndex((curPlayer) => playerReceived.name === curPlayer.name);
                     room.playerService.players[index].letterTable = playerReceived.letterTable;
@@ -226,6 +227,14 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
                 }
             },
         );
+
+        socket.on('sendStartingCase', (startPosition: Vec2, roomId: string) => {
+            socket.to(roomId).emit('receiveStartingCase', startPosition);
+        });
+
+        socket.on('sendEraseStartingCase', (roomId: string) => {
+            this.server.in(roomId).emit('eraseStartingCase');
+        });
     }
 
     onCreateRoom(socket: Socket): void {

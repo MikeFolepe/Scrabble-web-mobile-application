@@ -161,7 +161,7 @@ class PlaceService : Service() {
         return Vec2(x, y)
     }
 
-    private fun get1DPosition(x: Int, y: Int): Int {
+    fun get1DPosition(x: Int, y: Int): Int {
         return x * Constants.BOARD_HEIGHT + y
     }
 

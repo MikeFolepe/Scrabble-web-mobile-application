@@ -3,6 +3,7 @@ import { BOARD_COLUMNS, BOARD_ROWS, GRID_CASE_SIZE, INVALID_INDEX, LAST_INDEX } 
 import { MouseButton } from '@app/classes/enum';
 import { Orientation } from '@app/classes/scrabble-board-pattern';
 import { Vec2 } from '@common/vec2';
+import { ClientSocketService } from './client-socket.service';
 import { GridService } from './grid.service';
 import { PlaceLetterService } from './place-letter.service';
 import { PlacementsHandlerService } from './placements-handler.service';
@@ -25,6 +26,7 @@ export class BoardHandlerService {
         private placeLetterService: PlaceLetterService,
         private playerService: PlayerService,
         private placementsService: PlacementsHandlerService,
+        private clientSocket: ClientSocketService,
     ) {
         this.currentCase = { x: INVALID_INDEX, y: INVALID_INDEX };
         this.firstCase = { x: INVALID_INDEX, y: INVALID_INDEX };
@@ -33,6 +35,7 @@ export class BoardHandlerService {
         this.isFirstCasePicked = false;
         this.isFirstCaseLocked = false;
         this.orientation = Orientation.Horizontal;
+        this.receiveOpponentStartingCase();
     }
 
     buttonDetect(event: KeyboardEvent): void {
@@ -68,6 +71,7 @@ export class BoardHandlerService {
     }
 
     mouseHitDetect(event: MouseEvent): void {
+        if (this.playerService.currentPlayer.isTurn === false) return;
         if (event.button === MouseButton.Left) {
             if (this.isFirstCaseLocked) return;
             const caseClicked: Vec2 = this.calculateFirstCasePosition(event);
@@ -95,7 +99,7 @@ export class BoardHandlerService {
 
     cancelPlacement(): void {
         while (this.word.length) this.removePlacedLetter();
-        this.gridService.eraseLayer(this.gridService.gridContextPlacementLayer);
+        this.clientSocket.socket.emit('sendEraseStartingCase', this.clientSocket.roomId);
         this.currentCase.x = INVALID_INDEX;
         this.currentCase.y = INVALID_INDEX;
         this.isFirstCasePicked = false;
@@ -150,6 +154,7 @@ export class BoardHandlerService {
         this.isFirstCasePicked = true;
         this.orientation = Orientation.Horizontal;
         this.updateCaseDisplay();
+        this.clientSocket.socket.emit('sendStartingCase', this.firstCase, this.clientSocket.roomId);
     }
 
     private switchOrientation(): void {
@@ -236,5 +241,15 @@ export class BoardHandlerService {
             } while (this.placeLetterService.scrabbleBoard[currentArrowIndex.y][currentArrowIndex.x] !== '');
         }
         this.gridService.drawArrow(this.gridService.gridContextPlacementLayer, currentArrowIndex, this.orientation);
+    }
+
+    private receiveOpponentStartingCase(): void {
+        this.clientSocket.socket.on('receiveStartingCase', (startingCase: Vec2) => {
+            this.gridService.eraseLayer(this.gridService.gridContextPlacementLayer);
+            this.gridService.drawBorder(this.gridService.gridContextPlacementLayer, startingCase);
+        });
+        this.clientSocket.socket.on('eraseStartingCase', () => {
+            this.gridService.eraseLayer(this.gridService.gridContextPlacementLayer);
+        });
     }
 }
