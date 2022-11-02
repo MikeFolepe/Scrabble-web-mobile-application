@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { AuthService } from '@app/services/auth.service';
-import { ChatRoomIndexService } from '@app/services/chat-room-index.service';
 import { ChatRoomService } from '@app/services/chat-room.service';
 import { ClientSocketService } from '@app/services/client-socket.service';
 import { ChatRoom } from '@common/chatRoom';
@@ -16,7 +15,7 @@ export class JoinChatRoomsComponent implements OnInit {
   selectedChatRooms : string[];
   searchedRoom : string;
 
-  constructor(public joinChatRoomsDialogRef: MatDialogRef<JoinChatRoomsComponent>, public chatRoomService : ChatRoomService, public authService : AuthService, private clientSocketService : ClientSocketService, private chatRoomIndexService : ChatRoomIndexService) {
+  constructor(public joinChatRoomsDialogRef: MatDialogRef<JoinChatRoomsComponent>, public chatRoomService : ChatRoomService, public authService : AuthService, private clientSocketService : ClientSocketService) {
     this.selectedChatRooms = [];
     this.searchedRoom = "";
   }
