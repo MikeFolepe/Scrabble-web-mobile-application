@@ -5,10 +5,11 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import com.example.scrabbleprototype.R
+import com.example.scrabbleprototype.objects.CurrentRoom
 
 class WaitingRoomActivity : AppCompatActivity() {
 
-
+    var room = CurrentRoom
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.waiting_room)
@@ -17,11 +18,9 @@ class WaitingRoomActivity : AppCompatActivity() {
         }
 
     private fun setUpButtons(){
-        val privateRadioButton = findViewById<Button>(R.id.convert_game)
-        privateRadioButton.setOnClickListener {
-            val intent = Intent(this, PrivateGamePwd::class.java)
-            intent.putExtra("popuptitle", "Veuillez entrer un mot de passe")
-            startActivity(intent)
+        val privateButton = findViewById<Button>(R.id.convert_game)
+        privateButton.setOnClickListener {
+
 
         }
     }

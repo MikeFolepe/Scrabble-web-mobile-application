@@ -2,11 +2,13 @@ package com.example.scrabbleprototype.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.provider.MediaStore.Audio.Radio
 import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.RadioButton
 import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
 import com.example.scrabbleprototype.R
@@ -40,7 +42,7 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
         job.cancel()
     }
     var currentRoom = CurrentRoom;
-    var gameSetting: GameSettings = GameSettings(arrayListOf(Users.currentUser), StartingPlayer.Player1, "00", "00", AiType.beginner, "", "", "", arrayOf())
+    var gameSetting: GameSettings = GameSettings(arrayListOf(Users.currentUser), StartingPlayer.Player1, "00", "00", AiType.beginner, "", "", "", arrayOf(), GameType.public)
     val minutes = arrayListOf("00", "01", "02", "03")
     val seconds = arrayListOf("00", "30")
     var dictionariesTitle =  arrayListOf<String>()
@@ -89,6 +91,7 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
 
         minutesSpinner.setSelection(1)
         dicoSpinner.setSelection((0))
+
     }
 
     suspend fun getDictionaries(): HttpResponse? {
@@ -170,10 +173,12 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
 
         val privateRadioButton = findViewById<Button>(R.id.private_game)
         privateRadioButton.setOnClickListener {
-            val intent = Intent(this, PrivateGamePwd::class.java)
-            intent.putExtra("popuptitle", "Veuillez entrer un mot de passe")
-            startActivity(intent)
+            gameSetting.type = GameType.private;
+        }
 
+        val publicRadioButton = findViewById<Button>(R.id.private_game)
+        publicRadioButton.setOnClickListener {
+            gameSetting.type = GameType.public;
         }
     }
 

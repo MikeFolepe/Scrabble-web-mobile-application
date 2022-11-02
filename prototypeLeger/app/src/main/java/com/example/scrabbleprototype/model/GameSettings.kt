@@ -15,8 +15,13 @@ enum class AiType {
     expert,
 }
 
+enum class GameType {
+    public,
+    private,
+}
+
 @Serializable
 class GameSettings(var playersNames: ArrayList<String>, var startingPlayer: StartingPlayer,
                    var timeMinute: String, var timeSecond: String, var level: AiType, var randomBonus: String,
-                   var bonusPositions: String, var dictionary: String, var objectiveIds: Array<IntArray>) {
+                   var bonusPositions: String, var dictionary: String, var objectiveIds: Array<IntArray>, var type: GameType) {
 }
