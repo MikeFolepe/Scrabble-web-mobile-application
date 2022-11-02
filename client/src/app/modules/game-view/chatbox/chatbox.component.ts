@@ -4,6 +4,7 @@ import { BoardHandlerService } from '@app/services/board-handler.service';
 import { ChatboxService } from '@app/services/chatbox.service';
 import { EndGameService } from '@app/services/end-game.service';
 import { SendMessageService } from '@app/services/send-message.service';
+import { DEFAULT_CHAT_HEIGHT } from '@common/constants';
 
 @Component({
     selector: 'app-chatbox',
@@ -41,6 +42,7 @@ export class ChatboxComponent implements OnInit {
     }
 
     ngOnInit(): void {
+        this.initializeChatHeight();
         this.sendMessageService.displayBound(this.displayMessageByType.bind(this));
     }
 
@@ -75,5 +77,12 @@ export class ChatboxComponent implements OnInit {
             // Timeout is used to update the scroll after the last element added
             this.myScrollContainer.nativeElement.scrollTop = this.myScrollContainer.nativeElement.scrollHeight;
         }, 1);
+    }
+
+    initializeChatHeight(): void {
+        const chatBox = document.getElementById('chat-box');
+        if (chatBox) {
+            chatBox.style.height = DEFAULT_CHAT_HEIGHT + 'vh';
+        }
     }
 }

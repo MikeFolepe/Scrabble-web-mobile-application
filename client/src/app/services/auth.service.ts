@@ -22,7 +22,11 @@ export class AuthService {
         private communicationService: CommunicationService,
         public errorHandler: ErrorHandlerService,
         public snackBar: MatSnackBar,
-    ) {}
+    ) {
+        if (this.clientSocketService.socket) {
+            this.receiveUserSocket();
+        }
+    }
 
     signIn(userData: User) {
         this.serverUrl = 'http://localhost:3000';
@@ -33,10 +37,6 @@ export class AuthService {
                 if (valid) {
                     this.currentUser = userData;
                     this.clientSocketService.socket = io(this.serverUrl);
-                    this.clientSocketService.socket.on(ChatEvents.SocketId, (socketId: string) => {
-                        this.currentUser.socketId = socketId;
-                        this.clientSocketService.socket.emit(ChatEvents.UpdateUserSocket, this.currentUser);
-                    });
                     this.clientSocketService.socket.connect();
                     this.clientSocketService.socket.emit(ChatEvents.JoinRoom);
                     this.clientSocketService.socket.emit(ChatEvents.GetMessages);
@@ -68,6 +68,13 @@ export class AuthService {
             horizontalPosition: 'center',
             verticalPosition: 'bottom',
             panelClass: ['snackBarStyle'],
+        });
+    }
+
+    private receiveUserSocket(): void {
+        this.clientSocketService.socket.on(ChatEvents.SocketId, (socketId: string) => {
+            this.currentUser.socketId = socketId;
+            this.clientSocketService.socket.emit(ChatEvents.UpdateUserSocket, this.currentUser);
         });
     }
 }

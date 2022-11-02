@@ -13,7 +13,6 @@ import { GameSettingsService } from '@app/services/game-settings.service';
 import { GiveUpHandlerService } from '@app/services/give-up-handler.service';
 import { LetterService } from '@app/services/letter.service';
 import { PlaceLetterService } from '@app/services/place-letter.service';
-import { WordValidationService } from '@app/services/word-validation.service';
 import { ChatRoom } from '@common/chatRoom';
 import { GameType } from '@common/game-type';
 
@@ -45,9 +44,8 @@ export class MainPageComponent {
         private placeLetterService: PlaceLetterService,
         private giveUpHandlerService: GiveUpHandlerService,
         private endGameService: EndGameService,
-        private wordValidationService: WordValidationService,
         private authService: AuthService,
-        public chatRoomService: ChatRoomService
+        public chatRoomService: ChatRoomService,
     ) {
         this.selectedGameTypeIndex = 0;
         this.gameType = ['Scrabble classique', 'Scrabble LOG2990'];
@@ -84,11 +82,9 @@ export class MainPageComponent {
         this.chatRoomForm = true;
     }
 
-
-    createChatRoom() : void {
-        
+    createChatRoom(): void {
         this.clientSocketService.socket.emit('createChatRoom', this.authService.currentUser, this.chatRoomName);
-        // this.chatRoomService.getChatRooms();  
+        // this.chatRoomService.getChatRooms();
     }
 
     deleteChatRoom(index : any) : void {
@@ -116,10 +112,8 @@ export class MainPageComponent {
     }
 
     joinRoom() {
-        console.log(this.authService.currentUser.ipAddress, this.authService.currentUser.pseudonym, this.authService.currentUser.socketId);
         this.clientSocketService.socket.emit('joinChatRoom', this.authService.currentUser, this.selectedChatRooms);
         this.selectedChatRooms = [];
-        setTimeout(() => console.log(this.chatRoomService.chatRooms), 2000);
     }
 
     openBestScoresDialog(): void {
@@ -141,7 +135,6 @@ export class MainPageComponent {
     resetServices() {
         this.giveUpHandlerService.isGivenUp = false;
         this.endGameService.actionsLog = [];
-        this.wordValidationService.ngOnDestroy();
         this.letterService.ngOnDestroy();
         this.placeLetterService.ngOnDestroy();
         this.gameSettingsService.ngOnDestroy();

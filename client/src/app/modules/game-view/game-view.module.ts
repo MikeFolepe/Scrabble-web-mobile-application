@@ -13,7 +13,6 @@ import { SharedModule } from '@app/modules/shared/shared.module';
 import { ChangeChatRoomComponent } from './change-chat-room/change-chat-room.component';
 import { JoinChatRoomsComponent } from './join-chat-rooms/join-chat-rooms.component';
 
-
 @NgModule({
     declarations: [
         JoinChatRoomsComponent,

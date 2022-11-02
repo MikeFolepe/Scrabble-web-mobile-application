@@ -15,7 +15,6 @@ import { FormComponent } from './form/form.component';
 import { LevelFieldComponent } from './level-field/level-field.component';
 import { NameSelectorComponent } from './name-selector/name-selector.component';
 import { PlayerNameFieldComponent } from './player-name-field/player-name-field.component';
-import { RandomBonusComponent } from './random-bonus/random-bonus.component';
 import { TimerFieldComponent } from './timer-field/timer-field.component';
 
 @NgModule({
@@ -25,7 +24,6 @@ import { TimerFieldComponent } from './timer-field/timer-field.component';
         PlayerNameFieldComponent,
         TimerFieldComponent,
         LevelFieldComponent,
-        RandomBonusComponent,
         NameSelectorComponent,
         GiveUpGameDialogComponent,
     ],

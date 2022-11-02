@@ -1,22 +1,15 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { EASEL_SIZE, INVALID_INDEX, RESERVE } from '@app/classes/constants';
-import { ClientSocketService } from '@app/services/client-socket.service';
 import { Letter } from '@common/letter';
-@Injectable({
-    providedIn: 'root',
-})
+import { ClientSocketService } from './client-socket.service';
+@Injectable({ providedIn: 'root' })
 export class LetterService implements OnDestroy {
     reserve: Letter[];
     reserveSize: number;
 
     constructor(private clientSocketService: ClientSocketService) {
-        this.reserve = JSON.parse(JSON.stringify(RESERVE));
+        this.reserve = [];
         this.receiveReserve();
-        let size = 0;
-        for (const letter of this.reserve) {
-            size += letter.quantity;
-        }
-        this.reserveSize = size;
     }
 
     receiveReserve(): void {
@@ -54,7 +47,7 @@ export class LetterService implements OnDestroy {
         if (reserveIndex === INVALID_INDEX) return emptyLetter;
         this.reserve[reserveIndex].quantity--;
         this.reserveSize--;
-        this.clientSocketService.socket.emit('sendReserve', this.reserve, this.reserveSize, this.clientSocketService.roomId);
+        // this.clientSocketService.socket.emit('sendReserve', this.reserve, this.reserveSize, this.clientSocketService.roomId);
         return randomLetter;
     }
 
@@ -63,7 +56,7 @@ export class LetterService implements OnDestroy {
             if (letter.toUpperCase() === letterReserve.value) {
                 letterReserve.quantity++;
                 this.reserveSize++;
-                this.clientSocketService.socket.emit('sendReserve', this.reserve, this.reserveSize, this.clientSocketService.roomId);
+                // this.clientSocketService.socket.emit('sendReserve', this.reserve, this.reserveSize, this.clientSocketService.roomId);
                 return;
             }
         }

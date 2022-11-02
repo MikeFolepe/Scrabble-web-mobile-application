@@ -30,7 +30,7 @@ export class GameViewComponent {
         public chatBoxService: ChatboxService,
         public boardHandlerService: BoardHandlerService,
         public skipTurnService: SkipTurnService,
-        private playerService: PlayerService,
+        public playerService: PlayerService,
         public dialog: MatDialog,
         public sendMessageService: SendMessageService,
         public giveUpHandlerService: GiveUpHandlerService,
@@ -38,13 +38,13 @@ export class GameViewComponent {
         private placeLetterService: PlaceLetterService,
     ) {
         this.fontSize = DEFAULT_FONT_SIZE;
-        this.giveUpHandlerService.receiveEndGameByGiveUp();
+        // this.giveUpHandlerService.receiveEndGameByGiveUp();
         // this.objectiveService.ngOnDestroy();
     }
 
     handleFontSizeEvent(fontSizeEvent: number): void {
         this.fontSize = fontSizeEvent;
-        this.playerService.updateFontSize(this.fontSize);
+        // this.playerService.updateFontSize(this.fontSize);
     }
 
     confirmGiveUpGame(): void {
@@ -64,7 +64,7 @@ export class GameViewComponent {
         this.placeLetterService.ngOnDestroy();
         this.gridService.ngOnDestroy();
         this.endGameService.clearAllData();
-        this.playerService.clearPlayers();
+        // this.playerService.clearPlayers();
         this.gameSettingsService.ngOnDestroy();
         if (this.giveUpHandlerService.isGivenUp) this.clientSocketService.socket.emit('deleteGame', this.clientSocketService.roomId);
     }
