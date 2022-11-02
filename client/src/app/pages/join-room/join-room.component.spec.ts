@@ -11,7 +11,7 @@ import { ERROR_MESSAGE_DELAY } from '@app/classes/constants';
 import { AiType } from '@common/ai-name';
 import { GameSettings } from '@common/game-settings';
 import { GameType } from '@common/game-type';
-import { Room, State } from '@common/room';
+import { Room, State } from '@app/classes/room';
 import { of } from 'rxjs';
 import { Socket } from 'socket.io-client';
 import { JoinRoomComponent } from './join-room.component';

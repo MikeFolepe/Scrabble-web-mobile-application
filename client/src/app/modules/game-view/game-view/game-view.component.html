@@ -16,7 +16,7 @@
                     mat-raised-button
                     color="primary"
                     id="regular-button-1"
-                    [disabled]="!this.skipTurnService.isTurn || this.skipTurnService.shouldNotBeDisplayed"
+                    [disabled]="!playerService.currentPlayer.isTurn|| this.skipTurnService.shouldNotBeDisplayed"
                     (click)="this.chatBoxService.sendPlayerMessage('!passer')"
                 >
                     Passer son tour
@@ -48,7 +48,6 @@
     <app-letter-easel id="letter-easel"></app-letter-easel>
     <div id="chatbox">
         <app-chatbox></app-chatbox>
-        <app-objectives></app-objectives>
     </div>
 </div>
-<app-background [isDark]="!skipTurnService.isTurn"></app-background>
+<app-background [isDark]="!playerService.currentPlayer.isTurn"></app-background>

@@ -1,10 +1,10 @@
 import { Logger, Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { MongooseModule } from '@nestjs/mongoose';
 import { AdminModule } from './admin/admin.module';
-import { ChatGatewayModule } from './gateways/chat.gateway.module';
 import { AuthModule } from './auth/auth.module';
-import { GameController } from './game/controllers/game/game.controller';
+import { GameModuleModule } from './game/game-module.module';
+import { GatewayModule } from './gateways/gateway.module';
 
 @Module({
     imports: [
@@ -17,10 +17,10 @@ import { GameController } from './game/controllers/game/game.controller';
             }),
         }),
         AdminModule,
-        ChatGatewayModule,
+        GatewayModule,
         AuthModule,
+        GameModuleModule,
     ],
     providers: [Logger],
-    controllers: [GameController],
 })
 export class AppModule {}
