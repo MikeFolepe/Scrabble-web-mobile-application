@@ -9,7 +9,7 @@ import { Logger } from '@nestjs/common';
 import { OnGatewayConnection, OnGatewayDisconnect, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { DELAY_OF_DISCONNECT } from '../../classes/constants';
-import { DELAY_BEFORE_EMITTING_TIME, PRIVATE_ROOM_ID } from '../chatbox/chat.gateway.constants';
+import { DELAY_BEFORE_EMITTING_TIME, PRIVATE_ROOM_ID } from '../chat-channel/chat.gateway.constants';
 import { RoomManagerService } from '../services/room-manager/room-manager.service';
 import { ChatEvents } from './../../../../common/chat.gateway.events';
 

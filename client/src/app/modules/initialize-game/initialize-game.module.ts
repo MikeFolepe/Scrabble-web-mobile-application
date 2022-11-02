@@ -10,6 +10,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { AppRoutingModule } from '@app/modules/app-routing.module';
 import { GiveUpGameDialogComponent } from '@app/modules/game-view/give-up-game-dialog/give-up-game-dialog.component';
 import { SharedModule } from '@app/modules/shared/shared.module';
+import { AddChatRoomComponent } from '../game-view/add-chat-room/add-chat-room.component';
 import { FormComponent } from './form/form.component';
 import { LevelFieldComponent } from './level-field/level-field.component';
 import { NameSelectorComponent } from './name-selector/name-selector.component';
@@ -19,6 +20,7 @@ import { TimerFieldComponent } from './timer-field/timer-field.component';
 
 @NgModule({
     declarations: [
+        AddChatRoomComponent,
         FormComponent,
         PlayerNameFieldComponent,
         TimerFieldComponent,

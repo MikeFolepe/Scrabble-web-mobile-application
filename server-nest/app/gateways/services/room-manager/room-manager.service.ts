@@ -1,6 +1,5 @@
 import { Room, State } from '@app/classes/room';
 import { GameSettings, StartingPlayer } from '@common/game-settings';
-import { ObjectiveTypes } from '@common/objectives-type';
 import { PlayerIndex } from '@common/player-index';
 import { Injectable } from '@nestjs/common';
 import { OUT_BOUND_INDEX_OF_SOCKET } from '../../../classes/constants';
@@ -44,6 +43,7 @@ export class RoomManagerService {
 
     setSocket(room: Room, socketId: string): void {
         room.socketIds.push(socketId);
+
     }
 
     getGameSettings(roomId: string): GameSettings {
