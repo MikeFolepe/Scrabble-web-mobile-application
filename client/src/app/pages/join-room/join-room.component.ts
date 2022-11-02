@@ -7,6 +7,7 @@ import { MatPaginatorIntl, PageEvent } from '@angular/material/paginator';
 import { ERROR_MESSAGE_DELAY } from '@app/classes/constants';
 import { Room, State } from '@app/classes/room';
 import { NameSelectorComponent } from '@app/modules/initialize-game/name-selector/name-selector.component';
+import { ChannelHandlerService } from '@app/services/channel-handler.service';
 import { ClientSocketService } from '@app/services/client-socket.service';
 import { PlayerIndex } from '@common/player-index';
 
@@ -26,7 +27,7 @@ export class JoinRoomComponent implements OnInit {
 
     // JUSTIFICATION : must name service as it is named in MatPaginatorIntl
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    constructor(private clientSocketService: ClientSocketService, public dialog: MatDialog, public _MatPaginatorIntl: MatPaginatorIntl) {
+    constructor(private clientSocketService: ClientSocketService, public channelHandlerService : ChannelHandlerService, public dialog: MatDialog, public _MatPaginatorIntl: MatPaginatorIntl) {
         this.rooms = [];
         this.roomItemIndex = 0;
         // 2 rooms per page
@@ -98,6 +99,10 @@ export class JoinRoomComponent implements OnInit {
             });
     }
 
+    // test() {
+        
+    //     console.log(this.channelHandlerService.channels);
+    // }
     placeRandomly(): void {
         this.dialog
             .open(NameSelectorComponent, { disableClose: true })

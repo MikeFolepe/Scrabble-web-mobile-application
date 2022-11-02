@@ -1,0 +1,84 @@
+
+.chatRoom {
+    height: 400px;
+    width: 350px;
+    background-color: grey;
+    overflow: hidden;
+}
+
+.closeButton {
+    position: absolute;
+    background-color:  #00804D;
+    color : white;
+    top:0;
+    right:0;
+    outline:none;
+    line-height: 0px;
+    width: auto;
+
+}
+
+.sendButton {
+    background-color: #00804D;
+    color: white;
+    text-align: center;
+    line-height: 0px !important;
+    padding: 12px 10px 10px 10px !important
+}
+
+.title {
+
+    background-color: #00804D;
+    color : white;
+    text-align: center;
+}
+
+.noChatRoom {
+    //center the text
+    color : white;
+    margin-top : 30px;
+    text-align: center;
+
+}
+
+
+.conversation {
+
+    margin-top: -10px;
+    margin-bottom:0px;
+    height : 330px;
+    overflow-y: scroll;
+    word-break: break-word;
+
+}
+
+.text {
+    color:white;
+}
+
+.sendMessage {
+    //put in the bottom of the box
+    //make this class always stay at the bottom of the div
+    position: absolute;
+    bottom: 0;
+    //make the width of the div
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    // margin-top: 200px;
+}
+
+input {
+    width: 80%;
+    height: 25px;
+    outline: none;
+}
+input:focus, textarea:focus, select:focus{
+    outline: none;
+}
+button {
+    width: 20%;
+    height: 31px;
+}
+
