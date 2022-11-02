@@ -13,7 +13,6 @@ export class ChatGateway {
     @WebSocketServer() private server: Server;
 
     messages: string[] = [];
-    private readonly room = '';
 
     constructor(private readonly logger: Logger, private userService: UsersService, private chatRoomService: ChatRoomService) {}
 
@@ -98,10 +97,6 @@ export class ChatGateway {
         this.server.emit(ChatEvents.MassMessage, `${socket.id} : ${message}`);
     }
 
-    @SubscribeMessage(ChatEvents.JoinRoom)
-    joinRoom(socket: Socket) {
-        socket.join(this.room);
-    }
 
     @SubscribeMessage(ChatEvents.RoomMessage)
     roomMessage(socket: Socket, message: Message) {
@@ -109,7 +104,6 @@ export class ChatGateway {
         const messageObject = new Message(message.message, message.messageUser);
         const messageString = JSON.stringify(messageObject);
         this.messages.push(messageString);
-        this.server.to(this.room).emit(ChatEvents.RoomMessage, messageString);
 
     }
 
