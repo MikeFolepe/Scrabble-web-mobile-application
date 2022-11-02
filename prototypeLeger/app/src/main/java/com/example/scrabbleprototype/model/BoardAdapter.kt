@@ -21,7 +21,7 @@ class BoardAdapter(private var board: ArrayList<Letter>) :
     RecyclerView.Adapter<BoardAdapter.ViewHolder>() {
 
     var onCaseClicked: ((position: Int) -> Unit)? = null
-    var onPlacement: ((letterRackPosition: Int, boardPosition: Int) -> Unit)? = null
+    var onPlacement: ((letterRackPosition: Int, boardPosition: Int, draggedFromRack: Boolean) -> Unit)? = null
 
     /**
      * Provide a reference to the type of views that you are using
@@ -58,15 +58,15 @@ class BoardAdapter(private var board: ArrayList<Letter>) :
                         val letterTouched = e.clipData.getItemAt(0)
                         val letterQuantity: Int = e.clipData.getItemAt(1).text.toString().toInt()
                         val letterScore: Int = e.clipData.getItemAt(2).text.toString().toInt()
-                        val positionTouched: Int = e.clipData.getItemAt(3).text.toString().toInt()
+                        val dragStartPosition: Int = e.clipData.getItemAt(3).text.toString().toInt()
+                        val draggedFromRack = e.clipData.getItemAt(4).text.toString().toBoolean()
                         val dragData = letterTouched.text // La data de la lettre qui a été dragged
 
                         // Add letter dropped to board
                         board[bindingAdapterPosition] = Letter(dragData.first().toString().lowercase(), letterQuantity, letterScore, false, false)
-                        // Remove letter dragged of letterRack
-                        onPlacement?.invoke(positionTouched, bindingAdapterPosition)
-
                         notifyItemChanged(bindingAdapterPosition)
+                        // Remove letter dragged of letterRack
+                        onPlacement?.invoke(dragStartPosition, bindingAdapterPosition, draggedFromRack)
                         true
                     }
                     DragEvent.ACTION_DRAG_ENDED -> {
@@ -123,6 +123,7 @@ class BoardAdapter(private var board: ArrayList<Letter>) :
             val letterQuantity = ClipData.Item(board[viewHolder.layoutPosition].quantity.toString())
             val letterScore = ClipData.Item(board[viewHolder.layoutPosition].points.toString())
             val positionTouched = ClipData.Item(viewHolder.layoutPosition.toString())
+            val isDraggedFromRack = ClipData.Item(false.toString())
             val dragData = ClipData(
                 board[viewHolder.layoutPosition].value,
                 arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN),
@@ -131,6 +132,7 @@ class BoardAdapter(private var board: ArrayList<Letter>) :
             dragData.addItem(letterQuantity)
             dragData.addItem(letterScore)
             dragData.addItem(positionTouched)
+            dragData.addItem(isDraggedFromRack)
 
             val shadowBuilder: View.DragShadowBuilder = View.DragShadowBuilder(v)
 

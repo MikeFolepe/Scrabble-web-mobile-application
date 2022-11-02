@@ -37,54 +37,6 @@ class LetterRackAdapter(private var letterRack: ArrayList<Letter>) :
             view.setOnClickListener {
                 onLetterClick?.invoke(layoutPosition)
             }
-            setupDragListener(view)
-        }
-
-        private fun setupDragListener(view: View) {
-            // Drag listener for board cases
-            view.setOnDragListener { v, e ->
-                when(e.action) {
-                    DragEvent.ACTION_DRAG_STARTED -> {
-                        return@setOnDragListener e.clipDescription.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)
-                    }
-                    DragEvent.ACTION_DRAG_ENTERED -> {
-                        // Can modify view here to show that the view is being dragged
-                        true
-                    }
-                    DragEvent.ACTION_DRAG_EXITED -> {
-                        // Modify view style back to DRAG_STARTED DragEvent
-                        true
-                    }
-                    DragEvent.ACTION_DROP -> {
-                        val letterTouched = e.clipData.getItemAt(0)
-                        val letterQuantity: Int = e.clipData.getItemAt(1).text.toString().toInt()
-                        val letterScore: Int = e.clipData.getItemAt(2).text.toString().toInt()
-                        val positionTouched: Int = e.clipData.getItemAt(3).text.toString().toInt()
-                        val dragData = letterTouched.text // La data de la lettre qui a été dragged
-
-                        // Add letter dropped to board
-                        letterRack[bindingAdapterPosition] = Letter(dragData.first().toString().lowercase(), letterQuantity, letterScore, false, false)
-                        // Remove letter dragged of letterRack
-                        //onPlacement?.invoke(positionTouched, bindingAdapterPosition)
-
-                        notifyItemChanged(bindingAdapterPosition)
-                        true
-                    }
-                    DragEvent.ACTION_DRAG_ENDED -> {
-                        when(e.result) {
-                            true ->
-                                Toast.makeText(v.context, "DROP SUCCESSFUL", Toast.LENGTH_LONG)
-                            else ->
-                                Toast.makeText(v.context, "DROP DIDN'T WORK", Toast.LENGTH_LONG)
-                        }.show()
-                        true
-                    }
-                    else -> {
-                        Log.d("dragdrop", "Unknown Action type received by the drag listener")
-                        false
-                    }
-                }
-            }
         }
     }
 
@@ -101,15 +53,8 @@ class LetterRackAdapter(private var letterRack: ArrayList<Letter>) :
 
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
-
-        if(letterRack[position].isEmpty())  {
-            viewHolder.letterLayout.background = ContextCompat.getDrawable(viewHolder.letterLayout.context, R.drawable.transparent)
-            viewHolder.letterScore.text = ""
-        } else {
-            viewHolder.letterLayout.background = ContextCompat.getDrawable(viewHolder.letterLayout.context, R.drawable.letter_background)
-            viewHolder.letterScore.text = letterRack[position].points.toString()
-        }
-        viewHolder.letter.text = letterRack[position].value
+        viewHolder.letterScore.text = letterRack[position].points.toString()
+        viewHolder.letter.text = letterRack[position].value.uppercase()
         setupTouchListener(viewHolder)
     }
 
@@ -122,6 +67,7 @@ class LetterRackAdapter(private var letterRack: ArrayList<Letter>) :
             val letterQuantity = ClipData.Item(letterRack[viewHolder.layoutPosition].quantity.toString())
             val letterScore = ClipData.Item(letterRack[viewHolder.layoutPosition].points.toString())
             val positionTouched = ClipData.Item(viewHolder.layoutPosition.toString())
+            val isDraggedFromRack = ClipData.Item(true.toString())
             val dragData = ClipData(
                 letterRack[viewHolder.layoutPosition].value,
                 arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN),
@@ -130,6 +76,7 @@ class LetterRackAdapter(private var letterRack: ArrayList<Letter>) :
             dragData.addItem(letterQuantity)
             dragData.addItem(letterScore)
             dragData.addItem(positionTouched)
+            dragData.addItem(isDraggedFromRack)
 
             val shadowBuilder: View.DragShadowBuilder = View.DragShadowBuilder(v)
 
