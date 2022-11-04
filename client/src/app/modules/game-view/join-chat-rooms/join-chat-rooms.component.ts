@@ -21,7 +21,6 @@ export class JoinChatRoomsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // this.chatRooms = this.chatRoomService.chatRooms;
   }
 
   checkRoom(chatRoomName : string) {
@@ -34,7 +33,6 @@ export class JoinChatRoomsComponent implements OnInit {
   }
 
   joinRoom() {
-    console.log(this.authService.currentUser.ipAddress, this.authService.currentUser.pseudonym, this.authService.currentUser.socketId);
     this.clientSocketService.socket.emit('joinChatRoom', this.authService.currentUser, this.selectedChatRooms);
     this.selectedChatRooms = [];
     setTimeout(() => console.log(this.chatRoomService.chatRooms), 2000);
@@ -48,8 +46,13 @@ export class JoinChatRoomsComponent implements OnInit {
 
   alreadyInRoom(chatRoom : ChatRoom) : boolean {
     //find the user in the current room 
+
+    //check if the chatRoom is the first room in the chatRoomService.chatRooms array
+    if(this.chatRoomService.chatRooms[0].chatRoomName === chatRoom.chatRoomName) {
+      return true;
+    }
+
     if(chatRoom.users) {
-      console.log(chatRoom.users);
       var foundUser = chatRoom.users.find((user) => user.pseudonym === this.authService.currentUser.pseudonym);
       return Boolean(foundUser);
     }
@@ -63,8 +66,6 @@ export class JoinChatRoomsComponent implements OnInit {
     } else {
         this.selectedChatRooms.push(value.chatRoomName);
     }
-    console.log(this.selectedChatRooms.length);
-    // this.chatRoomIndexService.amountOfChatRooms = this.selectedChatRooms.length;
   }
   
 } 

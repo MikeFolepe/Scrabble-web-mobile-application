@@ -7,7 +7,7 @@
     <mat-radio-group class="radio-group" [(ngModel)]="selectedChatRoom">
         <mat-radio-button color="primary" class="radio-button" value="solo" [disabled]="disableJoinCurrentRoom(chatRoom)" *ngFor="let chatRoom of userChatsRooms" [value]="chatRoom"
             >{{ chatRoom.chatRoomName }}{{ ", par " }}{{ chatRoom.creatorName }}
-            <button mat-button color="warn" (click)="leaveChatRoom(chatRoom)">Quitter</button>
+            <button mat-button color="warn" (click)="leaveChatRoom(chatRoom)" *ngIf="chatRoom.chatRoomName != this.chatRoomService.chatRooms[0].chatRoomName">Quitter</button>
         </mat-radio-button>
         
     </mat-radio-group>
