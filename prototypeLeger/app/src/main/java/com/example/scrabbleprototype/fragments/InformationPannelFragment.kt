@@ -17,10 +17,10 @@ import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.model.SocketHandler
 import com.example.scrabbleprototype.objects.CurrentRoom
 import com.example.scrabbleprototype.objects.Players
-import com.example.scrabbleprototype.services.SkipTurnCallback
 import com.example.scrabbleprototype.services.SkipTurnService
+import com.example.scrabbleprototype.services.TurnUICallback
 
-class InformationPannelFragment : Fragment(), SkipTurnCallback {
+class InformationPannelFragment : Fragment(), TurnUICallback {
 
     val player = Players.currentPlayer
 
@@ -40,7 +40,7 @@ class InformationPannelFragment : Fragment(), SkipTurnCallback {
             val binder = service as SkipTurnService.LocalBinder
             skipTurnService = binder.getService()
             skipTurnBound = true
-            skipTurnService.setCallbacks(this@InformationPannelFragment)
+            skipTurnService.setTurnUICallback(this@InformationPannelFragment)
         }
         override fun onServiceDisconnected(name: ComponentName?) {
             skipTurnBound = false
@@ -65,7 +65,7 @@ class InformationPannelFragment : Fragment(), SkipTurnCallback {
         timerText = view.findViewById(R.id.timer)
 
         view.findViewById<ConstraintLayout>(R.id.info_pannel_layout).setOnClickListener {
-            skipTurnService.setCallbacks(this@InformationPannelFragment)
+            skipTurnService.setTurnUICallback(this@InformationPannelFragment)
         }
     }
 
@@ -78,7 +78,7 @@ class InformationPannelFragment : Fragment(), SkipTurnCallback {
 
     override fun onStop() {
         super.onStop()
-        skipTurnService.setCallbacks(null)
+        skipTurnService.setTurnUICallback(null)
         activityContext.unbindService(connection)
         skipTurnBound = false
     }

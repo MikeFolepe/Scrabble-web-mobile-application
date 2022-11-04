@@ -90,9 +90,7 @@ class LetterRackFragment : Fragment() {
     }
 
     private fun setupLetterRack(view: View) {
-        Log.d("easelInit", Players.currentPlayer.letterTable[6].value)
         LetterRack.letters = Players.currentPlayer.letterTable
-        Log.d("easelInit", LetterRack.letters[6].value)
         letterRackView = view.findViewById<RecyclerView>(R.id.letter_rack)
         val horizontalLayoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false)
         letterRackView.layoutManager = horizontalLayoutManager

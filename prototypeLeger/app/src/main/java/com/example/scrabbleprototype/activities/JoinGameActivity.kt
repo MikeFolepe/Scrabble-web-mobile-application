@@ -54,7 +54,6 @@ class JoinGameActivity : AppCompatActivity() {
         }
         receiveRooms(gameListAdapter)
         handleRoomUnavailability()
-        routeToGameView()
     }
 
     private fun joinGame(position: Int) {
@@ -109,12 +108,6 @@ class JoinGameActivity : AppCompatActivity() {
     private fun handleRoomUnavailability() {
         socket.on("roomAlreadyToken") {
             Toast.makeText(this, "Il est impossible de joindre cette partie", Toast.LENGTH_LONG).show()
-        }
-    }
-
-    private fun routeToGameView() {
-        socket.on("goToGameView") {
-            startActivity(Intent(this, GameActivity::class.java))
         }
     }
 

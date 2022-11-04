@@ -38,7 +38,9 @@ class GameActivity : AppCompatActivity() {
         }
 
         receiveReserve()
-        setUpFragments()
+        if(savedInstanceState == null) {
+            setUpFragments()
+        }
     }
 
     private fun setUpFragments() {

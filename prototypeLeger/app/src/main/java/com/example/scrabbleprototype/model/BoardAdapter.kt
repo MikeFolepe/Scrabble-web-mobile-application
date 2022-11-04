@@ -109,10 +109,11 @@ class BoardAdapter(private var board: ArrayList<Letter>) :
         if(board[position].value == "")  {
             letterLayer.background = ContextCompat.getDrawable(viewHolder.case.context, R.drawable.transparent)
             letterLayer.findViewById<TextView>(R.id.letter_score).text = ""
+            letterLayer.findViewById<TextView>(R.id.letter).text = ""
         } else {
             letterLayer.background = ContextCompat.getDrawable(viewHolder.case.context, R.drawable.tan)
-            viewHolder.case.findViewById<TextView>(R.id.letter).text = board[position].value.uppercase()
-            viewHolder.case.findViewById<TextView>(R.id.letter_score).text = board[position].points.toString()
+            letterLayer.findViewById<TextView>(R.id.letter).text = board[position].value.uppercase()
+            letterLayer.findViewById<TextView>(R.id.letter_score).text = board[position].points.toString()
         }
     }
 

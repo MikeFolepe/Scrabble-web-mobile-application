@@ -10,8 +10,11 @@ import com.example.scrabbleprototype.model.SocketHandler
 import com.example.scrabbleprototype.objects.CurrentRoom
 import com.example.scrabbleprototype.objects.Players
 
-interface SkipTurnCallback {
+interface TurnUICallback {
     fun updateTimeUI(currentTime: Long)
+}
+interface EndTurnCallback {
+    fun handleInvalidPlacement()
 }
 
 class SkipTurnService : Service() {
@@ -25,7 +28,8 @@ class SkipTurnService : Service() {
     private lateinit var countdownTimer: CountDownTimer
 
     private val binder = LocalBinder()
-    private var skipTurnCallBack: SkipTurnCallback? = null
+    private var turnUICallback: TurnUICallback? = null
+    private var endTurnCallback: EndTurnCallback? = null
 
     inner class LocalBinder: Binder() {
         fun getService(): SkipTurnService = this@SkipTurnService
@@ -37,8 +41,11 @@ class SkipTurnService : Service() {
         return binder
     }
 
-    fun setCallbacks(callBack: SkipTurnCallback?) {
-        skipTurnCallBack = callBack
+    fun setTurnUICallback(callBack: TurnUICallback?) {
+        turnUICallback = callBack
+    }
+    fun setEndTurnCallback(callBack: EndTurnCallback?) {
+        endTurnCallback = callBack
     }
 
     private fun receiveStartFromServer() {
@@ -47,8 +54,8 @@ class SkipTurnService : Service() {
                 Log.d("timer", "Started")
                 getTurnTime()
                 timeMs = 60000
-                if(skipTurnCallBack == null) Log.d("timer", "its null")
-                skipTurnCallBack?.updateTimeUI(timeMs)
+                if(turnUICallback == null) Log.d("timer", "its null")
+                turnUICallback?.updateTimeUI(timeMs)
                 startTimer(timeMs)
             }
         }
@@ -81,7 +88,7 @@ class SkipTurnService : Service() {
 
                 override fun onTick(newTime: Long) {
                     timeMs = newTime
-                    skipTurnCallBack?.updateTimeUI(timeMs)
+                    turnUICallback?.updateTimeUI(timeMs)
                 }
             }
             countdownTimer.start()
@@ -91,6 +98,7 @@ class SkipTurnService : Service() {
     fun switchTimer() {
         resetTimer()
         Thread.sleep(3000)
+        endTurnCallback?.handleInvalidPlacement()
         Log.d("timer", "Emit du switch")
         socket.emit("switchTurn", CurrentRoom.myRoom.id, player.name)
         player.setTurn(false)
@@ -99,7 +107,7 @@ class SkipTurnService : Service() {
     fun resetTimer() {
         countdownTimer.cancel()
         timeMs = 0
-        skipTurnCallBack?.updateTimeUI(timeMs)
+        turnUICallback?.updateTimeUI(timeMs)
     }
 
     private fun getTurnTime() {

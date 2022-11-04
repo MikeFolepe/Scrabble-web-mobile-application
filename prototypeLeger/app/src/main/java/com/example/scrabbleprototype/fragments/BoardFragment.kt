@@ -93,7 +93,7 @@ class BoardFragment : Fragment() {
 
     private fun setupBoard(view: View) {
         initializeBoard()
-        boardView = view.findViewById<RecyclerView>(R.id.board)
+        boardView = view.findViewById(R.id.board)
         val gridLayoutManager = GridLayoutManager(activity, 15, GridLayoutManager.VERTICAL, false)
         boardView.layoutManager = gridLayoutManager
         val boardAdapter = BoardAdapter(board)
@@ -116,6 +116,7 @@ class BoardFragment : Fragment() {
     }
 
     private fun initializeBoard() {
+        // in board.length until Constants.max
         for(i in 0..224 ) {
             board.add(Constants.EMPTY_LETTER)
         }

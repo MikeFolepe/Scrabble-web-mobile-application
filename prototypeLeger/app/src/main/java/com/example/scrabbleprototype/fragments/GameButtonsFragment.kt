@@ -17,16 +17,18 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.databinding.FragmentGameButtonsBinding
 import com.example.scrabbleprototype.model.Constants
+import com.example.scrabbleprototype.model.Player
 import com.example.scrabbleprototype.model.SocketHandler
 import com.example.scrabbleprototype.objects.Board
 import com.example.scrabbleprototype.objects.LetterRack
 import com.example.scrabbleprototype.objects.Players
+import com.example.scrabbleprototype.services.EndTurnCallback
 import com.example.scrabbleprototype.services.PlaceService
 import com.example.scrabbleprototype.services.SkipTurnService
 import com.example.scrabbleprototype.services.SwapLetterService
 import com.example.scrabbleprototype.viewModel.PlacementViewModel
 
-class GameButtonsFragment : Fragment() {
+class GameButtonsFragment : Fragment(), EndTurnCallback {
     private val board = Board.cases
     private val placementViewModel: PlacementViewModel by activityViewModels()
     private val socket = SocketHandler.getPlayerSocket()
@@ -47,6 +49,7 @@ class GameButtonsFragment : Fragment() {
             if(service is SkipTurnService.LocalBinder) {
                 skipTurnService = service.getService()
                 skipTurnBound = true
+                skipTurnService.setEndTurnCallback(this@GameButtonsFragment)
             } else if (service is PlaceService.LocalBinder) {
                 placeService = service.getService()
                 placeBound = true
@@ -90,6 +93,7 @@ class GameButtonsFragment : Fragment() {
         skipTurnBound = false
         placeBound = false
         swapBound = false
+        skipTurnService.setEndTurnCallback(null)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -118,14 +122,16 @@ class GameButtonsFragment : Fragment() {
     }
 
     private fun setupPlayButton() {
+        binding.playTurnButton.isEnabled = false
         val placementObserver = Observer<Int> { placementLength ->
-            binding.playTurnButton.isEnabled = placementLength != 0
+            if(Players.currentPlayer.getTurn()) binding.playTurnButton.isEnabled = placementLength != 0
         }
         placementViewModel.currentPlacementLength.observe(viewLifecycleOwner, placementObserver)
 
         binding.playTurnButton.setOnClickListener {
             val placementPositions = placementViewModel.currentPlacement.toList().sortedBy { (k, v) -> k }.toMap().keys.toIntArray()
             skipTurnService.switchTimer()
+            binding.playTurnButton.isEnabled = false
 
             if(placeService.validatePlacement(placementPositions)) {
                 Log.d("placing", "PASSED")
@@ -135,7 +141,7 @@ class GameButtonsFragment : Fragment() {
         }
     }
 
-    private fun handleInvalidPlacement() {
+    override fun handleInvalidPlacement() {
         val letterRackAdapter = activity?.findViewById<RecyclerView>(R.id.letter_rack)?.adapter
         val boardAdapter = activity?.findViewById<RecyclerView>(R.id.board)?.adapter
 
