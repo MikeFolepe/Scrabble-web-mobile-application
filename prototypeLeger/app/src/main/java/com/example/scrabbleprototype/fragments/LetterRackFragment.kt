@@ -117,7 +117,6 @@ class LetterRackFragment : Fragment() {
             activity?.runOnUiThread {
                 val mapper = jacksonObjectMapper()
                 val playerReceived = mapper.readValue(response[0].toString(), Player::class.java)
-                Log.d("easelUpdate", playerReceived.name + " " + Players.currentPlayer.name)
                 if(Players.currentPlayer.name == playerReceived.name) {
                     Players.currentPlayer.letterTable = playerReceived.letterTable
                     Players.currentPlayer.score = playerReceived.score

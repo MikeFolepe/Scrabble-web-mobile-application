@@ -4,11 +4,11 @@ import android.app.Service
 import android.content.Intent
 import android.os.*
 import android.util.Log
-import androidx.databinding.ObservableField
-import com.example.scrabbleprototype.fragments.InformationPannelFragment
 import com.example.scrabbleprototype.model.SocketHandler
 import com.example.scrabbleprototype.objects.CurrentRoom
 import com.example.scrabbleprototype.objects.Players
+import java.util.*
+import kotlin.concurrent.timerTask
 
 interface TurnUICallback {
     fun updateTimeUI(currentTime: Long)
@@ -97,11 +97,12 @@ class SkipTurnService : Service() {
 
     fun switchTimer() {
         resetTimer()
-        Thread.sleep(3000)
-        endTurnCallback?.handleInvalidPlacement()
-        Log.d("timer", "Emit du switch")
-        socket.emit("switchTurn", CurrentRoom.myRoom.id, player.name)
-        player.setTurn(false)
+        Timer().schedule(timerTask {
+            endTurnCallback?.handleInvalidPlacement()
+            Log.d("timer", "Emit du switch")
+            socket.emit("switchTurn", CurrentRoom.myRoom.id, player.name)
+            player.setTurn(false)
+        }, 3000)
     }
 
     fun resetTimer() {

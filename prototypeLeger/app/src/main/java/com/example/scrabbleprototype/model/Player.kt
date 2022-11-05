@@ -18,7 +18,8 @@ class Player: BaseObservable() {
     private var isTurn = false
 
     @Bindable
-    fun getTurn(): Boolean { return isTurn
+    fun getTurn(): Boolean {
+        return isTurn
     }
 
     @JvmName("setPlayerTurn")
