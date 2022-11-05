@@ -54,7 +54,7 @@ class GameListAdapter(private var gameList: ArrayList<Room>) :
 
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
-        viewHolder.gameRoom.findViewById<TextView>(R.id.room_name).text = gameList[position].gameSettings.playersNames[0]
+        viewHolder.gameRoom.findViewById<TextView>(R.id.room_name).text = gameList[position].gameSettings.creatorName
         val gameStatus = viewHolder.gameRoom.findViewById<TextView>(R.id.game_status)
         if(gameList[position].state == State.Playing || gameList[position].state == State.Finish) {
             gameStatus.text = "Indisponible"

@@ -9,7 +9,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.model.*
+import com.example.scrabbleprototype.objects.CurrentRoom
+import com.example.scrabbleprototype.objects.Players
+import com.example.scrabbleprototype.objects.Reserve
+import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -18,12 +23,20 @@ import org.json.JSONArray
 class JoinGameActivity : AppCompatActivity() {
 
     var rooms = arrayListOf<Room>()
-    val playerSocket = SocketHandler.getPlayerSocket()
+    val socketHandler = SocketHandler
+    val socket = socketHandler.getPlayerSocket()
+    private val mapper = jacksonObjectMapper()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_join_game)
 
+        receiveOpponents()
+        receiveRoomId()
+        receiveMyPlayer()
+        receiveNewOpponent()
+        receiveGameSettings()
+        routeToWaitingRoom()
         setupGameList()
     }
 
@@ -46,37 +59,68 @@ class JoinGameActivity : AppCompatActivity() {
 
     private fun joinGame(position: Int) {
         Log.d("room", rooms[position].id)
-        playerSocket.emit("newRoomCustomer", Users.currentUser, rooms[position].id)
+        socket.emit("newRoomCustomer", Users.currentUser, rooms[position].id)
+        socketHandler.roomId = rooms[position].id
     }
 
     private fun receiveRooms(gameListAdapter: GameListAdapter) {
-        playerSocket.on("roomConfiguration"){ response ->
-            var roomsAvailable = response[0] as JSONArray
-            for(i in 0 until roomsAvailable.length()) {
-                Log.d("room", roomsAvailable[i].toString())
-            }
-            roomsAvailable = roomsAvailable[0] as JSONArray
-            for(i in 0 until roomsAvailable.length()) {
-               val mapper = jacksonObjectMapper()
-               val roomToAdd = mapper.readValue(roomsAvailable.get(i).toString(), Room::class.java)
-                rooms.add(roomToAdd)
-            }
+        socket.on("roomConfiguration"){ response ->
+            rooms = mapper.readValue(response[0].toString(), object: TypeReference<ArrayList<Room>>() {})
             runOnUiThread {
                 gameListAdapter.updateData(rooms)
             }
         }
-        playerSocket.emit("getRoomsConfiguration")
+        socket.emit("getRoomsConfiguration")
+    }
+
+    private fun receiveOpponents() {
+        socket.on("curOps") { response ->
+            val opponentsString = response[0].toString()
+            Players.opponents = mapper.readValue(opponentsString, object: TypeReference<ArrayList<Player>>() {})
+        }
+    }
+
+    private fun receiveRoomId() {
+        socket.on("yourRoomId") { response ->
+            val roomId = response[0] as String
+            SocketHandler.roomId = roomId
+        }
+    }
+
+    private fun receiveMyPlayer() {
+        socket.on("MyPlayer") { response ->
+            Players.currentPlayer = mapper.readValue(response[0].toString(), Player::class.java)
+        }
+    }
+
+    private fun receiveNewOpponent() {
+        socket.on("Opponent") { response ->
+            Players.opponents.add(mapper.readValue(response[0].toString(), Player::class.java))
+        }
+    }
+
+    private fun receiveGameSettings() {
+        socket.on("yourGameSettings") { response ->
+            val gameSettings = mapper.readValue(response[0].toString(), GameSettings::class.java)
+            CurrentRoom.myRoom = Room(SocketHandler.roomId, arrayListOf(), gameSettings, State.Playing)
+        }
     }
 
     private fun handleRoomUnavailability() {
-        playerSocket.on("roomAlreadyToken") {
+        socket.on("roomAlreadyToken") {
             Toast.makeText(this, "Il est impossible de joindre cette partie", Toast.LENGTH_LONG).show()
         }
     }
 
     private fun routeToGameView() {
-        playerSocket.on("goToGameView") {
+        socket.on("goToGameView") {
             startActivity(Intent(this, GameActivity::class.java))
+        }
+    }
+
+    private fun routeToWaitingRoom() {
+        socket.on("goToWaiting") {
+            startActivity(Intent(this, WaitingRoomActivity::class.java))
         }
     }
 }

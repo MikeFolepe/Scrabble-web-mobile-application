@@ -1,32 +1,49 @@
 package com.example.scrabbleprototype.fragments
 
-import android.os.Bundle
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
+import android.os.*
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet.Constraint
 import com.example.scrabbleprototype.R
+import com.example.scrabbleprototype.model.SocketHandler
+import com.example.scrabbleprototype.objects.CurrentRoom
+import com.example.scrabbleprototype.objects.Players
+import com.example.scrabbleprototype.services.SkipTurnCallback
+import com.example.scrabbleprototype.services.SkipTurnService
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+class InformationPannelFragment : Fragment(), SkipTurnCallback {
 
-/**
- * A simple [Fragment] subclass.
- * Use the [InformationPannelFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class InformationPannelFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    val player = Players.currentPlayer
+
+    private var timeMs: Long = 0
+    private lateinit var timerText: TextView
+
+    private lateinit var skipTurnService: SkipTurnService
+    private var skipTurnBound: Boolean = false
+    lateinit var activityContext: Context
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+    }
+
+    private val connection = object: ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            val binder = service as SkipTurnService.LocalBinder
+            skipTurnService = binder.getService()
+            skipTurnBound = true
+            skipTurnService.setCallbacks(this@InformationPannelFragment)
+        }
+        override fun onServiceDisconnected(name: ComponentName?) {
+            skipTurnBound = false
         }
     }
 
@@ -38,23 +55,45 @@ class InformationPannelFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_information_pannel, container, false)
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment InformationPannelFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            InformationPannelFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        activityContext = context
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        timerText = view.findViewById(R.id.timer)
+
+        view.findViewById<ConstraintLayout>(R.id.info_pannel_layout).setOnClickListener {
+            skipTurnService.setCallbacks(this@InformationPannelFragment)
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Intent(activityContext, SkipTurnService::class.java).also { intent ->
+            activityContext.bindService(intent, connection, Context.BIND_AUTO_CREATE)
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        skipTurnService.setCallbacks(null)
+        activityContext.unbindService(connection)
+        skipTurnBound = false
+    }
+
+    override fun updateTimeUI(currentTime: Long) {
+        activity?.runOnUiThread {
+            val minutes = (currentTime / 1000) / 60
+            val seconds = (currentTime / 1000) % 60
+            var minutesString = ""
+            var secondsString = ""
+            minutesString = if(minutes < 10) "0$minutes"
+                            else "$minutes"
+            secondsString = if(seconds < 10) "0$seconds"
+                            else "$seconds"
+            timerText.text = minutesString + ":" + secondsString
+        }
     }
 }

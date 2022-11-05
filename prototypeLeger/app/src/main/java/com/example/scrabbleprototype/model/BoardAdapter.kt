@@ -19,7 +19,7 @@ class BoardAdapter(private var board: ArrayList<Letter>) :
     RecyclerView.Adapter<BoardAdapter.ViewHolder>() {
 
     var onCaseClicked: ((position: Int) -> Unit)? = null
-    var onPlacement: ((letterRackPosition: Int) -> Unit)? = null
+    var onPlacement: ((letterRackPosition: Int, boardPosition: Int) -> Unit)? = null
 
     /**
      * Provide a reference to the type of views that you are using
@@ -50,15 +50,15 @@ class BoardAdapter(private var board: ArrayList<Letter>) :
                     }
                     DragEvent.ACTION_DROP -> {
                         val letterTouched = e.clipData.getItemAt(0)
-                        var letterQuantity = e.clipData.getItemAt(1)
-                        var letterScore = e.clipData.getItemAt(2)
-                        var positionTouched = e.clipData.getItemAt(3)
+                        val letterQuantity: Int = e.clipData.getItemAt(1).text.toString().toInt()
+                        val letterScore: Int = e.clipData.getItemAt(2).text.toString().toInt()
+                        val positionTouched: Int = e.clipData.getItemAt(3).text.toString().toInt()
                         val dragData = letterTouched.text // La data de la lettre qui a été dragged
 
-                        // Case du board ou la lettre a été drop
-                        board[bindingAdapterPosition] = Letter(dragData.first(), letterQuantity.text.toString().toInt(), letterScore.text.toString().toInt(), false, false)
-                        // Remove of letter dragged of letterRack
-                        onPlacement?.invoke(positionTouched.text.toString().toInt())
+                        // Add letter dropped to board
+                        board[bindingAdapterPosition] = Letter(dragData.first().toString().lowercase(), letterQuantity, letterScore, false, false)
+                        // Remove letter dragged of letterRack
+                        onPlacement?.invoke(positionTouched, bindingAdapterPosition)
 
                         notifyItemChanged(bindingAdapterPosition)
                         true
@@ -96,14 +96,16 @@ class BoardAdapter(private var board: ArrayList<Letter>) :
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
         val letterLayer =  viewHolder.case.findViewById<LinearLayout>(R.id.letter_layer)
+        val bonusLayer = viewHolder.case.findViewById<TextView>(R.id.bonus_layer)
+        setupBonus(bonusLayer, position, viewHolder)
 
-        if(board[position].value == ' ')  {
+        if(board[position].value == "")  {
             letterLayer.background = ContextCompat.getDrawable(viewHolder.case.context, R.drawable.transparent)
             letterLayer.findViewById<TextView>(R.id.letter_score).text = ""
         } else {
             letterLayer.background = ContextCompat.getDrawable(viewHolder.case.context, R.drawable.tan)
-            viewHolder.case.findViewById<TextView>(R.id.letter).text = board[position].value.toString()
-            viewHolder.case.findViewById<TextView>(R.id.letter_score).text = board[position].point.toString()
+            viewHolder.case.findViewById<TextView>(R.id.letter).text = board[position].value.uppercase()
+            viewHolder.case.findViewById<TextView>(R.id.letter_score).text = board[position].points.toString()
         }
     }
 
@@ -113,6 +115,29 @@ class BoardAdapter(private var board: ArrayList<Letter>) :
     fun updateData(newBoard: ArrayList<Letter>) {
         board = newBoard
         this.notifyDataSetChanged()
+    }
+
+    fun setupBonus(bonusLayer: TextView, position: Int, viewHolder: ViewHolder) {
+        if(position == Constants.BOARD_CENTER) bonusLayer.background = ContextCompat.getDrawable(viewHolder.case.context, R.drawable.ic_baseline_star_24)
+
+        when(Constants.BONUS_POSITIONS[position]) {
+            "doubleLetter" -> {
+                bonusLayer.text = "Lettre\nx2"
+                bonusLayer.background = ContextCompat.getDrawable(viewHolder.case.context, R.color.light_cyan)
+            }
+            "doubleWord" -> {
+                bonusLayer.text = "Mot\nx2"
+                bonusLayer.background = ContextCompat.getDrawable(viewHolder.case.context, R.color.light_red)
+            }
+            "tripleLetter" -> {
+                bonusLayer.text = "Lettre\nx3"
+                bonusLayer.background = ContextCompat.getDrawable(viewHolder.case.context, R.color.teal)
+            }
+            "tripleWord" -> {
+                bonusLayer.text = "Mot\nx3"
+                bonusLayer.background = ContextCompat.getDrawable(viewHolder.case.context, R.color.red)
+            }
+        }
     }
 
 }

@@ -1,5 +1,5 @@
-import { WordValidationService } from '@app/game/services/word-validation.service';
-import { Controller, Get, HttpStatus, Post, Req, Res } from '@nestjs/common';
+import { WordValidationService } from '@app/game/services/word-validation/word-validation.service';
+import { Controller, Get, HttpStatus, Req, Res } from '@nestjs/common';
 import { Response } from 'express';
 import * as fileSystem from 'fs';
 @Controller('game')
@@ -13,9 +13,9 @@ export class GameController {
         response.status(HttpStatus.OK).send(words);
     }
 
-    @Post('/validateWords/:fileName')
-    validateWords(@Req() request, @Res() response: Response) {
-        const isValid = this.wordValidator.isValidInDictionary(request.body, request.params.fileName);
-        response.status(HttpStatus.OK).send(isValid);
-    }
+    // @Post('/validateWords/:fileName')
+    // validateWords(@Req() request, @Res() response: Response) {
+    //     const isValid = this.wordValidator.isValidInDictionary(request.body, request.params.fileName);
+    //     response.status(HttpStatus.OK).send(isValid);
+    // }
 }

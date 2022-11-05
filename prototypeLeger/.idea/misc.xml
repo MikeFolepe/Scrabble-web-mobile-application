@@ -3,9 +3,10 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/Users/sayen/OneDrive/Desktop/LOG3900/CreateGame/LOG3900-110/prototypeLeger/app/src/main/res/layout/activity_create_game.xml" value="0.10536980749746708" />
-        <entry key="..\:/Users/sayen/OneDrive/Desktop/LOG3900/CreateGame/LOG3900-110/prototypeLeger/app/src/main/res/layout/activity_create_game_2.xml" value="0.25416666666666665" />
-        <entry key="..\:/Users/sayen/OneDrive/Desktop/LOG3900/CreateGame/LOG3900-110/prototypeLeger/app/src/main/res/layout/game_params.xml" value="0.25416666666666665" />
+        <entry key="..\:/Users/sayen/OneDrive/Desktop/LOG3900/Game/LOG3900-110/prototypeLeger/app/src/main/res/layout/fragment_chat.xml" value="0.20863616930312098" />
+        <entry key="..\:/Users/sayen/OneDrive/Desktop/LOG3900/Game/LOG3900-110/prototypeLeger/app/src/main/res/layout/fragment_game_buttons.xml" value="0.1" />
+        <entry key="..\:/Users/sayen/OneDrive/Desktop/LOG3900/Game/LOG3900-110/prototypeLeger/app/src/main/res/layout/fragment_information_pannel.xml" value="0.1527651858567543" />
+        <entry key="..\:/Users/sayen/OneDrive/Desktop/LOG3900/Game/LOG3900-110/prototypeLeger/app/src/main/res/layout/fragment_letter_rack.xml" value="0.20863616930312098" />
         <entry key="..\:/Users/sayen/OneDrive/Desktop/LOG3900/LOG3900-110/prototypeLeger/app/src/main/res/layout/activity_chat.xml" value="0.1625" />
         <entry key="..\:/Users/sayen/OneDrive/Desktop/LOG3900/LOG3900-110/prototypeLeger/app/src/main/res/layout/activity_connection.xml" value="0.1539855072463768" />
         <entry key="..\:/Users/sayen/OneDrive/Desktop/LOG3900/PrototypeLeger/app/src/main/res/layout/activity_chat.xml" value="0.1840435176790571" />
