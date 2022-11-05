@@ -2,6 +2,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable max-len */
 import { BOARD_COLUMNS, BOARD_ROWS, EASEL_SIZE, PLAYER_AI_INDEX } from '@app/classes/constants';
+import { Direction } from '@app/classes/enum';
 import { Orientation } from '@app/classes/scrabble-board-pattern';
 import { ScoreValidation } from '@app/classes/validation-score';
 // eslint-disable-next-line import/no-unresolved
@@ -65,7 +66,7 @@ export class PlaceLetterService {
         this.numLettersUsedFromEasel = 0;
 
         if (!this.isPossible(position, orientation, wordNoAccents, indexPlayer)) {
-            //     this.sendMessageService.displayMessageByType('ERREUR : Le placement est invalide', MessageType.Error);
+            // this.sendMessageService.displayMessageByType('ERREUR : Le placement est invalide', MessageType.Error);
             return false;
         }
 
@@ -77,12 +78,20 @@ export class PlaceLetterService {
                 // this.sendMessageService.displayMessageByType('ERREUR : Le placement est invalide', MessageType.Error);
                 return false;
             }
-            // this.placementsService.goToNextPosition(currentPosition, orientation);
+            this.goToNextPosition(currentPosition, orientation);
         }
+        console.log('boo');
+        console.log(this.scrabbleBoard);
         if (this.numLettersUsedFromEasel === EASEL_SIZE) this.isEaselSize = true;
 
         // Validation of the placement
         return await this.validatePlacement(position, orientation, wordNoAccents, indexPlayer);
+    }
+    goToNextPosition(position: Vec2, orientation: Orientation, direction: Direction = Direction.Forwards): void {
+        if (direction === Direction.Forwards)
+            position = orientation === Orientation.Horizontal ? { x: position.x++, y: position.y } : { x: position.x, y: position.y++ };
+        else if (direction === Direction.Backwards)
+            position = orientation === Orientation.Horizontal ? { x: position.x--, y: position.y } : { x: position.x, y: position.y-- };
     }
 
     placeLetter(position: Vec2, letter: string, orientation: Orientation, indexLetterInWord: number, indexPlayer: number): boolean {
@@ -121,10 +130,14 @@ export class PlaceLetterService {
         this.finalResult = await this.wordValidationService.validateAllWordsOnBoard(this.scrabbleBoard, this.isEaselSize, this.isRow);
 
         if (this.finalResult.validation) {
+            console.log('val');
             this.handleValidPlacement(this.finalResult, indexPlayer);
+
+            console.log('truuuue');
             return true;
         }
         this.handleInvalidPlacement(position, orientation, word, indexPlayer);
+        console.log('false');
         return false;
     }
 
@@ -153,7 +166,8 @@ export class PlaceLetterService {
                 // this.isWordTouchingOthers(position, orientation, word); // If the word is in contact with other letters on the board
             }
         }
-        return isPossible;
+        // return isPossible;
+        return true;
     }
 
     isWordFitting(position: Vec2, orientation: Orientation, word: string): boolean {

@@ -8,6 +8,7 @@ import { Player } from './player.model';
 
 export class PlayerAI extends Player {
     strategy: PlaceLetterStrategy;
+    placeLetter: PlaceLetterService;
 
     constructor(
         name: string,
@@ -20,7 +21,8 @@ export class PlayerAI extends Player {
         score: number = 0,
     ) {
         super(name, letterTable, score);
-        this.strategy = new PlaceLetterStrategy(letterTable, player, gameSetting, placeLetterService, letterService, wordValidation);
+        this.placeLetter = placeLetterService;
+        this.strategy = new PlaceLetterStrategy(letterTable, player, gameSetting, this.placeLetter, letterService, wordValidation);
     }
 
     async play(index: number): Promise<void> {

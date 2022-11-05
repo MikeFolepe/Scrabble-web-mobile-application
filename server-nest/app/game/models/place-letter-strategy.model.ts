@@ -68,6 +68,7 @@ export class PlaceLetterStrategy {
             word.point = scoreValidation.validation ? scoreValidation.score : 0;
         }
         allPossibleWords = allPossibleWords.filter((word) => word.point > 0);
+
         return allPossibleWords;
     }
     filterByRange(allPossibleWords: PossibleWords[], pointingRange: CustomRange): PossibleWords[] {
@@ -100,12 +101,12 @@ export class PlaceLetterStrategy {
 
         // Step5: Add the earning points to all words and update the
         allPossibleWords = await this.calculatePoints(allPossibleWords);
-        console.log('point ' + allPossibleWords);
         // Step6: Sort the words
         this.sortDecreasingPoints(allPossibleWords);
         // matchingPointingRangeWords = this.filterByRange(allPossibleWords, this.pointingRange);
         // Step7: Place one word between all the words that have passed the steps
-        await this.computeResults(allPossibleWords, false, index);
+        // console.log(allPossibleWords);
+        await this.computeResults(allPossibleWords, true, index);
         // await this.computeResults(matchingPointingRangeWords, false, index);
 
         // Step8: Alert the debug about the alternatives
@@ -190,7 +191,9 @@ export class PlaceLetterStrategy {
     };
     async place(word: PossibleWords, index: number): Promise<void> {
         const startPos = word.orientation ? { x: word.line, y: word.startIndex } : { x: word.startIndex, y: word.line };
-        if ((await this.placeLetterService.placeCommand(startPos, word.orientation, word.word), index)) return;
+        if (await this.placeLetterService.placeCommand(startPos, word.orientation, word.word)) {
+            return;
+        }
         // this.skip(false);
     }
 

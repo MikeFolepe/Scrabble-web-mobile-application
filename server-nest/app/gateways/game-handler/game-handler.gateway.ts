@@ -215,11 +215,8 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
                     room.playerService.players[index].letterTable = playerReceived.letterTable;
                     room.placeLetter.handleValidPlacement(validationResult, index);
                     room.placeLetter.scrabbleBoard = JSON.parse(board);
-                    console.log(room.placeLetter.scrabbleBoard);
-                    room.ai.play(0);
-                    console.log(room.placeLetter.scrabbleBoard);
                     socket.emit('receiveSuccess');
-                    socket.to(roomId).emit('receivePlacement', board, position, orientation, word);
+                    socket.to(roomId).emit('receivePlacement', room.placeLetter.scrabbleBoard, position, orientation, word);
                     this.server.to(roomId).emit('updatePlayer', room.playerService.players[index]);
                     this.server.to(roomId).emit('receiveReserve', room.letter.reserve, room.letter.reserveSize);
                 } else {
