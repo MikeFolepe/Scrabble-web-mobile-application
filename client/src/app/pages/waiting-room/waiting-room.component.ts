@@ -52,7 +52,6 @@ export class WaitingRoomComponent implements OnInit {
 
     handleReloadErrors(): void {
         if (this.gameSettingsService.gameSettings.creatorName === '') {
-            console.log("F")
             const errorMessage = 'Une erreur est survenue';
             this.waitBeforeChangeStatus(ONE_SECOND_DELAY, errorMessage);
             this.router.navigate(['home']);
@@ -89,7 +88,6 @@ export class WaitingRoomComponent implements OnInit {
     }
 
     routeToGameView(): void {
-        console.log("never happens")
         this.gameSettingsService.isSoloMode = true;
         this.gameSettingsService.isRedirectedFromMultiplayerGame = true;
         this.deleteGame();

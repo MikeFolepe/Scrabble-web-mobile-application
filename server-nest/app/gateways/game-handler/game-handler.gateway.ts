@@ -20,11 +20,7 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
 
     constructor(private readonly logger: Logger, private userService: UsersService, private roomManagerService: RoomManagerService) {}
 
-    // afterInit() {
-    //     setInterval(() => {
-    //         this.emitTime();
-    //     }, DELAY_BEFORE_EMITTING_TIME);
-    // }
+
 
     // TODO: set a socket id in player class to easily find the player
 

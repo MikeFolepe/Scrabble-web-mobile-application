@@ -108,6 +108,10 @@ export class JoinRoomComponent implements OnInit {
         });
     }
 
+    // test() {
+
+    //     console.log(this.channelHandlerService.channels);
+    // }
     placeRandomly(): void {
         this.dialog
             .open(NameSelectorComponent, { disableClose: true })
@@ -153,10 +157,8 @@ export class JoinRoomComponent implements OnInit {
         this.clientSocketService.socket.on('roomConfiguration', (rooms) => {
             this.rooms = [];
             for (const room of rooms) {
-                console.log(room);
                 this.rooms.push(new Room(room.id, room.gameSettings, room.state, room.socketIds));
             }
-            console.log("ROOMS : ", this.rooms)
         });
     }
 }

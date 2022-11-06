@@ -78,7 +78,5 @@ export class Room {
         //     this.letter,
         //     this.wordValidation,
         // );
-
-        // instancier placeLetterService avec wordValidation, instancier  world validation, instancier playerService           placer tout dans Ai
     }
 }

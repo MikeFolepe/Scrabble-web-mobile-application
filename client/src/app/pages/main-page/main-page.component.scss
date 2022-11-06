@@ -3,6 +3,34 @@ p {
     text-align: center;
 }
 
+.hovertext {
+    position: relative;
+    border-bottom: 1px dotted grey;
+  }
+  
+.hovertext:before {
+    content: attr(data-hover);
+    visibility: hidden;
+    opacity: 0;
+    width: max-content;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 5px;
+    padding: 5px 5px;
+    transition: opacity 1s ease-in-out;
+  
+    position: absolute;
+    // z-index: 1;
+    left: 0;
+    top: 110%;
+  }
+  
+.hovertext:hover:before {
+    opacity: 1;
+    visibility: visible;
+  }
+
 .justified {
     display: flex;
     flex-direction: column;
@@ -10,10 +38,14 @@ p {
     align-items: center;
 }
 
+
+
 .button {
     margin-top: 10px;
     text-align: center;
 }
+
+
 
 .tab-group {
     padding: 20px 0;
@@ -28,4 +60,92 @@ p {
 
 .radio-button {
     margin: 8px;
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: #23501F;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 1;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -60px;
+    
+}
+
+.tooltip .tooltiptext::after {
+    content: " ";
+    position: absolute;
+    top: 100%; /* At the bottom of the tooltip */
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #23501F transparent transparent transparent;
+  }
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+  }
+
+.chatRooms-buttons {
+    position:absolute;
+    bottom: 10px;
+    right : 400px;
+}
+
+.addButton {
+    background-color: #00804d;
+    margin-right : 10px;
+}
+
+.allRoomsButton {
+    background-color: #00804d;
+    margin-left : 10px;
+    margin-right : 10px;
+}
+
+.joinedRoomsButton {
+    background-color: #00804d;
+    margin-left : 10px;
+}
+
+.chatRooms {
+    //put the chatrooms at the botton left of the page
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+}
+
+.closedChat {
+    transition : all 0.5s ease;
+    user-select: none;
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    height: 40px;
+    width: 350px;
+    background-color: #00804d;
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+.closedChat:hover {
+    cursor: pointer;
+}
+
+.textClosedChat {
+    margin-top: 5px;
+    text-align: center;
+    color:white;
 }
