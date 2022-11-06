@@ -1,7 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { DEFAULT_DICTIONARY_INDEX, PLAYER_ONE_INDEX } from '@app/classes/constants';
+import { AddChatRoomComponent } from '@app/modules/game-view/add-chat-room/add-chat-room.component';
+import { ChangeChatRoomComponent } from '@app/modules/game-view/change-chat-room/change-chat-room.component';
+import { JoinChatRoomsComponent } from '@app/modules/game-view/join-chat-rooms/join-chat-rooms.component';
 import { AdministratorService } from '@app/services/administrator.service';
 import { ChannelHandlerService } from '@app/services/channel-handler.service';
 import { CommunicationService } from '@app/services/communication.service';
@@ -29,6 +33,9 @@ export class FormComponent implements OnInit, OnDestroy {
         public gameSettingsService: GameSettingsService,
         public channelHandlerService : ChannelHandlerService,
         private router: Router,
+        public joinChatRoomsDialog: MatDialog,
+        public changeChatRoomDialog: MatDialog,
+        public addChatRoomDialog : MatDialog,
         private communicationService: CommunicationService,
         public adminService: AdministratorService,
     ) {
@@ -110,5 +117,17 @@ export class FormComponent implements OnInit, OnDestroy {
 
     private getLevel(): AiType {
         return this.form.controls.levelInput.value === AiType.beginner ? AiType.beginner : AiType.expert;
+    }
+
+    openChangeChatRoomDialog() : void {
+        this.changeChatRoomDialog.open(ChangeChatRoomComponent, { disableClose: true });
+    }
+
+    openJoinChatRoomDialog() : void {
+        this.joinChatRoomsDialog.open(JoinChatRoomsComponent, { disableClose: true });
+    }
+
+    openAddChatRoomDialog() : void {
+        this.addChatRoomDialog.open(AddChatRoomComponent, { disableClose: true });
     }
 }

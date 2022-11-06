@@ -13,10 +13,10 @@
                 Jouer!
             </button>
         </mat-tab>
-        <mat-tab label="Canaux de Discussion">
+        <!-- <mat-tab label="Canaux de Discussion">
             
-                <!--show all the chatRooms that exist-->
-                <button class="button" class="hovertext" id="playButton" mat-raised-button color="primary"  data-hover="Ajouter un canal de discussion" (click)="openChatRoomForm()">
+                show all the chatRooms that exist-->
+                <!-- <button class="button" class="hovertext" id="playButton" mat-raised-button color="primary"  data-hover="Ajouter un canal de discussion" (click)="openChatRoomForm()">
                     <mat-icon>add</mat-icon> 
                 </button>
 
@@ -44,7 +44,7 @@
                 
 
             
-        </mat-tab>
+        </mat-tab> -->
     </mat-tab-group>
     <p>
         {{ gameType[0] }}<br />
@@ -63,11 +63,4 @@
     <button mat-mini-fab class="allRoomsButton tooltip" (click)="openJoinChatRoomDialog()"><span class="tooltiptext">Rejoindre</span><mat-icon>search</mat-icon></button>
     <button mat-mini-fab class="joinedRoomsButton tooltip" (click)="openChangeChatRoomDialog()"><span class="tooltiptext">Changer</span><mat-icon>view_headline</mat-icon></button>
 </div>
-<div *ngIf="isOpen == false" class="closedChat" (click)="openChat()">
-    <div class="textClosedChat">
-        <h2>Cliquez pour ouvrir le chat</h2>
-    </div>       
-</div>
-<div *ngIf="isOpen == true">
-    <app-chatrooms class = "chatRooms"></app-chatrooms>
-</div>
+<app-chatrooms class = "chatRooms"></app-chatrooms>

@@ -9,8 +9,10 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { AppRoutingModule } from '@app/modules/app-routing.module';
 import { GiveUpGameDialogComponent } from '@app/modules/game-view/give-up-game-dialog/give-up-game-dialog.component';
+import { AppMaterialModule } from '@app/modules/material.module';
 import { SharedModule } from '@app/modules/shared/shared.module';
 import { AddChatRoomComponent } from '../game-view/add-chat-room/add-chat-room.component';
+import { GameViewModule } from '../game-view/game-view.module';
 import { FormComponent } from './form/form.component';
 import { LevelFieldComponent } from './level-field/level-field.component';
 import { NameSelectorComponent } from './name-selector/name-selector.component';
@@ -34,6 +36,7 @@ import { TimerFieldComponent } from './timer-field/timer-field.component';
         MatInputModule,
         MatRadioModule,
         MatSelectModule,
+        GameViewModule,
         ReactiveFormsModule,
         MatFormFieldModule,
         MatButtonModule,
@@ -41,6 +44,7 @@ import { TimerFieldComponent } from './timer-field/timer-field.component';
         SharedModule,
         MatDialogModule,
         FormsModule,
+        AppMaterialModule,
     ],
     exports: [FormComponent],
     entryComponents: [NameSelectorComponent],

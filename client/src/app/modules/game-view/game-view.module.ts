@@ -11,12 +11,14 @@ import { ScrabbleBoardComponent } from '@app/modules/game-view/scrabble-board/sc
 import { AppMaterialModule } from '@app/modules/material.module';
 import { SharedModule } from '@app/modules/shared/shared.module';
 import { ChangeChatRoomComponent } from './change-chat-room/change-chat-room.component';
+import { ChatroomsComponent } from './chatrooms/chatrooms.component';
 import { JoinChatRoomsComponent } from './join-chat-rooms/join-chat-rooms.component';
 
 
 @NgModule({
     declarations: [
         JoinChatRoomsComponent,
+        ChatroomsComponent,
         GameViewComponent,
         ScrabbleBoardComponent,
         InformationPanelComponent,
@@ -26,7 +28,7 @@ import { JoinChatRoomsComponent } from './join-chat-rooms/join-chat-rooms.compon
         ChangeChatRoomComponent,
     ],
     imports: [CommonModule, AppRoutingModule, FormsModule, SharedModule, AppMaterialModule],
-    exports: [GameViewComponent],
+    exports: [GameViewComponent, ChatroomsComponent],
     bootstrap: [GameViewComponent],
 })
 export class GameViewModule {}
