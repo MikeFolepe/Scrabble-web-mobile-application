@@ -16,11 +16,11 @@ enum class AiType {
 }
 
 @Serializable
-enum class GameType {
+enum class RoomType {
     public,
     private,
 }
 
 @Serializable
 class GameSettings(var creatorName: String, var startingPlayer: StartingPlayer, var timeMinute: String,
-                   var timeSecond: String, var level: AiType, var dictionary: String, var type: GameType) {}
+                   var timeSecond: String, var level: AiType, var dictionary: String, var type: RoomType) {}

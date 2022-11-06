@@ -1,5 +1,5 @@
 import { AiType } from '@common/ai-name';
-import { StartingPlayer } from '@common/game-settings';
+import { RoomType, StartingPlayer } from '@common/game-settings';
 import { Letter } from '@common/letter';
 import { Vec2 } from '@common/vec2';
 import { CustomRange } from './range';
@@ -121,7 +121,7 @@ export const DEFAULT_GAME_SETTINGS = {
     timeSecond: '00',
     level: AiType.beginner,
     dictionary: '',
-    objectiveIds: [],
+    type: RoomType.public,
 };
 
 export const RESERVE: Letter[] = [

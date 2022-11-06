@@ -44,7 +44,7 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
     }
     var dicoFileName= ""
     var currentRoom = CurrentRoom;
-    var gameSetting: GameSettings = GameSettings(Users.currentUser, StartingPlayer.Player1, "00", "00", AiType.beginner, "", GameType.public)
+    var gameSetting: GameSettings = GameSettings(Users.currentUser, StartingPlayer.Player1, "00", "00", AiType.beginner, "", RoomType.public)
     val minutes = arrayListOf("00", "01", "02", "03")
     val seconds = arrayListOf("00", "30")
     var dictionaries = listOf<Dictionary>()
@@ -172,12 +172,25 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
 
         val privateRadioButton = findViewById<Button>(R.id.private_game)
         privateRadioButton.setOnClickListener {
-            gameSetting.type = GameType.private;
+            gameSetting.type = RoomType.private;
+            Log.d("type:",gameSetting.type.toString())
         }
 
         val publicRadioButton = findViewById<Button>(R.id.private_game)
         publicRadioButton.setOnClickListener {
-            gameSetting.type = GameType.public;
+            gameSetting.type = RoomType.public;
+        }
+    }
+
+    fun private_radio_button_click(view: View, ){
+        // Get the clicked radio button instance
+        val radio: RadioButton = findViewById(R.id.radio_group.checkedRadioButtonId)
+        if(radio.text == "Public") {
+            gameSetting.type = RoomType.private;
+        }
+        else {
+            gameSetting.type = RoomType.private;
+            Log.d("type:", gameSetting.type.toString())
         }
     }
 
@@ -187,6 +200,7 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
             currentRoom.myRoom = roomReceived;
         }
         gameSetting.dictionary = dictionaries.find { it.title == dicoFileName }!!.fileName
+        Log.d("game" , gameSetting.toString())
         socket.emit("createRoom", JSONObject(Json.encodeToString(gameSetting)))
     }
 

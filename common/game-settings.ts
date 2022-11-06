@@ -1,8 +1,13 @@
-import { AiType } from "./ai-name";
+import { AiType } from './ai-name';
 
 export enum StartingPlayer {
     Player1,
     Player2,
+}
+
+export enum RoomType {
+    public,
+    private,
 }
 
 export class GameSettings {
@@ -13,5 +18,6 @@ export class GameSettings {
         public timeSecond: string,
         public level: AiType,
         public dictionary: string,
+        public type: RoomType,
     ) {}
 }

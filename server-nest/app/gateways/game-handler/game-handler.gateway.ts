@@ -3,6 +3,7 @@ import { PlayerAI } from '@app/game/models/player-ai.model';
 import { UsersService } from '@app/users/service/users.service';
 import { GameSettings } from '@common/game-settings';
 import { Letter } from '@common/letter';
+import { User } from '@common/user';
 import { Logger } from '@nestjs/common';
 import { OnGatewayConnection, OnGatewayDisconnect, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
@@ -51,6 +52,13 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
             socket.in(roomId).emit('Opponent', player);
             this.server.in(roomId).emit('yourGameSettings', this.roomManagerService.getGameSettings(roomId));
             socket.emit('goToWaiting');
+        });
+
+        socket.on('sendRequestToCreator', (userJoining: User, currentRoom: Room) => {
+            console.log('requestSended');
+            const room = this.roomManagerService.find(currentRoom.id);
+            Logger.log(room);
+            this.server.to(room.socketIds[0]).emit('newRequest', userJoining);
         });
 
         socket.on('startGame', (roomId: string) => {
@@ -228,6 +236,7 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
 
     onCreateRoom(socket: Socket): void {
         socket.on('createRoom', (gameSettings: GameSettings) => {
+            Logger.log(gameSettings);
             const roomId = this.roomManagerService.createRoomId(gameSettings.creatorName, socket.id);
             this.roomManagerService.createRoom(socket.id, roomId, gameSettings);
             socket.join(roomId);

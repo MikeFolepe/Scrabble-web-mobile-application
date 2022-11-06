@@ -59,8 +59,15 @@ class JoinGameActivity : AppCompatActivity() {
 
     private fun joinGame(position: Int) {
         Log.d("room", rooms[position].id)
-        socket.emit("newRoomCustomer", Users.currentUser, rooms[position].id)
-        socketHandler.roomId = rooms[position].id
+        val currentRoom = rooms[position]
+        if (currentRoom.gameSettings.type == RoomType.public) {
+            socket.emit("newRoomCustomer", Users.currentUser, rooms[position].id)
+            socketHandler.roomId = rooms[position].id
+        }
+        else {
+            socket.emit("sendRequestToCreator", Users.currentUser, currentRoom)
+            socketHandler.roomId = rooms[position].id
+        }
     }
 
     private fun receiveRooms(gameListAdapter: GameListAdapter) {

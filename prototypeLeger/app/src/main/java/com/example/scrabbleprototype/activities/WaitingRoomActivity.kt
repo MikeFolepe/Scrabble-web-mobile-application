@@ -31,6 +31,7 @@ class WaitingRoomActivity : AppCompatActivity() {
         setupStartGameButton()
         setupRoomId()
         setupPlayersWaiting()
+        receiveNewRequest()
     }
 
     private fun setupStartGameButton() {
@@ -50,15 +51,15 @@ class WaitingRoomActivity : AppCompatActivity() {
         roomIdText.text = "Salle de jeu : " + CurrentRoom.myRoom.id
     }
 
-    fun setUpGameTypeLabel() {
+    /*fun setUpGameTypeLabel() {
         val typeText = findViewById<TextView>(R.id.gameTypeLabel)
-        if(currentRoom.gameSettings.type == GameType.public) {
+        if(currentRoom.gameSettings.type == RoomType.public) {
             typeText.text = "PUBLIC"
         }
         else {
             typeText.text = "PRIVÉE"
         }
-    }
+    }*/
 
     private fun setupPlayersWaiting() {
         val playersWaitingView = findViewById<RecyclerView>(R.id.players_waiting)
@@ -83,6 +84,13 @@ class WaitingRoomActivity : AppCompatActivity() {
                 Log.d("waiting", playersWaiting[playersWaiting.size - 1].name)
                 playersWaitingAdapter.notifyItemChanged(playersWaiting.size - 1)
             }
+        }
+    }
+
+    private fun receiveNewRequest() {
+        socket.on("newRequest") {response ->
+            startActivity(Intent(this, PrivateGamePwd::class.java))
+
         }
     }
 

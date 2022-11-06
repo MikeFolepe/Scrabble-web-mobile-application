@@ -9,7 +9,7 @@ import { CommunicationService } from '@app/services/communication.service';
 import { GameSettingsService } from '@app/services/game-settings.service';
 import { AiType } from '@common/ai-name';
 import { Dictionary } from '@common/dictionary';
-import { GameSettings, StartingPlayer } from '@common/game-settings';
+import { GameSettings, RoomType, StartingPlayer } from '@common/game-settings';
 
 @Component({
     selector: 'app-form',
@@ -105,6 +105,7 @@ export class FormComponent implements OnInit, OnDestroy {
             this.form.controls.secondInput.value,
             this.getLevel(),
             this.fileName,
+            RoomType.public,
         );
     }
 

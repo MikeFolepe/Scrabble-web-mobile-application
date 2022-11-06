@@ -11,6 +11,7 @@ import { NameSelectorComponent } from '@app/modules/initialize-game/name-selecto
 import { AuthService } from '@app/services/auth.service';
 import { ClientSocketService } from '@app/services/client-socket.service';
 import { PlayerService } from '@app/services/player.service';
+import { RoomType } from '@common/game-settings';
 
 @Component({
     selector: 'app-join-room',
@@ -35,7 +36,6 @@ export class JoinRoomComponent implements OnInit {
         private authService: AuthService,
         private router: Router,
         public playerService: PlayerService,
-
     ) {
         this.rooms = [];
         this.roomItemIndex = 0;
@@ -45,7 +45,7 @@ export class JoinRoomComponent implements OnInit {
         this.shouldDisplayJoinError = false;
         this.isRoomAvailable = false;
         this.isRandomButtonAvailable = false;
-        //this.clientSocketService.socket.connect();
+        // this.clientSocketService.socket.connect();
         // Method for button and others
     }
 
@@ -97,13 +97,17 @@ export class JoinRoomComponent implements OnInit {
             }, ERROR_MESSAGE_DELAY);
             return;
         }
-        console.log(this.authService.currentUser.pseudonym + " " + room.id)
-        this.clientSocketService.socket.emit('newRoomCustomer', this.authService.currentUser.pseudonym, room.id);
+        console.log(this.authService.currentUser.pseudonym + ' ' + room.id);
+        if ((room.gameSettings.type = RoomType.public)) {
+            this.clientSocketService.socket.emit('newRoomCustomer', this.authService.currentUser.pseudonym, room.id);
+        } else {
+            this.clientSocketService.socket.emit('sendRequestToCreator', this.authService.currentUser, room);
+        }
     }
 
-    confirm(){
-        this.clientSocketService.socket.on('goToWaiting', ()=>{
-            console.log("gotowaiting")
+    confirm() {
+        this.clientSocketService.socket.on('goToWaiting', () => {
+            console.log('gotowaiting');
             this.router.navigate(['waiting-room']);
         });
     }
@@ -142,7 +146,7 @@ export class JoinRoomComponent implements OnInit {
     private handleRoomUnavailability(): void {
         this.clientSocketService.socket.on('roomAlreadyToken', () => {
             this.shouldDisplayJoinError = true;
-            this.playerService.opponents =[];
+            this.playerService.opponents = [];
             setTimeout(() => {
                 this.shouldDisplayJoinError = false;
             }, ERROR_MESSAGE_DELAY);
@@ -156,7 +160,7 @@ export class JoinRoomComponent implements OnInit {
                 console.log(room);
                 this.rooms.push(new Room(room.id, room.gameSettings, room.state, room.socketIds));
             }
-            console.log("ROOMS : ", this.rooms)
+            console.log('ROOMS : ', this.rooms);
         });
     }
 }
