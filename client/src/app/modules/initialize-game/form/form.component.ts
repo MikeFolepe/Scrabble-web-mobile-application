@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { DEFAULT_DICTIONARY_INDEX } from '@app/classes/constants';
 import { AdministratorService } from '@app/services/administrator.service';
 import { AuthService } from '@app/services/auth.service';
+import { ChannelHandlerService } from '@app/services/channel-handler.service';
 import { ClientSocketService } from '@app/services/client-socket.service';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameSettingsService } from '@app/services/game-settings.service';
@@ -17,15 +18,19 @@ import { GameSettings, StartingPlayer } from '@common/game-settings';
     styleUrls: ['./form.component.scss'],
 })
 export class FormComponent implements OnInit, OnDestroy {
+
     form: FormGroup;
     dictionaries: Dictionary[];
     selectedDictionary: Dictionary;
     isDictionaryDeleted: boolean;
     fileName: string;
+    channels: string[] = [];
+    channel:string;
 
     constructor(
         private clientSocket: ClientSocketService,
         public gameSettingsService: GameSettingsService,
+        public channelHandlerService : ChannelHandlerService,
         private router: Router,
         private communicationService: CommunicationService,
         public adminService: AdministratorService,
@@ -42,6 +47,7 @@ export class FormComponent implements OnInit, OnDestroy {
             minuteInput: new FormControl(this.gameSettingsService.gameSettings.timeMinute),
             secondInput: new FormControl(this.gameSettingsService.gameSettings.timeSecond),
             levelInput: new FormControl('Débutant'),
+            channelInput: new FormControl(''),
             dictionaryInput: new FormControl(this.selectedDictionary.title, [Validators.required]),
         });
         this.adminService.initializeAiPlayers();
@@ -56,7 +62,6 @@ export class FormComponent implements OnInit, OnDestroy {
         this.router.navigate([nextUrl]);
     }
 
-    // Checks if dictionary is not deleted and update the attributes
     async selectGameDictionary(dictionary: Dictionary): Promise<void> {
         const dictionaries = await this.communicationService.getDictionaries().toPromise();
         if (!dictionaries.find((dictionaryInArray: Dictionary) => dictionary.title === dictionaryInArray.title)) {
@@ -81,21 +86,6 @@ export class FormComponent implements OnInit, OnDestroy {
     private async initializeDictionaries(): Promise<void> {
         this.dictionaries = await this.communicationService.getDictionaries().toPromise();
     }
-
-    // private chooseStartingPlayer(): StartingPlayer {
-    //     return Math.floor((Math.random() * Object.keys(StartingPlayer).length) / 2);
-    // }
-
-    // private chooseRandomAIName(levelInput: AiType): string {
-    //     let randomName = '';
-    //     do {
-    //         // Random value [0, AI_NAME_DATABASE.length[
-    //         const randomNumber = Math.floor(Math.random() * this.adminService.aiBeginner.length);
-    //         randomName =
-    //             levelInput === AiType.beginner ? this.adminService.aiBeginner[randomNumber].aiName : this.adminService.aiExpert[randomNumber].aiName;
-    //     } while (randomName === this.form.controls.playerName.value);
-    //     return randomName;
-    // }
 
     private snapshotSettings(): void {
         this.gameSettingsService.gameSettings = new GameSettings(
