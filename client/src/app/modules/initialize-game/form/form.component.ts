@@ -41,6 +41,7 @@ export class FormComponent implements OnInit, OnDestroy {
             playerName: new FormControl(this.authService.currentUser.pseudonym),
             minuteInput: new FormControl(this.gameSettingsService.gameSettings.timeMinute),
             secondInput: new FormControl(this.gameSettingsService.gameSettings.timeSecond),
+            visibilityInput: new FormControl('Publique'),
             levelInput: new FormControl('Débutant'),
             dictionaryInput: new FormControl(this.selectedDictionary.title, [Validators.required]),
         });
@@ -82,22 +83,10 @@ export class FormComponent implements OnInit, OnDestroy {
         this.dictionaries = await this.communicationService.getDictionaries().toPromise();
     }
 
-    // private chooseStartingPlayer(): StartingPlayer {
-    //     return Math.floor((Math.random() * Object.keys(StartingPlayer).length) / 2);
-    // }
-
-    // private chooseRandomAIName(levelInput: AiType): string {
-    //     let randomName = '';
-    //     do {
-    //         // Random value [0, AI_NAME_DATABASE.length[
-    //         const randomNumber = Math.floor(Math.random() * this.adminService.aiBeginner.length);
-    //         randomName =
-    //             levelInput === AiType.beginner ? this.adminService.aiBeginner[randomNumber].aiName : this.adminService.aiExpert[randomNumber].aiName;
-    //     } while (randomName === this.form.controls.playerName.value);
-    //     return randomName;
-    // }
-
     private snapshotSettings(): void {
+        const type: RoomType = this.form.controls.visibilityInput.value === 'Publique' ? RoomType.public : RoomType.private;
+
+        console.log('Type: ', type);
         this.gameSettingsService.gameSettings = new GameSettings(
             this.form.controls.playerName.value,
             StartingPlayer.Player1,
@@ -105,11 +94,11 @@ export class FormComponent implements OnInit, OnDestroy {
             this.form.controls.secondInput.value,
             this.getLevel(),
             this.fileName,
-            RoomType.public,
+            type,
         );
     }
 
     private getLevel(): AiType {
-        return this.form.controls.levelInput.value === AiType.beginner ? AiType.beginner : AiType.expert;
+        return this.form.controls.levelInput.value === 'Débutant' ? AiType.beginner : AiType.expert;
     }
 }

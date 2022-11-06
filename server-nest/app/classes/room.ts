@@ -5,6 +5,7 @@ import { PlaceLetterService } from '@app/game/services/place-letter/place-letter
 import { PlayerService } from '@app/game/services/player/player.service';
 import { WordValidationService } from '@app/game/services/word-validation/word-validation.service';
 import { GameSettings } from '@common/game-settings';
+import { DEFAULT_AI_PLAYERS_NB, DEFAULT_HUMAN_PLAYERS_NB } from './constants';
 
 export enum State {
     Playing,
@@ -22,8 +23,12 @@ export class Room {
     placeLetter: PlaceLetterService;
     playerService: PlayerService;
     turnCounter: number;
+    aiPlayersNumber: number;
+    humanPlayersNumber: number;
 
     constructor(roomId: string, socketId: string, gameSettings: GameSettings, state: State = State.Waiting) {
+        this.aiPlayersNumber = DEFAULT_AI_PLAYERS_NB;
+        this.humanPlayersNumber = DEFAULT_HUMAN_PLAYERS_NB;
         this.turnCounter = 0;
         this.id = roomId;
         this.socketIds = [];

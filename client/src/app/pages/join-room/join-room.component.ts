@@ -97,8 +97,9 @@ export class JoinRoomComponent implements OnInit {
             }, ERROR_MESSAGE_DELAY);
             return;
         }
-        console.log(this.authService.currentUser.pseudonym + ' ' + room.id);
-        if ((room.gameSettings.type = RoomType.public)) {
+
+        if ((room.gameSettings.type === RoomType.public)) {
+            console.log(this.authService.currentUser.pseudonym + ' ' + room.id +  ' ' + room.gameSettings.type);
             this.clientSocketService.socket.emit('newRoomCustomer', this.authService.currentUser.pseudonym, room.id);
         } else {
             this.clientSocketService.socket.emit('sendRequestToCreator', this.authService.currentUser, room);
@@ -122,6 +123,7 @@ export class JoinRoomComponent implements OnInit {
                 this.clientSocketService.socket.emit('newRoomCustomerOfRandomPlacement', playerName);
             });
     }
+
     receiveRandomPlacement(): void {
         this.clientSocketService.socket.on('receiveCustomerOfRandomPlacement', (customerName: string, roomId: string) => {
             this.clientSocketService.socket.emit('newRoomCustomer', customerName, roomId);
@@ -158,7 +160,7 @@ export class JoinRoomComponent implements OnInit {
             this.rooms = [];
             for (const room of rooms) {
                 console.log(room);
-                this.rooms.push(new Room(room.id, room.gameSettings, room.state, room.socketIds));
+                this.rooms.push(new Room(room.id, room.gameSettings, room.state, room.socketIds, room.aiPlayersNumber, room.humanPlayersNumber));
             }
             console.log('ROOMS : ', this.rooms);
         });

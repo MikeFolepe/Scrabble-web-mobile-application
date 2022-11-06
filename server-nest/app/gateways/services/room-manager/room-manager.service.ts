@@ -44,6 +44,8 @@ export class RoomManagerService {
 
         if (room.playerService.players.length === 4) return false;
         room.playerService.players.push(new Player(customerName, room.letter.getRandomLetters()));
+        room.aiPlayersNumber--;
+        room.humanPlayersNumber++;
         console.log("pushed new player")
         return true;
     }
