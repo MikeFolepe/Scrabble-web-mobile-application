@@ -1,3 +1,4 @@
+import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { EASEL_SIZE, PLAYER_ONE_INDEX } from '@app/classes/constants';
 import { MessageType } from '@app/classes/enum';
@@ -63,6 +64,14 @@ export class LetterEaselComponent implements OnInit {
         // this.playerService.bindUpdateEasel(this.update.bind(this));
         // this.update();
         this.manipulateService.sendEasel(this.letterEaselTab);
+    }
+
+    onDrop(event: CdkDragDrop<Letter[]>) {
+        if (event.previousContainer === event.container) {
+            moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+        } else {
+            transferArrayItem(event.previousContainer.data, event.container.data, event.previousIndex, event.currentIndex);
+        }
     }
 
     onRightClick(event: MouseEvent, indexLetter: number): void {

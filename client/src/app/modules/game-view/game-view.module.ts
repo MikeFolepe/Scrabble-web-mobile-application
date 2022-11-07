@@ -1,3 +1,4 @@
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -13,7 +14,7 @@ import { SharedModule } from '@app/modules/shared/shared.module';
 
 @NgModule({
     declarations: [GameViewComponent, ScrabbleBoardComponent, InformationPanelComponent, LetterEaselComponent, FontSizeComponent, ChatboxComponent],
-    imports: [CommonModule, AppRoutingModule, FormsModule, SharedModule, AppMaterialModule],
+    imports: [CommonModule, AppRoutingModule, FormsModule, SharedModule, AppMaterialModule, DragDropModule],
     exports: [GameViewComponent],
     bootstrap: [GameViewComponent],
 })
