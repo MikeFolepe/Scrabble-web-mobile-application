@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { DEFAULT_DICTIONARY_INDEX } from '@app/classes/constants';
 import { AdministratorService } from '@app/services/administrator.service';
@@ -10,6 +11,7 @@ import { GameSettingsService } from '@app/services/game-settings.service';
 import { AiType } from '@common/ai-name';
 import { Dictionary } from '@common/dictionary';
 import { GameSettings, RoomType, StartingPlayer } from '@common/game-settings';
+import { PasswordGameDialogComponent } from '../password-game-dialog/password-game-dialog.component';
 
 @Component({
     selector: 'app-form',
@@ -30,6 +32,7 @@ export class FormComponent implements OnInit, OnDestroy {
         private communicationService: CommunicationService,
         public adminService: AdministratorService,
         private authService: AuthService,
+        public dialog: MatDialog,
     ) {
         this.gameSettingsService.ngOnDestroy();
     }
@@ -41,6 +44,7 @@ export class FormComponent implements OnInit, OnDestroy {
             playerName: new FormControl(this.authService.currentUser.pseudonym),
             minuteInput: new FormControl(this.gameSettingsService.gameSettings.timeMinute),
             secondInput: new FormControl(this.gameSettingsService.gameSettings.timeSecond),
+            visibilityInput: new FormControl('Publique'),
             levelInput: new FormControl('Débutant'),
             dictionaryInput: new FormControl(this.selectedDictionary.title, [Validators.required]),
         });
@@ -51,9 +55,6 @@ export class FormComponent implements OnInit, OnDestroy {
         await this.selectGameDictionary(this.selectedDictionary);
         if (this.isDictionaryDeleted) return;
         this.snapshotSettings();
-        this.clientSocket.socket.emit('createRoom', this.gameSettingsService.gameSettings);
-        const nextUrl = 'waiting-room';
-        this.router.navigate([nextUrl]);
     }
 
     // Checks if dictionary is not deleted and update the attributes
@@ -82,22 +83,8 @@ export class FormComponent implements OnInit, OnDestroy {
         this.dictionaries = await this.communicationService.getDictionaries().toPromise();
     }
 
-    // private chooseStartingPlayer(): StartingPlayer {
-    //     return Math.floor((Math.random() * Object.keys(StartingPlayer).length) / 2);
-    // }
-
-    // private chooseRandomAIName(levelInput: AiType): string {
-    //     let randomName = '';
-    //     do {
-    //         // Random value [0, AI_NAME_DATABASE.length[
-    //         const randomNumber = Math.floor(Math.random() * this.adminService.aiBeginner.length);
-    //         randomName =
-    //             levelInput === AiType.beginner ? this.adminService.aiBeginner[randomNumber].aiName : this.adminService.aiExpert[randomNumber].aiName;
-    //     } while (randomName === this.form.controls.playerName.value);
-    //     return randomName;
-    // }
-
     private snapshotSettings(): void {
+        const type: RoomType = this.form.controls.visibilityInput.value === 'Publique' ? RoomType.public : RoomType.private;
         this.gameSettingsService.gameSettings = new GameSettings(
             this.form.controls.playerName.value,
             StartingPlayer.Player1,
@@ -105,11 +92,40 @@ export class FormComponent implements OnInit, OnDestroy {
             this.form.controls.secondInput.value,
             this.getLevel(),
             this.fileName,
-            RoomType.public,
+            type,
         );
+        this.handleGameType(type);
+    }
+
+    private handleGameType(type: RoomType): void {
+        if (type === RoomType.public) {
+            const ref = this.dialog.open(PasswordGameDialogComponent, {
+                disableClose: true,
+                width: '500px',
+                height: '300px',
+            });
+            ref.afterClosed().subscribe((password) => {
+                // if user closes the dialog box without input nothing
+                if (password == null) {
+                    this.goToWaiting();
+                    return;
+                }
+                // if decision is true the EndGame occurred
+                this.gameSettingsService.gameSettings.password = password;
+                this.goToWaiting();
+            });
+        } else {
+            this.goToWaiting();
+        }
+    }
+
+    private goToWaiting(): void {
+        this.clientSocket.socket.emit('createRoom', this.gameSettingsService.gameSettings);
+        const nextUrl = 'waiting-room';
+        this.router.navigate([nextUrl]);
     }
 
     private getLevel(): AiType {
-        return this.form.controls.levelInput.value === AiType.beginner ? AiType.beginner : AiType.expert;
+        return this.form.controls.levelInput.value === 'Débutant' ? AiType.beginner : AiType.expert;
     }
 }

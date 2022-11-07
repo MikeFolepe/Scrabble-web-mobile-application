@@ -54,11 +54,18 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
             socket.emit('goToWaiting');
         });
 
-        socket.on('sendRequestToCreator', (userJoining: User, currentRoom: Room) => {
+        socket.on('sendRequestToCreator', (userJoining: User, roomId: string) => {
             console.log('requestSended');
-            const room = this.roomManagerService.find(currentRoom.id);
-            Logger.log(room);
-            this.server.to(room.socketIds[0]).emit('newRequest', userJoining);
+            const room = this.roomManagerService.find(roomId);
+            console.log(room);
+            this.logger.log(room.socketIds[0]);
+            this.server.to(room.socketIds[0]).emit('newRequest', userJoining, roomId);
+        });
+
+        socket.on('sendJoinResponse', (decision: boolean, userJoining: User, roomId: string) => {
+            this.logger.log(decision);
+            this.logger.log(userJoining.socketId);
+            this.server.to(userJoining.socketId).emit('receiveJoinDecision', decision, roomId);
         });
 
         socket.on('startGame', (roomId: string) => {
@@ -232,6 +239,11 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
                 }
             },
         );
+
+        socket.on(ChatEvents.UpdateUserSocket, async (user: User) => {
+            const currentUser = await this.userService.findOne(user.pseudonym);
+            currentUser.socketId = user.socketId;
+        });
     }
 
     onCreateRoom(socket: Socket): void {

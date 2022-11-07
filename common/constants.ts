@@ -47,6 +47,7 @@ export const COLOR_BLACK = 'black';
 export const BEGINNER_POINTING_RANGE: CustomRange = { min: 1, max: 18 };
 
 export const NAME_SIZE: CustomRange = { min: 4, max: 12 };
+export const GAME_PASSWORD_SIZE: CustomRange = { min: 8, max: 12 };
 export const SPECIAL_CHAR = '@#$%^&*_';
 export const VALIDATION_PATTERN = '^([A-Za-z][A-Za-z][A-Za-z][A-Za-z])[A-Za-z0-9' + SPECIAL_CHAR + ']*';
 

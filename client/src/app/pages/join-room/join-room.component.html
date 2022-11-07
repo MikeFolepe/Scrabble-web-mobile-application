@@ -14,6 +14,10 @@
                 <br />
                 Second : {{ room.gameSettings.timeSecond }}
                 <br />
+                Nombre de joueurs humains: {{room.humanPlayersNumber}}
+                <br />
+                Nombre de joueurs virtuels: {{room.aiPlayersNumber}}
+
             </mat-card-subtitle>
             <mat-card-actions>
                 <span>Statut : </span>
@@ -41,7 +45,7 @@
 
 <div id="buttons">
     <button mat-raised-button routerLink="/home" color="warn">Retour</button>
-    <button
+    <!-- <button
         mat-raised-button
         *ngIf="this.isRoomAvailable && !shouldDisplayNameError && !shouldDisplayJoinError"
         color="primary"
@@ -49,5 +53,5 @@
         [disabled]="!this.isRandomButtonAvailable"
     >
         Placement aléatoire
-    </button>
+    </button> -->
 </div>

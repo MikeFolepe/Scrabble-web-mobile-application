@@ -20,6 +20,10 @@
                 <legend>Durée</legend>
                 <app-timer-field [formGroup]="form" [parentForm]="form"></app-timer-field>
             </fieldset>
+            <fieldset class="form-section">
+                <legend>Protection de la partie</legend>
+                <app-visibility-field [formGroup]="form" [parentForm]="form"></app-visibility-field>
+            </fieldset>
             <fieldset *ngIf="gameSettingsService.isSoloMode" class="form-section">
                 <legend>Niveau du joueur virtuel</legend>
                 <app-level-field [formGroup]="form" [parentForm]="form"></app-level-field>

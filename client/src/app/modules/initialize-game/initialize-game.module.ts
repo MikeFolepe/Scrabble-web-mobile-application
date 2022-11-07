@@ -15,6 +15,9 @@ import { LevelFieldComponent } from './level-field/level-field.component';
 import { NameSelectorComponent } from './name-selector/name-selector.component';
 import { PlayerNameFieldComponent } from './player-name-field/player-name-field.component';
 import { TimerFieldComponent } from './timer-field/timer-field.component';
+import { VisibilityFieldComponent } from './visibility-field/visibility-field.component';
+import { PasswordGameDialogComponent } from './password-game-dialog/password-game-dialog.component';
+import { JoiningConfirmationDialogComponent } from './joining-confirmation-dialog/joining-confirmation-dialog.component';
 
 @NgModule({
     declarations: [
@@ -24,6 +27,9 @@ import { TimerFieldComponent } from './timer-field/timer-field.component';
         LevelFieldComponent,
         NameSelectorComponent,
         GiveUpGameDialogComponent,
+        VisibilityFieldComponent,
+        PasswordGameDialogComponent,
+        JoiningConfirmationDialogComponent,
     ],
     imports: [
         CommonModule,

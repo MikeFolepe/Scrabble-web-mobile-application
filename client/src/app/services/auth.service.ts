@@ -22,11 +22,7 @@ export class AuthService {
         private communicationService: CommunicationService,
         public errorHandler: ErrorHandlerService,
         public snackBar: MatSnackBar,
-    ) {
-        if (this.clientSocketService.socket) {
-            this.receiveUserSocket();
-        }
-    }
+    ) {}
 
     signIn(userData: User) {
         this.serverUrl = 'http://localhost:3000';
@@ -40,6 +36,7 @@ export class AuthService {
                     this.clientSocketService.socket.connect();
                     this.clientSocketService.socket.emit(ChatEvents.JoinRoom);
                     this.clientSocketService.socket.emit(ChatEvents.GetMessages);
+                    this.receiveUserSocket();
                     localStorage.setItem('ACCESS_TOKEN', 'access_token');
                     this.router.navigate(['/home']);
                     this.clientSocketService.initialize();
@@ -73,6 +70,7 @@ export class AuthService {
 
     private receiveUserSocket(): void {
         this.clientSocketService.socket.on(ChatEvents.SocketId, (socketId: string) => {
+            console.log('soket', socketId);
             this.currentUser.socketId = socketId;
             this.clientSocketService.socket.emit(ChatEvents.UpdateUserSocket, this.currentUser);
         });

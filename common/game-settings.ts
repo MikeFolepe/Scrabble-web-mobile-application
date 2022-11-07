@@ -11,6 +11,7 @@ export enum RoomType {
 }
 
 export class GameSettings {
+    password: string;
     constructor(
         public creatorName: string,
         public startingPlayer: StartingPlayer,
@@ -19,5 +20,7 @@ export class GameSettings {
         public level: AiType,
         public dictionary: string,
         public type: RoomType,
-    ) {}
+    ) {
+        this.password = '';
+    }
 }
