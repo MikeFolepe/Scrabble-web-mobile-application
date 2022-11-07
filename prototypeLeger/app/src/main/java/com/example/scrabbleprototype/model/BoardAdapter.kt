@@ -123,7 +123,7 @@ class BoardAdapter(private var board: ArrayList<Letter>) :
     }
 
     private fun setupTouchListener(viewHolder: ViewHolder) {
-        viewHolder.itemView.setOnLongClickListener { v ->
+        viewHolder.case.findViewById<LinearLayout>(R.id.letter_layer).setOnLongClickListener { v ->
             if(board[viewHolder.layoutPosition].isValidated || board[viewHolder.layoutPosition].isEmpty()) return@setOnLongClickListener false
 
             Log.d("boardDrag", "touching")

@@ -144,6 +144,7 @@ class PlaceService : Service() {
             val letterFound = Constants.RESERVE.find { it.value == letter.uppercase() }
                 ?: return
             val letterToPlace = Letter(letterFound.value.lowercase(), letterFound.quantity, letterFound.points, false, false)
+            letterToPlace.isValidated = true
             board[currentPosition] = letterToPlace
             boardView.adapter?.notifyItemChanged(currentPosition)
             currentPosition += spaceBetweenEachLetter
