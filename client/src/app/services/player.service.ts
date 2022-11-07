@@ -29,6 +29,7 @@ export class PlayerService {
     currentPlayer: Player;
 
     constructor(private clientSocketService: ClientSocketService, private letterService: LetterService) {
+        this.currentPlayer = new Player('', []);
         this.fontSize = 10;
         this.opponents = [];
         this.getMyPlayer();

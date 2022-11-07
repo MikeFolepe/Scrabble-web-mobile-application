@@ -20,7 +20,7 @@ export const ONE_SECOND_DELAY = 1000;
 export const TWO_SECOND_DELAY = 2000;
 export const THREE_SECONDS_DELAY = 3000;
 export const DELAY_BEFORE_PLAYING = 3000;
-export const ERROR_MESSAGE_DELAY = 4000;
+export const ERROR_MESSAGE_DELAY = 2000;
 export const DELAY_TO_PASS_TURN = 5000;
 export const ONE_MINUTE = 60;
 
@@ -122,6 +122,7 @@ export const DEFAULT_GAME_SETTINGS = {
     level: AiType.beginner,
     dictionary: '',
     type: RoomType.public,
+    password: '',
 };
 
 export const RESERVE: Letter[] = [

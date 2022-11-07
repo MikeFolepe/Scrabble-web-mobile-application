@@ -1,0 +1,19 @@
+<h1 mat-dialog-title></h1>
+<div mat-dialog-content>
+    <mat-label>{{message}}</mat-label>
+</div>
+<br />
+<br />
+<br />
+<div mat-dialog-actions>
+    <button mat-button mat-dialog-close (click)="this.joiningConfirmation.close(false)" color="warn">Non</button>
+    <button
+        mat-raised-button
+        mat-dialog-close
+        (click)="this.joiningConfirmation.close(true)"
+        color="warn"
+    >
+        Oui
+    </button>
+</div>
+

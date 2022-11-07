@@ -12,7 +12,8 @@
 .waiting-players-container {
     width: 400px;
     height: 300px;
-    background-color: linen;
+    background-color: #00804d;
+    color: white;
     align-items: center;
     justify-content: center;
     border-radius: 10px;
@@ -28,6 +29,7 @@
     line-height: 1.6;
     white-space: pre-line;
     font-size: 20px;
+    color: white;
 }
 
 .display {
@@ -58,10 +60,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: linen;
+    color: white;
     margin-top: 10px;
     margin-bottom: 10px;
-    color: black;
     font-size: 20px;
 }
 

@@ -1,10 +1,13 @@
-import { PlayerService } from '@app/services/player.service';
 import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { ONE_SECOND_DELAY, TWO_SECOND_DELAY } from '@app/classes/constants';
+import { JoiningConfirmationDialogComponent } from '@app/modules/initialize-game/joining-confirmation-dialog/joining-confirmation-dialog.component';
 import { ClientSocketService } from '@app/services/client-socket.service';
 import { GameSettingsService } from '@app/services/game-settings.service';
+import { PlayerService } from '@app/services/player.service';
 import { ERROR_MESSAGE_DELAY } from '@common/constants';
+import { User } from '@common/user';
 
 @Component({
     selector: 'app-waiting-room',
@@ -21,6 +24,8 @@ export class WaitingRoomComponent implements OnInit {
         private gameSettingsService: GameSettingsService,
         private clientSocket: ClientSocketService,
         public playerService: PlayerService,
+        private dialog: MatDialog,
+        private clientSocketService: ClientSocketService,
     ) {
         this.status = '';
         this.isWaiting = true;
@@ -29,6 +34,7 @@ export class WaitingRoomComponent implements OnInit {
 
     ngOnInit(): void {
         this.playAnimation();
+        this.acceptNewPlayer();
     }
 
     playAnimation(): void {
@@ -52,7 +58,7 @@ export class WaitingRoomComponent implements OnInit {
 
     handleReloadErrors(): void {
         if (this.gameSettingsService.gameSettings.creatorName === '') {
-            console.log("F")
+            console.log('F');
             const errorMessage = 'Une erreur est survenue';
             this.waitBeforeChangeStatus(ONE_SECOND_DELAY, errorMessage);
             this.router.navigate(['home']);
@@ -89,10 +95,25 @@ export class WaitingRoomComponent implements OnInit {
     }
 
     routeToGameView(): void {
-        console.log("never happens")
+        console.log('never happens');
         this.gameSettingsService.isSoloMode = true;
         this.gameSettingsService.isRedirectedFromMultiplayerGame = true;
         this.deleteGame();
         this.router.navigate(['solo-game-ai']);
+    }
+
+    private acceptNewPlayer(): void {
+        this.clientSocketService.socket.on('newRequest', (joiningUser: User, roomId: string) => {
+            console.log('hererrrr');
+
+            const joiningConfirmation = this.dialog.open(JoiningConfirmationDialogComponent, { disableClose: true });
+            joiningConfirmation.componentInstance.message = "Acceptez vous d'ajouter " + joiningUser.pseudonym + ' dans la partie?';
+            joiningConfirmation.afterClosed().subscribe((decision: boolean) => {
+                // if user closes the dialog box without input nothing
+                console.log(decision);
+                this.clientSocketService.socket.emit('sendJoinResponse', decision, joiningUser, roomId);
+                // if decision is true the EndGame occurred
+            });
+        });
     }
 }

@@ -4,6 +4,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginatorIntl, PageEvent } from '@angular/material/paginator';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { ERROR_MESSAGE_DELAY } from '@app/classes/constants';
 import { Room, State } from '@app/classes/room';
@@ -36,6 +37,7 @@ export class JoinRoomComponent implements OnInit {
         private authService: AuthService,
         private router: Router,
         public playerService: PlayerService,
+        public snackBar: MatSnackBar,
     ) {
         this.rooms = [];
         this.roomItemIndex = 0;
@@ -54,6 +56,7 @@ export class JoinRoomComponent implements OnInit {
         this.handleRoomUnavailability();
         this.receiveRoomAvailable();
         this.receiveRandomPlacement();
+        this.receiveJoinDecision();
         this.clientSocketService.initialize();
         this.confirm();
         this.clientSocketService.socket.emit('getRoomsConfiguration');
@@ -98,12 +101,32 @@ export class JoinRoomComponent implements OnInit {
             return;
         }
 
-        if ((room.gameSettings.type === RoomType.public)) {
-            console.log(this.authService.currentUser.pseudonym + ' ' + room.id +  ' ' + room.gameSettings.type);
-            this.clientSocketService.socket.emit('newRoomCustomer', this.authService.currentUser.pseudonym, room.id);
-        } else {
-            this.clientSocketService.socket.emit('sendRequestToCreator', this.authService.currentUser, room);
+        if (room.gameSettings.type !== RoomType.public) {
+            console.log(this.authService.currentUser.socketId);
+            this.clientSocketService.socket.emit('sendRequestToCreator', this.authService.currentUser, room.id);
+            return;
         }
+
+        if (room.gameSettings.password === '') {
+            console.log(this.authService.currentUser.pseudonym + ' ' + room.id + ' ' + room.gameSettings.type);
+            this.clientSocketService.socket.emit('newRoomCustomer', this.authService.currentUser.pseudonym, room.id);
+            return;
+        }
+
+        this.dialog
+            .open(NameSelectorComponent, { disableClose: true })
+            .afterClosed()
+            .subscribe((password: string) => {
+                // if user closes the dialog box without input nothing
+                if (password === null) return;
+
+                if (password === room.gameSettings.password) {
+                    this.clientSocketService.socket.emit('newRoomCustomer', this.authService.currentUser.pseudonym, room.id);
+                    return;
+                }
+                this.displayMessage('Mot de passe incorrect');
+                return;
+            });
     }
 
     confirm() {
@@ -111,17 +134,6 @@ export class JoinRoomComponent implements OnInit {
             console.log('gotowaiting');
             this.router.navigate(['waiting-room']);
         });
-    }
-
-    placeRandomly(): void {
-        this.dialog
-            .open(NameSelectorComponent, { disableClose: true })
-            .afterClosed()
-            .subscribe((playerName: string) => {
-                // if user closes the dialog box without input nothing
-                if (playerName === null) return;
-                this.clientSocketService.socket.emit('newRoomCustomerOfRandomPlacement', playerName);
-            });
     }
 
     receiveRandomPlacement(): void {
@@ -155,6 +167,15 @@ export class JoinRoomComponent implements OnInit {
             return;
         });
     }
+    private receiveJoinDecision(): void {
+        this.clientSocketService.socket.on('receiveJoinDecision', (decision: boolean, roomId: string) => {
+            if (decision) {
+                this.clientSocketService.socket.emit('newRoomCustomer', this.authService.currentUser.pseudonym, roomId);
+                return;
+            }
+            this.displayMessage('Demande rejetée par le créateur');
+        });
+    }
     private configureRooms(): void {
         this.clientSocketService.socket.on('roomConfiguration', (rooms) => {
             this.rooms = [];
@@ -163,6 +184,15 @@ export class JoinRoomComponent implements OnInit {
                 this.rooms.push(new Room(room.id, room.gameSettings, room.state, room.socketIds, room.aiPlayersNumber, room.humanPlayersNumber));
             }
             console.log('ROOMS : ', this.rooms);
+        });
+    }
+
+    private displayMessage(message: string): void {
+        this.snackBar.open(message, 'OK', {
+            duration: ERROR_MESSAGE_DELAY,
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom',
+            panelClass: ['snackBarStyle'],
         });
     }
 }
