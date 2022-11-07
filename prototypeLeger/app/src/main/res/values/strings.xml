@@ -11,4 +11,34 @@
     <string name="login_failed">"Login failed"</string>
     <string name="mobile_server_ip">10.0.2.2:3000</string>
     <string name="http">http://</string>
+    <string name="play_button">Jouer</string>
+    <string name="skip_turn_button">Passer son tour</string>
+    <string name="give_up_button">Abandonner</string>
+    <string name="chatbox_hint">Entre ton message ici</string>
+    <string name="info_pannel">Panneau d\'information</string>
+    <string name="swap_button">Échanger</string>
+    <string name="cancel_button">Annuler</string>
+    <string name="create_game_button">Créer une partie multijoueur</string>
+    <string name="join_game_button">Joindre une partie multijoueur</string>
+
+    // Create game form
+    <string name="game_settings">Paramètres de la partie</string>
+    <string name="player_info">Informations du joueur</string>
+    <string name="duration">Durée</string>
+    <string name="dictionary">Dictionnaire</string>
+    <string name="party_type">Type de partie</string>
+    <string name="minute">Minute(s)</string>
+    <string name="seconde">Seconde(s)</string>
+    <string name="everyone">Public</string>
+    <string name="restricted">Privée</string>
+    <string name="back">Retour</string>
+    <string name="Continue">Continuer</string>
+
+    //Game view
+    <string name="timer_display">Temps restant au tour : </string>
+
+    //Waiting room
+    <string name="startGame">Démarrer la partie</string>
+    <string name="players_waiting_list">Liste des joueurs</string>
+
 </resources>

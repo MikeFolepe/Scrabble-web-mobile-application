@@ -5,7 +5,6 @@ import { User } from '@common/user';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { DELAY_BEFORE_EMITTING_TIME, WORD_MIN_LENGTH } from '../chat-channel/chat.gateway.constants';
 import { ChatRoomService } from '../services/chat-room/chat-room.service';
 import { ChatEvents } from './../../../../common/chat.gateway.events';
 @WebSocketGateway({ cors: true })
@@ -23,17 +22,12 @@ export class ChatGateway {
         this.logger.log(`Message reçu : ${message}`);
     }
 
-    @SubscribeMessage(ChatEvents.Validate)
-    validate(socket: Socket, word: string) {
-        socket.emit(ChatEvents.WordValidated, word.length > WORD_MIN_LENGTH);
-    }
-
     @SubscribeMessage('createChatRoom')
     createChatRoom(@ConnectedSocket() socket, @MessageBody() creator: User, @MessageBody() chatRoomName: string) {
-        
-        
-        const roomId = this.chatRoomService.createRoomId(creator[0].pseudonym, socket.id); 
-        
+
+
+        const roomId = this.chatRoomService.createRoomId(creator[0].pseudonym, socket.id);
+
         this.chatRoomService.addCustomer(creator[0], roomId)
         socket.join(roomId);
 
@@ -74,12 +68,12 @@ export class ChatGateway {
 
             for(let j = 0; j < roomNames[1].length; j++) {
                 if(this.chatRoomService.chatRooms[i].chatRoomName === roomNames[1][j]) {
-                    
+
 
 
                     const userInRoom = this.chatRoomService.chatRooms[i].users.find((currentUser) => currentUser.pseudonym === user[0].pseudonym);
                     if(!userInRoom) {
- 
+
                         const newMessage = new ChatRoomMessage(`a rejoint le canal de communication`, "", user[0].pseudonym);
                         this.chatRoomService.chatRooms[i].messages.push(newMessage);
 
@@ -96,7 +90,7 @@ export class ChatGateway {
     @SubscribeMessage('leaveChatRoom')
     leaveChatRoom(@ConnectedSocket() socket, @MessageBody() pseudonym : string, @MessageBody() chatRoomName : string) {
 
-        const chatRoomIndex = this.chatRoomService.chatRooms.findIndex((currentChatRoom) => currentChatRoom.chatRoomName === chatRoomName[1]); 
+        const chatRoomIndex = this.chatRoomService.chatRooms.findIndex((currentChatRoom) => currentChatRoom.chatRoomName === chatRoomName[1]);
         const userIndex = this.chatRoomService.chatRooms[chatRoomIndex].users.findIndex((user) => user.pseudonym === pseudonym[0]);
         this.chatRoomService.chatRooms[chatRoomIndex].users.splice(userIndex, 1);
         this.server.emit('updateChatRooms', this.chatRoomService.chatRooms);
@@ -135,13 +129,5 @@ export class ChatGateway {
         }
     }
 
-    afterInit() {
-        setInterval(() => {
-            this.emitTime();
-        }, DELAY_BEFORE_EMITTING_TIME);
-    }
 
-    private emitTime() {
-        this.server.emit(ChatEvents.Clock, new Date().toLocaleTimeString());
-    }
 }

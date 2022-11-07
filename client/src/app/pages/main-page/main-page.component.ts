@@ -13,8 +13,6 @@ import { GameSettingsService } from '@app/services/game-settings.service';
 import { GiveUpHandlerService } from '@app/services/give-up-handler.service';
 import { LetterService } from '@app/services/letter.service';
 import { PlaceLetterService } from '@app/services/place-letter.service';
-import { WordValidationService } from '@app/services/word-validation.service';
-// import { ChatRoom } from '@common/chatRoom';
 import { GameType } from '@common/game-type';
 
 @Component({
@@ -45,7 +43,7 @@ export class MainPageComponent {
         private placeLetterService: PlaceLetterService,
         private giveUpHandlerService: GiveUpHandlerService,
         private endGameService: EndGameService,
-        private wordValidationService: WordValidationService,
+        // private authService: AuthService,
         // private authService: AuthService,
         public chatRoomService: ChatRoomService
     ) {
@@ -141,7 +139,6 @@ export class MainPageComponent {
     resetServices() {
         this.giveUpHandlerService.isGivenUp = false;
         this.endGameService.actionsLog = [];
-        this.wordValidationService.ngOnDestroy();
         this.letterService.ngOnDestroy();
         this.placeLetterService.ngOnDestroy();
         this.gameSettingsService.ngOnDestroy();

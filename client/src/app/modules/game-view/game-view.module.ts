@@ -14,7 +14,6 @@ import { ChangeChatRoomComponent } from './change-chat-room/change-chat-room.com
 import { ChatroomsComponent } from './chatrooms/chatrooms.component';
 import { JoinChatRoomsComponent } from './join-chat-rooms/join-chat-rooms.component';
 
-
 @NgModule({
     declarations: [
         JoinChatRoomsComponent,

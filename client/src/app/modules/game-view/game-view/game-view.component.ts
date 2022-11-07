@@ -17,6 +17,7 @@ import { SkipTurnService } from '@app/services/skip-turn.service';
 import { AddChatRoomComponent } from '../add-chat-room/add-chat-room.component';
 import { ChangeChatRoomComponent } from '../change-chat-room/change-chat-room.component';
 import { JoinChatRoomsComponent } from '../join-chat-rooms/join-chat-rooms.component';
+// import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 
 @Component({
     selector: 'app-game-view',
@@ -38,7 +39,7 @@ export class GameViewComponent {
         public chatBoxService: ChatboxService,
         public boardHandlerService: BoardHandlerService,
         public skipTurnService: SkipTurnService,
-        private playerService: PlayerService,
+        public playerService: PlayerService,
         public dialog: MatDialog,
         public joinChatRoomsDialog: MatDialog,
         public changeChatRoomDialog: MatDialog,
@@ -50,7 +51,7 @@ export class GameViewComponent {
         public chatRoomService: ChatRoomService,
     ) {
         this.fontSize = DEFAULT_FONT_SIZE;
-        this.giveUpHandlerService.receiveEndGameByGiveUp();
+        // this.giveUpHandlerService.receiveEndGameByGiveUp();
         // this.objectiveService.ngOnDestroy();
         this.chatRoomService.getChatRooms();
         this.selectedChatRooms = [];
@@ -60,7 +61,7 @@ export class GameViewComponent {
 
     handleFontSizeEvent(fontSizeEvent: number): void {
         this.fontSize = fontSizeEvent;
-        this.playerService.updateFontSize(this.fontSize);
+        // this.playerService.updateFontSize(this.fontSize);
     }
 
     confirmGiveUpGame(): void {

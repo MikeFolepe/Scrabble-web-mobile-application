@@ -7,7 +7,7 @@ export enum StartingPlayer {
 
 export class GameSettings {
     constructor(
-        public playersNames: string[],
+        public creatorName: string,
         public startingPlayer: StartingPlayer,
         public timeMinute: string,
         public timeSecond: string,

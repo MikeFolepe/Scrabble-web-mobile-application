@@ -1,9 +1,10 @@
+import { PlayerService } from '@app/services/player.service';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ONE_SECOND_DELAY, TWO_SECOND_DELAY } from '@app/classes/constants';
 import { ClientSocketService } from '@app/services/client-socket.service';
 import { GameSettingsService } from '@app/services/game-settings.service';
-import { PlayerIndex } from '@common/player-index';
+import { ERROR_MESSAGE_DELAY } from '@common/constants';
 
 @Component({
     selector: 'app-waiting-room',
@@ -13,8 +14,14 @@ import { PlayerIndex } from '@common/player-index';
 export class WaitingRoomComponent implements OnInit {
     status: string;
     isWaiting: boolean;
+    shouldDisplayStartError: boolean;
 
-    constructor(private router: Router, private gameSettingsService: GameSettingsService, private clientSocket: ClientSocketService) {
+    constructor(
+        private router: Router,
+        private gameSettingsService: GameSettingsService,
+        private clientSocket: ClientSocketService,
+        public playerService: PlayerService,
+    ) {
         this.status = '';
         this.isWaiting = true;
         this.clientSocket.routeToGameView();
@@ -27,7 +34,6 @@ export class WaitingRoomComponent implements OnInit {
     playAnimation(): void {
         const startMessage = 'Connexion au serveur...';
         this.waitBeforeChangeStatus(ONE_SECOND_DELAY, startMessage);
-        this.clientSocket.socket.connect();
 
         this.handleReloadErrors();
         setTimeout(() => {
@@ -37,7 +43,6 @@ export class WaitingRoomComponent implements OnInit {
                 this.waitBeforeChangeStatus(0, connexionSuccess);
                 const waitingMessage = "En attente d'un joueur...";
                 this.waitBeforeChangeStatus(TWO_SECOND_DELAY, waitingMessage);
-                this.clientSocket.socket.emit('createRoom', this.gameSettingsService.gameSettings);
             } else {
                 this.status = 'Erreur de connexion... Veuillez réessayer';
                 this.isWaiting = false;
@@ -46,7 +51,7 @@ export class WaitingRoomComponent implements OnInit {
     }
 
     handleReloadErrors(): void {
-        if (this.gameSettingsService.gameSettings.playersNames[PlayerIndex.OWNER] === '') {
+        if (this.gameSettingsService.gameSettings.creatorName === '') {
             const errorMessage = 'Une erreur est survenue';
             this.waitBeforeChangeStatus(ONE_SECOND_DELAY, errorMessage);
             this.router.navigate(['home']);
@@ -62,6 +67,24 @@ export class WaitingRoomComponent implements OnInit {
 
     deleteGame(): void {
         this.clientSocket.socket.emit('deleteGame', this.clientSocket.roomId);
+    }
+
+    startGame(): void {
+        // let aiCount = 0;
+        // for (const player of this.playerService.opponents) {
+        //     if (player instanceof PlayerAI) {
+        //         aiCount++;
+        //     }
+        // }
+
+        if (this.playerService.opponents.length < 3 || !this.playerService.currentPlayer.isCreator) {
+            this.shouldDisplayStartError = true;
+            setTimeout(() => {
+                this.shouldDisplayStartError = false;
+            }, ERROR_MESSAGE_DELAY);
+            return;
+        }
+        this.clientSocket.socket.emit('startGame', this.clientSocket.roomId);
     }
 
     routeToGameView(): void {
