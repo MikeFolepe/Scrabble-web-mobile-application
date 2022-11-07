@@ -148,6 +148,8 @@ class LetterRackFragment : Fragment() {
                     true
                 }
                 DragEvent.ACTION_DROP -> {
+                    if(!Players.currentPlayer.getTurn()) return@setOnDragListener false
+
                     val letterTouched = e.clipData.getItemAt(0)
                     val letterQuantity: Int = e.clipData.getItemAt(1).text.toString().toInt()
                     val letterScore: Int = e.clipData.getItemAt(2).text.toString().toInt()

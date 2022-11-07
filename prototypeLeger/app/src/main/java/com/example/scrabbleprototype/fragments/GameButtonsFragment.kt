@@ -166,6 +166,9 @@ class GameButtonsFragment : Fragment(), EndTurnCallback {
     private fun receivePlacementSuccess() {
         socket.on("receiveSuccess") {
             placeService.isFirstPlacement = false
+            for(letter in placementViewModel.currentPlacement) {
+                board[letter.key].isValidated = true
+            }
             activity?.runOnUiThread { placementViewModel.clearPlacement() }
         }
     }

@@ -11,11 +11,13 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.objects.LetterRack
+import com.example.scrabbleprototype.objects.Players
 
 class BoardAdapter(private var board: ArrayList<Letter>) :
     RecyclerView.Adapter<BoardAdapter.ViewHolder>() {
@@ -27,6 +29,7 @@ class BoardAdapter(private var board: ArrayList<Letter>) :
      * Provide a reference to the type of views that you are using
      * (custom ViewHolder).
      */
+
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val case: CardView
 
@@ -55,6 +58,8 @@ class BoardAdapter(private var board: ArrayList<Letter>) :
                         true
                     }
                     DragEvent.ACTION_DROP -> {
+                        if(!Players.currentPlayer.getTurn()) return@setOnDragListener false
+
                         val letterTouched = e.clipData.getItemAt(0)
                         val letterQuantity: Int = e.clipData.getItemAt(1).text.toString().toInt()
                         val letterScore: Int = e.clipData.getItemAt(2).text.toString().toInt()
@@ -119,6 +124,8 @@ class BoardAdapter(private var board: ArrayList<Letter>) :
 
     private fun setupTouchListener(viewHolder: ViewHolder) {
         viewHolder.itemView.setOnLongClickListener { v ->
+            if(board[viewHolder.layoutPosition].isValidated || board[viewHolder.layoutPosition].isEmpty()) return@setOnLongClickListener false
+
             Log.d("boardDrag", "touching")
             val letterTouched = ClipData.Item(board[viewHolder.layoutPosition].value)
             val letterQuantity = ClipData.Item(board[viewHolder.layoutPosition].quantity.toString())

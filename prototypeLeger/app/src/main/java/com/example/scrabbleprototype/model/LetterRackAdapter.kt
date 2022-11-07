@@ -13,6 +13,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
+import com.example.scrabbleprototype.objects.Players
 import org.w3c.dom.Text
 
 class LetterRackAdapter(private var letterRack: ArrayList<Letter>) :
@@ -63,6 +64,8 @@ class LetterRackAdapter(private var letterRack: ArrayList<Letter>) :
 
     private fun setupTouchListener(viewHolder: ViewHolder) {
         viewHolder.itemView.setOnLongClickListener { v ->
+            if(!Players.currentPlayer.getTurn()) return@setOnLongClickListener false
+
             val letterTouched = ClipData.Item(letterRack[viewHolder.layoutPosition].value)
             val letterQuantity = ClipData.Item(letterRack[viewHolder.layoutPosition].quantity.toString())
             val letterScore = ClipData.Item(letterRack[viewHolder.layoutPosition].points.toString())
