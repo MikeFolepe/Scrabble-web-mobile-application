@@ -168,7 +168,7 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
         }
         val backButton = findViewById<Button>(R.id.back_button)
         backButton.setOnClickListener {
-            startActivity(Intent(this, HomeMenuActivity::class.java))
+            startActivity(Intent(this, MainMenuActivity::class.java))
         }
     }
 

@@ -131,7 +131,7 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
     }
 
     fun joinChat(serverIp: String, user: User) {
-        val intent = Intent(this, HomeMenuActivity::class.java)
+        val intent = Intent(this, MainMenuActivity::class.java)
 
         SocketHandler.setPlayerSocket(serverIp)
         SocketHandler.establishConnection()
