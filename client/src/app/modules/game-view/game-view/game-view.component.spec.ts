@@ -1,7 +1,7 @@
 /* eslint-disable dot-notation */
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -10,7 +10,7 @@ import { GameViewComponent } from './game-view.component';
 
 describe('GameViewComponent', () => {
     let component: GameViewComponent;
-    let fixture: ComponentFixture<GameViewComponent>;
+    // let fixture: ComponentFixture<GameViewComponent>;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({

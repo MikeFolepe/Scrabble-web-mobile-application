@@ -39,7 +39,7 @@ export class AuthService {
                     this.clientSocketService.socket = io(this.serverUrl);
                     this.clientSocketService.socket.on(ChatEvents.SocketId, (socketId: string) => {
                         this.currentUser.socketId = socketId;
-                        this.clientSocketService.socket.emit(ChatEvents.UpdateUserSocket, this.currentUser);
+                        // this.clientSocketService.socket.emit(ChatEvents.UpdateUserSocket, this.currentUser);
                         
                     });
                     this.clientSocketService.socket.connect();

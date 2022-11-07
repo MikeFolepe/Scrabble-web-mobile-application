@@ -82,44 +82,6 @@ export class MainPageComponent {
         this.chatRoomForm = true;
     }
 
-
-    // createChatRoom() : void {
-        
-    //     this.clientSocketService.socket.emit('createChatRoom', this.authService.currentUser, this.chatRoomName);
-    //     // this.chatRoomService.getChatRooms();  
-    // }
-
-    // deleteChatRoom(index : any) : void {
-    //     this.chatRoomService.chatRooms.splice(index, 1);
-    //     this.clientSocketService.socket.emit('deleteChatRoom', index);
-
-    // }
-
-    // closeChatRoomForm() : void {
-    //     // this.chatRooms.push(this.chatRoomName);
-    //     // // this.chatRoomName = "";
-    //     this.chatRoomForm = false;
-    // }
-
-    // openChat() : void {
-    //     this.isOpen = true;
-    // }
-
-    // onChange(value : ChatRoom) {
-    //     if(this.selectedChatRooms.includes(value.chatRoomName)) {
-    //         this.selectedChatRooms.splice(this.selectedChatRooms.indexOf(value.chatRoomName), 1);
-    //     } else {
-    //         this.selectedChatRooms.push(value.chatRoomName);
-    //     }
-    // }
-
-    // joinRoom() {
-    //     console.log(this.authService.currentUser.ipAddress, this.authService.currentUser.pseudonym, this.authService.currentUser.socketId);
-    //     this.clientSocketService.socket.emit('joinChatRoom', this.authService.currentUser, this.selectedChatRooms);
-    //     this.selectedChatRooms = [];
-    //     setTimeout(() => console.log(this.chatRoomService.chatRooms), 2000);
-    // }
-
     openBestScoresDialog(): void {
         this.bestScoresDialog.open(BestScoresComponent, { disableClose: true });
     }
