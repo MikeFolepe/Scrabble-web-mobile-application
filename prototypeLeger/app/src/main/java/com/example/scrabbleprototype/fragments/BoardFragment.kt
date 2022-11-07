@@ -116,8 +116,7 @@ class BoardFragment : Fragment() {
     }
 
     private fun initializeBoard() {
-        // in board.length until Constants.max
-        for(i in 0..224 ) {
+        for(i in board.size until Constants.BOARD_SIZE ) {
             board.add(Constants.EMPTY_LETTER)
         }
     }

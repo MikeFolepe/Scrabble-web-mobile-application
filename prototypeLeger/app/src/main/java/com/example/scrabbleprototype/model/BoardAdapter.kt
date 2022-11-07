@@ -110,13 +110,15 @@ class BoardAdapter(private var board: ArrayList<Letter>) :
         // contents of the view with that element
         val letterLayer =  viewHolder.case.findViewById<LinearLayout>(R.id.letter_layer)
         val bonusLayer = viewHolder.case.findViewById<TextView>(R.id.bonus_layer)
-        setupBonus(bonusLayer, position, viewHolder)
 
         if(board[position].value == "")  {
+            setupBonus(bonusLayer, position, viewHolder)
             letterLayer.setBackgroundResource(0)
             letterLayer.findViewById<TextView>(R.id.letter_score).text = ""
             letterLayer.findViewById<TextView>(R.id.letter).text = ""
         } else {
+            bonusLayer.setBackgroundResource(0)
+            bonusLayer.text = ""
             letterLayer.background = ContextCompat.getDrawable(viewHolder.case.context, R.drawable.tan)
             letterLayer.findViewById<TextView>(R.id.letter).text = board[position].value.uppercase()
             letterLayer.findViewById<TextView>(R.id.letter_score).text = board[position].points.toString()
@@ -162,7 +164,7 @@ class BoardAdapter(private var board: ArrayList<Letter>) :
     }
 
     fun setupBonus(bonusLayer: TextView, position: Int, viewHolder: ViewHolder) {
-        if(bonusInit) return
+        if(bonusInit)
         Log.d("bonus", "settingBonuses at " + position.toString())
         if(position == Constants.BOARD_CENTER) bonusLayer.background = ContextCompat.getDrawable(viewHolder.case.context, R.drawable.ic_baseline_star_24)
 
