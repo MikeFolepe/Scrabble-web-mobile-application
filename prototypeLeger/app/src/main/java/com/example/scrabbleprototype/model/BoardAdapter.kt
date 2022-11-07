@@ -24,6 +24,7 @@ class BoardAdapter(private var board: ArrayList<Letter>) :
 
     var onCaseClicked: ((position: Int) -> Unit)? = null
     var onPlacement: ((letterRackPosition: Int, boardPosition: Int, draggedFromRack: Boolean) -> Unit)? = null
+    var bonusInit = false
 
     /**
      * Provide a reference to the type of views that you are using
@@ -112,7 +113,7 @@ class BoardAdapter(private var board: ArrayList<Letter>) :
         setupBonus(bonusLayer, position, viewHolder)
 
         if(board[position].value == "")  {
-            letterLayer.background = ContextCompat.getDrawable(viewHolder.case.context, R.drawable.transparent)
+            letterLayer.setBackgroundResource(0)
             letterLayer.findViewById<TextView>(R.id.letter_score).text = ""
             letterLayer.findViewById<TextView>(R.id.letter).text = ""
         } else {
@@ -125,7 +126,6 @@ class BoardAdapter(private var board: ArrayList<Letter>) :
     private fun setupTouchListener(viewHolder: ViewHolder) {
         viewHolder.case.findViewById<LinearLayout>(R.id.letter_layer).setOnLongClickListener { v ->
             if(board[viewHolder.layoutPosition].isValidated || board[viewHolder.layoutPosition].isEmpty()) return@setOnLongClickListener false
-
             Log.d("boardDrag", "touching")
             val letterTouched = ClipData.Item(board[viewHolder.layoutPosition].value)
             val letterQuantity = ClipData.Item(board[viewHolder.layoutPosition].quantity.toString())
@@ -162,6 +162,8 @@ class BoardAdapter(private var board: ArrayList<Letter>) :
     }
 
     fun setupBonus(bonusLayer: TextView, position: Int, viewHolder: ViewHolder) {
+        if(bonusInit) return
+        Log.d("bonus", "settingBonuses at " + position.toString())
         if(position == Constants.BOARD_CENTER) bonusLayer.background = ContextCompat.getDrawable(viewHolder.case.context, R.drawable.ic_baseline_star_24)
 
         when(Constants.BONUS_POSITIONS[position]) {
@@ -182,6 +184,7 @@ class BoardAdapter(private var board: ArrayList<Letter>) :
                 bonusLayer.background = ContextCompat.getDrawable(viewHolder.case.context, R.color.red)
             }
         }
+        if(position == Constants.LAST_BOARD_POSITION) bonusInit = true
     }
 
 }
