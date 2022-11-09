@@ -4,7 +4,7 @@
     flex-direction: column;
     margin-top: -10px;
     margin-bottom:0px;
-    max-height: 250px;
+    max-height: 200px;
     overflow-y: scroll;
     word-break: break-word;
 }
@@ -23,3 +23,13 @@ h1 {
 .button {
     margin-top: 10px;
 }
+
+.mat-form-field {
+    //make the width the max of the dialogRef
+    width: 300px;
+    margin-bottom: 10px;
+}
+
+[hidden] {
+    display: none !important;
+  }

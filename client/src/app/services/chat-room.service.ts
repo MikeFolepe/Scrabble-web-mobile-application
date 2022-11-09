@@ -12,6 +12,7 @@ export class ChatRoomService {
   constructor(public clientSocketService: ClientSocketService) {
       
       this.clientSocketService.socket.on('updateChatRooms',(chatRooms: ChatRoom[]) => {
+          console.log(chatRooms);
           this.chatRooms = chatRooms;
           this.scrollDown();
       });
