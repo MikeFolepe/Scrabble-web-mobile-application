@@ -57,6 +57,7 @@ class GameActivity : AppCompatActivity() {
     private fun receiveReserve() {
         socket.on("receiveReserve") { response ->
             Reserve.RESERVE = mapper.readValue(response[0].toString(), object : TypeReference<Array<Letter>>() {})
+            Reserve.setReserveSize(Reserve.RESERVE.sumOf { it.quantity })
         }
     }
 

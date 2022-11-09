@@ -36,6 +36,10 @@
 
     //Game view
     <string name="timer_display">Temps restant au tour : </string>
+    <string name="reserve_letters">Nombre de lettres dans la réserve : </string>
+    <string name="player_name">Nom : </string>
+    <string name="player_score">Score : </string>
+    <string name="active_player">Joueur actif</string>
 
     //Waiting room
     <string name="startGame">Démarrer la partie</string>

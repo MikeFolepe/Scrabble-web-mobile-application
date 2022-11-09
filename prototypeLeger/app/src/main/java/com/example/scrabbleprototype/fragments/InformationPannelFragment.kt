@@ -13,19 +13,34 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet.Constraint
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
+import com.example.scrabbleprototype.databinding.FragmentGameButtonsBinding
+import com.example.scrabbleprototype.databinding.FragmentInformationPannelBinding
+import com.example.scrabbleprototype.model.Constants
+import com.example.scrabbleprototype.model.Player
+import com.example.scrabbleprototype.model.PlayersAdapter
 import com.example.scrabbleprototype.model.SocketHandler
 import com.example.scrabbleprototype.objects.CurrentRoom
 import com.example.scrabbleprototype.objects.Players
+import com.example.scrabbleprototype.objects.Reserve
 import com.example.scrabbleprototype.services.SkipTurnService
 import com.example.scrabbleprototype.services.TurnUICallback
+import com.example.scrabbleprototype.viewModel.PlacementViewModel
+import com.example.scrabbleprototype.viewModel.PlayersViewModel
 
 class InformationPannelFragment : Fragment(), TurnUICallback {
 
     val player = Players.currentPlayer
+    private lateinit var playersAdapter: PlayersAdapter
+    private lateinit var playersView: RecyclerView
 
-    private var timeMs: Long = 0
-    private lateinit var timerText: TextView
+    private val playersViewModel: PlayersViewModel by activityViewModels()
+    private var _binding: FragmentInformationPannelBinding? = null
+    private val binding get() = _binding!!
 
     private lateinit var skipTurnService: SkipTurnService
     private var skipTurnBound: Boolean = false
@@ -52,7 +67,8 @@ class InformationPannelFragment : Fragment(), TurnUICallback {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_information_pannel, container, false)
+        _binding = FragmentInformationPannelBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onAttach(context: Context) {
@@ -62,11 +78,12 @@ class InformationPannelFragment : Fragment(), TurnUICallback {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        timerText = view.findViewById(R.id.timer)
 
         view.findViewById<ConstraintLayout>(R.id.info_pannel_layout).setOnClickListener {
             skipTurnService.setTurnUICallback(this@InformationPannelFragment)
         }
+        setupPlayers(view)
+        setupReserveSize(view)
     }
 
     override fun onStart() {
@@ -83,6 +100,30 @@ class InformationPannelFragment : Fragment(), TurnUICallback {
         skipTurnBound = false
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    private fun setupPlayers(view: View) {
+        playersViewModel.initializePlayersOrder()
+
+        val playerObserver = Observer<Int> { playerUpdatedPosition ->
+            playersAdapter.notifyItemChanged(playerUpdatedPosition)
+        }
+        playersViewModel.playerUpdatedPosition.observe(viewLifecycleOwner, playerObserver)
+
+        playersView = view.findViewById(R.id.players)
+        val verticalLayoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
+        playersView.layoutManager = verticalLayoutManager
+        playersAdapter = PlayersAdapter(playersViewModel.playersInGame)
+        playersView.adapter = playersAdapter
+    }
+
+    private fun setupReserveSize(view: View) {
+        binding.reserve = Reserve
+    }
+
     override fun updateTimeUI(currentTime: Long) {
         activity?.runOnUiThread {
             val minutes = (currentTime / 1000) / 60
@@ -93,7 +134,9 @@ class InformationPannelFragment : Fragment(), TurnUICallback {
                             else "$minutes"
             secondsString = if(seconds < 10) "0$seconds"
                             else "$seconds"
-            timerText.text = minutesString + ":" + secondsString
+
+            val timerView = playersView.findViewHolderForAdapterPosition(Players.currentPlayerPosition)?.itemView?.findViewById<TextView>(R.id.timer)
+            timerView?.text = minutesString + ":" + secondsString
         }
     }
 }

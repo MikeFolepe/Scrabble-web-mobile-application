@@ -34,7 +34,6 @@ class JoinGameActivity : AppCompatActivity() {
         receiveOpponents()
         receiveRoomId()
         receiveMyPlayer()
-        receiveNewOpponent()
         receiveGameSettings()
         routeToWaitingRoom()
         setupGameList()
@@ -89,12 +88,6 @@ class JoinGameActivity : AppCompatActivity() {
     private fun receiveMyPlayer() {
         socket.on("MyPlayer") { response ->
             Players.currentPlayer = mapper.readValue(response[0].toString(), Player::class.java)
-        }
-    }
-
-    private fun receiveNewOpponent() {
-        socket.on("Opponent") { response ->
-            Players.opponents.add(mapper.readValue(response[0].toString(), Player::class.java))
         }
     }
 
