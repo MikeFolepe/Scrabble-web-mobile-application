@@ -124,7 +124,7 @@ class InformationPannelFragment : Fragment(), TurnUICallback {
         binding.reserve = Reserve
     }
 
-    override fun updateTimeUI(currentTime: Long) {
+    override fun updateTimeUI(currentTime: Long, activePlayerName: String) {
         activity?.runOnUiThread {
             val minutes = (currentTime / 1000) / 60
             val seconds = (currentTime / 1000) % 60
@@ -135,7 +135,8 @@ class InformationPannelFragment : Fragment(), TurnUICallback {
             secondsString = if(seconds < 10) "0$seconds"
                             else "$seconds"
 
-            val timerView = playersView.findViewHolderForAdapterPosition(Players.currentPlayerPosition)?.itemView?.findViewById<TextView>(R.id.timer)
+            val activePlayerIndex = playersViewModel.playersInGame.indexOfFirst { it.name == activePlayerName }
+            val timerView = playersView.findViewHolderForAdapterPosition(activePlayerIndex)?.itemView?.findViewById<TextView>(R.id.timer)
             timerView?.text = minutesString + ":" + secondsString
         }
     }
