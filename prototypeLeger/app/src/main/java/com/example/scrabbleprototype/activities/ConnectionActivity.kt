@@ -29,6 +29,7 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import org.json.JSONObject
 import java.lang.Exception
 import kotlin.coroutines.CoroutineContext
 
@@ -140,7 +141,7 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
         chatSocket.emit("joinRoom")
         chatSocket.on("socketId") { response ->
             user.socketId = response[0].toString()
-            chatSocket.emit("updateUserSocket", Json.encodeToString(user))
+            chatSocket.emit("updateUserSocket", JSONObject(Json.encodeToString(user)))
         }
         startActivity(intent)
     }

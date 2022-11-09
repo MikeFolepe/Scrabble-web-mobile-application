@@ -9,6 +9,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.RadioButton
+import android.widget.RadioGroup
 import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
 import com.example.scrabbleprototype.R
@@ -169,27 +170,13 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
         backButton.setOnClickListener {
             startActivity(Intent(this, HomeMenuActivity::class.java))
         }
-
-        val privateRadioButton = findViewById<Button>(R.id.private_game)
-        privateRadioButton.setOnClickListener {
-            gameSetting.type = RoomType.private;
-            Log.d("type:",gameSetting.type.toString())
-        }
-
-        val publicRadioButton = findViewById<Button>(R.id.private_game)
-        publicRadioButton.setOnClickListener {
-            gameSetting.type = RoomType.public;
-        }
-    }
-
-    fun private_radio_button_click(view: View, ){
-        // Get the clicked radio button instance
-        val radio: RadioButton = findViewById(R.id.radio_group.checkedRadioButtonId)
-        if(radio.text == "Public") {
-            gameSetting.type = RoomType.private;
-        }
-        else {
-            gameSetting.type = RoomType.private;
+        findViewById<RadioGroup>(R.id.radio_group).setOnCheckedChangeListener { group, checkedId ->
+            val radio: RadioButton = findViewById(checkedId)
+            if (radio.text == "Public") {
+                gameSetting.type = RoomType.public;
+            } else {
+                gameSetting.type = RoomType.private;
+            }
             Log.d("type:", gameSetting.type.toString())
         }
     }
