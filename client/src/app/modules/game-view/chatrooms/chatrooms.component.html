@@ -1,9 +1,10 @@
-<div class = "chatRoom">
-    <div *ngIf="this.chatRoomIndexService.amountOfChatRooms === 0"> 
-        <h3 class="noChatRoom">Vous ne faites partie d'aucun canal de discussion</h3>
-        <button mat-button class="closeButton" (click)="closeChat()"><mat-icon>clear</mat-icon></button>
+<div *ngIf="this.isOpen === false" class="closedChat" (click)="openChat()">
+    <div class="textClosedChat">
+        <h2>Cliquez pour ouvrir le chat</h2>
     </div>
-    <div *ngIf="this.chatRoomIndexService.amountOfChatRooms !== 0"> 
+</div>
+<div *ngIf="this.isOpen === true" class = "chatRoom">
+    <div> 
         <div *ngIf="chatRoomInSelectedRooms()">
             <h2 class = "title">{{this.chatRoomService.chatRooms[this.chatRoomIndexService.chatRoomIndex].chatRoomName}}</h2>
 
@@ -23,5 +24,5 @@
         <div *ngIf="!chatRoomInSelectedRooms()">
             <h2 class = "title">Aucun canal de discussion sélectionné</h2>
         </div>
-
+    </div>
 </div>

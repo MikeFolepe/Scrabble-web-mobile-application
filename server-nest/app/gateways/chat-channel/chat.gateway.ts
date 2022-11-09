@@ -14,7 +14,8 @@ export class ChatGateway {
 
     messages: string[] = [];
 
-    constructor(private readonly logger: Logger, private userService: UsersService, private chatRoomService: ChatRoomService) {}
+    constructor(private readonly logger: Logger, private userService: UsersService, private chatRoomService: ChatRoomService) {
+    }
 
     @SubscribeMessage(ChatEvents.Message)
     message(_: Socket, message: string) {
@@ -53,6 +54,12 @@ export class ChatGateway {
         this.server.emit('updateChatRooms', this.chatRoomService.chatRooms);
     }
 
+    @SubscribeMessage('joinMainRoom')
+    joinMainRoom(@ConnectedSocket() socket, @MessageBody() user: User) {
+        this.chatRoomService.addCustomer(user[0], this.chatRoomService.chatRooms[0].chatRoomId);
+        socket.join(this.chatRoomService.chatRooms[0].chatRoomId); 
+        this.server.emit('updateChatRooms', this.chatRoomService.chatRooms); 
+    }
 
     @SubscribeMessage('joinChatRoom')
     joinChatRoom(@ConnectedSocket() socket, @MessageBody() user: User, @MessageBody() roomNames:string[]) {

@@ -1,14 +1,24 @@
 import { ChatRoom } from '@common/chatRoom';
 // import { Room } from '@common/room';
+import { SERVER_ROOM } from '@app/gateways/chat-channel/chat.gateway.constants';
 import { User } from '@common/user';
 import { Injectable } from '@nestjs/common';
+import { WebSocketServer } from '@nestjs/websockets';
+import { Server } from 'socket.io';
 @Injectable()
 export class ChatRoomService {
+    @WebSocketServer() private server: Server;
     chatRooms: ChatRoom[];
+    //give the initUser initial values to never be undefined
 
     constructor() {
         this.chatRooms = [];
+        const initUser = new User("", "ADMIN", "");
+        const initRoom = new ChatRoom(SERVER_ROOM, initUser, 'Canal Général');
+        this.chatRooms.push(initRoom);
     }
+
+    
 
     createRoom(chatRoomId: string, creator: User, chatRoomName: string) : ChatRoom {
 

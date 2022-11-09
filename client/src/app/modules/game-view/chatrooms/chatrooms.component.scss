@@ -47,10 +47,12 @@
     margin-top: -10px;
     margin-bottom:0px;
     height : 330px;
-    overflow-y: scroll;
+    overflow-y: auto;
     word-break: break-word;
 
 }
+
+
 
 .text {
     color:white;
@@ -67,6 +69,29 @@
     flex-direction: row;
     align-items: baseline;
     // margin-top: 200px;
+}
+
+.closedChat {
+    transition : all 0.5s ease;
+    user-select: none;
+    position: absolute;
+    bottom: 0.5px;
+    right: 10px;
+    height: 40px;
+    width: 350px;
+    background-color: #00804d;
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+.closedChat:hover {
+    cursor: pointer;
+}
+
+.textClosedChat {
+    margin-top: 5px;
+    text-align: center;
+    color:white;
 }
 
 input {

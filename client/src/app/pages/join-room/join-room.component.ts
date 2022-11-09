@@ -7,8 +7,12 @@ import { MatPaginatorIntl, PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
 import { ERROR_MESSAGE_DELAY } from '@app/classes/constants';
 import { Room, State } from '@app/classes/room';
+import { AddChatRoomComponent } from '@app/modules/game-view/add-chat-room/add-chat-room.component';
+import { ChangeChatRoomComponent } from '@app/modules/game-view/change-chat-room/change-chat-room.component';
+import { JoinChatRoomsComponent } from '@app/modules/game-view/join-chat-rooms/join-chat-rooms.component';
 import { NameSelectorComponent } from '@app/modules/initialize-game/name-selector/name-selector.component';
 import { AuthService } from '@app/services/auth.service';
+import { ChannelHandlerService } from '@app/services/channel-handler.service';
 import { ClientSocketService } from '@app/services/client-socket.service';
 import { PlayerService } from '@app/services/player.service';
 
@@ -27,16 +31,18 @@ export class JoinRoomComponent implements OnInit {
     isRandomButtonAvailable: boolean;
 
     // JUSTIFICATION : must name service as it is named in MatPaginatorIntl
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     constructor(
-        private clientSocketService: ClientSocketService,
-        public dialog: MatDialog,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        public _MatPaginatorIntl: MatPaginatorIntl,
+        private clientSocketService: ClientSocketService, 
+        public channelHandlerService : ChannelHandlerService, 
+        public dialog: MatDialog, 
+        public _MatPaginatorIntl: MatPaginatorIntl, 
+        public joinChatRoomsDialog: MatDialog, 
+        public changeChatRoomDialog: MatDialog, 
+        public addChatRoomDialog : MatDialog,  
         private authService: AuthService,
         private router: Router,
-        public playerService: PlayerService,
-
-    ) {
+        public playerService: PlayerService) {
         this.rooms = [];
         this.roomItemIndex = 0;
         // 2 rooms per page
@@ -160,5 +166,17 @@ export class JoinRoomComponent implements OnInit {
                 this.rooms.push(new Room(room.id, room.gameSettings, room.state, room.socketIds));
             }
         });
+    }
+
+    openChangeChatRoomDialog() : void {
+        this.changeChatRoomDialog.open(ChangeChatRoomComponent, { disableClose: true });
+    }
+
+    openJoinChatRoomDialog() : void {
+        this.joinChatRoomsDialog.open(JoinChatRoomsComponent, { disableClose: true });
+    }
+
+    openAddChatRoomDialog() : void {
+        this.addChatRoomDialog.open(AddChatRoomComponent, { disableClose: true });
     }
 }

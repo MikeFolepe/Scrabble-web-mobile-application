@@ -17,15 +17,21 @@ export class ChangeChatRoomComponent implements OnInit {
   selectedChatRoom? : ChatRoom;
   selectedChatRoomIndex : number;
 
-  constructor(private chatRoomIndexService : ChatRoomIndexService, public changeChatRoomDialogRef: MatDialogRef<ChangeChatRoomComponent>, private chatRoomService : ChatRoomService, private authService : AuthService, private clientSocketService : ClientSocketService) { 
+  constructor(private chatRoomIndexService : ChatRoomIndexService, public changeChatRoomDialogRef: MatDialogRef<ChangeChatRoomComponent>, public chatRoomService : ChatRoomService, private authService : AuthService, private clientSocketService : ClientSocketService) { 
     // this.chatRoomService.getChatRooms();
-    this.userChatsRooms = []
+    this.userChatsRooms = [this.chatRoomService.chatRooms[0]];
     for(var chatRoom of this.chatRoomService.chatRooms) {
+      //if the chatRoom is the main room, skip it
+      if(chatRoom.chatRoomName === this.chatRoomService.chatRooms[0].chatRoomName) {
+        continue;
+      }
       var foundUser = chatRoom.users.find((user) => user.pseudonym === this.authService.currentUser.pseudonym);
       if(foundUser) {
         this.userChatsRooms.push(chatRoom);
       }
     }
+
+    console.log(this.userChatsRooms);
     this.chatRoomIndexService.amountOfChatRooms = this.userChatsRooms.length;
     this.chatRoomIndexService.selectedChatRooms = this.userChatsRooms;
     

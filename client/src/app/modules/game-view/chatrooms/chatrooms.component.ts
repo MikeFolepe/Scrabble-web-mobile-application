@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { MainPageComponent } from '@app/pages/main-page/main-page.component';
+// import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { AuthService } from '@app/services/auth.service';
 import { ChatRoomIndexService } from '@app/services/chat-room-index.service';
 import { ChatRoomService } from '@app/services/chat-room.service';
@@ -14,11 +14,13 @@ export class ChatroomsComponent implements OnInit {
   @ViewChild('scrollMe') private myScrollContainer: ElementRef;
 
   currentMessage : string;
+  isOpen : boolean;
 
-  constructor(public chatRoomIndexService : ChatRoomIndexService, public chatRoomService: ChatRoomService, private clientSocketService: ClientSocketService, private authService: AuthService, private mainPageComponent: MainPageComponent) { 
-    this.chatRoomService.getChatRooms();
+  constructor(public chatRoomIndexService : ChatRoomIndexService, public chatRoomService: ChatRoomService, private clientSocketService: ClientSocketService, private authService: AuthService) { 
+    // this.chatRoomService.getChatRooms();
     this.currentMessage = "";
     this.scrollToBottom();
+    this.isOpen = false;
 
   }
 
@@ -28,7 +30,6 @@ export class ChatroomsComponent implements OnInit {
   }
 
   sendMessage() : void {
-    console.log(this.chatRoomIndexService.chatRoomIndex);
     this.scrollToBottom();
     this.clientSocketService.socket.emit("newMessage", this.chatRoomIndexService.chatRoomIndex, this.authService.currentUser, this.currentMessage);
     this.currentMessage = "";
@@ -36,12 +37,22 @@ export class ChatroomsComponent implements OnInit {
   }
 
   closeChat() : void {
-    this.mainPageComponent.isOpen = false;
+    this.isOpen = false;
+  }
+
+  openChat() : void {
+    
+    this.isOpen = true;
+    this.scrollToBottom();
   }
 
   chatRoomInSelectedRooms() : boolean {
     if(!this.chatRoomService.chatRooms[this.chatRoomIndexService.chatRoomIndex]) {
       return false;
+    }
+
+    if(this.chatRoomIndexService.chatRoomIndex == 0){
+      return true;
     }
     
     const roomStillSelected = this.chatRoomIndexService.selectedChatRooms.find((chatRoom) => chatRoom.chatRoomName === this.chatRoomService.chatRooms[this.chatRoomIndexService.chatRoomIndex].chatRoomName);
