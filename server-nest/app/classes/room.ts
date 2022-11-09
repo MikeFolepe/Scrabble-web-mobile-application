@@ -3,6 +3,7 @@ import { Player } from '@app/game/models/player.model';
 import { LetterService } from '@app/game/services/letter/letter.service';
 import { PlaceLetterService } from '@app/game/services/place-letter/place-letter.service';
 import { PlayerService } from '@app/game/services/player/player.service';
+import { SkipTurnService } from '@app/game/services/skip-turn-service/skip-turn-service';
 import { WordValidationService } from '@app/game/services/word-validation/word-validation.service';
 import { GameSettings } from '@common/game-settings';
 
@@ -21,6 +22,7 @@ export class Room {
     letter: LetterService;
     placeLetter: PlaceLetterService;
     playerService: PlayerService;
+    skipTurnService: SkipTurnService;
     turnCounter: number;
 
     constructor(roomId: string, socketId: string, gameSettings: GameSettings, state: State = State.Waiting) {
@@ -34,6 +36,7 @@ export class Room {
         this.letter = new LetterService();
         this.playerService = new PlayerService(this.letter);
         this.placeLetter = new PlaceLetterService(this.wordValidation, this.playerService);
+        this.skipTurnService = new SkipTurnService(gameSettings, this.playerService.players);
         this.playerService.players[0] = new Player(this.gameSettings.creatorName, this.letter.getRandomLetters(), 0, true, true);
         // this.playerService.players[1] = new PlayerAI(
         //     'BOT1',

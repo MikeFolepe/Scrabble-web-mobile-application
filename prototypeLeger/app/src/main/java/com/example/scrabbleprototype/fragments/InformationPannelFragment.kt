@@ -83,6 +83,7 @@ class InformationPannelFragment : Fragment(), TurnUICallback {
             skipTurnService.setTurnUICallback(this@InformationPannelFragment)
         }
         setupPlayers(view)
+        setupTimers()
         setupReserveSize(view)
     }
 
@@ -118,6 +119,13 @@ class InformationPannelFragment : Fragment(), TurnUICallback {
         playersView.layoutManager = verticalLayoutManager
         playersAdapter = PlayersAdapter(playersViewModel.playersInGame)
         playersView.adapter = playersAdapter
+    }
+
+    private fun setupTimers() {
+        for(i in 0..playersViewModel.playersInGame.size) {
+            val timerView = playersView.findViewHolderForAdapterPosition(i)?.itemView?.findViewById<TextView>(R.id.timer)
+            timerView?.text = "00:00"
+        }
     }
 
     private fun setupReserveSize(view: View) {

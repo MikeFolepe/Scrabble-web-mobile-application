@@ -60,7 +60,7 @@ export class GameViewComponent {
     }
 
     leaveGame(): void {
-        this.skipTurnService.stopTimer();
+        this.clientSocketService.socket.emit('stopTimer', this.clientSocketService.roomId);
         this.placeLetterService.ngOnDestroy();
         this.gridService.ngOnDestroy();
         this.endGameService.clearAllData();

@@ -38,8 +38,10 @@ class SkipTurnService : Service() {
     }
 
     override fun onBind(intent: Intent): IBinder {
+        activePlayerName = CurrentRoom.myRoom.gameSettings.creatorName
         receiveNewTurn()
         receiveStartFromServer()
+        receiveStopFromServer()
         return binder
     }
 
@@ -54,11 +56,17 @@ class SkipTurnService : Service() {
         socket.on("startTimer") {
             Log.d("timer", "Started")
             getTurnTime()
-            timeMs = 60000
             if(turnUICallback == null) Log.d("timer", "its null")
+            Log.d("activeName", activePlayerName)
             turnUICallback?.updateTimeUI(timeMs, activePlayerName)
             startTimer(timeMs)
 
+        }
+    }
+
+    private fun receiveStopFromServer() {
+        socket.on("stopTimer") {
+            resetTimer()
         }
     }
 
@@ -79,6 +87,7 @@ class SkipTurnService : Service() {
 
         socket.on("updatePlayerTurnToFalse") { response ->
             resetTimer()
+            Log.d("oppTurn", activePlayerName)
             val opponentName = response[0] as String
             opponents.find { it.name == opponentName }?.setTurn(false)
         }
@@ -88,7 +97,6 @@ class SkipTurnService : Service() {
         Handler(Looper.getMainLooper()).post {
             countdownTimer = object : CountDownTimer(startTime, 1000) {
                 override fun onFinish() {
-                    resetTimer()
                     if(player.getTurn()) switchTimer()
                 }
 
@@ -102,6 +110,7 @@ class SkipTurnService : Service() {
     }
 
     fun switchTimer() {
+        resetTimer()
         Timer().schedule(timerTask {
             endTurnCallback?.handleInvalidPlacement()
             Log.d("timer", "Emit du switch")
@@ -117,6 +126,9 @@ class SkipTurnService : Service() {
     }
 
     private fun getTurnTime() {
-        Log.d("turnTime", CurrentRoom.myRoom.gameSettings.timeMinute + " " + CurrentRoom.myRoom.gameSettings.timeSecond)
+        var minutes: Long = CurrentRoom.myRoom.gameSettings.timeMinute.toLong() * 1000 * 60
+        var seconds: Long = CurrentRoom.myRoom.gameSettings.timeSecond.toLong() * 1000
+        timeMs = minutes + seconds
+        Log.d("timertime", timeMs.toString())
     }
 }
