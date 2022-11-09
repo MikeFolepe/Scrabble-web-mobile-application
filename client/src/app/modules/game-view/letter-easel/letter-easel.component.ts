@@ -1,4 +1,3 @@
-import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { EASEL_SIZE, PLAYER_ONE_INDEX } from '@app/classes/constants';
 import { MessageType } from '@app/classes/enum';
@@ -47,10 +46,8 @@ export class LetterEaselComponent implements OnInit {
     }
 
     @HostListener('keydown', ['$event'])
-    onKeyPress(event: KeyboardEvent): void {
-        if (this.easel.nativeElement.contains(event.target)) {
-            this.manipulateService.onKeyPress(event);
-        }
+    buttonDetect(event: KeyboardEvent): void {
+        this.boardHandlerService.buttonDetect(event);
     }
 
     @HostListener('document:wheel', ['$event'])
@@ -66,12 +63,8 @@ export class LetterEaselComponent implements OnInit {
         this.manipulateService.sendEasel(this.letterEaselTab);
     }
 
-    onDrop(event: CdkDragDrop<Letter[]>) {
-        if (event.previousContainer === event.container) {
-            moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-        } else {
-            transferArrayItem(event.previousContainer.data, event.container.data, event.previousIndex, event.currentIndex);
-        }
+    onDragEnd() {
+        this.boardHandlerService.isDragged = true;
     }
 
     onRightClick(event: MouseEvent, indexLetter: number): void {
@@ -132,6 +125,12 @@ export class LetterEaselComponent implements OnInit {
             if (letter.isSelectedForSwap || letter.isSelectedForManipulation) return true;
         }
         return false;
+    }
+
+    isDragged(letter: Letter) {
+        console.log('start');
+        this.boardHandlerService.isDragged = false;
+        this.boardHandlerService.currentDraggedLetter = letter;
     }
 
     // private update(): void {

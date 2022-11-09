@@ -23,6 +23,14 @@ export class ScrabbleBoardComponent implements AfterViewInit {
         this.boardHandlerService.mouseHitDetect(event);
     }
 
+    dragEnd(event: MouseEvent): void {
+        if (this.boardHandlerService.isDragged) {
+            console.log('Sdfdsf');
+            this.boardHandlerService.isDragged = false;
+            this.boardHandlerService.placeDroppedLetter(event, this.boardHandlerService.currentDraggedLetter);
+        }
+    }
+
     ngAfterViewInit(): void {
         this.gridService.gridContextBoardLayer = this.boardLayer.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.gridService.gridContextLettersLayer = this.lettersLayer.nativeElement.getContext('2d') as CanvasRenderingContext2D;
