@@ -1,5 +1,12 @@
-export interface User {
-    ipAddress: string;
+export class User {
     pseudonym: string;
-    socketId?: string;
+    ipAddress: string;
+    socketId: string;
+    isObserver: boolean;
+    constructor(pseudo: string, ipAddress: string, socketId: string = '', isObserver: boolean = false) {
+        this.pseudonym = pseudo;
+        this.ipAddress = ipAddress;
+        this.socketId = socketId;
+        this.isObserver = isObserver;
+    }
 }

@@ -21,7 +21,7 @@
     border-style: solid;
     border-width: 5px;
     padding: 25px;
-    margin-top: 100px
+    margin-top: 100px;
 }
 
 #list-display {
@@ -81,7 +81,6 @@ mat-icon {
     background-color: white;
 }
 
-
 .mat-expansion-panel-header-title {
     font-weight: bold;
 }
@@ -115,4 +114,5 @@ mat-icon {
     width: 45%;
     margin-left: auto;
     margin-right: auto;
+    border-radius: 10px;
 }

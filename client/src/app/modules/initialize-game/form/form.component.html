@@ -12,7 +12,7 @@
     <form id="main-form-box" *ngIf="this.form">
         <fieldset>
             <legend id="main-form-name">Paramètres de la partie</legend>
-            <fieldset *ngIf="!gameSettingsService.isRedirectedFromMultiplayerGame" class="form-section" id="player-name-box">
+            <fieldset *ngIf="!gameSettingsService.isRedirectedFromMultiplayerGame" class="form-section" id="player-name-box" disabled>
                 <legend>Informations du joueur</legend>
                 <app-player-name-field [formGroup]="form" [parentForm]="form"></app-player-name-field>
             </fieldset>

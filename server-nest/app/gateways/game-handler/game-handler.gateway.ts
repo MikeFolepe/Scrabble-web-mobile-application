@@ -19,12 +19,6 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
 
     constructor(private readonly logger: Logger, private userService: UsersService, private roomManagerService: RoomManagerService) {}
 
-    // afterInit() {
-    //     setInterval(() => {
-    //         this.emitTime();
-    //     }, DELAY_BEFORE_EMITTING_TIME);
-    // }
-
     // TODO: set a socket id in player class to easily find the player
 
     onNewRoomPlayer(socket: Socket): void {
@@ -45,13 +39,26 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
             this.roomManagerService.setSocket(this.roomManagerService.find(roomId) as Room, socket.id);
             this.server.emit('roomConfiguration', this.roomManagerService.rooms);
             socket.join(roomId);
-            this.server.in(roomId).emit('yourRoomId', roomId);
+            this.server.in(roomId).emit('yourRoom', room);
             const player = room.playerService.players.find((curPlayer) => curPlayer.name === playerName);
             socket.emit('MyPlayer', player);
             // emit to opponents
             socket.in(roomId).emit('Opponent', player);
-            this.server.in(roomId).emit('yourGameSettings', this.roomManagerService.getGameSettings(roomId));
             socket.emit('goToWaiting');
+        });
+
+        socket.on('newRoomObserver', (observer: User, roomId: string) => {
+            const room = this.roomManagerService.find(roomId);
+            const players = room.playerService.players;
+            socket.emit('roomPlayers', players);
+            if (!this.roomManagerService.addObserver(observer, roomId)) {
+                socket.emit('roomFullObservers');
+                return;
+            }
+
+            this.server.emit('roomConfiguration', this.roomManagerService.rooms);
+            socket.emit('yourRoom', room);
+            socket.emit('ObserverToGameView');
         });
 
         socket.on('sendRequestToCreator', (userJoining: User, roomId: string) => {
@@ -135,13 +142,11 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
         socket.on('switchTurn', async (roomId: string, playerName: string) => {
             const room = this.roomManagerService.find(roomId);
             if (room === undefined) {
-                console.log('undegined');
                 return;
             }
             room.turnCounter++;
 
             let index = room.playerService.players.findIndex((curPlayer) => playerName === curPlayer.name);
-            console.log(index);
             room.playerService.players[index].isTurn = false;
             this.server.in(roomId).emit('updatePlayerTurnToFalse', room.playerService.players[index].name);
 
@@ -182,9 +187,10 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
         });
 
         socket.on('deleteGame', (roomId: string) => {
+            // Send number of rooms available
+            this.server.to(roomId).emit('leaveToHome');
             this.roomManagerService.deleteRoom(roomId);
             this.server.emit('roomConfiguration', this.roomManagerService.rooms);
-            // Send number of rooms available
             this.server.emit('roomAvailable', this.roomManagerService.getNumberOfRoomInWaitingState());
             this.server.socketsLeave(roomId);
         });
@@ -242,7 +248,9 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
 
         socket.on(ChatEvents.UpdateUserSocket, async (user: User) => {
             const currentUser = await this.userService.findOne(user.pseudonym);
-            currentUser.socketId = user.socketId;
+            if (currentUser) {
+                currentUser.socketId = user.socketId;
+            }
         });
     }
 
@@ -250,10 +258,11 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
         socket.on('createRoom', (gameSettings: GameSettings) => {
             Logger.log(gameSettings);
             const roomId = this.roomManagerService.createRoomId(gameSettings.creatorName, socket.id);
-            this.roomManagerService.createRoom(socket.id, roomId, gameSettings);
+            const createdRoom = this.roomManagerService.createRoom(socket.id, roomId, gameSettings);
+            this.logger.log(createdRoom);
             socket.join(roomId);
             // give the client his roomId to communicate later with server
-            socket.emit('yourRoomId', roomId);
+            socket.emit('yourRoom', createdRoom);
             const room = this.roomManagerService.find(roomId);
             const player = room.playerService.players.find((curPlayer) => curPlayer.name === gameSettings.creatorName);
             socket.emit('MyPlayer', player);
@@ -287,9 +296,5 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
         this.roomManagerService.deleteRoom(roomId);
         this.server.emit('roomConfiguration', this.roomManagerService.rooms);
         this.server.socketsLeave(roomId);
-    }
-
-    private emitTime() {
-        this.server.emit(ChatEvents.Clock, new Date().toLocaleTimeString());
     }
 }

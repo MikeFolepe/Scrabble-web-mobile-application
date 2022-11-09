@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Room } from '@app/classes/room';
 // import {
 //     BOARD_COLUMNS,
 //     BOARD_ROWS,
@@ -26,19 +27,23 @@ import { LetterService } from './letter.service';
 export class PlayerService {
     fontSize: number;
     opponents: Player[];
+    players: Player[];
     currentPlayer: Player;
+    currentRoom: Room;
 
     constructor(private clientSocketService: ClientSocketService, private letterService: LetterService) {
         this.currentPlayer = new Player('', []);
-        this.fontSize = 10;
+        this.fontSize = 14;
         this.opponents = [];
         this.getMyPlayer();
         this.getOpponent();
         this.getExistingOpponents();
         this.updatePlayer();
+        this.getPlayers();
     }
 
     clearPlayers(): void {
+        this.currentPlayer = new Player('', []);
         this.opponents = [];
     }
 
@@ -140,6 +145,11 @@ export class PlayerService {
         });
     }
 
+    private getPlayers(): void {
+        this.clientSocketService.socket.on('players', (players) => {
+            this.players = players;
+        });
+    }
     // receiveOpponentEasel(): void {
     //     this.clientSocketService.socket.on('receiveOpponentEasel', (letterTable: Letter[]) => {
     //         this.players[PLAYER_TWO_INDEX].letterTable = letterTable;

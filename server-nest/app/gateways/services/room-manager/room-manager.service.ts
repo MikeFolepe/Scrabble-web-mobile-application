@@ -1,8 +1,8 @@
-import { PlayerAI } from './../../../game/models/player-ai.model';
 import { Room, State } from '@app/classes/room';
 import { Player } from '@app/game/models/player.model';
-import { GameSettings, StartingPlayer } from '@common/game-settings';
-import { PlayerIndex } from '@common/player-index';
+import { MAX_LENGTH_OBSERVERS } from '@common/constants';
+import { GameSettings } from '@common/game-settings';
+import { User } from '@common/user';
 import { Injectable } from '@nestjs/common';
 import { OUT_BOUND_INDEX_OF_SOCKET } from '../../../classes/constants';
 @Injectable()
@@ -13,8 +13,10 @@ export class RoomManagerService {
         this.rooms = [];
     }
 
-    createRoom(socketId: string, roomId: string, gameSettings: GameSettings) {
-        this.rooms.push(new Room(roomId, socketId, gameSettings));
+    createRoom(socketId: string, roomId: string, gameSettings: GameSettings): Room {
+        const newRoom = new Room(roomId, socketId, gameSettings);
+        this.rooms.push(newRoom);
+        return newRoom;
     }
 
     createRoomId(playerName: string, socketId: string) {
@@ -33,20 +35,36 @@ export class RoomManagerService {
     addCustomer(customerName: string, roomId: string): boolean {
         const room = this.find(roomId);
         if (room === undefined) return false;
-        // eslint-disable-next-line @typescript-eslint/prefer-for-of
-        // for (let i = 0; i < room.playerService.players.length; i++) {
-        //     if (room.playerService.players[i] instanceof PlayerAI) {
-        //         const humanPlayer = new Player(customerName, room.playerService.players[i].letterTable);
-        //         room.playerService.players[i] = humanPlayer;
-        //         return true;
+
+        // if (room.aiPlayersNumber !== 0) {
+        //     // eslint-disable-next-line @typescript-eslint/prefer-for-of
+        //     for (let i = 0; i < room.playerService.players.length; i++) {
+        //         if (room.playerService.players[i] instanceof PlayerAI) {
+        //             const humanPlayer = new Player(customerName, room.playerService.players[i].letterTable);
+        //             room.playerService.players[i] = humanPlayer;
+        //             room.aiPlayersNumber--;
+        //             room.humanPlayersNumber++;
+        //             return true;
+        //         }
         //     }
         // }
 
-        if (room.playerService.players.length === 4) return false;
+        if (room.humanPlayersNumber === 4) return false;
+
         room.playerService.players.push(new Player(customerName, room.letter.getRandomLetters()));
         room.aiPlayersNumber--;
         room.humanPlayersNumber++;
-        console.log("pushed new player")
+        return true;
+    }
+
+    addObserver(observer: User, roomId: string): boolean {
+        const room = this.find(roomId);
+        if (room === undefined) return false;
+
+        if (room.observers.length === MAX_LENGTH_OBSERVERS) return false;
+        observer.isObserver = true;
+        room.observers.push(observer);
+
         return true;
     }
 

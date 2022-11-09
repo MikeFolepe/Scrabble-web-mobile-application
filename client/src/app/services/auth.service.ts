@@ -31,7 +31,7 @@ export class AuthService {
         this.communicationService.connectUser(userData).subscribe(
             (valid: boolean) => {
                 if (valid) {
-                    this.currentUser = userData;
+                    this.currentUser = new User(userData.pseudonym, userData.ipAddress);
                     this.clientSocketService.socket = io(this.serverUrl);
                     this.clientSocketService.socket.connect();
                     this.clientSocketService.socket.emit(ChatEvents.JoinRoom);

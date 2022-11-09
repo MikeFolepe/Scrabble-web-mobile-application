@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { GameSettingsService } from '@app/services/game-settings.service';
-import { GameSettings } from '@common/game-settings';
+import { Room } from '@app/classes/room';
 import { Socket } from 'socket.io-client';
 
 @Injectable({
@@ -9,14 +8,12 @@ import { Socket } from 'socket.io-client';
 })
 export class ClientSocketService {
     socket: Socket;
-    roomId: string;
+    currentRoom: Room;
 
-    constructor(private gameSettingsService: GameSettingsService, private router: Router) {
-    }
+    constructor(private router: Router) {}
 
     initialize(): void {
         this.initializeRoomId();
-        this.initializeGameSettings();
         this.routeToGameView();
     }
 
@@ -27,14 +24,16 @@ export class ClientSocketService {
     }
 
     initializeRoomId(): void {
-        this.socket.on('yourRoomId', (roomIdFromServer: string) => {
-            this.roomId = roomIdFromServer;
-        });
-    }
-
-    initializeGameSettings(): void {
-        this.socket.on('yourGameSettings', (gameSettingsFromServer: GameSettings) => {
-            this.gameSettingsService.gameSettings = gameSettingsFromServer;
+        this.socket.on('yourRoom', (roomFromServer) => {
+            this.currentRoom = new Room(
+                roomFromServer.id,
+                roomFromServer.gameSettings,
+                roomFromServer.state,
+                roomFromServer.socketIds,
+                roomFromServer.aiNumber,
+                roomFromServer.humanNumber,
+                roomFromServer.observers,
+            );
         });
     }
 }

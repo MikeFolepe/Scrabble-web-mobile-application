@@ -1,8 +1,8 @@
-import { Vec2 } from './vec2'
-import { CustomRange } from './range';
-import {AiType} from './ai-name'
-import { Letter } from './letter';
+import { AiType } from './ai-name';
 import { StartingPlayer } from './game-settings';
+import { Letter } from './letter';
+import { CustomRange } from './range';
+import { Vec2 } from './vec2';
 
 export const DEFAULT_WIDTH = 750;
 export const DEFAULT_HEIGHT = 750;
@@ -20,7 +20,7 @@ export const ONE_SECOND_DELAY = 1000;
 export const TWO_SECOND_DELAY = 2000;
 export const THREE_SECONDS_DELAY = 3000;
 export const DELAY_BEFORE_PLAYING = 3000;
-export const ERROR_MESSAGE_DELAY = 4000;
+export const ERROR_MESSAGE_DELAY = 2000;
 export const DELAY_TO_PASS_TURN = 5000;
 export const ONE_MINUTE = 60;
 
@@ -50,6 +50,8 @@ export const NAME_SIZE: CustomRange = { min: 4, max: 12 };
 export const GAME_PASSWORD_SIZE: CustomRange = { min: 8, max: 12 };
 export const SPECIAL_CHAR = '@#$%^&*_';
 export const VALIDATION_PATTERN = '^([A-Za-z][A-Za-z][A-Za-z][A-Za-z])[A-Za-z0-9' + SPECIAL_CHAR + ']*';
+
+export const MAX_LENGTH_OBSERVERS = 6;
 
 // Positions are used for keys
 // Bonuses string are use for value
@@ -125,7 +127,6 @@ export const DEFAULT_GAME_SETTINGS = {
     dictionary: '',
     objectiveIds: [],
 };
-
 
 export const RESERVE: Letter[] = [
     {
@@ -318,5 +319,3 @@ export const RESERVE: Letter[] = [
         isSelectedForManipulation: false,
     },
 ];
-
-

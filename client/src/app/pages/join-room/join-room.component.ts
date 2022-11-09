@@ -7,11 +7,13 @@ import { MatPaginatorIntl, PageEvent } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { ERROR_MESSAGE_DELAY } from '@app/classes/constants';
+import { ErrorMessage } from '@app/classes/error-message-constants';
 import { Room, State } from '@app/classes/room';
 import { NameSelectorComponent } from '@app/modules/initialize-game/name-selector/name-selector.component';
 import { AuthService } from '@app/services/auth.service';
 import { ClientSocketService } from '@app/services/client-socket.service';
 import { PlayerService } from '@app/services/player.service';
+import { MAX_LENGTH_OBSERVERS } from '@common/constants';
 import { RoomType } from '@common/game-settings';
 
 @Component({
@@ -23,14 +25,14 @@ export class JoinRoomComponent implements OnInit {
     rooms: Room[];
     roomItemIndex: number;
     pageSize: number;
-    shouldDisplayNameError: boolean;
-    shouldDisplayJoinError: boolean;
+    shouldDisplayError: boolean;
     isRoomAvailable: boolean;
     isRandomButtonAvailable: boolean;
-
+    errorMessage: string;
+    maxObserversLength = MAX_LENGTH_OBSERVERS;
     // JUSTIFICATION : must name service as it is named in MatPaginatorIntl
     constructor(
-        private clientSocketService: ClientSocketService,
+        public clientSocketService: ClientSocketService,
         public dialog: MatDialog,
         // eslint-disable-next-line @typescript-eslint/naming-convention
         public _MatPaginatorIntl: MatPaginatorIntl,
@@ -43,10 +45,10 @@ export class JoinRoomComponent implements OnInit {
         this.roomItemIndex = 0;
         // 2 rooms per page
         this.pageSize = 2;
-        this.shouldDisplayNameError = false;
-        this.shouldDisplayJoinError = false;
+        this.shouldDisplayError = false;
         this.isRoomAvailable = false;
         this.isRandomButtonAvailable = false;
+        this.errorMessage = '';
         // this.clientSocketService.socket.connect();
         // Method for button and others
     }
@@ -57,6 +59,8 @@ export class JoinRoomComponent implements OnInit {
         this.receiveRoomAvailable();
         this.receiveRandomPlacement();
         this.receiveJoinDecision();
+        this.handleObservableRoomsAvailability();
+        this.sendObserverToGame();
         this.clientSocketService.initialize();
         this.confirm();
         this.clientSocketService.socket.emit('getRoomsConfiguration');
@@ -91,24 +95,33 @@ export class JoinRoomComponent implements OnInit {
         return state === State.Waiting ? 'En attente' : 'Indisponible';
     }
 
-    join(room: Room): void {
+    computeRoomType(room: Room): string {
+        if (room.gameSettings.password !== '') {
+            return 'Publique avec mot de passe';
+        }
+        return room.gameSettings.type === RoomType.public ? 'Publique' : 'Privée';
+    }
+    findObserver(room: Room): boolean {
+        const currentObserver = room.observers.find((observer) => observer.pseudonym === this.authService.currentUser.pseudonym);
+        return Boolean(currentObserver);
+    }
+    join(room: Room, isObserver: boolean): void {
         // if names are equals
         if (room.gameSettings.creatorName === this.authService.currentUser.pseudonym) {
-            this.shouldDisplayNameError = true;
-            setTimeout(() => {
-                this.shouldDisplayNameError = false;
-            }, ERROR_MESSAGE_DELAY);
+            this.displayErrorMessage(ErrorMessage.NameAlreadyUsed);
             return;
         }
 
-        if (room.gameSettings.type !== RoomType.public) {
-            console.log(this.authService.currentUser.socketId);
+        if (room.gameSettings.type === RoomType.private) {
             this.clientSocketService.socket.emit('sendRequestToCreator', this.authService.currentUser, room.id);
             return;
         }
 
         if (room.gameSettings.password === '') {
-            console.log(this.authService.currentUser.pseudonym + ' ' + room.id + ' ' + room.gameSettings.type);
+            if (isObserver) {
+                this.clientSocketService.socket.emit('newRoomObserver', this.authService.currentUser.pseudonym, room.id);
+                return;
+            }
             this.clientSocketService.socket.emit('newRoomCustomer', this.authService.currentUser.pseudonym, room.id);
             return;
         }
@@ -121,17 +134,21 @@ export class JoinRoomComponent implements OnInit {
                 if (password === null) return;
 
                 if (password === room.gameSettings.password) {
+                    if (isObserver) {
+                        this.clientSocketService.socket.emit('newRoomObserver', this.authService.currentUser, room.id);
+
+                        return;
+                    }
                     this.clientSocketService.socket.emit('newRoomCustomer', this.authService.currentUser.pseudonym, room.id);
                     return;
                 }
-                this.displayMessage('Mot de passe incorrect');
+                this.displayErrorMessage(ErrorMessage.BadGamePassword);
                 return;
             });
     }
 
     confirm() {
         this.clientSocketService.socket.on('goToWaiting', () => {
-            console.log('gotowaiting');
             this.router.navigate(['waiting-room']);
         });
     }
@@ -159,12 +176,12 @@ export class JoinRoomComponent implements OnInit {
 
     private handleRoomUnavailability(): void {
         this.clientSocketService.socket.on('roomAlreadyToken', () => {
-            this.shouldDisplayJoinError = true;
-            this.playerService.opponents = [];
-            setTimeout(() => {
-                this.shouldDisplayJoinError = false;
-            }, ERROR_MESSAGE_DELAY);
-            return;
+            this.displayErrorMessage(ErrorMessage.RoomUnavailable);
+        });
+    }
+    private handleObservableRoomsAvailability(): void {
+        this.clientSocketService.socket.on('roomFullObservers', () => {
+            this.displayErrorMessage(ErrorMessage.NoMoreObservers);
         });
     }
     private receiveJoinDecision(): void {
@@ -173,26 +190,33 @@ export class JoinRoomComponent implements OnInit {
                 this.clientSocketService.socket.emit('newRoomCustomer', this.authService.currentUser.pseudonym, roomId);
                 return;
             }
-            this.displayMessage('Demande rejetée par le créateur');
+            this.displayErrorMessage(ErrorMessage.JoinDisapproval);
         });
     }
     private configureRooms(): void {
         this.clientSocketService.socket.on('roomConfiguration', (rooms) => {
             this.rooms = [];
             for (const room of rooms) {
-                console.log(room);
-                this.rooms.push(new Room(room.id, room.gameSettings, room.state, room.socketIds, room.aiPlayersNumber, room.humanPlayersNumber));
+                this.rooms.push(
+                    new Room(room.id, room.gameSettings, room.state, room.socketIds, room.aiPlayersNumber, room.humanPlayersNumber, room.observers),
+                );
             }
-            console.log('ROOMS : ', this.rooms);
         });
     }
 
-    private displayMessage(message: string): void {
-        this.snackBar.open(message, 'OK', {
-            duration: ERROR_MESSAGE_DELAY,
-            horizontalPosition: 'center',
-            verticalPosition: 'bottom',
-            panelClass: ['snackBarStyle'],
+    private sendObserverToGame(): void {
+        this.clientSocketService.socket.on('ObserverToGameView', () => {
+            this.authService.currentUser.isObserver = true;
+            this.router.navigate(['game']);
         });
+    }
+
+    private displayErrorMessage(message: string): void {
+        this.errorMessage = message;
+        this.shouldDisplayError = true;
+        setTimeout(() => {
+            this.shouldDisplayError = false;
+            this.errorMessage = '';
+        }, ERROR_MESSAGE_DELAY);
     }
 }

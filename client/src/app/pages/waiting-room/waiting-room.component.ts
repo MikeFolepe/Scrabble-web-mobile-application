@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { ONE_SECOND_DELAY, TWO_SECOND_DELAY } from '@app/classes/constants';
+import { ErrorMessage } from '@app/classes/error-message-constants';
 import { JoiningConfirmationDialogComponent } from '@app/modules/initialize-game/joining-confirmation-dialog/joining-confirmation-dialog.component';
 import { ClientSocketService } from '@app/services/client-socket.service';
 import { GameSettingsService } from '@app/services/game-settings.service';
@@ -14,10 +15,11 @@ import { User } from '@common/user';
     templateUrl: './waiting-room.component.html',
     styleUrls: ['./waiting-room.component.scss'],
 })
-export class WaitingRoomComponent implements OnInit {
+export class WaitingRoomComponent implements OnInit, OnDestroy {
     status: string;
     isWaiting: boolean;
-    shouldDisplayStartError: boolean;
+    shouldDisplayError: boolean;
+    errorMessage: string;
 
     constructor(
         private router: Router,
@@ -25,17 +27,21 @@ export class WaitingRoomComponent implements OnInit {
         private clientSocket: ClientSocketService,
         public playerService: PlayerService,
         private dialog: MatDialog,
-        private clientSocketService: ClientSocketService,
     ) {
         this.status = '';
+        this.errorMessage = '';
         this.isWaiting = true;
         this.clientSocket.routeToGameView();
+        this.clientSocket.initialize();
     }
 
     ngOnInit(): void {
         this.playAnimation();
         this.acceptNewPlayer();
+        this.leaveToHome();
     }
+
+    ngOnDestroy(): void {}
 
     playAnimation(): void {
         const startMessage = 'Connexion au serveur...';
@@ -73,29 +79,29 @@ export class WaitingRoomComponent implements OnInit {
     }
 
     deleteGame(): void {
-        this.clientSocket.socket.emit('deleteGame', this.clientSocket.roomId);
+        this.clientSocket.socket.emit('deleteGame', this.clientSocket.currentRoom.id);
+        console.log(this.clientSocket.currentRoom.id);
+    }
+
+    leaveToHome(): void {
+        this.clientSocket.socket.on('leaveToHome', () => {
+            console.log('leavetOhOME');
+            this.displayErrorMessage(ErrorMessage.DeletedRoomByCreator);
+            setTimeout(() => {
+                this.router.navigate(['home']);
+            }, ERROR_MESSAGE_DELAY);
+        });
     }
 
     startGame(): void {
-        // let aiCount = 0;
-        // for (const player of this.playerService.opponents) {
-        //     if (player instanceof PlayerAI) {
-        //         aiCount++;
-        //     }
-        // }
-
-        if (this.playerService.opponents.length < 3 || !this.playerService.currentPlayer.isCreator) {
-            this.shouldDisplayStartError = true;
-            setTimeout(() => {
-                this.shouldDisplayStartError = false;
-            }, ERROR_MESSAGE_DELAY);
+        if (this.clientSocket.currentRoom.humanPlayersNumber < 4) {
+            this.displayErrorMessage(ErrorMessage.NotEnoughPlayers);
             return;
         }
-        this.clientSocket.socket.emit('startGame', this.clientSocket.roomId);
+        this.clientSocket.socket.emit('startGame', this.clientSocket.currentRoom.id);
     }
 
     routeToGameView(): void {
-        console.log('never happens');
         this.gameSettingsService.isSoloMode = true;
         this.gameSettingsService.isRedirectedFromMultiplayerGame = true;
         this.deleteGame();
@@ -103,17 +109,21 @@ export class WaitingRoomComponent implements OnInit {
     }
 
     private acceptNewPlayer(): void {
-        this.clientSocketService.socket.on('newRequest', (joiningUser: User, roomId: string) => {
-            console.log('hererrrr');
-
+        this.clientSocket.socket.on('newRequest', (joiningUser: User, roomId: string) => {
             const joiningConfirmation = this.dialog.open(JoiningConfirmationDialogComponent, { disableClose: true });
             joiningConfirmation.componentInstance.message = "Acceptez vous d'ajouter " + joiningUser.pseudonym + ' dans la partie?';
             joiningConfirmation.afterClosed().subscribe((decision: boolean) => {
-                // if user closes the dialog box without input nothing
-                console.log(decision);
-                this.clientSocketService.socket.emit('sendJoinResponse', decision, joiningUser, roomId);
-                // if decision is true the EndGame occurred
+                this.clientSocket.socket.emit('sendJoinResponse', decision, joiningUser, roomId);
             });
         });
+    }
+
+    private displayErrorMessage(message: string): void {
+        this.errorMessage = message;
+        this.shouldDisplayError = true;
+        setTimeout(() => {
+            this.shouldDisplayError = false;
+            this.errorMessage = '';
+        }, ERROR_MESSAGE_DELAY);
     }
 }

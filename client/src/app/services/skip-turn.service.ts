@@ -66,7 +66,7 @@ export class SkipTurnService {
 
     switchAiTurn(): void {
         this.clientSocket.socket.on('switchAiTurn', (playerName: string) => {
-            this.clientSocket.socket.emit('switchTurn', this.clientSocket.roomId, playerName);
+            this.clientSocket.socket.emit('switchTurn', this.clientSocket.currentRoom.id, playerName);
         });
     }
 
@@ -78,14 +78,14 @@ export class SkipTurnService {
         if (this.playerService.currentPlayer.isTurn) {
             setTimeout(() => {
                 this.shouldNotBeDisplayed = false;
-                this.clientSocket.socket.emit('switchTurn', this.clientSocket.roomId, this.playerService.currentPlayer.name);
+                this.clientSocket.socket.emit('switchTurn', this.clientSocket.currentRoom.id, this.playerService.currentPlayer.name);
             }, ONE_SECOND_DELAY);
         }
     }
 
     startTimer(): void {
-        this.minutes = parseInt(this.gameSettingsService.gameSettings.timeMinute, 10);
-        this.seconds = parseInt(this.gameSettingsService.gameSettings.timeSecond, 10);
+        this.minutes = parseInt(this.clientSocket.currentRoom.gameSettings.timeMinute, 10);
+        this.seconds = parseInt(this.clientSocket.currentRoom.gameSettings.timeSecond, 10);
 
         this.intervalID = setInterval(() => {
             if (this.seconds === 0 && this.minutes !== 0) {
@@ -94,7 +94,7 @@ export class SkipTurnService {
             } else if (this.seconds === 0 && this.minutes === 0) {
                 if (this.playerService.currentPlayer.isTurn) {
                     this.endGameService.actionsLog.push('AucuneAction');
-                    this.clientSocket.socket.emit('sendActions', this.endGameService.actionsLog, this.clientSocket.roomId);
+                    this.clientSocket.socket.emit('sendActions', this.endGameService.actionsLog, this.clientSocket.currentRoom.id);
                     this.switchTurn();
                 }
             } else {
@@ -115,7 +115,7 @@ export class SkipTurnService {
             this.endGameService.getFinalScore(PLAYER_ONE_INDEX);
             this.endGameService.getFinalScore(PLAYER_TWO_INDEX);
             this.stopTimer();
-            this.clientSocket.socket.emit('sendEasel', this.playerService.opponents[PLAYER_ONE_INDEX].letterTable, this.clientSocket.roomId);
+            this.clientSocket.socket.emit('sendEasel', this.playerService.opponents[PLAYER_ONE_INDEX].letterTable, this.clientSocket.currentRoom.id);
             this.sendMessageService.displayFinalMessage(PLAYER_ONE_INDEX);
             this.sendMessageService.displayFinalMessage(PLAYER_TWO_INDEX);
             this.shouldNotBeDisplayed = true;
