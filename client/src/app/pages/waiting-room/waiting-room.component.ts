@@ -109,6 +109,7 @@ export class WaitingRoomComponent implements OnInit {
 
     private acceptNewPlayer(): void {
         this.clientSocket.socket.on('newRequest', (joiningUser: User, roomId: string) => {
+            console.log('@mike est nul');
             const joiningConfirmation = this.dialog.open(JoiningConfirmationDialogComponent, { disableClose: true });
             joiningConfirmation.componentInstance.message = "Acceptez vous d'ajouter " + joiningUser.pseudonym + ' dans la partie?';
             joiningConfirmation.afterClosed().subscribe((decision: boolean) => {

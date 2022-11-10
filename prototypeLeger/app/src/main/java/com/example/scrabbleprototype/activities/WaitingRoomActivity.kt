@@ -1,5 +1,6 @@
 package com.example.scrabbleprototype.activities
 
+import android.app.Dialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -14,6 +15,9 @@ import com.example.scrabbleprototype.model.*
 import com.example.scrabbleprototype.objects.CurrentRoom
 import com.example.scrabbleprototype.objects.Players
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import org.json.JSONObject
 
 class WaitingRoomActivity : AppCompatActivity() {
 
@@ -22,6 +26,7 @@ class WaitingRoomActivity : AppCompatActivity() {
     val currentRoom = CurrentRoom.myRoom
     private val socket = SocketHandler.getPlayerSocket()
     private val mapper = jacksonObjectMapper()
+    val socketHandler = SocketHandler
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,6 +36,7 @@ class WaitingRoomActivity : AppCompatActivity() {
         setupStartGameButton()
         setupRoomId()
         setupPlayersWaiting()
+        Log.d("Aaaa", "Before call to receiveNewResquest")
         receiveNewRequest()
     }
 
@@ -88,11 +94,34 @@ class WaitingRoomActivity : AppCompatActivity() {
     }
 
     private fun receiveNewRequest() {
-        socket.on("newRequest") {response ->
-            startActivity(Intent(this, PrivateGamePwd::class.java))
+            socket.on("newRequest") { response ->
+                runOnUiThread {
+                    var dialog = Dialog(this)
+                    dialog.setContentView(R.layout.player_request_game)
+                    Log.d("response", response[1].toString())
+                    val newPlayer = mapper.readValue(response[0].toString(), User::class.java) as User
+                    val roomId = response[1].toString()
+                    val message = dialog.findViewById<TextView>(R.id.popup_window_text)
+                    message.text = newPlayer.pseudonym + " souhaite rejoindre la partie"
+                    dialog.show()
+                    val acceptButton = dialog.findViewById<Button>(R.id.accept_button)
+                    acceptButton.setOnClickListener {
+                        Log.d("button", "accept")
+                        socket.emit("sendJoinResponse", true, JSONObject(
+                            Json.encodeToString(newPlayer)), roomId)
+                        dialog.hide()
+                    }
+                    val denyButton = dialog.findViewById<Button>(R.id.deny_button)
+                    denyButton.setOnClickListener {
+                        socket.emit("sendJoinResponse", false, JSONObject(
+                            Json.encodeToString( newPlayer)), roomId)
+                        dialog.hide()
+                    }
+                    }
 
+            }
         }
-    }
+
 
     private fun goToGameView() {
         socket.on("goToGameView") {

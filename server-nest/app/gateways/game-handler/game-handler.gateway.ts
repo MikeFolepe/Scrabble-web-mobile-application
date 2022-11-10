@@ -63,6 +63,8 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
 
         socket.on('sendRequestToCreator', (userJoining: User, roomId: string) => {
             console.log('requestSended');
+            console.log(roomId);
+            Logger.log(userJoining);
             const room = this.roomManagerService.find(roomId);
             console.log(room);
             this.logger.log(room.socketIds[0]);

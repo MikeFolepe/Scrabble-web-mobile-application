@@ -1,23 +1,19 @@
 package com.example.scrabbleprototype.activities
 
+import android.app.Dialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import android.provider.MediaStore.Audio.Radio
 import android.util.Log
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.RadioButton
-import android.widget.RadioGroup
-import android.widget.Spinner
+import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.model.*
 import com.example.scrabbleprototype.objects.CurrentRoom
 import com.example.scrabbleprototype.objects.Players
 import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -29,10 +25,9 @@ import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import org.json.JSONArray
 import org.json.JSONObject
-import java.util.ArrayList
 import kotlin.coroutines.CoroutineContext
+
 
 class CreateGameActivity : AppCompatActivity(), CoroutineScope {
     private var job: Job = Job()
@@ -45,7 +40,7 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
     }
     var dicoFileName= ""
     var currentRoom = CurrentRoom;
-    var gameSetting: GameSettings = GameSettings(Users.currentUser, StartingPlayer.Player1, "00", "00", AiType.beginner, "", RoomType.public)
+    var gameSetting: GameSettings = GameSettings(Users.currentUser, StartingPlayer.Player1, "00", "00", AiType.beginner, "", RoomType.public, "")
     val minutes = arrayListOf("00", "01", "02", "03")
     val seconds = arrayListOf("00", "30")
     var dictionaries = listOf<Dictionary>()
@@ -174,6 +169,44 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
             val radio: RadioButton = findViewById(checkedId)
             if (radio.text == "Public") {
                 gameSetting.type = RoomType.public;
+                val builder = AlertDialog.Builder(this)
+                builder.setMessage("Voulez vous protégez la partie en ajoutant un mot de passe");
+                // Set Alert Title
+                builder.setTitle("Mot de passe partie public");
+
+                // Set Cancelable false for when the user clicks on the outside the Dialog Box then it will remain show
+                builder.setCancelable(false);
+                builder.setPositiveButton("Yes",
+                    DialogInterface.OnClickListener { dialog: DialogInterface?, which: Int ->
+                        // When the user click yes button then app will close
+                        finish()
+                        var pwdDialog = Dialog(this)
+                        pwdDialog.setContentView(R.layout.public_game_pwd)
+                        pwdDialog.show()
+                        val validateButton = pwdDialog.findViewById<Button>(R.id.validate_button)
+                        validateButton.setOnClickListener {
+                            Log.d("button", "accept")
+                            val passwordInput = pwdDialog.findViewById<EditText>(R.id.popup_window_text);
+                            this.gameSetting.password = passwordInput.text.toString()
+                            createGame(this.gameSetting)
+                            pwdDialog.hide()
+                        }
+                        val backButton = pwdDialog.findViewById<Button>(R.id.back_button)
+                        backButton.setOnClickListener {
+                            pwdDialog.hide()
+                        }
+                    })
+                // Set the Negative button with No name Lambda OnClickListener method is use of DialogInterface interface.
+                builder.setNegativeButton("No",
+                    DialogInterface.OnClickListener { dialog: DialogInterface, which: Int ->
+                        // If user click no then dialog box is canceled.
+                        dialog.cancel()
+                    } as DialogInterface.OnClickListener)
+                // Create the Alert dialog
+
+                val alertDialog = builder.create()
+                // Show the Alert Dialog box
+                alertDialog.show()
             } else {
                 gameSetting.type = RoomType.private;
             }
@@ -183,7 +216,7 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
 
     private fun createGame (gameSetting: GameSettings) {
         socket.on("yourRoomId") { response ->
-            val roomReceived = Room(response[0].toString(), arrayListOf(socket.id()), gameSetting, State.Waiting)
+            val roomReceived = Room(response[0].toString(), arrayListOf(socket.id()), gameSetting, State.Waiting, 3 , 1, arrayListOf())
             currentRoom.myRoom = roomReceived;
         }
         gameSetting.dictionary = dictionaries.find { it.title == dicoFileName }!!.fileName

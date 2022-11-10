@@ -100,7 +100,7 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
 
         //validate username and ip
         launch {
-            val user = User(serverIp, username, null)
+            val user = User(serverIp, username, null, false)
 
             val response = postAuthentication(user)
             if(response != null) {
