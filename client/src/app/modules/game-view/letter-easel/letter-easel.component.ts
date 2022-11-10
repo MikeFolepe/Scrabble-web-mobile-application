@@ -46,8 +46,10 @@ export class LetterEaselComponent implements OnInit {
     }
 
     @HostListener('keydown', ['$event'])
-    buttonDetect(event: KeyboardEvent): void {
-        this.boardHandlerService.buttonDetect(event);
+    onKeyPress(event: KeyboardEvent): void {
+        if (this.easel.nativeElement.contains(event.target)) {
+            this.manipulateService.onKeyPress(event);
+        }
     }
 
     @HostListener('document:wheel', ['$event'])
