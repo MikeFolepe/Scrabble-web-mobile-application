@@ -101,10 +101,7 @@ export class JoinRoomComponent implements OnInit {
         }
         return room.gameSettings.type === RoomType.public ? 'Publique' : 'Privée';
     }
-    findObserver(room: Room): boolean {
-        const currentObserver = room.observers.find((observer) => observer.pseudonym === this.authService.currentUser.pseudonym);
-        return Boolean(currentObserver);
-    }
+
     join(room: Room, isObserver: boolean): void {
         // if names are equals
         if (room.gameSettings.creatorName === this.authService.currentUser.pseudonym) {
@@ -119,7 +116,7 @@ export class JoinRoomComponent implements OnInit {
 
         if (room.gameSettings.password === '') {
             if (isObserver) {
-                this.clientSocketService.socket.emit('newRoomObserver', this.authService.currentUser.pseudonym, room.id);
+                this.clientSocketService.socket.emit('newRoomObserver', this.authService.currentUser, room.id);
                 return;
             }
             this.clientSocketService.socket.emit('newRoomCustomer', this.authService.currentUser.pseudonym, room.id);

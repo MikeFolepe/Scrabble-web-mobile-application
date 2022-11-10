@@ -40,22 +40,8 @@
                     }"
                     >{{ computeRoomType(room) }}</span
                 >
-                <button
-                    mat-button
-                    color="primary"
-                    *ngIf="room.state === 1"
-                    (click)="join(room, false)"
-                    [disabled]="clientSocketService.currentRoom.id === room.id"
-                >
-                    Joindre
-                </button>
-                <button
-                    mat-button
-                    color="primary"
-                    *ngIf="room.state === 0 && room.gameSettings.type === 0"
-                    (click)="join(room, true)"
-                    [disabled]="findObserver(room)"
-                >
+                <button mat-button color="primary" *ngIf="room.state === 1" (click)="join(room, false)">Joindre</button>
+                <button mat-button color="primary" *ngIf="room.state === 0 && room.gameSettings.type === 0" (click)="join(room, true)">
                     Observer
                 </button>
             </mat-card-actions>

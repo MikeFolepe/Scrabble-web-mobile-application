@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { ONE_SECOND_DELAY, TWO_SECOND_DELAY } from '@app/classes/constants';
@@ -15,7 +15,7 @@ import { User } from '@common/user';
     templateUrl: './waiting-room.component.html',
     styleUrls: ['./waiting-room.component.scss'],
 })
-export class WaitingRoomComponent implements OnInit, OnDestroy {
+export class WaitingRoomComponent implements OnInit {
     status: string;
     isWaiting: boolean;
     shouldDisplayError: boolean;
@@ -41,8 +41,6 @@ export class WaitingRoomComponent implements OnInit, OnDestroy {
         this.leaveToHome();
     }
 
-    ngOnDestroy(): void {}
-
     playAnimation(): void {
         const startMessage = 'Connexion au serveur...';
         this.waitBeforeChangeStatus(ONE_SECOND_DELAY, startMessage);
@@ -63,7 +61,7 @@ export class WaitingRoomComponent implements OnInit, OnDestroy {
     }
 
     handleReloadErrors(): void {
-        if (this.gameSettingsService.gameSettings.creatorName === '') {
+        if (this.clientSocket.currentRoom.gameSettings.creatorName === '') {
             console.log('F');
             const errorMessage = 'Une erreur est survenue';
             this.waitBeforeChangeStatus(ONE_SECOND_DELAY, errorMessage);
@@ -89,6 +87,7 @@ export class WaitingRoomComponent implements OnInit, OnDestroy {
             this.displayErrorMessage(ErrorMessage.DeletedRoomByCreator);
             setTimeout(() => {
                 this.router.navigate(['home']);
+                this.playerService.clearPlayers();
             }, ERROR_MESSAGE_DELAY);
         });
     }
