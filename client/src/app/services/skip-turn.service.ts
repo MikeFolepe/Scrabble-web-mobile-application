@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { ONE_SECOND_DELAY, PLAYER_ONE_INDEX, PLAYER_TWO_INDEX } from '@app/classes/constants';
-import { Player } from '@app/models/player.model';
 import { ClientSocketService } from '@app/services/client-socket.service';
 import { GameSettingsService } from '@app/services/game-settings.service';
 import { EndGameService } from './end-game.service';
@@ -36,19 +35,17 @@ export class SkipTurnService {
         this.clientSocket.socket.on('turnSwitched', (playerName: string) => {
             if (playerName === this.playerService.currentPlayer.name) {
                 this.playerService.currentPlayer.isTurn = true;
-            } else {
-                const curPlayer = this.playerService.opponents.find((playerC) => playerC.name === playerName) as Player;
-                curPlayer.isTurn = true;
             }
+            const index = this.playerService.players.findIndex((playerC) => playerC.name === playerName);
+            this.playerService.players[index].isTurn = true;
         });
 
         this.clientSocket.socket.on('updatePlayerTurnToFalse', (playerName: string) => {
             if (playerName === this.playerService.currentPlayer.name) {
                 this.playerService.currentPlayer.isTurn = false;
-            } else {
-                const curPlayer = this.playerService.opponents.find((playerC) => playerC.name === playerName) as Player;
-                curPlayer.isTurn = false;
             }
+            const index = this.playerService.players.findIndex((playerC) => playerC.name === playerName);
+            this.playerService.players[index].isTurn = false;
         });
     }
 

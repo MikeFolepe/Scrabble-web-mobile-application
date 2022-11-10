@@ -54,6 +54,7 @@ export class PlaceLetterService implements OnDestroy {
         this.receiveFailure();
         this.receiveSuccess();
         this.receivePlacement();
+        this.initBoard();
     }
 
     async placeWithKeyboard(position: Vec2, letter: string, orientation: Orientation, indexLetterInWord: number): Promise<boolean> {
@@ -288,6 +289,7 @@ export class PlaceLetterService implements OnDestroy {
             this.placeByOpponent(JSON.parse(scrabbleBoard), JSON.parse(startPosition), JSON.parse(orientation), word);
         });
     }
+
     private placeByOpponent(scrabbleBoard: string[][], startPosition: Vec2, orientation: Orientation, word: string): void {
         const currentPosition = { x: startPosition.x, y: startPosition.y };
         this.scrabbleBoard = scrabbleBoard;
@@ -296,6 +298,23 @@ export class PlaceLetterService implements OnDestroy {
             this.placementsService.goToNextPosition(currentPosition, orientation);
         }
         this.isFirstRound = false;
+    }
+
+    private initBoard(): void {
+        this.clientSocketService.socket.on('giveBoardToObserver', (scrabbleBoard: string[][]) => {
+            for (let i = 0; i < BOARD_ROWS; i++) {
+                for (let j = 0; j < BOARD_COLUMNS; j++) {
+                    if (scrabbleBoard[j][i] !== '') {
+                        this.gridService.drawLetter(
+                            this.gridService.gridContextLettersLayer,
+                            scrabbleBoard[j][i],
+                            { x: j, y: i },
+                            this.playerService.fontSize,
+                        );
+                    }
+                }
+            }
+        });
     }
     private isLetterOnBoard(position: Vec2, letter: string): boolean {
         return letter.toUpperCase() === this.scrabbleBoard[position.y][position.x].toUpperCase();

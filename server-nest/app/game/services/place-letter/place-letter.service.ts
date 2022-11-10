@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-imports */
 /* eslint-disable no-unused-vars */
 /* eslint-disable max-len */
-import { BOARD_COLUMNS, BOARD_ROWS, EASEL_SIZE, INVALID_INDEX, PLAYER_AI_INDEX, THREE_SECONDS_DELAY } from '@app/classes/constants';
+import { BOARD_COLUMNS, BOARD_ROWS, EASEL_SIZE, PLAYER_AI_INDEX } from '@app/classes/constants';
 import { Orientation } from '@app/classes/scrabble-board-pattern';
 import { ScoreValidation } from '@app/classes/validation-score';
 // eslint-disable-next-line import/no-unresolved
@@ -14,6 +14,7 @@ export class PlaceLetterService {
     lastPlacedWord: string;
     scrabbleBoard: string[][];
     finalResult: ScoreValidation;
+    firstOrientation: Orientation;
 
     startPosition: Vec2;
     orientation: Orientation;

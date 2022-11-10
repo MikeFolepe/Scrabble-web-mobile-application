@@ -55,13 +55,16 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
                 socket.emit('roomFullObservers');
                 return;
             }
-
             this.server.emit('roomConfiguration', this.roomManagerService.rooms);
             socket.emit('yourRoom', room);
+            socket.join(roomId);
             socket.emit('ObserverToGameView');
+            this.logger.log('borard', room.placeLetter.scrabbleBoard);
+            socket.emit('giveBoardToObserver', room.placeLetter.scrabbleBoard);
+            socket.emit('receiveReserve', room.letter.reserve, room.letter.reserveSize);
         });
 
-        socket.on('sendRequestToCreator', (userJoining: User, roomId: string) => {
+        socket.on('sendRequestToCreator', (userJoining: string, roomId: string) => {
             console.log('requestSended');
             console.log(roomId);
             Logger.log(userJoining);
@@ -71,10 +74,9 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
             this.server.to(room.socketIds[0]).emit('newRequest', userJoining, roomId);
         });
 
-        socket.on('sendJoinResponse', (decision: boolean, userJoining: User, roomId: string) => {
-            this.logger.log(decision);
-            this.logger.log(userJoining.socketId);
-            this.server.to(userJoining.socketId).emit('receiveJoinDecision', decision, roomId);
+        socket.on('sendJoinResponse', (decision: boolean, userJoining: string, roomId: string) => {
+            const user = this.userService.activeUsers.find((curUser) => curUser.pseudonym === userJoining);
+            this.server.to(user.socketId).emit('receiveJoinDecision', decision, roomId);
         });
 
         socket.on('startGame', (roomId: string) => {
@@ -83,6 +85,8 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
             this.server.in(roomId).emit('goToGameView');
             this.server.to(roomId).emit('receiveReserve', room.letter.reserve, room.letter.reserveSize);
             this.server.emit('roomAvailable', this.roomManagerService.getNumberOfRoomInWaitingState());
+            const players = room.playerService.players;
+            this.server.to(roomId).emit('roomPlayers', players);
             setTimeout(() => {
                 this.server.in(roomId).emit('startTimer');
             }, 3000);
@@ -236,6 +240,9 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
                 if (validationResult.validation) {
                     const index = room.playerService.players.findIndex((curPlayer) => playerReceived.name === curPlayer.name);
                     room.playerService.players[index].letterTable = playerReceived.letterTable;
+                    if (room.placeLetter.isFirstRound) {
+                        room.placeLetter.firstOrientation = JSON.parse(orientation);
+                    }
                     room.placeLetter.handleValidPlacement(validationResult, index);
                     room.placeLetter.scrabbleBoard = JSON.parse(board);
                     socket.emit('receiveSuccess');
