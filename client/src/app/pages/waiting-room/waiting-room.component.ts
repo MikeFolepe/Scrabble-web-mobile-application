@@ -8,7 +8,6 @@ import { ClientSocketService } from '@app/services/client-socket.service';
 import { GameSettingsService } from '@app/services/game-settings.service';
 import { PlayerService } from '@app/services/player.service';
 import { ERROR_MESSAGE_DELAY } from '@common/constants';
-import { User } from '@common/user';
 
 @Component({
     selector: 'app-waiting-room',
@@ -36,7 +35,7 @@ export class WaitingRoomComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.playAnimation();
+        // this.playAnimation();
         this.acceptNewPlayer();
         this.leaveToHome();
     }
@@ -108,9 +107,9 @@ export class WaitingRoomComponent implements OnInit {
     }
 
     private acceptNewPlayer(): void {
-        this.clientSocket.socket.on('newRequest', (joiningUser: User, roomId: string) => {
+        this.clientSocket.socket.on('newRequest', (joiningUser: string, roomId: string) => {
             const joiningConfirmation = this.dialog.open(JoiningConfirmationDialogComponent, { disableClose: true });
-            joiningConfirmation.componentInstance.message = "Acceptez vous d'ajouter " + joiningUser.pseudonym + ' dans la partie?';
+            joiningConfirmation.componentInstance.message = "Acceptez vous d'ajouter " + joiningUser + ' dans la partie?';
             joiningConfirmation.afterClosed().subscribe((decision: boolean) => {
                 this.clientSocket.socket.emit('sendJoinResponse', decision, joiningUser, roomId);
             });

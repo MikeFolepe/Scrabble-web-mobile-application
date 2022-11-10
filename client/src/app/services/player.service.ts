@@ -35,6 +35,7 @@ export class PlayerService {
         this.currentPlayer = new Player('', []);
         this.fontSize = 14;
         this.opponents = [];
+        this.players = [];
         this.getMyPlayer();
         this.getOpponent();
         this.getExistingOpponents();
@@ -45,6 +46,7 @@ export class PlayerService {
     clearPlayers(): void {
         this.currentPlayer = new Player('', []);
         this.opponents = [];
+        this.players = [];
     }
 
     indexLetterInEasel(letter: string, startIndex: number): number {
@@ -135,18 +137,16 @@ export class PlayerService {
             if (player.name === this.currentPlayer.name) {
                 this.currentPlayer.score = player.score;
                 this.currentPlayer.letterTable = player.letterTable;
-            } else {
-                const curPlayer = this.opponents.find((playerC) => playerC.name === player.name);
-                if (curPlayer) {
-                    curPlayer.score = player.score;
-                    curPlayer.letterTable = player.letterTable;
-                }
             }
+
+            const index = this.players.findIndex((playerC) => playerC.name === player.name);
+            this.players[index].score = player.score;
+            this.players[index].letterTable = player.letterTable;
         });
     }
 
     private getPlayers(): void {
-        this.clientSocketService.socket.on('players', (players) => {
+        this.clientSocketService.socket.on('roomPlayers', (players) => {
             this.players = players;
         });
     }

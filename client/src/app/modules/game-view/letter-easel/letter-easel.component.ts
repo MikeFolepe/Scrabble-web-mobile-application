@@ -1,6 +1,7 @@
 import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { EASEL_SIZE, PLAYER_ONE_INDEX } from '@app/classes/constants';
 import { MessageType } from '@app/classes/enum';
+import { AuthService } from '@app/services/auth.service';
 import { BoardHandlerService } from '@app/services/board-handler.service';
 import { EndGameService } from '@app/services/end-game.service';
 import { LetterService } from '@app/services/letter.service';
@@ -23,6 +24,7 @@ export class LetterEaselComponent implements OnInit {
 
     constructor(
         public playerService: PlayerService,
+        public authService: AuthService,
         private letterService: LetterService,
         private swapLetterService: SwapLetterService,
         private boardHandlerService: BoardHandlerService,

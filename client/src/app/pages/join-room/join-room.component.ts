@@ -110,7 +110,8 @@ export class JoinRoomComponent implements OnInit {
         }
 
         if (room.gameSettings.type === RoomType.private) {
-            this.clientSocketService.socket.emit('sendRequestToCreator', this.authService.currentUser, room.id);
+            this.clientSocketService.socket.emit('sendRequestToCreator', this.authService.currentUser.pseudonym, room.id);
+            console.log('emittedRequest');
             return;
         }
 
