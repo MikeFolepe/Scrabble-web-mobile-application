@@ -12,8 +12,10 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.Recycler
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.activities.GameActivity
 import com.example.scrabbleprototype.model.*
@@ -23,6 +25,7 @@ import com.example.scrabbleprototype.objects.Players
 import com.example.scrabbleprototype.objects.Reserve
 import com.example.scrabbleprototype.services.SwapLetterService
 import com.example.scrabbleprototype.viewModel.PlacementViewModel
+import com.example.scrabbleprototype.viewModel.PlayersViewModel
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 
 class LetterRackFragment : Fragment() {
@@ -33,7 +36,9 @@ class LetterRackFragment : Fragment() {
     private lateinit var letterRackAdapter: LetterRackAdapter
     private lateinit var letterRackView: RecyclerView
     private val board = Board.cases
+
     private val placementViewModel: PlacementViewModel by activityViewModels()
+    private val playersViewModel: PlayersViewModel by activityViewModels()
 
     private lateinit var swapLetterService: SwapLetterService
     private var swapLetterBound: Boolean = false
@@ -117,7 +122,6 @@ class LetterRackFragment : Fragment() {
             activity?.runOnUiThread {
                 val mapper = jacksonObjectMapper()
                 val playerReceived = mapper.readValue(response[0].toString(), Player::class.java)
-                Log.d("easelUpdate", playerReceived.name + " " + Players.currentPlayer.name)
                 if(Players.currentPlayer.name == playerReceived.name) {
                     Players.currentPlayer.letterTable = playerReceived.letterTable
                     Players.currentPlayer.score = playerReceived.score
@@ -129,6 +133,12 @@ class LetterRackFragment : Fragment() {
                 }
                 letterRackAdapter = LetterRackAdapter(LetterRack.letters)
                 letterRackView.adapter = letterRackAdapter
+
+                //UPDATE PLAYER IN INFO PANNEL
+                val playerIndex = playersViewModel.playersInGame.indexOfFirst { it.name == playerReceived.name }
+                if(playerIndex == -1) return@runOnUiThread
+                playersViewModel.playersInGame[playerIndex].score = playerReceived.score
+                playersViewModel.notifyItemChangedAt(playerIndex)
             }
         }
     }
@@ -149,6 +159,8 @@ class LetterRackFragment : Fragment() {
                     true
                 }
                 DragEvent.ACTION_DROP -> {
+                    if(!Players.currentPlayer.getTurn()) return@setOnDragListener false
+
                     val letterTouched = e.clipData.getItemAt(0)
                     val letterQuantity: Int = e.clipData.getItemAt(1).text.toString().toInt()
                     val letterScore: Int = e.clipData.getItemAt(2).text.toString().toInt()

@@ -1,8 +1,12 @@
 package com.example.scrabbleprototype.objects
 
+import android.util.Log
+import androidx.databinding.Bindable
 import com.example.scrabbleprototype.model.Letter
+import androidx.databinding.BaseObservable
+import androidx.databinding.library.baseAdapters.BR
 
-object Reserve {
+object Reserve: BaseObservable() {
 
     var RESERVE = arrayOf(
         Letter("A", 9, 1, false, false),
@@ -33,10 +37,16 @@ object Reserve {
         Letter("Z", 1, 10, false, false),
         Letter("*", 2, 0, false, false)
     );
-    private var reserveSize: Int = 0
+    private var reserveSize: Int = 74
 
-    private fun getReserveSize(): Int {
-        reserveSize = RESERVE.sumOf { it.quantity }
-        return reserveSize
+    @Bindable
+    fun getReserveSize(): String {
+        return reserveSize.toString()
+    }
+
+    @Bindable
+    fun setReserveSize(reserveSize: Int) {
+        this.reserveSize = reserveSize
+        notifyPropertyChanged(BR.reserveSize)
     }
 }

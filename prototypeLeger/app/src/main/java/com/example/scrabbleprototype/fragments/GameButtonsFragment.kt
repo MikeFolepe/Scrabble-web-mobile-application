@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
@@ -128,20 +129,22 @@ class GameButtonsFragment : Fragment(), EndTurnCallback {
         }
         placementViewModel.currentPlacementLength.observe(viewLifecycleOwner, placementObserver)
 
-        binding.playTurnButton.setOnClickListener {
-            val placementPositions = placementViewModel.currentPlacement.toList().sortedBy { (k, v) -> k }.toMap().keys.toIntArray()
-            skipTurnService.switchTimer()
-            binding.playTurnButton.isEnabled = false
+        binding.playTurnButton.setOnClickListener { placeWord() }
+    }
 
-            if(placeService.validatePlacement(placementPositions)) {
-                Log.d("placing", "PASSED")
-                placeService.sendPlacement()
-            }
-            else handleInvalidPlacement()
+    private fun placeWord() {
+        val placementPositions = placementViewModel.currentPlacement.toList().sortedBy { (k, v) -> k }.toMap().keys.toIntArray()
+        binding.playTurnButton.isEnabled = false
+
+        if(placeService.validatePlacement(placementPositions)) {
+            placeService.sendPlacement()
+            skipTurnService.switchTimer()
         }
+        else handleInvalidPlacement()
     }
 
     override fun handleInvalidPlacement() {
+        if(placementViewModel.currentPlacement.isEmpty()) return
         val letterRackAdapter = activity?.findViewById<RecyclerView>(R.id.letter_rack)?.adapter
         val boardAdapter = activity?.findViewById<RecyclerView>(R.id.board)?.adapter
 
@@ -156,18 +159,22 @@ class GameButtonsFragment : Fragment(), EndTurnCallback {
                 letterRackAdapter?.notifyItemChanged(LetterRack.letters.size - 1)
             }
             placementViewModel.clearPlacement()
+            Toast.makeText(activityContext, "Le placement est invalide", Toast.LENGTH_LONG).show()
         }
     }
 
     private fun receivePlacementSuccess() {
-        socket.on("receiveSuccess") { response ->
+        socket.on("receiveSuccess") {
             placeService.isFirstPlacement = false
+            for(letter in placementViewModel.currentPlacement) {
+                board[letter.key].isValidated = true
+            }
             activity?.runOnUiThread { placementViewModel.clearPlacement() }
         }
     }
 
     private fun receivePlacementFail() {
-        socket.on("receiveFail") { response ->
+        socket.on("receiveFail") {
             handleInvalidPlacement()
         }
     }
