@@ -40,8 +40,7 @@ class SkipTurnService : Service() {
     override fun onBind(intent: Intent): IBinder {
         activePlayerName = CurrentRoom.myRoom.gameSettings.creatorName
         receiveNewTurn()
-        receiveStartFromServer()
-        receiveStopFromServer()
+        receiveTimer()
         return binder
     }
 
@@ -52,31 +51,12 @@ class SkipTurnService : Service() {
         endTurnCallback = callBack
     }
 
-    private fun receiveStartFromServer() {
-        socket.on("startTimer") {
-            Log.d("timer", "Started")
-            getTurnTime()
-            if(turnUICallback == null) Log.d("timer", "its null")
-            Log.d("activeName", activePlayerName)
-            turnUICallback?.updateTimeUI(timeMs, activePlayerName)
-            startTimer(timeMs)
-
-        }
-    }
-
-    private fun receiveStopFromServer() {
-        socket.on("stopTimer") {
-            resetTimer()
-        }
-    }
-
     private fun receiveNewTurn() {
         socket.on("turnSwitched") { response ->
             val playerName = response[0] as String
             if(player.name == playerName) {
                 activePlayerName = playerName
                 player.setTurn(true)
-                Log.d("timer", "turn is true")
             }
             else {
                 val activeOpponent: Player = opponents.find { it.name == playerName }!!
@@ -86,49 +66,30 @@ class SkipTurnService : Service() {
         }
 
         socket.on("updatePlayerTurnToFalse") { response ->
-            resetTimer()
             Log.d("oppTurn", activePlayerName)
             val opponentName = response[0] as String
             opponents.find { it.name == opponentName }?.setTurn(false)
         }
     }
 
-    fun startTimer(startTime: Long) {
-        Handler(Looper.getMainLooper()).post {
-            countdownTimer = object : CountDownTimer(startTime, 1000) {
-                override fun onFinish() {
-                    if(player.getTurn()) switchTimer()
-                }
-
-                override fun onTick(newTime: Long) {
-                    timeMs = newTime
-                    turnUICallback?.updateTimeUI(timeMs, activePlayerName)
-                }
-            }
-            countdownTimer.start()
+    private fun receiveTimer() {
+        socket.on("updateTimer") { response ->
+            val minutes: Int = response[0] as Int
+            val seconds: Int = response[1] as Int
+            timeMs = getTimeMs(minutes, seconds)
+            turnUICallback?.updateTimeUI(timeMs, activePlayerName)
         }
     }
 
     fun switchTimer() {
-        resetTimer()
         Timer().schedule(timerTask {
             endTurnCallback?.handleInvalidPlacement()
-            Log.d("timer", "Emit du switch")
             socket.emit("switchTurn", CurrentRoom.myRoom.id, player.name)
             player.setTurn(false)
-        }, 3000)
+        }, 1000)
     }
 
-    fun resetTimer() {
-        countdownTimer.cancel()
-        timeMs = 0
-        turnUICallback?.updateTimeUI(timeMs, activePlayerName)
-    }
-
-    private fun getTurnTime() {
-        var minutes: Long = CurrentRoom.myRoom.gameSettings.timeMinute.toLong() * 1000 * 60
-        var seconds: Long = CurrentRoom.myRoom.gameSettings.timeSecond.toLong() * 1000
-        timeMs = minutes + seconds
-        Log.d("timertime", timeMs.toString())
+    private fun getTimeMs(minutes: Int, seconds: Int): Long {
+        return minutes.toLong() * 1000 * 60 + seconds.toLong() * 1000
     }
 }
