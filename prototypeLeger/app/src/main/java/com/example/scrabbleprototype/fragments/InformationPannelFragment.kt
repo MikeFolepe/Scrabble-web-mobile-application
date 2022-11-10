@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet.Constraint
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -83,7 +84,6 @@ class InformationPannelFragment : Fragment(), TurnUICallback {
             skipTurnService.setTurnUICallback(this@InformationPannelFragment)
         }
         setupPlayers(view)
-        setupTimers()
         setupReserveSize(view)
     }
 
@@ -121,31 +121,33 @@ class InformationPannelFragment : Fragment(), TurnUICallback {
         playersView.adapter = playersAdapter
     }
 
-    private fun setupTimers() {
-        for(i in 0..playersViewModel.playersInGame.size) {
-            val timerView = playersView.findViewHolderForAdapterPosition(i)?.itemView?.findViewById<TextView>(R.id.timer)
-            timerView?.text = "00:00"
-        }
-    }
-
     private fun setupReserveSize(view: View) {
         binding.reserve = Reserve
     }
 
-    override fun updateTimeUI(currentTime: Long, activePlayerName: String) {
+    override fun updateTimeUI(minutes: String, seconds: String, activePlayerName: String) {
         activity?.runOnUiThread {
-            val minutes = (currentTime / 1000) / 60
-            val seconds = (currentTime / 1000) % 60
-            var minutesString = ""
-            var secondsString = ""
-            minutesString = if(minutes < 10) "0$minutes"
-                            else "$minutes"
-            secondsString = if(seconds < 10) "0$seconds"
-                            else "$seconds"
+            val minutesDisplay = if(minutes.toInt() < 10) "0$minutes"
+                            else minutes
+            val secondsDisplay = if(seconds.toInt() < 10) "0$seconds"
+                            else seconds
 
             val activePlayerIndex = playersViewModel.playersInGame.indexOfFirst { it.name == activePlayerName }
-            val timerView = playersView.findViewHolderForAdapterPosition(activePlayerIndex)?.itemView?.findViewById<TextView>(R.id.timer)
-            timerView?.text = minutesString + ":" + secondsString
+            val activePlayerView = playersView.findViewHolderForAdapterPosition(activePlayerIndex)?.itemView
+            val timerView = activePlayerView?.findViewById<TextView>(R.id.timer)
+            val timerTitleView = activePlayerView?.findViewById<TextView>(R.id.timer_title)
+            timerView?.text = getString(R.string.timer_format, minutesDisplay, secondsDisplay)
+            setTimeUiColor(timerView, timerTitleView, minutes.toInt() + seconds.toInt())
+        }
+    }
+
+    private fun setTimeUiColor(timerView: TextView?, timerTitleView: TextView?, currentTime: Int) {
+        if(currentTime == 0) {
+            timerView?.setTextColor(ContextCompat.getColor(timerView.context, R.color.white))
+            timerTitleView?.setTextColor(ContextCompat.getColor(timerTitleView.context, R.color.white))
+        } else{
+            timerView?.setTextColor(ContextCompat.getColor(timerView.context, R.color.lime_green))
+            timerTitleView?.setTextColor(ContextCompat.getColor(timerTitleView.context, R.color.lime_green))
         }
     }
 }

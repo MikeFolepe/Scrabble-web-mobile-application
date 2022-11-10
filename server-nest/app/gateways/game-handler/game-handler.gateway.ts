@@ -262,6 +262,7 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
         const roomId = this.roomManagerService.findRoomIdOf(socket.id);
 
         if (room === undefined) return;
+        room.skipTurnService.stopTimer();
         if (room.state === State.Waiting) {
             this.roomManagerService.deleteRoom(roomId);
             this.server.emit('roomConfiguration', this.roomManagerService.rooms);

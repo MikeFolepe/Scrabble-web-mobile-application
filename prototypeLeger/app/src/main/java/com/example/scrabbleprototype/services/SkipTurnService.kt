@@ -12,7 +12,7 @@ import java.util.*
 import kotlin.concurrent.timerTask
 
 interface TurnUICallback {
-    fun updateTimeUI(currentTime: Long, activePlayerName: String)
+    fun updateTimeUI(minutes: String, seconds: String, activePlayerName: String)
 }
 interface EndTurnCallback {
     fun handleInvalidPlacement()
@@ -25,9 +25,7 @@ class SkipTurnService : Service() {
     private val player = Players.currentPlayer
     private val opponents = Players.opponents
 
-    var timeMs: Long = 0
     private var activePlayerName: String = ""
-    private lateinit var countdownTimer: CountDownTimer
 
     private val binder = LocalBinder()
     private var turnUICallback: TurnUICallback? = null
@@ -66,7 +64,6 @@ class SkipTurnService : Service() {
         }
 
         socket.on("updatePlayerTurnToFalse") { response ->
-            Log.d("oppTurn", activePlayerName)
             val opponentName = response[0] as String
             opponents.find { it.name == opponentName }?.setTurn(false)
         }
@@ -74,10 +71,9 @@ class SkipTurnService : Service() {
 
     private fun receiveTimer() {
         socket.on("updateTimer") { response ->
-            val minutes: Int = response[0] as Int
-            val seconds: Int = response[1] as Int
-            timeMs = getTimeMs(minutes, seconds)
-            turnUICallback?.updateTimeUI(timeMs, activePlayerName)
+            val minutes = response[0].toString()
+            val seconds = response[1].toString()
+            turnUICallback?.updateTimeUI(minutes, seconds, activePlayerName)
         }
     }
 
@@ -87,9 +83,5 @@ class SkipTurnService : Service() {
             socket.emit("switchTurn", CurrentRoom.myRoom.id, player.name)
             player.setTurn(false)
         }, 1000)
-    }
-
-    private fun getTimeMs(minutes: Int, seconds: Int): Long {
-        return minutes.toLong() * 1000 * 60 + seconds.toLong() * 1000
     }
 }
