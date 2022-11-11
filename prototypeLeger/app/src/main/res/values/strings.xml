@@ -78,7 +78,7 @@
     <string name="avatar">Avatar</string>
     <string name="email">Adresse e-mail</string>
     <string name="connections_list">Liste de connexions et déconnexions</string>
-    <string name="connections">Connections</string>
+    <string name="connections">Connexions</string>
     <string name="disconnections">Déconnexions</string>
     <string name="edit_avatar_btn">Modifier votre avatar</string>
     <string name="password">Mot de passe</string>
@@ -89,5 +89,10 @@
     <string name="board_theme">Thème du plateau de jeu</string>
     <string name="chat_theme">Thème de la boîte de discussion</string>
     <string name="language">Langue</string>
+
+    //Stats and history fragment
+    <string name="statistics">Statistiques</string>
+    <string name="connections_history">Historique de connexions</string>
+    <string name="games_history">Historique des parties jouées</string>
 
 </resources>
