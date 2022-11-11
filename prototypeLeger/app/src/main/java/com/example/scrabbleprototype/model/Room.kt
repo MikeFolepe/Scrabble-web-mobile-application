@@ -24,4 +24,6 @@ class Room(var id: String, var socketIds: ArrayList<String>, var gameSettings: G
     var playerService: String = ""
     @JsonIgnore
     var player: String = ""
+    @JsonIgnore
+    var skipTurnService: String = ""
 }

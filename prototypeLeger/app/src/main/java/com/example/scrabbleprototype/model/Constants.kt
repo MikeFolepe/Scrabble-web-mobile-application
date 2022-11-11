@@ -6,9 +6,11 @@ object Constants {
     val BOARD_HEIGHT = 15
     val BOARD_CENTER = 112
     val BOARD_SIZE = 225
+    val LAST_BOARD_POSITION = 224
     val RACK_SIZE = 7
 
     val MAX_OPPONENTS = 3
+    val MAX_PLAYERS = 4
 
     val EMPTY_LETTER = Letter("", 0, 0, false, false)
 

@@ -34,14 +34,6 @@ class SwapLetterService : Service() {
         letterPos.clear()
     }
 
-    fun refillRack(letterRackView: RecyclerView?) {
-        for(i in letterRack.size until Constants.RACK_SIZE) {
-            // ADD COPY of Letter???
-            letterRack.add(getRandomLetterFromReserve())
-            letterRackView?.adapter?.notifyItemChanged(i)
-        }
-    }
-
     private fun getRandomLetterFromReserve(): Letter {
         var letterFromReserve = findRandomLetterFromRes()
         while(letterFromReserve.quantity == 0) letterFromReserve = findRandomLetterFromRes()
