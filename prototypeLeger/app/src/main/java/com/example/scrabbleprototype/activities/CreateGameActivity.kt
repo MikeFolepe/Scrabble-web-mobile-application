@@ -13,8 +13,8 @@ import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.model.*
 import com.example.scrabbleprototype.objects.CurrentRoom
 import com.example.scrabbleprototype.objects.Players
+import com.example.scrabbleprototype.objects.Users
 import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -29,9 +29,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import org.json.JSONArray
 import org.json.JSONObject
-import java.util.ArrayList
 import kotlin.coroutines.CoroutineContext
 
 class CreateGameActivity : AppCompatActivity(), CoroutineScope {
@@ -44,7 +42,7 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
         job.cancel()
     }
     var currentRoom = CurrentRoom;
-    var gameSetting: GameSettings = GameSettings(Users.currentUser, StartingPlayer.Player1, "00", "00", AiType.beginner, "")
+    var gameSetting: GameSettings = GameSettings(Users.currentUser.pseudonym, StartingPlayer.Player1, "00", "00", AiType.beginner, "")
     val minutes = arrayListOf("00", "01", "02", "03")
     val seconds = arrayListOf("00", "30")
     var dictionaries = listOf<Dictionary>()
@@ -99,7 +97,7 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
     suspend fun getDictionaries(): HttpResponse? {
         var response: HttpResponse?
         try {
-            response = client.get(Users.ipAddress + "/api/admin/dictionaries") {
+            response = client.get(Users.currentUser.ipAddress + "/api/admin/dictionaries") {
                 contentType(ContentType.Application.Json)
             }
         } catch (err: Exception) {

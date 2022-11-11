@@ -27,4 +27,7 @@
     <color name="purple">#9400D3</color>
     <color name="yellow">#ffea00</color>
     <color name="lime_green">#73e13b</color>
+    <color name="blue">#1D7CF2</color>
+    <color name="white_gray">#fafafa</color>
+    <color name="light_gray">#e1e1e1</color>
 </resources>

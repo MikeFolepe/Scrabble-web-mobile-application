@@ -10,14 +10,11 @@ import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
-import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.model.SocketHandler
 import com.example.scrabbleprototype.model.User
-import com.example.scrabbleprototype.model.Users
-import com.google.android.material.snackbar.BaseTransientBottomBar
-import com.google.android.material.snackbar.Snackbar
+import com.example.scrabbleprototype.objects.Users
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
@@ -105,8 +102,7 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
             if(response != null) {
                 if (response.status == HttpStatusCode.OK) {
                     if (response.body()) {
-                        users.currentUser = username
-                        users.ipAddress = serverIp
+                        users.currentUser = user
                         joinChat(serverIp, user)
                     } else {
                         usernameInput.error = "Cet utilisateur est déjà connecté"
@@ -139,8 +135,8 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
 
         chatSocket.emit("joinRoom")
         chatSocket.on("socketId") { response ->
-            user.socketId = response[0].toString()
-            chatSocket.emit("updateUserSocket", Json.encodeToString(user))
+            users.currentUser.socketId = response[0].toString()
+            chatSocket.emit("updateUserSocket", Json.encodeToString(users.currentUser))
         }
         startActivity(intent)
     }

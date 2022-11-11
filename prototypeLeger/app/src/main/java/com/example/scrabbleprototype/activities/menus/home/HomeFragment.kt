@@ -7,12 +7,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.activities.CreateGameActivity
 import com.example.scrabbleprototype.activities.GameActivity
 import com.example.scrabbleprototype.activities.JoinGameActivity
 import com.example.scrabbleprototype.databinding.FragmentHomeBinding
+import com.example.scrabbleprototype.objects.Users
 
 class HomeFragment : Fragment() {
+
+    private val user = Users.currentUser
 
     private var _binding: FragmentHomeBinding? = null
 
@@ -31,6 +35,7 @@ class HomeFragment : Fragment() {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
+        setupUserInfo()
         setupButtons()
         return root
     }
@@ -38,6 +43,11 @@ class HomeFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun setupUserInfo() {
+        binding.userPseudonym.text = user.pseudonym
+        binding.userXp.text = getString(R.string.user_xp, user.xpPoints)
     }
 
     private fun setupButtons() {

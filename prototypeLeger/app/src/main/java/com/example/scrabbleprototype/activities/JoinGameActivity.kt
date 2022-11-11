@@ -11,14 +11,9 @@ import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.model.*
 import com.example.scrabbleprototype.objects.CurrentRoom
 import com.example.scrabbleprototype.objects.Players
-import com.example.scrabbleprototype.objects.Reserve
+import com.example.scrabbleprototype.objects.Users
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import org.json.JSONArray
 
 class JoinGameActivity : AppCompatActivity() {
 
@@ -57,7 +52,7 @@ class JoinGameActivity : AppCompatActivity() {
 
     private fun joinGame(position: Int) {
         Log.d("room", rooms[position].id)
-        socket.emit("newRoomCustomer", Users.currentUser, rooms[position].id)
+        socket.emit("newRoomCustomer", Users.currentUser.pseudonym, rooms[position].id)
         socketHandler.roomId = rooms[position].id
     }
 
