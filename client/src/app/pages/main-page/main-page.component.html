@@ -9,20 +9,13 @@
                     >{{ mode }}
                 </mat-radio-button>
             </mat-radio-group>
-        </mat-tab>
-        <mat-tab label="{{ gameType[1] }}">
-            <mat-radio-group class="radio-group" [(ngModel)]="selectedGameMode">
-                <mat-radio-button color="primary" class="radio-button" value="soloLOG" *ngFor="let mode of gameModes" [value]="mode">{{
-                    mode
-                }}</mat-radio-button>
-            </mat-radio-group>
+            <button class="button" id="playButton" mat-raised-button [disabled]="!selectedGameMode" color="primary" (click)="routeToGameMode()">
+                Jouer!
+            </button>
         </mat-tab>
     </mat-tab-group>
-    <button class="button" id="playButton" mat-raised-button [disabled]="!selectedGameMode" color="primary" (click)="routeToGameMode()">
-        Jouer!
-    </button>
     <p>
-        {{ gameType[selectedGameTypeIndex] }}<br />
+        {{ gameType[0] }}<br />
         {{ selectedGameMode }}
     </p>
     <button class="button" id="resetButton" mat-raised-button [disabled]="!selectedGameMode" color="warn" (click)="this.selectedGameMode = undefined">
@@ -32,4 +25,17 @@
     <div class="justified">
         <button class="button" mat-raised-button color="primary" (click)="openBestScoresDialog()">Meilleurs scores</button>
     </div>
+</div>
+<div class="chatRooms-buttons">
+    <button mat-mini-fab class="addButton tooltip" (click)="openAddChatRoomDialog()"><span class="tooltiptext">Ajouter</span><mat-icon>add</mat-icon></button>
+    <button mat-mini-fab class="allRoomsButton tooltip" (click)="openJoinChatRoomDialog()"><span class="tooltiptext">Rejoindre</span><mat-icon>search</mat-icon></button>
+    <button mat-mini-fab class="joinedRoomsButton tooltip" (click)="openChangeChatRoomDialog()"><span class="tooltiptext">Changer</span><mat-icon>view_headline</mat-icon></button>
+</div>
+<div *ngIf="isOpen === false" class="closedChat" (click)="openChat()">
+    <div class="textClosedChat">
+        <h2>Cliquez pour ouvrir le chat</h2>
+    </div>
+</div>
+<div *ngIf="isOpen == true">
+    <app-chatrooms class = "chatRooms"></app-chatrooms>
 </div>

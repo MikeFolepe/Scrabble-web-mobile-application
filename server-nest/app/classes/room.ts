@@ -67,8 +67,6 @@ export class Room {
         //     this.wordValidation,
         // );
 
-
-
         // this.player = new Player('ok, ', this.letter.reserve, 0);
 
         // this.aiPlayers = new PlayerAI(

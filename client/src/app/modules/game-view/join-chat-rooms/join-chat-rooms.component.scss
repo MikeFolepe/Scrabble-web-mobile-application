@@ -1,0 +1,25 @@
+.radio-group {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    margin-top: -10px;
+    margin-bottom:0px;
+    max-height: 250px;
+    overflow-y: scroll;
+    word-break: break-word;
+}
+.radio-button {
+    margin-bottom: 10px;
+}
+
+.span {
+    right : 0;
+}
+
+h1 {
+    color : #00804d;
+}
+
+.button {
+    margin-top: 10px;
+}

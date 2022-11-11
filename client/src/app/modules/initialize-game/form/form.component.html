@@ -47,7 +47,9 @@
         <button
             mat-raised-button
             *ngIf="this.form"
+            
             (click)="initializeGame()"
+            
             id="submit-button"
             color="primary"
             [disabled]="!form.valid || isDictionaryDeleted"
@@ -58,4 +60,5 @@
     <mat-hint *ngIf="isDictionaryDeleted" class="warning">
         Le dictionnaire {{ selectedDictionary.title }} a été supprimé. Veuillez en choisir un autre.
     </mat-hint>
+
 </div>

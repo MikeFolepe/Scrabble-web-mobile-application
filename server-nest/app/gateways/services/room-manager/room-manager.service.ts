@@ -1,8 +1,6 @@
-import { PlayerAI } from './../../../game/models/player-ai.model';
 import { Room, State } from '@app/classes/room';
 import { Player } from '@app/game/models/player.model';
-import { GameSettings, StartingPlayer } from '@common/game-settings';
-import { PlayerIndex } from '@common/player-index';
+import { GameSettings } from '@common/game-settings';
 import { Injectable } from '@nestjs/common';
 import { OUT_BOUND_INDEX_OF_SOCKET } from '../../../classes/constants';
 @Injectable()
@@ -44,7 +42,7 @@ export class RoomManagerService {
 
         if (room.playerService.players.length === 4) return false;
         room.playerService.players.push(new Player(customerName, room.letter.getRandomLetters()));
-        console.log("pushed new player")
+        console.log('pushed new player');
         return true;
     }
 
@@ -61,23 +59,6 @@ export class RoomManagerService {
         const room = this.find(roomId) as Room;
         return room.gameSettings;
     }
-
-    // formatGameSettingsForCustomerIn(roomId: string): GameSettings {
-    //     const room = this.find(roomId) as Room;
-    //     const gameSettings = room.gameSettings;
-    //     const playerNames: string[] = [gameSettings.playersNames[PlayerIndex.CUSTOMER], gameSettings.playersNames[PlayerIndex.OWNER]];
-    //     const startingPlayer = gameSettings.startingPlayer ? StartingPlayer.Player1 : StartingPlayer.Player2;
-    //     const formattedGameSettings = new GameSettings(
-    //         playerNames,
-    //         startingPlayer,
-    //         gameSettings.timeMinute,
-    //         gameSettings.timeSecond,
-    //         gameSettings.level,
-    //         gameSettings.dictionary,
-    //     );
-
-    //     return formattedGameSettings;
-    // }
 
     deleteRoom(roomId: string): void {
         this.rooms.forEach((room, roomIndex) => {

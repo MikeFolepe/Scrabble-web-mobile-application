@@ -20,12 +20,6 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
 
     constructor(private readonly logger: Logger, private userService: UsersService, private roomManagerService: RoomManagerService) {}
 
-    // afterInit() {
-    //     setInterval(() => {
-    //         this.emitTime();
-    //     }, DELAY_BEFORE_EMITTING_TIME);
-    // }
-
     // TODO: set a socket id in player class to easily find the player
 
     onNewRoomPlayer(socket: Socket): void {
@@ -211,8 +205,7 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
                 const room = this.roomManagerService.find(roomId);
                 const validationResult = await room.wordValidation.validateAllWordsOnBoard(JSON.parse(board), isEaselSize, isRow);
                 const playerReceived = JSON.parse(player);
-                this.logger.log(validationResult);
-                this.logger.log(JSON.parse(orientation), isRow, isEaselSize, JSON.parse(position));
+
                 if (validationResult.validation) {
                     const index = room.playerService.players.findIndex((curPlayer) => playerReceived.name === curPlayer.name);
                     room.playerService.players[index].letterTable = playerReceived.letterTable;
