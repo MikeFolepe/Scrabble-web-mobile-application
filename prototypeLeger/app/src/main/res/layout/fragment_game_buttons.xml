@@ -25,7 +25,6 @@
                 android:text="@string/play_button"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
-                android:enabled="@{player.turn}"
                 android:background="@drawable/button_selector"
                 android:textAllCaps="false"
                 android:textColor="@color/white"

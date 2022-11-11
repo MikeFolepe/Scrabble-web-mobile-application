@@ -144,6 +144,7 @@ class PlaceService : Service() {
             val letterFound = Constants.RESERVE.find { it.value == letter.uppercase() }
                 ?: return
             val letterToPlace = Letter(letterFound.value.lowercase(), letterFound.quantity, letterFound.points, false, false)
+            letterToPlace.isValidated = true
             board[currentPosition] = letterToPlace
             boardView.adapter?.notifyItemChanged(currentPosition)
             currentPosition += spaceBetweenEachLetter
@@ -161,7 +162,7 @@ class PlaceService : Service() {
         return Vec2(x, y)
     }
 
-    private fun get1DPosition(x: Int, y: Int): Int {
+    fun get1DPosition(x: Int, y: Int): Int {
         return x * Constants.BOARD_HEIGHT + y
     }
 

@@ -11,7 +11,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -29,12 +31,15 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 class BoardFragment : Fragment() {
 
     var board = Board.cases
+    private lateinit var boardView: RecyclerView
+    private var opponentStartingCase: Int? = null
     private val socket = SocketHandler.getPlayerSocket()
 
     private lateinit var placeService: PlaceService
     private var placeBound: Boolean = false
 
     private val placementViewModel: PlacementViewModel by activityViewModels()
+    private val mapper = jacksonObjectMapper()
 
     private val connection = object: ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
@@ -64,6 +69,7 @@ class BoardFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         receiveOpponentPlacement(view)
+        receiveOpponentStartingCase()
         setupBoard(view)
     }
 
@@ -78,7 +84,6 @@ class BoardFragment : Fragment() {
             Log.d("receive", response[2].toString())
             Log.d("receive", response[3].toString())
 
-            val mapper = jacksonObjectMapper()
             val startPosition = mapper.readValue(response[1].toString(), Vec2::class.java)
             val orientation = mapper.readValue(response[2].toString(), Orientation::class.java)
             val word = response[3] as String
@@ -88,30 +93,55 @@ class BoardFragment : Fragment() {
 
     private fun setupBoard(view: View) {
         initializeBoard()
-        val boardView = view.findViewById<RecyclerView>(R.id.board)
+        boardView = view.findViewById(R.id.board)
         val gridLayoutManager = GridLayoutManager(activity, 15, GridLayoutManager.VERTICAL, false)
         boardView.layoutManager = gridLayoutManager
         val boardAdapter = BoardAdapter(board)
         boardView.adapter = boardAdapter
         boardAdapter.updateData(board)
 
-        boardAdapter.onPlacement = { letterRackPosition, boardPosition ->
+        boardAdapter.onPlacement = { dragStartPosition, boardPosition, draggedFromRack ->
             placementViewModel.addLetter(boardPosition, board[boardPosition].value)
-            Log.d("removing", letterRackPosition.toString())
-            Log.d("removing", LetterRack.letters[letterRackPosition].value)
-            LetterRack.letters.removeAt(letterRackPosition)
-            val letterRackAdapter = activity?.findViewById<RecyclerView>(R.id.letter_rack)?.adapter
-            letterRackAdapter?.notifyDataSetChanged()
-            Log.d("placing", LetterRack.letters.size.toString())
+            // We drag from letter rack
+            if(draggedFromRack) {
+                LetterRack.letters.removeAt(dragStartPosition)
+                val letterRackAdapter = activity?.findViewById<RecyclerView>(R.id.letter_rack)?.adapter
+                letterRackAdapter?.notifyDataSetChanged()
+            } else { // We drag from the board
+                board[dragStartPosition] = Constants.EMPTY_LETTER
+                boardAdapter.notifyItemChanged(dragStartPosition)
+                placementViewModel.removeLetter(dragStartPosition)
+            }
         }
     }
 
     private fun initializeBoard() {
-        for(i in 0..224 ) {
+        for(i in board.size until Constants.BOARD_SIZE ) {
             board.add(Constants.EMPTY_LETTER)
         }
     }
 
+    private fun receiveOpponentStartingCase() {
+        socket.on("receiveStartingCase") { response ->
+            // Erase the last starting case border
+            eraseStartingCase()
+            // Draw the new one
+            val startingCase: Vec2 = mapper.readValue(response[0].toString(), Vec2::class.java)
+            opponentStartingCase = placeService.get1DPosition(startingCase.y, startingCase.x)
+            val startingCaseView = boardView.findViewHolderForAdapterPosition(opponentStartingCase!!)?.itemView?.findViewById<ImageView>(R.id.placement_layer)
+            if(startingCaseView != null) startingCaseView.background = ContextCompat.getDrawable(startingCaseView.context, R.drawable.starting_case_border)
+        }
+        socket.on("eraseStartingCase") {
+            eraseStartingCase()
+        }
+    }
+
+    private fun eraseStartingCase() {
+        if(opponentStartingCase != null) {
+            val lastStartingCaseView = boardView.findViewHolderForAdapterPosition(opponentStartingCase!!)?.itemView?.findViewById<ImageView>(R.id.placement_layer)
+            if(lastStartingCaseView != null) lastStartingCaseView.background = ContextCompat.getDrawable(lastStartingCaseView.context, R.drawable.board_case_border)
+        }
+    }
 
 
 }
