@@ -16,6 +16,7 @@ import { ErrorHandlerService } from './error-handler.service';
 export class AuthService {
     currentUser: User;
     serverUrl: string;
+    chosenAvatar : string;
     constructor(
         private clientSocketService: ClientSocketService,
         private router: Router,
@@ -23,6 +24,7 @@ export class AuthService {
         public errorHandler: ErrorHandlerService,
         public snackBar: MatSnackBar,
     ) {
+        this.chosenAvatar = '';
         if (this.clientSocketService.socket) {
             this.receiveUserSocket();
         }
@@ -39,6 +41,7 @@ export class AuthService {
                     this.clientSocketService.socket = io(this.serverUrl);
                     this.clientSocketService.socket.on(ChatEvents.SocketId, (socketId: string) => {
                         this.currentUser.socketId = socketId;
+                        console.log(`this is the password : ${this.currentUser.password}`);
                         // this.clientSocketService.socket.emit(ChatEvents.UpdateUserSocket, this.currentUser);
                         
                     });

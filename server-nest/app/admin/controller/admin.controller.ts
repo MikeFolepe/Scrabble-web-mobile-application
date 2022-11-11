@@ -1,4 +1,5 @@
 import { AdminService } from '@app/admin/service/admin.service';
+import { AccountService } from '@app/gateways/services/account/account.service';
 import { AiType } from '@common/ai-name';
 import { Body, Controller, Get, HttpStatus, Post, Res } from '@nestjs/common';
 import { ApiCreatedResponse, ApiNotFoundResponse } from '@nestjs/swagger';
@@ -6,7 +7,7 @@ import { Response } from 'express';
 
 @Controller('admin')
 export class AdminController {
-    constructor(private readonly adminService: AdminService) {}
+    constructor(private readonly adminService: AdminService, private readonly accountService : AccountService) {}
 
     @ApiCreatedResponse({
         description: 'Returns all beginners ais',
@@ -62,5 +63,33 @@ export class AdminController {
     @Get('/dictionaries')
     getDictionnary(@Res() response) {
         response.status(HttpStatus.OK).send(this.adminService.getDictionaries());
+    }
+
+
+    @Post()
+    async addAccount(
+        @Body('avatar') avatar : string,
+        @Body('pseudonym') pseudonym : string,
+        @Body('password') password : string,
+        @Body('email') email : string,
+    ) {
+        const generatedId = await this.accountService.insertAccount(avatar, pseudonym, password, email);
+        return { id: generatedId };
+    }
+
+    @Get()
+    async getAllAccounts() {
+        const accounts = await this.accountService.getAccounts();
+        return accounts;
+    }
+
+    //get an account by pseudonym
+    @Get(':pseudonym')
+    getAccount(@Res() response, @Body('pseudonym') pseudonym : string) {
+        const account = this.accountService.getSingleAccount(pseudonym);
+        if (!account) {
+            response.status(HttpStatus.NOT_FOUND).send('Account not found');
+        }
+        return response.status(HttpStatus.OK).send(account);
     }
 }

@@ -1,6 +1,7 @@
 export class User {
     ipAddress: string;
     pseudonym: string;
+    password : string;
     socketId?: string;
 
 

@@ -13,6 +13,7 @@ import { SharedModule } from '@app/modules/shared/shared.module';
 import { ChangeChatRoomComponent } from './change-chat-room/change-chat-room.component';
 import { ChatroomsComponent } from './chatrooms/chatrooms.component';
 import { JoinChatRoomsComponent } from './join-chat-rooms/join-chat-rooms.component';
+import { AvatarChoiceComponent } from './avatar-choice/avatar-choice.component';
 
 @NgModule({
     declarations: [
@@ -25,6 +26,7 @@ import { JoinChatRoomsComponent } from './join-chat-rooms/join-chat-rooms.compon
         FontSizeComponent,
         ChatboxComponent,
         ChangeChatRoomComponent,
+        AvatarChoiceComponent,
     ],
     imports: [CommonModule, AppRoutingModule, FormsModule, SharedModule, AppMaterialModule],
     exports: [GameViewComponent, ChatroomsComponent],
