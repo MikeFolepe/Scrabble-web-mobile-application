@@ -308,7 +308,7 @@ export class PlaceLetterService implements OnDestroy {
                         this.gridService.drawLetter(
                             this.gridService.gridContextLettersLayer,
                             scrabbleBoard[j][i],
-                            { x: j, y: i },
+                            { x: i, y: j },
                             this.playerService.fontSize,
                         );
                     }
