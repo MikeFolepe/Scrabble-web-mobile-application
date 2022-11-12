@@ -65,6 +65,10 @@ export class LetterEaselComponent implements OnInit {
         this.manipulateService.sendEasel(this.letterEaselTab);
     }
 
+    onDragEnd() {
+        this.boardHandlerService.isDragged = false;
+    }
+
     onRightClick(event: MouseEvent, indexLetter: number): void {
         event.preventDefault();
         this.handleSwapSelection(indexLetter);
@@ -123,6 +127,12 @@ export class LetterEaselComponent implements OnInit {
             if (letter.isSelectedForSwap || letter.isSelectedForManipulation) return true;
         }
         return false;
+    }
+
+    isDragged(letter: Letter) {
+        console.log('start');
+        this.boardHandlerService.isDragged = true;
+        this.boardHandlerService.currentDraggedLetter = letter;
     }
 
     // private update(): void {

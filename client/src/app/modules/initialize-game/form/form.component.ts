@@ -22,23 +22,22 @@ import { GameSettings, StartingPlayer } from '@common/game-settings';
     styleUrls: ['./form.component.scss'],
 })
 export class FormComponent implements OnInit, OnDestroy {
-
     form: FormGroup;
     dictionaries: Dictionary[];
     selectedDictionary: Dictionary;
     isDictionaryDeleted: boolean;
     fileName: string;
     channels: string[] = [];
-    channel:string;
+    channel: string;
 
     constructor(
         private clientSocket: ClientSocketService,
         public gameSettingsService: GameSettingsService,
-        public channelHandlerService : ChannelHandlerService,
+        public channelHandlerService: ChannelHandlerService,
         private router: Router,
         public joinChatRoomsDialog: MatDialog,
         public changeChatRoomDialog: MatDialog,
-        public addChatRoomDialog : MatDialog,
+        public addChatRoomDialog: MatDialog,
         private communicationService: CommunicationService,
         public adminService: AdministratorService,
         private authService: AuthService,
@@ -109,15 +108,15 @@ export class FormComponent implements OnInit, OnDestroy {
         return this.form.controls.levelInput.value === AiType.beginner ? AiType.beginner : AiType.expert;
     }
 
-    openChangeChatRoomDialog() : void {
+    openChangeChatRoomDialog(): void {
         this.changeChatRoomDialog.open(ChangeChatRoomComponent, { disableClose: true });
     }
 
-    openJoinChatRoomDialog() : void {
+    openJoinChatRoomDialog(): void {
         this.joinChatRoomsDialog.open(JoinChatRoomsComponent, { disableClose: true });
     }
 
-    openAddChatRoomDialog() : void {
+    openAddChatRoomDialog(): void {
         this.addChatRoomDialog.open(AddChatRoomComponent, { disableClose: true });
     }
 }

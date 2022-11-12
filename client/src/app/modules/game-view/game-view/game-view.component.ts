@@ -26,10 +26,10 @@ import { JoinChatRoomsComponent } from '../join-chat-rooms/join-chat-rooms.compo
 })
 export class GameViewComponent {
     fontSize: number;
-    selectedChatRooms : string[];
-    chatRoomForm : boolean;
-    isOpen : boolean;
-    chatRoomName : string;
+    selectedChatRooms: string[];
+    chatRoomForm: boolean;
+    isOpen: boolean;
+    chatRoomName: string;
 
     constructor(
         public endGameService: EndGameService,
@@ -43,16 +43,14 @@ export class GameViewComponent {
         public dialog: MatDialog,
         public joinChatRoomsDialog: MatDialog,
         public changeChatRoomDialog: MatDialog,
-        public addChatRoomDialog : MatDialog,
+        public addChatRoomDialog: MatDialog,
         public sendMessageService: SendMessageService,
         public giveUpHandlerService: GiveUpHandlerService,
-        // public objectiveService: ObjectivesService,
         private placeLetterService: PlaceLetterService,
         public chatRoomService: ChatRoomService,
     ) {
         this.fontSize = DEFAULT_FONT_SIZE;
         // this.giveUpHandlerService.receiveEndGameByGiveUp();
-        // this.objectiveService.ngOnDestroy();
         this.chatRoomService.getChatRooms();
         this.selectedChatRooms = [];
         this.chatRoomForm = false;
@@ -77,28 +75,28 @@ export class GameViewComponent {
     }
 
     leaveGame(): void {
-        this.skipTurnService.stopTimer();
+        this.clientSocketService.socket.emit('stopTimer', this.clientSocketService.roomId);
         this.placeLetterService.ngOnDestroy();
         this.gridService.ngOnDestroy();
         this.endGameService.clearAllData();
-        this.playerService.clearPlayers();
+        // this.playerService.clearPlayers();
         this.gameSettingsService.ngOnDestroy();
         if (this.giveUpHandlerService.isGivenUp) this.clientSocketService.socket.emit('deleteGame', this.clientSocketService.roomId);
     }
 
-    openChangeChatRoomDialog() : void {
+    openChangeChatRoomDialog(): void {
         this.changeChatRoomDialog.open(ChangeChatRoomComponent, { disableClose: true });
     }
 
-    openJoinChatRoomDialog() : void {
+    openJoinChatRoomDialog(): void {
         this.joinChatRoomsDialog.open(JoinChatRoomsComponent, { disableClose: true });
     }
 
-    openAddChatRoomDialog() : void {
+    openAddChatRoomDialog(): void {
         this.addChatRoomDialog.open(AddChatRoomComponent, { disableClose: true });
     }
 
-    openChat() : void {
+    openChat(): void {
         this.isOpen = true;
     }
 }

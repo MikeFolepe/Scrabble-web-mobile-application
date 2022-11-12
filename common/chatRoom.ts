@@ -9,11 +9,7 @@ export class ChatRoom {
     creatorName: string;
     chatRoomId: string;
     
-
-
-
     constructor(roomId: string, creator: User, chatRoomName: string ) {
-
         this.chatRoomId = roomId;
         this.users.push(creator);
         this.currentMessage = new ChatRoomMessage('','','');

@@ -14,8 +14,7 @@ export class ChatGateway {
 
     messages: string[] = [];
 
-    constructor(private readonly logger: Logger, private userService: UsersService, private chatRoomService: ChatRoomService) {
-    }
+    constructor(private readonly logger: Logger, private userService: UsersService, private chatRoomService: ChatRoomService) {}
 
     @SubscribeMessage(ChatEvents.Message)
     message(_: Socket, message: string) {
@@ -24,21 +23,17 @@ export class ChatGateway {
 
     @SubscribeMessage('createChatRoom')
     createChatRoom(@ConnectedSocket() socket, @MessageBody() creator: User, @MessageBody() chatRoomName: string) {
-
-
         const roomId = this.chatRoomService.createRoomId(creator[0].pseudonym, socket.id);
 
-        this.chatRoomService.addCustomer(creator[0], roomId)
+        this.chatRoomService.addCustomer(creator[0], roomId);
         socket.join(roomId);
 
         this.server.emit('newChatRoom', this.chatRoomService.createRoom(roomId, creator[0], chatRoomName[1]));
-
     }
 
     @SubscribeMessage('newMessage')
-    addNewMessage(@ConnectedSocket() socket, @MessageBody() chatRoomIndex : number, @MessageBody() user : User, @MessageBody() message: string) {
-
-        const newMessage = new ChatRoomMessage(message[2], "", user[1].pseudonym);
+    addNewMessage(@ConnectedSocket() socket, @MessageBody() chatRoomIndex: number, @MessageBody() user: User, @MessageBody() message: string) {
+        const newMessage = new ChatRoomMessage(message[2], '', user[1].pseudonym);
         this.chatRoomService.chatRooms[chatRoomIndex[0]].messages.push(newMessage);
         this.server.emit('updateChatRooms', this.chatRoomService.chatRooms);
     }
@@ -57,30 +52,23 @@ export class ChatGateway {
     @SubscribeMessage('joinMainRoom')
     joinMainRoom(@ConnectedSocket() socket, @MessageBody() user: User) {
         this.chatRoomService.addCustomer(user[0], this.chatRoomService.chatRooms[0].chatRoomId);
-        socket.join(this.chatRoomService.chatRooms[0].chatRoomId); 
-        this.server.emit('updateChatRooms', this.chatRoomService.chatRooms); 
+        socket.join(this.chatRoomService.chatRooms[0].chatRoomId);
+        this.server.emit('updateChatRooms', this.chatRoomService.chatRooms);
     }
 
     @SubscribeMessage('joinChatRoom')
-    joinChatRoom(@ConnectedSocket() socket, @MessageBody() user: User, @MessageBody() roomNames:string[]) {
+    joinChatRoom(@ConnectedSocket() socket, @MessageBody() user: User, @MessageBody() roomNames: string[]) {
+        for (const chatRoom of this.chatRoomService.chatRooms) {
+            for (const roomName of roomNames[1]) {
+                if (chatRoom.chatRoomName === roomName) {
+                    const userInRoom = chatRoom.users.find((currentUser) => currentUser.pseudonym === user[0].pseudonym);
+                    if (!userInRoom) {
+                        const newMessage = new ChatRoomMessage('a rejoint le canal de communication', '', user[0].pseudonym);
+                        chatRoom.messages.push(newMessage);
 
-        for(let i = 0; i < this.chatRoomService.chatRooms.length; i++) {
-
-            for(let j = 0; j < roomNames[1].length; j++) {
-                if(this.chatRoomService.chatRooms[i].chatRoomName === roomNames[1][j]) {
-
-
-
-                    const userInRoom = this.chatRoomService.chatRooms[i].users.find((currentUser) => currentUser.pseudonym === user[0].pseudonym);
-                    if(!userInRoom) {
-
-                        const newMessage = new ChatRoomMessage(`a rejoint le canal de communication`, "", user[0].pseudonym);
-                        this.chatRoomService.chatRooms[i].messages.push(newMessage);
-
-                        this.chatRoomService.addCustomer(user[0], this.chatRoomService.chatRooms[i].chatRoomId);
-                        socket.join(this.chatRoomService.chatRooms[i].chatRoomId);
+                        this.chatRoomService.addCustomer(user[0], chatRoom.chatRoomId);
+                        socket.join(chatRoom.chatRoomId);
                         this.server.emit('updateChatRooms', this.chatRoomService.chatRooms);
-
                     }
                 }
             }
@@ -88,22 +76,17 @@ export class ChatGateway {
     }
 
     @SubscribeMessage('leaveChatRoom')
-    leaveChatRoom(@ConnectedSocket() socket, @MessageBody() pseudonym : string, @MessageBody() chatRoomName : string) {
-
+    leaveChatRoom(@ConnectedSocket() socket, @MessageBody() pseudonym: string, @MessageBody() chatRoomName: string) {
         const chatRoomIndex = this.chatRoomService.chatRooms.findIndex((currentChatRoom) => currentChatRoom.chatRoomName === chatRoomName[1]);
         const userIndex = this.chatRoomService.chatRooms[chatRoomIndex].users.findIndex((user) => user.pseudonym === pseudonym[0]);
         this.chatRoomService.chatRooms[chatRoomIndex].users.splice(userIndex, 1);
         this.server.emit('updateChatRooms', this.chatRoomService.chatRooms);
     }
 
-
-
-
     @SubscribeMessage(ChatEvents.BroadcastAll)
     broadcastAll(socket: Socket, message: string) {
         this.server.emit(ChatEvents.MassMessage, `${socket.id} : ${message}`);
     }
-
 
     @SubscribeMessage(ChatEvents.RoomMessage)
     roomMessage(socket: Socket, message: Message) {
@@ -111,7 +94,6 @@ export class ChatGateway {
         const messageObject = new Message(message.message, message.messageUser);
         const messageString = JSON.stringify(messageObject);
         this.messages.push(messageString);
-
     }
 
     @SubscribeMessage(ChatEvents.GetMessages)
@@ -121,13 +103,10 @@ export class ChatGateway {
 
     @SubscribeMessage(ChatEvents.UpdateUserSocket)
     updateUser(_: Socket, user: User) {
-
         for (const activeUser of this.userService.activeUsers) {
             if (activeUser.pseudonym === user.pseudonym) {
                 activeUser.socketId = user.socketId;
             }
         }
     }
-
-
 }

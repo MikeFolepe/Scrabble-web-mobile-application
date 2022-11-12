@@ -51,7 +51,6 @@ export class JoinRoomComponent implements OnInit {
         this.shouldDisplayJoinError = false;
         this.isRoomAvailable = false;
         this.isRandomButtonAvailable = false;
-        //this.clientSocketService.socket.connect();
         // Method for button and others
     }
 
@@ -103,13 +102,11 @@ export class JoinRoomComponent implements OnInit {
             }, ERROR_MESSAGE_DELAY);
             return;
         }
-        console.log(this.authService.currentUser.pseudonym + " " + room.id)
         this.clientSocketService.socket.emit('newRoomCustomer', this.authService.currentUser.pseudonym, room.id);
     }
 
     confirm(){
         this.clientSocketService.socket.on('goToWaiting', ()=>{
-            console.log("gotowaiting")
             this.router.navigate(['waiting-room']);
         });
     }
@@ -149,6 +146,18 @@ export class JoinRoomComponent implements OnInit {
         });
     }
 
+    openChangeChatRoomDialog() : void {
+        this.changeChatRoomDialog.open(ChangeChatRoomComponent, { disableClose: true });
+    }
+
+    openJoinChatRoomDialog() : void {
+        this.joinChatRoomsDialog.open(JoinChatRoomsComponent, { disableClose: true });
+    }
+
+    openAddChatRoomDialog() : void {
+        this.addChatRoomDialog.open(AddChatRoomComponent, { disableClose: true });
+    }
+
     private handleRoomUnavailability(): void {
         this.clientSocketService.socket.on('roomAlreadyToken', () => {
             this.shouldDisplayJoinError = true;
@@ -166,17 +175,5 @@ export class JoinRoomComponent implements OnInit {
                 this.rooms.push(new Room(room.id, room.gameSettings, room.state, room.socketIds));
             }
         });
-    }
-
-    openChangeChatRoomDialog() : void {
-        this.changeChatRoomDialog.open(ChangeChatRoomComponent, { disableClose: true });
-    }
-
-    openJoinChatRoomDialog() : void {
-        this.joinChatRoomsDialog.open(JoinChatRoomsComponent, { disableClose: true });
-    }
-
-    openAddChatRoomDialog() : void {
-        this.addChatRoomDialog.open(AddChatRoomComponent, { disableClose: true });
     }
 }
