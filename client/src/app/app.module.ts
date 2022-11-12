@@ -14,7 +14,6 @@ import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { PageNotFoundComponent } from '@app/pages/page-not-found/page-not-found.component';
 import { WaitingRoomComponent } from '@app/pages/waiting-room/waiting-room.component';
 import { ClickOutsideModule } from 'ng-click-outside';
-import { ChatroomsComponent } from './modules/game-view/chatrooms/chatrooms.component';
 import { AdminPageComponent } from './pages/admin-page/admin-page.component';
 import { EditDictionaryDialogComponent } from './pages/admin-page/edit-dictionary-dialog/edit-dictionary-dialog.component';
 import { AuthPageComponent } from './pages/auth-page/auth-page.component';
@@ -34,7 +33,6 @@ import { PrototypeChatBoxComponent } from './pages/prototype-chat-box/prototype-
         PageNotFoundComponent,
         WaitingRoomComponent,
         JoinRoomComponent,
-        // ChatroomsComponent,
         AdminPageComponent,
         EditDictionaryDialogComponent,
         BestScoresComponent,
@@ -54,7 +52,7 @@ import { PrototypeChatBoxComponent } from './pages/prototype-chat-box/prototype-
         ClickOutsideModule,
         ReactiveFormsModule,
     ],
-    providers: [ChatroomsComponent, MainPageComponent],
+    providers: [MainPageComponent],
     bootstrap: [AppComponent],
 })
 export class AppModule {}

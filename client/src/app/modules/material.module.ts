@@ -46,6 +46,11 @@ const modules = [
     MatInputModule,
     MatSelectModule,
     MatFormFieldModule,
+    MatInputModule,
+    MatRadioModule,
+    MatSelectModule,
+    MatFormFieldModule,
+    MatButtonModule,
 ];
 
 /**
@@ -56,7 +61,6 @@ const modules = [
     imports: [...modules],
     exports: [...modules],
     providers: [MatPaginatorIntl],
-    declarations: [
-  ],
+    declarations: [],
 })
 export class AppMaterialModule {}

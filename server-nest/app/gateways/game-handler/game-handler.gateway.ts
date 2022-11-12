@@ -141,6 +141,11 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
             room.skipTurnService.stopTimer();
         });
 
+        socket.on('stopTimer', (roomId: string) => {
+            const room = this.roomManagerService.find(roomId);
+            room.skipTurnService.stopTimer();
+        });
+
         socket.on('objectiveAccomplished', (id: number, roomId: string) => {
             socket.to(roomId).emit('receiveObjectiveCompleted', id);
         });

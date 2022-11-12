@@ -39,7 +39,7 @@ export class JoinChatRoomsComponent {
         setTimeout(() => console.log(this.chatRoomService.chatRooms), 2000);
     }
 
-    deleteChatRoom(index: any) {
+    deleteChatRoom(index: number) {
         // console.log(this.chatRoomService.chatRooms[this.chatRoomIndexService.chatRoomIndex])
         this.chatRoomService.chatRooms.splice(index, 1);
         this.clientSocketService.socket.emit('deleteChatRoom', index);

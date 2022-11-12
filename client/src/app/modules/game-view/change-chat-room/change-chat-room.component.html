@@ -5,14 +5,32 @@
 </div>
 <div *ngIf="userChatsRooms.length !== 0">
     <mat-radio-group class="radio-group" [(ngModel)]="selectedChatRoom">
-        <mat-radio-button color="primary" class="radio-button" value="solo" [disabled]="disableJoinCurrentRoom(chatRoom)" *ngFor="let chatRoom of userChatsRooms" [value]="chatRoom"
-            >{{ chatRoom.chatRoomName }}{{ ", par " }}{{ chatRoom.creatorName }}
-            <button mat-button color="warn" (click)="leaveChatRoom(chatRoom)" *ngIf="chatRoom.chatRoomName !== this.chatRoomService.chatRooms[0].chatRoomName">Quitter</button>
+        <mat-radio-button
+            color="primary"
+            class="radio-button"
+            value="solo"
+            [disabled]="disableJoinCurrentRoom(chatRoom)"
+            *ngFor="let chatRoom of userChatsRooms"
+            [value]="chatRoom"
+            >{{ chatRoom.chatRoomName }}{{ ', par ' }}{{ chatRoom.creatorName }}
+            <button
+                mat-button
+                color="warn"
+                (click)="leaveChatRoom(chatRoom)"
+                *ngIf="chatRoom.chatRoomName !== this.chatRoomService.chatRooms[0].chatRoomName"
+            >
+                Quitter
+            </button>
         </mat-radio-button>
-        
     </mat-radio-group>
 </div>
-<button class="button" id="playButton" mat-raised-button color="primary" (click)="changeChatRoom(); this.changeChatRoomDialogRef.close(true); firstSelection()">
+<button
+    class="button"
+    id="playButton"
+    mat-raised-button
+    color="primary"
+    (click)="changeChatRoom(); this.changeChatRoomDialogRef.close(true); firstSelection()"
+>
     Changer!
 </button>
 
