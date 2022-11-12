@@ -1,9 +1,9 @@
-import { PlayerService } from '@app/services/player.service';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ONE_SECOND_DELAY, TWO_SECOND_DELAY } from '@app/classes/constants';
 import { ClientSocketService } from '@app/services/client-socket.service';
 import { GameSettingsService } from '@app/services/game-settings.service';
+import { PlayerService } from '@app/services/player.service';
 import { ERROR_MESSAGE_DELAY } from '@common/constants';
 
 @Component({
@@ -77,7 +77,7 @@ export class WaitingRoomComponent implements OnInit {
         //     }
         // }
 
-        if (this.playerService.opponents.length < 3 || !this.playerService.currentPlayer.isCreator) {
+        if (this.playerService.opponents.length < 2 || !this.playerService.currentPlayer.isCreator) {
             this.shouldDisplayStartError = true;
             setTimeout(() => {
                 this.shouldDisplayStartError = false;

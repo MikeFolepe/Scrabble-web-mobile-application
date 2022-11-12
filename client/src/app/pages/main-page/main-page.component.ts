@@ -5,9 +5,7 @@ import { AddChatRoomComponent } from '@app/modules/game-view/add-chat-room/add-c
 import { ChangeChatRoomComponent } from '@app/modules/game-view/change-chat-room/change-chat-room.component';
 import { JoinChatRoomsComponent } from '@app/modules/game-view/join-chat-rooms/join-chat-rooms.component';
 import { BestScoresComponent } from '@app/pages/best-scores/best-scores.component';
-// import { AuthService } from '@app/services/auth.service';
 import { ChatRoomService } from '@app/services/chat-room.service';
-// import { ClientSocketService } from '@app/services/client-socket.service';
 import { EndGameService } from '@app/services/end-game.service';
 import { GameSettingsService } from '@app/services/game-settings.service';
 import { GiveUpHandlerService } from '@app/services/give-up-handler.service';
@@ -24,10 +22,10 @@ export class MainPageComponent {
     selectedGameTypeIndex: number;
     selectedGameType: string | GameType;
     selectedGameMode?: string;
-    selectedChatRooms : string[];
-    chatRoomForm : boolean;
-    isOpen : boolean;
-    chatRoomName : string;
+    selectedChatRooms: string[];
+    chatRoomForm: boolean;
+    isOpen: boolean;
+    chatRoomName: string;
     readonly gameType: string[];
     readonly gameModes: string[];
 
@@ -37,15 +35,12 @@ export class MainPageComponent {
         public bestScoresDialog: MatDialog,
         public joinChatRoomsDialog: MatDialog,
         public changeChatRoomDialog: MatDialog,
-        public addChatRoomDialog : MatDialog,
-        // private clientSocketService: ClientSocketService,
+        public addChatRoomDialog: MatDialog,
         private letterService: LetterService,
         private placeLetterService: PlaceLetterService,
         private giveUpHandlerService: GiveUpHandlerService,
         private endGameService: EndGameService,
-        // private authService: AuthService,
-        // private authService: AuthService,
-        public chatRoomService: ChatRoomService
+        public chatRoomService: ChatRoomService,
     ) {
         this.selectedGameTypeIndex = 0;
         this.gameType = ['Scrabble classique'];
@@ -78,7 +73,7 @@ export class MainPageComponent {
         }
     }
 
-    openChatRoomForm() : void {
+    openChatRoomForm(): void {
         this.chatRoomForm = true;
     }
 
@@ -86,15 +81,15 @@ export class MainPageComponent {
         this.bestScoresDialog.open(BestScoresComponent, { disableClose: true });
     }
 
-    openChangeChatRoomDialog() : void {
+    openChangeChatRoomDialog(): void {
         this.changeChatRoomDialog.open(ChangeChatRoomComponent, { disableClose: true });
     }
 
-    openJoinChatRoomDialog() : void {
+    openJoinChatRoomDialog(): void {
         this.joinChatRoomsDialog.open(JoinChatRoomsComponent, { disableClose: true });
     }
 
-    openAddChatRoomDialog() : void {
+    openAddChatRoomDialog(): void {
         this.addChatRoomDialog.open(AddChatRoomComponent, { disableClose: true });
     }
 
@@ -106,5 +101,3 @@ export class MainPageComponent {
         this.gameSettingsService.ngOnDestroy();
     }
 }
-
-

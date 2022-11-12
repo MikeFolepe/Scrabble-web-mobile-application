@@ -16,14 +16,14 @@ import { JoinChatRoomsComponent } from './join-chat-rooms/join-chat-rooms.compon
 
 @NgModule({
     declarations: [
-        JoinChatRoomsComponent,
-        ChatroomsComponent,
         GameViewComponent,
         ScrabbleBoardComponent,
         InformationPanelComponent,
         LetterEaselComponent,
         FontSizeComponent,
         ChatboxComponent,
+        JoinChatRoomsComponent,
+        ChatroomsComponent,
         ChangeChatRoomComponent,
     ],
     imports: [CommonModule, AppRoutingModule, FormsModule, SharedModule, AppMaterialModule],

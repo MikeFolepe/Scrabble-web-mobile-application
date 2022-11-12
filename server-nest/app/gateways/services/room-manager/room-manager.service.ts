@@ -28,7 +28,7 @@ export class RoomManagerService {
         );
     }
 
-    addCustomer(customerName: string, roomId: string): boolean {
+    addCustomer(customerName: string, roomId: string, isAi?: boolean): boolean {
         const room = this.find(roomId);
         if (room === undefined) return false;
         // eslint-disable-next-line @typescript-eslint/prefer-for-of
@@ -39,10 +39,15 @@ export class RoomManagerService {
         //         return true;
         //     }
         // }
+        if (isAi) {
+            room.playerService.players.push(new Player(room.createAi(), []));
+            room.playerService.players[room.playerService.players.length - 1].isAI = true;
+            return true;
+        }
 
         if (room.playerService.players.length === 4) return false;
         room.playerService.players.push(new Player(customerName, room.letter.getRandomLetters()));
-        console.log("pushed new player")
+        console.log('pushed new player');
         return true;
     }
 
@@ -53,7 +58,6 @@ export class RoomManagerService {
 
     setSocket(room: Room, socketId: string): void {
         room.socketIds.push(socketId);
-
     }
 
     getGameSettings(roomId: string): GameSettings {

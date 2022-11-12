@@ -9,19 +9,16 @@ import { Server } from 'socket.io';
 export class ChatRoomService {
     @WebSocketServer() private server: Server;
     chatRooms: ChatRoom[];
-    //give the initUser initial values to never be undefined
+    // give the initUser initial values to never be undefined
 
     constructor() {
         this.chatRooms = [];
-        const initUser = new User("", "ADMIN", "");
+        const initUser = new User('', 'ADMIN', '');
         const initRoom = new ChatRoom(SERVER_ROOM, initUser, 'Canal Général');
         this.chatRooms.push(initRoom);
     }
 
-    
-
-    createRoom(chatRoomId: string, creator: User, chatRoomName: string) : ChatRoom {
-
+    createRoom(chatRoomId: string, creator: User, chatRoomName: string): ChatRoom {
         const newRoom = new ChatRoom(chatRoomId, creator, chatRoomName);
         this.chatRooms.push(newRoom);
         return newRoom;
@@ -48,15 +45,10 @@ export class ChatRoomService {
         return true;
     }
 
-
     find(roomId: string): ChatRoom | undefined {
-
         for (const room of this.chatRooms) {
             if (room.chatRoomId === roomId) return room;
         }
         return undefined;
-        
     }
-
-
 }

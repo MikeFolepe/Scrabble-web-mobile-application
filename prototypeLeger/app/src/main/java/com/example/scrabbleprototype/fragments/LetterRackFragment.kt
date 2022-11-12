@@ -1,27 +1,31 @@
 package com.example.scrabbleprototype.fragments
 
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
+import android.content.*
 import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
+import android.view.DragEvent
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.Recycler
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.activities.GameActivity
 import com.example.scrabbleprototype.model.*
+import com.example.scrabbleprototype.objects.Board
 import com.example.scrabbleprototype.objects.LetterRack
 import com.example.scrabbleprototype.objects.Players
 import com.example.scrabbleprototype.objects.Reserve
 import com.example.scrabbleprototype.services.SwapLetterService
+import com.example.scrabbleprototype.viewModel.PlacementViewModel
+import com.example.scrabbleprototype.viewModel.PlayersViewModel
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 
 class LetterRackFragment : Fragment() {
@@ -31,6 +35,10 @@ class LetterRackFragment : Fragment() {
     private val letterPos = hashMapOf<Int, Letter>()
     private lateinit var letterRackAdapter: LetterRackAdapter
     private lateinit var letterRackView: RecyclerView
+    private val board = Board.cases
+
+    private val placementViewModel: PlacementViewModel by activityViewModels()
+    private val playersViewModel: PlayersViewModel by activityViewModels()
 
     private lateinit var swapLetterService: SwapLetterService
     private var swapLetterBound: Boolean = false
@@ -79,6 +87,7 @@ class LetterRackFragment : Fragment() {
         updatePlayer(view)
         setupLetterRack(view)
         setupSwapButton(view)
+        setupDragListener(view)
 
         for(element in reserve) {
             hashMap[element.value] = element
@@ -86,9 +95,7 @@ class LetterRackFragment : Fragment() {
     }
 
     private fun setupLetterRack(view: View) {
-        Log.d("easelInit", Players.currentPlayer.letterTable[6].value)
         LetterRack.letters = Players.currentPlayer.letterTable
-        Log.d("easelInit", LetterRack.letters[6].value)
         letterRackView = view.findViewById<RecyclerView>(R.id.letter_rack)
         val horizontalLayoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false)
         letterRackView.layoutManager = horizontalLayoutManager
@@ -115,7 +122,6 @@ class LetterRackFragment : Fragment() {
             activity?.runOnUiThread {
                 val mapper = jacksonObjectMapper()
                 val playerReceived = mapper.readValue(response[0].toString(), Player::class.java)
-                Log.d("easelUpdate", playerReceived.name + " " + Players.currentPlayer.name)
                 if(Players.currentPlayer.name == playerReceived.name) {
                     Players.currentPlayer.letterTable = playerReceived.letterTable
                     Players.currentPlayer.score = playerReceived.score
@@ -125,17 +131,72 @@ class LetterRackFragment : Fragment() {
                     opponentToUpdate?.letterTable = playerReceived.letterTable
                     opponentToUpdate?.score = playerReceived.score
                 }
-                for(let in LetterRack.letters) {
-                    Log.d("easelUpdate", let.value)
-                }
-
-                for(i in 0 until LetterRack.letters.size) {
-                    letterRackAdapter.notifyItemChanged(i)
-                }
                 letterRackAdapter = LetterRackAdapter(LetterRack.letters)
                 letterRackView.adapter = letterRackAdapter
-                letterRackAdapter.updateData(LetterRack.letters)
+
+                //UPDATE PLAYER IN INFO PANNEL
+                val playerIndex = playersViewModel.playersInGame.indexOfFirst { it.name == playerReceived.name }
+                if(playerIndex == -1) return@runOnUiThread
+                playersViewModel.playersInGame[playerIndex].score = playerReceived.score
+                playersViewModel.notifyItemChangedAt(playerIndex)
             }
         }
+    }
+
+    private fun setupDragListener(view: View) {
+        // Drag listener for board cases
+        view.setOnDragListener { v, e ->
+            when(e.action) {
+                DragEvent.ACTION_DRAG_STARTED -> {
+                    return@setOnDragListener e.clipDescription.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)
+                }
+                DragEvent.ACTION_DRAG_ENTERED -> {
+                    // Can modify view here to show that the view is being dragged
+                    true
+                }
+                DragEvent.ACTION_DRAG_EXITED -> {
+                    // Modify view style back to DRAG_STARTED DragEvent
+                    true
+                }
+                DragEvent.ACTION_DROP -> {
+                    if(!Players.currentPlayer.getTurn()) return@setOnDragListener false
+
+                    val letterTouched = e.clipData.getItemAt(0)
+                    val letterQuantity: Int = e.clipData.getItemAt(1).text.toString().toInt()
+                    val letterScore: Int = e.clipData.getItemAt(2).text.toString().toInt()
+                    val dragStartPosition: Int = e.clipData.getItemAt(3).text.toString().toInt()
+                    val isDraggedFromRack: Boolean = e.clipData.getItemAt(4).text.toString().toBoolean()
+                    val dragData = letterTouched.text // La data de la lettre qui a été dragged
+
+                    // Add letter dropped to rack
+                    if(isDraggedFromRack) return@setOnDragListener false
+                    LetterRack.letters.add(Letter(dragData.first().toString().lowercase(), letterQuantity, letterScore, false, false))
+                    letterRackAdapter.notifyItemChanged(LetterRack.letters.size - 1)
+                    // Remove letter dragged of board
+                    onPlacementFromBoard(dragStartPosition)
+                    true
+                }
+                DragEvent.ACTION_DRAG_ENDED -> {
+                    when(e.result) {
+                        true ->
+                            Toast.makeText(v.context, "DROP SUCCESSFUL", Toast.LENGTH_LONG)
+                        else ->
+                            Toast.makeText(v.context, "DROP DIDN'T WORK", Toast.LENGTH_LONG)
+                    }.show()
+                    true
+                }
+                else -> {
+                    Log.d("dragdrop", "Unknown Action type received by the drag listener")
+                    false
+                }
+            }
+        }
+    }
+
+    private fun onPlacementFromBoard(dragStartPosition: Int) {
+        board[dragStartPosition] = Constants.EMPTY_LETTER
+        val boardAdapter = activity?.findViewById<RecyclerView>(R.id.board)?.adapter
+        boardAdapter?.notifyItemChanged(dragStartPosition)
+        placementViewModel.removeLetter(dragStartPosition)
     }
 }
