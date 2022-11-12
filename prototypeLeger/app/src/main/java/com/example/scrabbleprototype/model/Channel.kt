@@ -10,11 +10,11 @@ class Channel(): AppCompatActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val players: Array<String>
-        val name: String = ""
+        var players: Array<String> = arrayOf<String>()
+        var name: String = ""
 
         fun addPlayer(player: String) {
-            players.add(player)
+            players += player
         }
     }
 }
