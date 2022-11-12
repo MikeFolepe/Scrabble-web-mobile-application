@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BOARD_COLUMNS, BOARD_ROWS, GRID_CASE_SIZE, INVALID_INDEX, LAST_INDEX } from '@app/classes/constants';
 import { MouseButton } from '@app/classes/enum';
 import { Orientation } from '@app/classes/scrabble-board-pattern';
+import { Letter } from '@common/letter';
 import { Vec2 } from '@common/vec2';
 import { ClientSocketService } from './client-socket.service';
 import { GridService } from './grid.service';
@@ -14,6 +15,9 @@ import { PlayerService } from './player.service';
 })
 export class BoardHandlerService {
     word: string;
+    isDragged: boolean;
+    currentDraggedLetter: Letter;
+    isDragActivated: boolean;
     private currentCase: Vec2;
     private firstCase: Vec2;
     private placedLetters: boolean[];
@@ -59,7 +63,7 @@ export class BoardHandlerService {
                 break;
             }
             default: {
-                if (!this.playerService.currentPlayer.isTurn) break;
+                if (!this.playerService.currentPlayer.isTurn || this.isDragged) break;
                 if (/([a-zA-Z\u00C0-\u00FF])+/g.test(event.key) && event.key.length === 1) {
                     // Removes accents from the letter to place
                     const letterNoAccents = event.key.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -70,8 +74,31 @@ export class BoardHandlerService {
         }
     }
 
+    placeDroppedLetter(event: MouseEvent, letter: Letter): void {
+        // if(this.playerService.getEasel().length === 6){}
+        // const caseClicked: Vec2 = this.calculateFirstCasePosition(event);
+        // if (!this.isCasePositionValid(caseClicked) || !this.playerService.currentPlayer.isTurn) return;
+        // this.selectStartingCase(caseClicked);
+        // this.placeLetter(letter.value);
+        // switch (this.word.length) {
+        //     case 1:
+        // }
+        this.isDragActivated = true;
+        const position: Vec2 = {
+            x: Math.floor((event.offsetX - GRID_CASE_SIZE) / GRID_CASE_SIZE),
+            y: Math.floor((event.offsetY - GRID_CASE_SIZE) / GRID_CASE_SIZE),
+        };
+        this.placeLetterService.placeLetter(position, letter.value, Orientation.Horizontal, this.word.length);
+        this.word += letter.value;
+        this.currentCase = position;
+        // faire un switch case pour si c'Est la premiere lettre ou non
+        // faire les vérifications nécessaires (est ce possible de jouer à cette case)
+        // si la verification passe jouer et incrémenter this.word
+    }
+
     mouseHitDetect(event: MouseEvent): void {
-        if (this.playerService.currentPlayer.isTurn === false) return;
+        if (this.isDragActivated) return;
+        // if (this.playerService.currentPlayer.isTurn === false) return;
         if (event.button === MouseButton.Left) {
             if (this.isFirstCaseLocked) return;
             const caseClicked: Vec2 = this.calculateFirstCasePosition(event);
@@ -129,6 +156,7 @@ export class BoardHandlerService {
 
     private removePlacedLetter(): void {
         const letterToRemove = this.word[this.word.length - 1];
+        console.log(letterToRemove);
         // Verify that letterToRemove isn't undefined
         if (letterToRemove) {
             this.word = this.word.slice(0, LAST_INDEX);

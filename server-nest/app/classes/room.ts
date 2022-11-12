@@ -6,6 +6,7 @@ import { PlayerService } from '@app/game/services/player/player.service';
 import { SkipTurnService } from '@app/game/services/skip-turn-service/skip-turn-service';
 import { WordValidationService } from '@app/game/services/word-validation/word-validation.service';
 import { GameSettings } from '@common/game-settings';
+import { AI_NAMES } from './aiNames';
 
 export enum State {
     Playing,
@@ -24,7 +25,9 @@ export class Room {
     playerService: PlayerService;
     skipTurnService: SkipTurnService;
     turnCounter: number;
-
+    ais: PlayerAI[];
+    nbOfAi: number;
+    aiTurn: number;
     constructor(roomId: string, socketId: string, gameSettings: GameSettings, state: State = State.Waiting) {
         this.turnCounter = 0;
         this.id = roomId;
@@ -38,16 +41,10 @@ export class Room {
         this.placeLetter = new PlaceLetterService(this.wordValidation, this.playerService);
         this.skipTurnService = new SkipTurnService(gameSettings, this.playerService.players);
         this.playerService.players[0] = new Player(this.gameSettings.creatorName, this.letter.getRandomLetters(), 0, true, true);
-        // this.playerService.players[1] = new PlayerAI(
-        //     'BOT1',
-        //     this.letter.getRandomLetters(),
-        //     this.playerService,
-        //     this.gameSettings,
-        //     this.placeLetter,
-        //     this.letter,
-        //     this.wordValidation,
-        // );
-
+        this.ais = [];
+        this.socketIds = [];
+        this.nbOfAi = 0;
+        this.aiTurn = 0;
         // this.playerService.players[2] = new PlayerAI(
         //     'BOT2',
         //     this.letter.getRandomLetters(),
@@ -66,9 +63,6 @@ export class Room {
         //     this.letter,
         //     this.wordValidation,
         // );
-
-
-
         // this.player = new Player('ok, ', this.letter.reserve, 0);
 
         // this.aiPlayers = new PlayerAI(
@@ -83,5 +77,28 @@ export class Room {
         // );
 
         // instancier placeLetterService avec wordValidation, instancier  world validation, instancier playerService           placer tout dans Ai
+    }
+
+    createAi(): string {
+        const name = AI_NAMES[this.ais.length];
+        this.playerService.players[this.ais.length] = new Player(this.gameSettings.creatorName, this.letter.getRandomLetters(), 0, false, false);
+        this.ais.push(
+            new PlayerAI(
+                name,
+                this.letter.getRandomLetters(),
+                this.playerService.players[this.ais.length],
+                this.gameSettings,
+                this.placeLetter,
+                this.letter,
+                this.wordValidation,
+            ),
+        );
+        return name;
+    }
+    aiIturn(): number {
+        if (this.aiTurn === this.ais.length) this.aiTurn = 0;
+        const turn = this.aiTurn;
+        this.aiTurn++;
+        return turn;
     }
 }

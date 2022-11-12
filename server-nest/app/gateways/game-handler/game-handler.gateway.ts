@@ -1,10 +1,9 @@
 import { Room, State } from '@app/classes/room';
-import { PlayerAI } from '@app/game/models/player-ai.model';
+import { Vec2 } from '@app/classes/vec2';
 import { UsersService } from '@app/users/service/users.service';
 import { ONE_SECOND_DELAY, THREE_SECONDS_DELAY } from '@common/constants';
 import { GameSettings } from '@common/game-settings';
 import { Letter } from '@common/letter';
-import { Vec2 } from '@common/vec2';
 import { Logger } from '@nestjs/common';
 import { OnGatewayConnection, OnGatewayDisconnect, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
@@ -19,12 +18,6 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
     messages: string[] = [];
 
     constructor(private readonly logger: Logger, private userService: UsersService, private roomManagerService: RoomManagerService) {}
-
-    // afterInit() {
-    //     setInterval(() => {
-    //         this.emitTime();
-    //     }, DELAY_BEFORE_EMITTING_TIME);
-    // }
 
     // TODO: set a socket id in player class to easily find the player
 
@@ -54,15 +47,23 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
             this.server.in(roomId).emit('yourGameSettings', this.roomManagerService.getGameSettings(roomId));
             socket.emit('goToWaiting');
         });
-
         socket.on('startGame', (roomId: string) => {
             const room = this.roomManagerService.find(roomId);
+            let nbOfAi = 3 - room.socketIds.length;
+            while (nbOfAi !== 0) {
+                this.roomManagerService.addCustomer('', roomId, true);
+                this.server.in(roomId).emit('curAis', room.playerService.players[room.playerService.players.length - 1]);
+                nbOfAi--;
+            }
+            const players = room.playerService.players;
+            console.log(players);
             this.roomManagerService.setState(roomId, State.Playing);
             this.server.in(roomId).emit('goToGameView');
             this.server.to(roomId).emit('receiveReserve', room.letter.reserve, room.letter.reserveSize);
             this.server.emit('roomAvailable', this.roomManagerService.getNumberOfRoomInWaitingState());
             setTimeout(() => {
                 room.skipTurnService.findStartingPlayerIndex(room.playerService.players);
+                room.skipTurnService.players = players;
                 this.startTimer(roomId);
             }, 5000);
         });
@@ -130,30 +131,19 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
             setTimeout(() => {
                 this.updateTurns(room);
                 this.startTimer(room.id);
+                this.startAiTurn(room);
             }, THREE_SECONDS_DELAY);
             this.server.in(roomId).emit('eraseStartingCase');
+        });
 
-            const activePlayerIndex = room.skipTurnService.activePlayerIndex;
-            if (room.playerService.players[activePlayerIndex] instanceof PlayerAI) {
-                setTimeout(async () => {
-                    await (room.playerService.players[activePlayerIndex] as PlayerAI).play(activePlayerIndex);
-                    if (room.placeLetter.finalResult.validation) {
-                        socket
-                            .to(roomId)
-                            .emit(
-                                'receivePlacement',
-                                room.placeLetter.scrabbleBoard,
-                                room.placeLetter.startPosition,
-                                room.placeLetter.orientation,
-                                room.placeLetter.word,
-                            );
-                        this.server.to(roomId).emit('updatePlayer', room.playerService.players[activePlayerIndex]);
-                        this.server.to(roomId).emit('receiveReserve', room.letter.reserve, room.letter.reserveSize);
-                    }
+        socket.on('stopTimer', (roomId: string) => {
+            const room = this.roomManagerService.find(roomId);
+            room.skipTurnService.stopTimer();
+        });
 
-                    this.server.to(roomId).emit('switchAiTurn', room.playerService.players[activePlayerIndex].name);
-                }, DELAY_BEFORE_PLAYING);
-            }
+        socket.on('stopTimer', (roomId: string) => {
+            const room = this.roomManagerService.find(roomId);
+            room.skipTurnService.stopTimer();
         });
 
         socket.on('stopTimer', (roomId: string) => {
@@ -211,8 +201,6 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
                 const room = this.roomManagerService.find(roomId);
                 const validationResult = await room.wordValidation.validateAllWordsOnBoard(JSON.parse(board), isEaselSize, isRow);
                 const playerReceived = JSON.parse(player);
-                this.logger.log(validationResult);
-                this.logger.log(JSON.parse(orientation), isRow, isEaselSize, JSON.parse(position));
                 if (validationResult.validation) {
                     const index = room.playerService.players.findIndex((curPlayer) => playerReceived.name === curPlayer.name);
                     room.playerService.players[index].letterTable = playerReceived.letterTable;
@@ -314,5 +302,30 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
         if (room.skipTurnService.activePlayerIndex >= room.playerService.players.length) room.skipTurnService.activePlayerIndex = 0;
         room.playerService.players[room.skipTurnService.activePlayerIndex].isTurn = true;
         this.server.in(room.id).emit('turnSwitched', room.playerService.players[room.skipTurnService.activePlayerIndex].name);
+        console.log('update : ' + room.skipTurnService.activePlayerIndex);
+    }
+
+    private startAiTurn(room: Room) {
+        const activePlayerIndex = room.skipTurnService.activePlayerIndex;
+        console.log(room.skipTurnService.players);
+        if (!room.playerService.players[activePlayerIndex].isAI) return;
+
+        console.log('i am AI');
+        setTimeout(async () => {
+            const turn = room.aiIturn();
+            await room.ais[turn].play(activePlayerIndex);
+            this.server
+                .in(room.id)
+                .emit(
+                    'receivePlacement',
+                    JSON.stringify(room.placeLetter.scrabbleBoard),
+                    JSON.stringify(room.placeLetter.startPosition),
+                    JSON.stringify(room.placeLetter.orientation),
+                    room.placeLetter.word,
+                );
+            this.server.to(room.id).emit('updatePlayer', room.playerService.players[activePlayerIndex]);
+            this.server.to(room.id).emit('receiveReserve', room.letter.reserve, room.letter.reserveSize);
+            this.server.to(room.socketIds[0]).emit('switchAiTurn', room.playerService.players[activePlayerIndex].name);
+        }, DELAY_BEFORE_PLAYING);
     }
 }

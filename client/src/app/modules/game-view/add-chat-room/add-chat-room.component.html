@@ -1,0 +1,21 @@
+<h1>Création de canal de discussion</h1>
+<div class="creation">
+    <mat-form-field>
+        <input matInput placeholder="Nom du canal de discussion" [(ngModel)]="chatRoomName" />
+    </mat-form-field>
+    <button mat-button [disabled]="!validChatRoomName()" (click)="this.addChatRoomDialogRef.close(true); this.createChatRoom()">Créer</button>
+</div>
+<div class="errorMessage">
+    <p *ngIf="!validChatRoomName()">{{ errorMessage }}</p>
+    <p
+        *ngIf="
+            !validChatRoomName() &&
+            errorMessage === 'Le nom du canal doit contenir au moins 5 caractères, les caractères étant seulement des lettres et des chiffres.'
+        "
+    >
+        {{ secondErrorMessage }}
+    </p>
+</div>
+<div mat-dialog-actions>
+    <button class="close-button" mat-raised-button mat-dialog-close (click)="this.addChatRoomDialogRef.close(true)" color="warn">Fermer</button>
+</div>
