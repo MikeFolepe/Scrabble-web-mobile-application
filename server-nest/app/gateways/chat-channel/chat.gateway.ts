@@ -1,10 +1,10 @@
 import { Message } from '@app/model/message';
-import { UsersService } from '@app/users/service/users.service';
 import { ChatRoomMessage } from '@common/chatRoomMessage';
 import { User } from '@common/user';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { UserService } from '../../users/user.service';
 import { ChatRoomService } from '../services/chat-room/chat-room.service';
 import { ChatEvents } from './../../../../common/chat.gateway.events';
 @WebSocketGateway({ cors: true })
@@ -14,7 +14,7 @@ export class ChatGateway {
 
     messages: string[] = [];
 
-    constructor(private readonly logger: Logger, private userService: UsersService, private chatRoomService: ChatRoomService) {
+    constructor(private readonly logger: Logger, private userService: UserService, private chatRoomService: ChatRoomService) {
     }
 
     @SubscribeMessage(ChatEvents.Message)

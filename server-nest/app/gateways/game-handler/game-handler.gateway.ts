@@ -1,14 +1,12 @@
 import { Room, State } from '@app/classes/room';
-import { Orientation } from '@app/classes/scrabble-board-pattern';
 import { PlayerAI } from '@app/game/models/player-ai.model';
-import { UsersService } from '@app/users/service/users.service';
 import { GameSettings } from '@common/game-settings';
 import { Letter } from '@common/letter';
-import { Vec2 } from '@common/vec2';
 import { Logger } from '@nestjs/common';
 import { OnGatewayConnection, OnGatewayDisconnect, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { DELAY_BEFORE_PLAYING, DELAY_OF_DISCONNECT } from '../../classes/constants';
+import { UserService } from '../../users/user.service';
 import { RoomManagerService } from '../services/room-manager/room-manager.service';
 import { ChatEvents } from './../../../../common/chat.gateway.events';
 
@@ -18,7 +16,7 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
 
     messages: string[] = [];
 
-    constructor(private readonly logger: Logger, private userService: UsersService, private roomManagerService: RoomManagerService) {}
+    constructor(private readonly logger: Logger, private userService: UserService, private roomManagerService: RoomManagerService) {}
 
 
 

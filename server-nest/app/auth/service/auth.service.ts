@@ -1,15 +1,15 @@
-import { UsersService } from '@app/users/service/users.service';
+import { UserService } from '@app/users/user.service';
 import { User } from '@common/user';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class AuthService {
-    constructor(private usersService: UsersService) {}
+    constructor(private userService: UserService) {}
 
     async login(userData: User): Promise<boolean> {
-        const user = await this.usersService.findOne(userData.pseudonym);
+        const user = await this.userService.findOne(userData.pseudonym);
         if (user) return false;
-        await this.usersService.addUser(userData);
-        return true;
+        await this.userService.addUser(userData);
+        return true; 
     }
 }

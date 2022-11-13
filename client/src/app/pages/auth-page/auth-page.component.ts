@@ -2,7 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { AvatarChoiceComponent } from '@app/modules/game-view/avatar-choice/avatar-choice.component';
+import { AdministratorService } from '@app/services/administrator.service';
 import { AuthService } from '@app/services/auth.service';
+import { User } from '@common/user';
 
 @Component({
     selector: 'app-auth-page',
@@ -25,7 +27,7 @@ export class AuthPageComponent implements OnInit {
     ipAddressValue = '';
     differentPasswords = false;
     // choseAvatar = false;
-    constructor(public authService: AuthService, private formBuilder: FormBuilder, public avatarChoiceDialog : MatDialog) {
+    constructor(private administratorService : AdministratorService, public authService: AuthService, private formBuilder: FormBuilder, public avatarChoiceDialog : MatDialog) {
         
     }
 
@@ -43,6 +45,7 @@ export class AuthPageComponent implements OnInit {
             password : ['', Validators.required],
             confirmPassword: ['', Validators.required],
         });
+        this.administratorService.initializeUsers();
 
     }
 
@@ -58,8 +61,10 @@ export class AuthPageComponent implements OnInit {
         this.isSubmitted = true;
 
         if (this.authForm.invalid) {
+            console.log(this.administratorService.user[0]);
             return;
         }
+       
         this.authService.signIn(this.authForm.value);
     }
 
@@ -92,6 +97,9 @@ export class AuthPageComponent implements OnInit {
             return;
         }
         this.differentPasswords = false;
+
+        const user  = new User("", this.avatarValue, this.pseudonymValue, this.passwordValue, this.emailValue, "");
+        this.administratorService.addUserToDatabase(user);
 
     }
 

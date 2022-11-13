@@ -13,7 +13,7 @@ export class ChatRoomService {
 
     constructor() {
         this.chatRooms = [];
-        const initUser = new User("", "ADMIN", "");
+        const initUser = new User("", "", "ADMIN", "", "", "");
         const initRoom = new ChatRoom(SERVER_ROOM, initUser, 'Canal Général');
         this.chatRooms.push(initRoom);
     }
