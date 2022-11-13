@@ -55,6 +55,7 @@ export class PlaceLetterService implements OnDestroy {
         this.receiveSuccess();
         this.receivePlacement();
         this.receiveBoard();
+        this.receiveDragPlacement();
     }
 
     async placeWithKeyboard(position: Vec2, letter: string, orientation: Orientation, indexLetterInWord: number): Promise<boolean> {
@@ -88,14 +89,25 @@ export class PlaceLetterService implements OnDestroy {
         return true;
     }
 
-    async validateKeyboardPlacement(position: Vec2, orientation: Orientation, word: string): Promise<void> {
+    async validateKeyboardPlacement(position: Vec2, orientation: Orientation, word: string, dragWord?: Map<string, Vec2>): Promise<void> {
         this.startPosition = position;
         this.orientation = orientation;
         this.word = word;
         if (this.numLettersUsedFromEasel === EASEL_SIZE) this.isEaselSize = true;
         // Placing the first word
         if (this.isFirstRound) {
-            if (this.placementsService.isFirstWordValid(position, orientation, word)) {
+            if (dragWord)
+                this.clientSocketService.socket.emit(
+                    'validateDragPlacement',
+                    word,
+                    this.isRow,
+                    this.isEaselSize,
+                    JSON.stringify(this.scrabbleBoard),
+                    this.clientSocketService.roomId,
+                    JSON.stringify(this.playerService.currentPlayer),
+                    dragWord,
+                );
+            else if (this.placementsService.isFirstWordValid(position, orientation, word)) {
                 this.clientSocketService.socket.emit(
                     'validatePlacement',
                     JSON.stringify(position),
@@ -290,12 +302,29 @@ export class PlaceLetterService implements OnDestroy {
         });
     }
 
+    private receiveDragPlacement(): void {
+        this.clientSocketService.socket.on('receiveDragPlacement', (word: string, scrabbleBoard: string, dragWord: string) => {
+            this.placeDragByOpponent(JSON.parse(scrabbleBoard), word, JSON.parse(dragWord));
+            console.log('pass');
+        });
+    }
+
     private receivePlacement(): void {
         this.clientSocketService.socket.on('receivePlacement', (scrabbleBoard: string, startPosition: string, orientation: string, word: string) => {
-            console.log(word);
             this.placeByOpponent(JSON.parse(scrabbleBoard), JSON.parse(startPosition), JSON.parse(orientation), word);
             console.log('pass');
         });
+    }
+    private placeDragByOpponent(scrabbleBoard: string[][], word: string, dragWord: Map<string, Vec2>): void {
+        this.scrabbleBoard = scrabbleBoard;
+        for (const letter of word) {
+            console.log(letter);
+            const currentPosition = { x: dragWord.get(letter)?.x, y: dragWord.get(letter)?.y } as Vec2;
+            if (currentPosition.x !== undefined && currentPosition.y !== undefined) {
+                this.gridService.drawLetter(this.gridService.gridContextLettersLayer, letter, currentPosition, this.playerService.fontSize);
+            }
+        }
+        this.isFirstRound = false;
     }
     private placeByOpponent(scrabbleBoard: string[][], startPosition: Vec2, orientation: Orientation, word: string): void {
         const currentPosition = { x: startPosition.x, y: startPosition.y };

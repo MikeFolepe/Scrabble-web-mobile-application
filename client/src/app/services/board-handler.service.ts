@@ -18,6 +18,7 @@ export class BoardHandlerService {
     isDragged: boolean;
     currentDraggedLetter: Letter;
     isDragActivated: boolean;
+    dragWord: Map<string, Vec2>;
     private currentCase: Vec2;
     private firstCase: Vec2;
     private placedLetters: boolean[];
@@ -36,6 +37,7 @@ export class BoardHandlerService {
         this.firstCase = { x: INVALID_INDEX, y: INVALID_INDEX };
         this.word = '';
         this.placedLetters = [];
+        this.dragWord = new Map<string, Vec2>();
         this.isFirstCasePicked = false;
         this.isFirstCaseLocked = false;
         this.orientation = Orientation.Horizontal;
@@ -51,6 +53,7 @@ export class BoardHandlerService {
             case 'Enter': {
                 if (this.word.length) {
                     if (this.playerService.currentPlayer.isTurn) {
+                        console.log('voila');
                         this.confirmPlacement();
                         break;
                     }
@@ -90,6 +93,7 @@ export class BoardHandlerService {
         };
         this.placeLetterService.placeLetter(position, letter.value, Orientation.Horizontal, this.word.length);
         this.word += letter.value;
+        this.dragWord.set(letter.value, position);
         this.currentCase = position;
         // faire un switch case pour si c'Est la premiere lettre ou non
         // faire les vérifications nécessaires (est ce possible de jouer à cette case)
@@ -115,9 +119,11 @@ export class BoardHandlerService {
 
     async confirmPlacement(): Promise<void> {
         // Validation of the placement
-        await this.placeLetterService.validateKeyboardPlacement(this.firstCase, this.orientation, this.word);
+        if (this.isDragActivated) await this.placeLetterService.validateKeyboardPlacement(this.firstCase, this.orientation, this.word, this.dragWord);
+        else await this.placeLetterService.validateKeyboardPlacement(this.firstCase, this.orientation, this.word);
         this.word = '';
         this.placedLetters = [];
+        this.dragWord.clear();
         this.isFirstCasePicked = false;
         this.isFirstCaseLocked = false;
         this.gridService.eraseLayer(this.gridService.gridContextPlacementLayer);

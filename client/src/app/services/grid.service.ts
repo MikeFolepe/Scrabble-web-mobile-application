@@ -2,8 +2,8 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import { Injectable, OnDestroy } from '@angular/core';
 import { BOARD_ROWS, BONUS_POSITIONS, COLOR_BLACK, DEFAULT_HEIGHT, DEFAULT_WIDTH, GRID_CASE_SIZE } from '@app/classes/constants';
-import { RESERVE } from '@common/constants';
 import { Orientation } from '@app/classes/scrabble-board-pattern';
+import { RESERVE } from '@common/constants';
 import { Vec2 } from '@common/vec2';
 @Injectable({
     providedIn: 'root',

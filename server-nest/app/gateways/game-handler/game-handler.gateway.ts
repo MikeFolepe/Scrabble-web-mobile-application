@@ -141,6 +141,11 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
             room.skipTurnService.stopTimer();
         });
 
+        socket.on('stopTimer', (roomId: string) => {
+            const room = this.roomManagerService.find(roomId);
+            room.skipTurnService.stopTimer();
+        });
+
         socket.on('objectiveAccomplished', (id: number, roomId: string) => {
             socket.to(roomId).emit('receiveObjectiveCompleted', id);
         });
@@ -177,6 +182,36 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
         });
 
         socket.on(
+            'validateDragPlacement',
+            async (
+                word: string,
+                isRow: boolean,
+                isEaselSize: boolean,
+                board: string,
+                roomId: string,
+                player: string,
+                dragWord: Map<string, Vec2>,
+            ) => {
+                const room = this.roomManagerService.find(roomId);
+                const validationResult = await room.wordValidation.validateAllWordsOnBoard(JSON.parse(board), isEaselSize, isRow);
+                const playerReceived = JSON.parse(player);
+                if (validationResult.validation) {
+                    const index = room.playerService.players.findIndex((curPlayer) => playerReceived.name === curPlayer.name);
+                    room.playerService.players[index].letterTable = playerReceived.letterTable;
+                    room.placeLetter.handleValidPlacement(validationResult, index);
+                    room.placeLetter.scrabbleBoard = JSON.parse(board);
+                    socket.emit('receiveSuccess');
+                    socket.to(roomId).emit('receiveDragPlacement', word, board, dragWord);
+                    this.server.to(roomId).emit('updatePlayer', room.playerService.players[index]);
+                    this.server.to(roomId).emit('receiveReserve', room.letter.reserve, room.letter.reserveSize);
+                }
+                // else {
+                //     socket.emit('receiveFail', JSON.parse(position), JSON.parse(orientation), word);
+                // }
+            },
+        );
+
+        socket.on(
             'validatePlacement',
             async (
                 position: string,
@@ -197,7 +232,7 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
                     room.placeLetter.handleValidPlacement(validationResult, index);
                     room.placeLetter.scrabbleBoard = JSON.parse(board);
                     socket.emit('receiveSuccess');
-                    socket.to(roomId).emit('receivePlacement', room.placeLetter.scrabbleBoard, position, orientation, word);
+                    socket.to(roomId).emit('receivePlacement', board, position, orientation, word);
                     this.server.to(roomId).emit('updatePlayer', room.playerService.players[index]);
                     this.server.to(roomId).emit('receiveReserve', room.letter.reserve, room.letter.reserveSize);
                 } else {
