@@ -7,4 +7,8 @@ import kotlinx.serialization.Serializable
 class User(var ipAddress: String, var pseudonym: String, var socketId: String?) {
     @JsonIgnore
     var xpPoints: Int = 0
+    @JsonIgnore
+    var email: String = "test@gmail.com"
+    @JsonIgnore
+    var avatar: String = ""
 }

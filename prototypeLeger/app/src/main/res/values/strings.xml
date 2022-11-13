@@ -94,5 +94,18 @@
     <string name="statistics">Statistiques</string>
     <string name="connections_history">Historique de connexions</string>
     <string name="games_history">Historique des parties jouées</string>
+    <string name="games_played">Nombre de parties jouées</string>
+    <string name="games_won">Nombre de parties gagnées</string>
+    <string name="average_points_per_game">Moyenne de points par parties</string>
+    <string name="average_time_per_game">Temps moyen consacré par parties</string>
+    <string name="connection_item">Connecté le </string>
+    <string name="logout_item">Déconnecté le </string>
+    <string name="connection_time_title"> À </string>
+    <string name="game_history_item">Partie jouée le </string>
+    <string name="game_victory">Victoire</string>
+    <string name="game_defeat">Défaite</string>
+
+    //Items Dialog
+    <string name="themes_dialog_title">Veuillez choisir un thème de %1s</string>
 
 </resources>

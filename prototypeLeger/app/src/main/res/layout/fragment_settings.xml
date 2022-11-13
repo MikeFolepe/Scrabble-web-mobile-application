@@ -120,23 +120,6 @@
                     android:textSize="16sp" />
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="@string/password"
-                    android:textColor="@color/dark_gray"
-                    android:textSize="16sp" />
-
-                <EditText
-                    android:id="@+id/profile_password"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:background="@drawable/profile_info_field"
-                    android:padding="5dp"
-                    android:textSize="16sp" />
-
-                <TextView
                     android:id="@+id/personalization_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -171,23 +154,22 @@
 
                         <RelativeLayout
                             android:layout_width="match_parent"
-                            android:layout_height="30dp"
+                            android:layout_height="35dp"
                             android:layout_marginTop="5dp"
-                            android:background="@drawable/white_background"
-                            android:padding="5dp">
+                            android:background="@drawable/white_background">
 
                             <Spinner
                                 android:id="@+id/app_theme_spinner"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_centerVertical="true"
-                                android:layout_marginStart="5dp"
                                 android:background="@android:color/transparent" />
 
                             <ImageView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_alignParentRight="true"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerVertical="true"
                                 android:src="@drawable/ic_baseline_keyboard_arrow_down_24" />
                         </RelativeLayout>
                     </LinearLayout>
@@ -218,6 +200,7 @@
                                 android:layout_weight="1"
                                 android:background="@drawable/profile_info_field"
                                 android:padding="5dp"
+                                android:textStyle="bold"
                                 android:textSize="16sp" />
 
                             <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -255,6 +238,7 @@
                                 android:layout_weight="1"
                                 android:background="@drawable/profile_info_field"
                                 android:padding="5dp"
+                                android:textStyle="bold"
                                 android:textSize="16sp" />
 
                             <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -280,23 +264,22 @@
 
                         <RelativeLayout
                             android:layout_width="match_parent"
-                            android:layout_height="30dp"
+                            android:layout_height="35dp"
                             android:layout_marginTop="5dp"
-                            android:background="@drawable/white_background"
-                            android:padding="5dp">
+                            android:background="@drawable/white_background">
 
                             <Spinner
                                 android:id="@+id/language_spinner"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_centerVertical="true"
-                                android:layout_marginStart="5dp"
                                 android:background="@android:color/transparent" />
 
                             <ImageView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_alignParentRight="true"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerVertical="true"
                                 android:src="@drawable/ic_baseline_keyboard_arrow_down_24" />
                         </RelativeLayout>
                     </LinearLayout>
@@ -311,7 +294,7 @@
                     android:background="@drawable/blue_button"
                     android:textColor="@color/white"
                     android:padding="10dp"
-                    android:layout_marginTop="15dp"
+                    android:layout_marginTop="25dp"
                     android:layout_marginBottom="20dp"/>
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>

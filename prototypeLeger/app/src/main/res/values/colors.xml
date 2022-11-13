@@ -30,4 +30,7 @@
     <color name="blue">#1D7CF2</color>
     <color name="white_gray">#fafafa</color>
     <color name="light_gray">#e1e1e1</color>
+    <color name="orange">#e66a00</color>
+    <color name="light_orange">#FFE5B4</color>
+    <color name="gold">#fcd21c</color>
 </resources>
