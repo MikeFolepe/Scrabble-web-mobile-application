@@ -71,6 +71,7 @@ export class PlaceLetterStrategy {
 
         return allPossibleWords;
     }
+
     filterByRange(allPossibleWords: PossibleWords[], pointingRange: CustomRange): PossibleWords[] {
         return allPossibleWords.filter((word) => word.point >= pointingRange.min && word.point <= pointingRange.max);
     }
@@ -80,6 +81,7 @@ export class PlaceLetterStrategy {
         const level = this.gameSettings.level;
         const isFirstRound = this.placeLetterService.isFirstRound;
         const scrabbleBoard = this.placeLetterService.scrabbleBoard;
+        console.log(scrabbleBoard);
         // console.log(scrabbleBoard);
         if (this.isFirstRoundAi) {
             // this.dictionary = this.wordValidation.dictionary;
@@ -94,13 +96,18 @@ export class PlaceLetterStrategy {
         const patterns = this.generateAllPatterns(this.getEasel(), isFirstRound);
         // Step2: Generate all words in the dictionary satisfying the patterns
         allPossibleWords = this.generateAllWords(this.dictionary, patterns);
+        console.log('96place stra');
+        console.log(allPossibleWords);
         // Step3: Clip words containing more letter than playable
         // allPossibleWords = this.removeIfNotEnoughLetter(allPossibleWords, playerAi);
         // Step4: Clip words that can not be on the board
         allPossibleWords = this.removeIfNotDisposable(allPossibleWords);
-
+        console.log('102place stra');
+        console.log(allPossibleWords);
         // Step5: Add the earning points to all words and update the
         allPossibleWords = await this.calculatePoints(allPossibleWords);
+        console.log('106place stra');
+        console.log(allPossibleWords);
         // Step6: Sort the words
         this.sortDecreasingPoints(allPossibleWords);
         // matchingPointingRangeWords = this.filterByRange(allPossibleWords, this.pointingRange);
@@ -191,7 +198,7 @@ export class PlaceLetterStrategy {
     };
     async place(word: PossibleWords, index: number): Promise<void> {
         const startPos = word.orientation ? { x: word.line, y: word.startIndex } : { x: word.startIndex, y: word.line };
-        if (await this.placeLetterService.placeCommand(startPos, word.orientation, word.word)) {
+        if (await this.placeLetterService.placeCommand(startPos, word.orientation, word.word, index)) {
             return;
         }
         // this.skip(false);
@@ -245,7 +252,10 @@ export class PlaceLetterStrategy {
                 })
                 .toString();
             line = line.replace(regex2, '');
-            const radixes = this.board[word.orientation][word.line].toString().toLowerCase().replace(regex1, '').match(regex3) as string[];
+            // BUG LINE 256 WHEN THE AI DOES THE FIRST PLACEMENT OF THE GAME
+            const radixes = !this.placeLetterService.isEmpty
+                ? (this.board[word.orientation][word.line].toString().toLowerCase().replace(regex1, '').match(regex3) as string[])
+                : [];
             if (this.isWordMovableOnBoard(line, word, radixes)) filteredWords.push(word);
         }
 

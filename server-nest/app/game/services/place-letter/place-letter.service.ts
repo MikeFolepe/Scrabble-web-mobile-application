@@ -19,6 +19,7 @@ export class PlaceLetterService {
     startPosition: Vec2;
     orientation: Orientation;
     word: string;
+    isEmpty: boolean;
     // Array of the size of the word to place that tells which letter is valid
     private validLetters: boolean[];
     // If the bonus to form a word with all the letters from the easel applies
@@ -45,6 +46,7 @@ export class PlaceLetterService {
                 this.scrabbleBoard[i][j] = '';
             }
         }
+        this.isEmpty = true;
         this.finalResult = { validation: false, score: 0 };
         // this.playerService.updateScrabbleBoard(this.scrabbleBoard);
         // this.receivePlacement();
@@ -133,7 +135,7 @@ export class PlaceLetterService {
             console.log('val');
             this.handleValidPlacement(this.finalResult, indexPlayer);
 
-            console.log('truuuue');
+            this.isEmpty = false;
             return true;
         }
         this.handleInvalidPlacement(position, orientation, word, indexPlayer);

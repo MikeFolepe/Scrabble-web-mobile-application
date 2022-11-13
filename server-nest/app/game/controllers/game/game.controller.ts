@@ -1,10 +1,9 @@
-import { WordValidationService } from '@app/game/services/word-validation/word-validation.service';
-import { Controller, Get, HttpStatus, Post, Req, Res } from '@nestjs/common';
+import { Controller, Get, HttpStatus, Req, Res } from '@nestjs/common';
 import { Response } from 'express';
 import * as fileSystem from 'fs';
 @Controller('game')
 export class GameController {
-    constructor(private wordValidator: WordValidationService) {}
+    constructor() {}
 
     @Get('/dictionary/:fileName')
     getDictionnary(@Req() request, @Res() response: Response) {

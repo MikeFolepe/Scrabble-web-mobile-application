@@ -121,7 +121,6 @@ export const DEFAULT_GAME_SETTINGS = {
     timeSecond: '00',
     level: AiType.beginner,
     dictionary: '',
-    objectiveIds: [],
 };
 
 export const RESERVE: Letter[] = [

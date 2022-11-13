@@ -33,6 +33,7 @@ export class PlayerService {
         this.opponents = [];
         this.getMyPlayer();
         this.getOpponent();
+        this.getAIs();
         this.getExistingOpponents();
         this.updatePlayer();
     }
@@ -115,10 +116,16 @@ export class PlayerService {
         });
     }
 
+    private getAIs(): void {
+        this.clientSocketService.socket.on('curAis', (player: Player) => {
+            this.opponents.push(player);
+        });
+    }
+
     private getExistingOpponents(): void {
         this.clientSocketService.socket.on('curOps', (players: Player[]) => {
             for (const player of players) {
-                console.log(player)
+                console.log(player);
                 this.opponents.push(player);
             }
         });

@@ -1,7 +1,7 @@
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppRoutingModule } from '@app/modules/app-routing.module';
 import { ChatboxComponent } from '@app/modules/game-view/chatbox/chatbox.component';
 import { FontSizeComponent } from '@app/modules/game-view/font-size/font-size.component';
@@ -14,7 +14,7 @@ import { SharedModule } from '@app/modules/shared/shared.module';
 
 @NgModule({
     declarations: [GameViewComponent, ScrabbleBoardComponent, InformationPanelComponent, LetterEaselComponent, FontSizeComponent, ChatboxComponent],
-    imports: [CommonModule, AppRoutingModule, FormsModule, SharedModule, AppMaterialModule, DragDropModule],
+    imports: [CommonModule, AppRoutingModule, FormsModule, SharedModule, AppMaterialModule, ReactiveFormsModule, DragDropModule],
     exports: [GameViewComponent],
     bootstrap: [GameViewComponent],
 })

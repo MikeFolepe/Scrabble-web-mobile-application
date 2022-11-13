@@ -1,0 +1,28 @@
+<div *ngIf="this.isOpen === false" class="closedChat" (click)="openChat()">
+    <div class="textClosedChat">
+        <h2>Cliquez pour ouvrir le chat</h2>
+    </div>
+</div>
+<div *ngIf="this.isOpen === true" class="chatRoom">
+    <div>
+        <div *ngIf="chatRoomInSelectedRooms()">
+            <h2 class="title">{{ this.chatRoomService.chatRooms[this.chatRoomIndexService.chatRoomIndex].chatRoomName }}</h2>
+
+            <div class="conversation" #scrollMe>
+                <div class="text" *ngFor="let message of this.chatRoomService.chatRooms[this.chatRoomIndexService.chatRoomIndex].messages">
+                    <p>{{ message.pseudonym }}: {{ message.text }}</p>
+                </div>
+            </div>
+
+            <button mat-button class="closeButton" (click)="closeChat()"><mat-icon>clear</mat-icon></button>
+
+            <div class="sendMessage">
+                <input placeholder="Cliquez pour envoyer un message" [(ngModel)]="currentMessage" (keypress)="handleKeyEvent($event)" />
+                <button mat-button class="sendButton" (click)="sendMessage()">Envoyer</button>
+            </div>
+        </div>
+        <div *ngIf="!chatRoomInSelectedRooms()">
+            <h2 class="title">Aucun canal de discussion sélectionné</h2>
+        </div>
+    </div>
+</div>

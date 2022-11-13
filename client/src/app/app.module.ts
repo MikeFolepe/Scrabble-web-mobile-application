@@ -51,7 +51,7 @@ import { PrototypeChatBoxComponent } from './pages/prototype-chat-box/prototype-
         ClickOutsideModule,
         ReactiveFormsModule,
     ],
-    providers: [],
+    providers: [MainPageComponent],
     bootstrap: [AppComponent],
 })
 export class AppModule {}
