@@ -104,7 +104,7 @@ export class PlaceLetterService implements OnDestroy {
                     this.isRow,
                     this.isEaselSize,
                     JSON.stringify(this.scrabbleBoard),
-                    this.clientSocketService.roomId,
+                    this.clientSocketService.currentRoom,
                     JSON.stringify(this.playerService.currentPlayer),
                     JSON.stringify(dragWord),
                 );
