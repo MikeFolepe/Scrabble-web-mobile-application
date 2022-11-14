@@ -1,6 +1,5 @@
 package com.example.scrabbleprototype.activities
 
-import android.app.Dialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -15,9 +14,6 @@ import com.example.scrabbleprototype.model.*
 import com.example.scrabbleprototype.objects.CurrentRoom
 import com.example.scrabbleprototype.objects.Players
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import org.json.JSONObject
 
 class WaitingRoomActivity : AppCompatActivity() {
 
@@ -26,7 +22,6 @@ class WaitingRoomActivity : AppCompatActivity() {
     val currentRoom = CurrentRoom.myRoom
     private val socket = SocketHandler.getPlayerSocket()
     private val mapper = jacksonObjectMapper()
-    val socketHandler = SocketHandler
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,7 +31,6 @@ class WaitingRoomActivity : AppCompatActivity() {
         setupStartGameButton()
         setupRoomId()
         setupPlayersWaiting()
-        Log.d("Aaaa", "Before call to receiveNewResquest")
         receiveNewRequest()
 
         Players.currentPlayerPosition = Players.opponents.size
@@ -82,9 +76,10 @@ class WaitingRoomActivity : AppCompatActivity() {
     }
 
     private fun receiveNewOpponent() {
-        socket.on("roomPlayers") { response ->
+        socket.on("Opponent") { response ->
             val newOpponent = mapper.readValue(response[0].toString(), Player::class.java)
-            Players.opponents = newOpponent
+            val index = response[1]
+            Players.opponents[index]= newOpponent
             runOnUiThread {
                 playersWaiting.add(newOpponent)
                 playersWaitingAdapter.notifyItemChanged(playersWaiting.size - 1)
@@ -116,10 +111,11 @@ class WaitingRoomActivity : AppCompatActivity() {
                             Json.encodeToString( newPlayer)), roomId)
                         dialog.hide()
                     }
-                    }
+                }
 
             }
         }
+    }
 
 
     private fun goToGameView() {
