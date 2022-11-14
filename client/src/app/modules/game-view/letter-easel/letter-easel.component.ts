@@ -117,7 +117,6 @@ export class LetterEaselComponent implements OnInit {
         for (const letter of this.letterEaselTab) {
             if (letter.isSelectedForSwap) isButtonActive = true;
         }
-
         return isButtonActive;
     }
 
@@ -142,8 +141,13 @@ export class LetterEaselComponent implements OnInit {
     private handleSwapSelection(indexLetter: number): void {
         this.manipulateService.unselectManipulation();
         // Unselect swap
-        if (this.letterEaselTab[indexLetter].isSelectedForSwap) this.letterEaselTab[indexLetter].isSelectedForSwap = false;
+        if (this.letterEaselTab[indexLetter].isSelectedForSwap) {
+            this.letterEaselTab[indexLetter].isSelectedForSwap = false;
+        }
         // Select to swap if the letter is not already selected for manipulation
-        else if (!this.letterEaselTab[indexLetter].isSelectedForManipulation) this.letterEaselTab[indexLetter].isSelectedForSwap = true;
+        // else if (!this.letterEaselTab[indexLetter].isSelectedForManipulation) {
+        //     alert('ouioui');
+        // }
+        this.letterEaselTab[indexLetter].isSelectedForSwap = true;
     }
 }

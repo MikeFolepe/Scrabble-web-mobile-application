@@ -136,9 +136,11 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
             this.server.in(roomId).emit('eraseStartingCase');
         });
 
-        socket.on('stopTimer', (roomId: string) => {
+        socket.on('swap', (easel: string, indexToSwap: number, roomId) => {
             const room = this.roomManagerService.find(roomId);
-            room.skipTurnService.stopTimer();
+            room.playerService.players[room.skipTurnService.activePlayerIndex].letterTable = JSON.parse(easel);
+            room.playerService.swap(indexToSwap, room.skipTurnService.activePlayerIndex);
+            socket.emit('swapped', JSON.stringify(room.playerService.players[room.skipTurnService.activePlayerIndex].letterTable));
         });
 
         socket.on('stopTimer', (roomId: string) => {

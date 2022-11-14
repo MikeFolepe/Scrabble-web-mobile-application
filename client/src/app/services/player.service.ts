@@ -36,6 +36,7 @@ export class PlayerService {
         this.getAIs();
         this.getExistingOpponents();
         this.updatePlayer();
+        this.getUpdateEasel();
     }
 
     clearPlayers(): void {
@@ -92,16 +93,24 @@ export class PlayerService {
         this.currentPlayer.letterTable.splice(indexToRemove, 1);
     }
     swap(indexToSwap: number, indexPlayer: number): void {
-        const letterFromReserve = this.letterService.getRandomLetter();
-        // Add a copy of the random letter from the reserve
-        const letterToAdd = {
-            value: letterFromReserve.value,
-            quantity: letterFromReserve.quantity,
-            points: letterFromReserve.points,
-            isSelectedForSwap: letterFromReserve.isSelectedForSwap,
-            isSelectedForManipulation: letterFromReserve.isSelectedForManipulation,
-        };
-        this.opponents[indexPlayer].letterTable.splice(indexToSwap, 1, letterToAdd);
+        // const letterFromReserve = this.letterService.getRandomLetter();
+        // // Add a copy of the random letter from the reserve
+        // const letterToAdd = {
+        //     value: letterFromReserve.value,
+        //     quantity: letterFromReserve.quantity,
+        //     points: letterFromReserve.points,
+        //     isSelectedForSwap: letterFromReserve.isSelectedForSwap,
+        //     isSelectedForManipulation: letterFromReserve.isSelectedForManipulation,
+        // };
+        // this.opponents[indexPlayer].letterTable.splice(indexToSwap, 1, letterToAdd);
+
+        this.clientSocketService.socket.emit('swap', this.getEasel(), indexToSwap, this.clientSocketService.roomId);
+    }
+
+    private getUpdateEasel(): void {
+        this.clientSocketService.socket.on('swapped', (easel: string) => {
+            this.currentPlayer.letterTable = JSON.parse(easel);
+        });
     }
 
     private getMyPlayer(): void {
