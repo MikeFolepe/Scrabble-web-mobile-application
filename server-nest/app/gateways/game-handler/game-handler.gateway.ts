@@ -76,6 +76,7 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
 
         socket.on('sendJoinResponse', (decision: boolean, userJoining: string, roomId: string) => {
             const user = this.userService.activeUsers.find((curUser) => curUser.pseudonym === userJoining);
+            Logger.log(user);
             this.server.to(user.socketId).emit('receiveJoinDecision', decision, roomId);
         });
 
@@ -197,6 +198,7 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
             this.server.to(roomId).emit('leaveToHome');
             this.roomManagerService.deleteRoom(roomId);
             this.server.emit('roomConfiguration', this.roomManagerService.rooms);
+            // a retirer car pour le placement aleatoire
             this.server.emit('roomAvailable', this.roomManagerService.getNumberOfRoomInWaitingState());
             this.server.socketsLeave(roomId);
         });
@@ -274,6 +276,7 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
             socket.emit('yourRoom', createdRoom);
             const room = this.roomManagerService.find(roomId);
             const player = room.playerService.players.find((curPlayer) => curPlayer.name === gameSettings.creatorName);
+            console.log(player);
             socket.emit('MyPlayer', player);
             // room creation alerts all clients on the new rooms configurations
             this.server.emit('roomConfiguration', this.roomManagerService.rooms);

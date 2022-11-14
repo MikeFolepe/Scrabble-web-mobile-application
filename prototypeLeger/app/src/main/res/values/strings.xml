@@ -38,7 +38,7 @@
     <string name="timer_display">Temps restant au tour : </string>
 
     //Waiting room
-    <string name="startGame">Démarrer la partie</string>
+    <string name="startGame">Démarrer</string>
     <string name="players_waiting_list">Liste des joueurs</string>
 
 </resources>

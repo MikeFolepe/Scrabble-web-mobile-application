@@ -59,6 +59,7 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
         }
         setUpButtons()
         receiveMyPlayer()
+        currRoom()
         launch { setupSpinners() }
     }
 
@@ -177,9 +178,8 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
                 // Set Cancelable false for when the user clicks on the outside the Dialog Box then it will remain show
                 builder.setCancelable(false);
                 builder.setPositiveButton("Yes",
-                    DialogInterface.OnClickListener { dialog: DialogInterface?, which: Int ->
+                    DialogInterface.OnClickListener { dialog: DialogInterface, which: Int ->
                         // When the user click yes button then app will close
-                        finish()
                         var pwdDialog = Dialog(this)
                         pwdDialog.setContentView(R.layout.public_game_pwd)
                         pwdDialog.show()
@@ -188,8 +188,9 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
                             Log.d("button", "accept")
                             val passwordInput = pwdDialog.findViewById<EditText>(R.id.popup_window_text);
                             this.gameSetting.password = passwordInput.text.toString()
-                            createGame(this.gameSetting)
                             pwdDialog.hide()
+                            dialog.cancel()
+                            Toast.makeText(this, "Le mot de passe a été configuré. Appuyez sur Continuer", Toast.LENGTH_LONG).show()
                         }
                         val backButton = pwdDialog.findViewById<Button>(R.id.back_button)
                         backButton.setOnClickListener {
@@ -223,6 +224,17 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
         Log.d("game" , gameSetting.toString())
         socket.emit("createRoom", JSONObject(Json.encodeToString(gameSetting)))
     }
+
+
+    private fun currRoom() {
+        socket.on("yourRoom") {response ->
+            val mapper = jacksonObjectMapper()
+            var myRoom =  mapper.readValue(response[0].toString(), Room::class.java)
+            CurrentRoom.myRoom =  myRoom
+            SocketHandler.roomId = myRoom.id
+        }
+    }
+
 
     private fun receiveMyPlayer() {
         socket.on("MyPlayer") { response ->

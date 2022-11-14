@@ -35,13 +35,13 @@ class JoinGameActivity : AppCompatActivity() {
         setContentView(R.layout.activity_join_game)
 
         receiveOpponents()
-        receiveRoomId()
         receiveMyPlayer()
+        currRoom()
         receiveNewOpponent()
-        receiveGameSettings()
         routeToWaitingRoom()
         setupGameList()
         receiveJoinDecision()
+        handleDeletedGame()
     }
 
     private fun setupGameList() {
@@ -54,36 +54,55 @@ class JoinGameActivity : AppCompatActivity() {
         gameListAdapter.updateData(rooms)
 
         gameListAdapter.onJoinGame = { position ->
-            joinGame(position)
+            joinGame(position, Users.isObserver)
         }
         receiveRooms(gameListAdapter)
         handleRoomUnavailability()
         routeToGameView()
     }
 
-    private fun joinGame(position: Int) {
+    private fun joinGame(position: Int, isObserver: Boolean) {
         Log.d("room", rooms.toString())
         val currentRoom = rooms[position]
         if (currentRoom.gameSettings.type == RoomType.public) {
-            socket.emit("newRoomCustomer", Users.currentUser, rooms[position].id)
-            socketHandler.roomId = rooms[position].id
+            if(isObserver){
+                socket.emit("newRoomObserver", Users, rooms[position].id)
+            }
+            else {
+                socket.emit("newRoomCustomer", Users.currentUser, rooms[position].id)
+                socketHandler.roomId = rooms[position].id
+            }
         }
         else {
-            socket.emit("sendRequestToCreator", Users.currentUser, currentRoom.id)
-            socketHandler.roomId = rooms[position].id
+            if(isObserver){
+                socket.emit("newRoomObserver", Users, rooms[position].id)
+            }
+            else {
+                socket.emit("sendRequestToCreator", Users.currentUser, currentRoom.id)
+                socketHandler.roomId = rooms[position].id
+            }
         }
     }
 
+    private fun sendObserverToGame() {
+        socket.on("ObserverToGameView") { response ->
+            Users.isObserver = true;
+            startActivity(Intent(this, GameActivity::class.java))
+        }
+    }
+
+
     private fun currRoom() {
         socket.on("yourRoom") {response ->
-
+            var myRoom =  mapper.readValue(response[0].toString(), Room::class.java)
+            CurrentRoom.myRoom =  myRoom
+            SocketHandler.roomId = myRoom.id
         }
     }
 
     private fun receiveRooms(gameListAdapter: GameListAdapter) {
         socket.on("roomConfiguration"){ response ->
             rooms = mapper.readValue(response[0].toString(), object: TypeReference<ArrayList<Room>>() {})
-            Log.d("receiveRooms", rooms[0].id.toString())
             runOnUiThread {
                 gameListAdapter.updateData(rooms)
             }
@@ -98,16 +117,10 @@ class JoinGameActivity : AppCompatActivity() {
         }
     }
 
-    private fun receiveRoomId() {
-        socket.on("yourRoomId") { response ->
-            val roomId = response[0] as String
-            SocketHandler.roomId = roomId
-        }
-    }
-
     private fun receiveMyPlayer() {
         socket.on("MyPlayer") { response ->
             Players.currentPlayer = mapper.readValue(response[0].toString(), Player::class.java)
+
         }
     }
 
@@ -123,7 +136,9 @@ class JoinGameActivity : AppCompatActivity() {
         socket.on("receiveJoinDecision") { response ->
 
             val decision = mapper.readValue(response[0].toString(), Boolean::class.java)
-            val roomId = mapper.readValue(response[1].toString(), String::class.java)
+            val roomId = response[1].toString()
+            Log.d("roomId" , roomId)
+            Log.d("decision" , decision.toString())
             if (decision) {
                 socket.emit("newRoomCustomer", currentUser, roomId)
             }
@@ -132,10 +147,13 @@ class JoinGameActivity : AppCompatActivity() {
             }
         }
     }
-    private fun receiveGameSettings() {
-        socket.on("yourGameSettings") { response ->
-            val gameSettings = mapper.readValue(response[0].toString(), GameSettings::class.java)
-            CurrentRoom.myRoom = Room(SocketHandler.roomId, arrayListOf(), gameSettings, State.Playing, 3,1 , arrayListOf())
+
+    private fun handleDeletedGame() {
+        socket.on("leaveToHome") {
+            runOnUiThread {
+                Toast.makeText(this, "Le createur a supprimé la partie", Toast.LENGTH_LONG).show()
+                startActivity(Intent(this, HomeMenuActivity::class.java))
+            }
         }
     }
 
