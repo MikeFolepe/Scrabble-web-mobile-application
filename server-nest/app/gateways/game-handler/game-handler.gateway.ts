@@ -334,6 +334,7 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
                 setTimeout(() => {
                     this.updateTurns(room);
                     this.startTimer(room.id);
+                    this.startAiTurn(room);
                 }, THREE_SECONDS_DELAY);
             } else {
                 room.skipTurnService.seconds = room.skipTurnService.seconds - 1;
