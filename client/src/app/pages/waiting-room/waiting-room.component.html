@@ -26,6 +26,7 @@
 >
     Commencer
 </button>
+
 <button
     *ngIf="this.playerService.currentPlayer.isCreator && !shouldDisplayError"
     mat-raised-button
@@ -35,6 +36,16 @@
 >
     Annuler
 </button>
+
+<!-- <button
+    *ngIf="!this.playerService.currentPlayer.isCreator && !shouldDisplayError"
+    mat-raised-button
+    color="warn"
+    id="submit-button-1"
+    (click)="leaveGame()"
+>
+    Annuler
+</button> -->
 
 <div *ngIf="shouldDisplayError">
     <mat-card class="error-message"

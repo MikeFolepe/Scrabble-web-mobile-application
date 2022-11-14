@@ -92,7 +92,7 @@ export class WaitingRoomComponent implements OnInit {
     }
 
     startGame(): void {
-        if (this.clientSocket.currentRoom.humanPlayersNumber < 4) {
+        if (this.clientSocket.currentRoom.humanPlayersNumber < 2) {
             this.displayErrorMessage(ErrorMessage.NotEnoughPlayers);
             return;
         }
@@ -115,6 +115,10 @@ export class WaitingRoomComponent implements OnInit {
             });
         });
     }
+
+    // leaveGame(): void {
+    //     this.clientSocket.socket.emit('leaveGame', this.pla)
+    // }
 
     private displayErrorMessage(message: string): void {
         this.errorMessage = message;
