@@ -118,15 +118,14 @@ export class AuthPageComponent implements OnInit {
         this.administratorService.addUserToDatabase(user);
         this.pseudonymValue = '';
         this.passwordValue = '';
+        this.confirmPasswordValue = '';
+        this.authService.chosenAvatar = '';
+        this.emailValue = '';
         this.hasAccount = true;
     }
 
     openDialog() {
         this.avatarChoiceDialog.open(AvatarChoiceComponent, { disableClose: true });
-    }
-
-    createAccount() {
-        this.hasAccount = false;
     }
 
     private async findUser() {
