@@ -7,7 +7,7 @@
         <deviceKey>
           <Key>
             <type value="VIRTUAL_DEVICE_PATH" />
-            <value value="C:\Users\sayen\.android\avd\Samsung_A_2019_API_28.avd" />
+            <value value="C:\Users\Étienne\.android\avd\Samsung_A_2019_API_28.avd" />
           </Key>
         </deviceKey>
       </Target>

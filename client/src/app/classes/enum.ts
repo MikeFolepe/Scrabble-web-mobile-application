@@ -19,6 +19,7 @@ export enum MessageType {
     Error,
 }
 
+
 export enum Direction {
     Forwards,
     Backwards,

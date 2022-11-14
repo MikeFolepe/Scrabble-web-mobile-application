@@ -5,22 +5,36 @@
 </mat-card> -->
 <div *ngIf="!shouldDisplayError">
     <div class="waiting-players-container">
-        <div class="title">Mon joueur : {{ playerService.currentPlayer.name }}</div>
-        <hr style="color: black; width: 100%; height: 1px; background-color: black" />
-        <div class="title">Adversaires</div>
-
         <div class="display" #scrollMe>
-            <p id="list-display" *ngFor="let player of playerService.opponents; let i = index; let last = last">
-                {{ player.name }}
-            </p>
+            <div id="list-display" *ngFor="let player of playerService.players; let i = index; let last = last">
+                <p>
+                    <span *ngIf="player.isCreator" class="creator"> > Createur :</span>
+                    {{ player.name }}
+                </p>
+                <hr style="color: black; width: 100%; height: 1px; background-color: black" />
+            </div>
         </div>
     </div>
 </div>
 
-<button *ngIf="this.playerService.currentPlayer.isCreator" mat-raised-button color="primary" id="submit-button-1" (click)="startGame()">
+<button
+    *ngIf="this.playerService.currentPlayer.isCreator && !shouldDisplayError"
+    mat-raised-button
+    color="primary"
+    id="submit-button-1"
+    (click)="startGame()"
+>
     Commencer
 </button>
-<button *ngIf="this.playerService.currentPlayer.isCreator" mat-raised-button color="warn" id="submit-button-1" (click)="deleteGame()">Annuler</button>
+<button
+    *ngIf="this.playerService.currentPlayer.isCreator && !shouldDisplayError"
+    mat-raised-button
+    color="warn"
+    id="submit-button-1"
+    (click)="deleteGame()"
+>
+    Annuler
+</button>
 
 <div *ngIf="shouldDisplayError">
     <mat-card class="error-message"

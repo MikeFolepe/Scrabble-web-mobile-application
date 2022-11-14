@@ -35,7 +35,7 @@ export class SendMessageService {
     }
 
     sendMessageToOpponent(message: Message): void {
-        this.clientSocketService.socket.emit(ChatEvents.RoomMessage, message, this.clientSocketService.currentRoom.id);
+        this.clientSocketService.socket.emit('sendRoomMessage', message, this.clientSocketService.currentRoom.id);
     }
 
     // Function to send message of conversion to all players in the room

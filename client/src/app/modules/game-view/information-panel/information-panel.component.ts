@@ -1,4 +1,5 @@
 import { Component, OnDestroy } from '@angular/core';
+import { ClientSocketService } from '@app/services/client-socket.service';
 import { EndGameService } from '@app/services/end-game.service';
 import { LetterService } from '@app/services/letter.service';
 import { PlayerService } from '@app/services/player.service';
@@ -15,6 +16,7 @@ export class InformationPanelComponent implements OnDestroy {
         public playerService: PlayerService,
         public skipTurnService: SkipTurnService,
         public endGameService: EndGameService,
+        public clientSocket: ClientSocketService,
     ) {}
 
     displaySeconds(): string {
@@ -28,6 +30,6 @@ export class InformationPanelComponent implements OnDestroy {
 
     ngOnDestroy(): void {
         this.playerService.clearPlayers();
-        this.skipTurnService.stopTimer();
+        this.clientSocket.socket.emit('stopTimer', this.clientSocket.currentRoom.id);
     }
 }

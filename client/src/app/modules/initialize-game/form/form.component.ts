@@ -3,8 +3,12 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { DEFAULT_DICTIONARY_INDEX } from '@app/classes/constants';
+import { AddChatRoomComponent } from '@app/modules/game-view/add-chat-room/add-chat-room.component';
+import { ChangeChatRoomComponent } from '@app/modules/game-view/change-chat-room/change-chat-room.component';
+import { JoinChatRoomsComponent } from '@app/modules/game-view/join-chat-rooms/join-chat-rooms.component';
 import { AdministratorService } from '@app/services/administrator.service';
 import { AuthService } from '@app/services/auth.service';
+import { ChannelHandlerService } from '@app/services/channel-handler.service';
 import { ClientSocketService } from '@app/services/client-socket.service';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameSettingsService } from '@app/services/game-settings.service';
@@ -24,11 +28,17 @@ export class FormComponent implements OnInit, OnDestroy {
     selectedDictionary: Dictionary;
     isDictionaryDeleted: boolean;
     fileName: string;
+    channels: string[] = [];
+    channel: string;
 
     constructor(
         private clientSocket: ClientSocketService,
         public gameSettingsService: GameSettingsService,
+        public channelHandlerService: ChannelHandlerService,
         private router: Router,
+        public joinChatRoomsDialog: MatDialog,
+        public changeChatRoomDialog: MatDialog,
+        public addChatRoomDialog: MatDialog,
         private communicationService: CommunicationService,
         public adminService: AdministratorService,
         private authService: AuthService,
@@ -46,6 +56,7 @@ export class FormComponent implements OnInit, OnDestroy {
             secondInput: new FormControl(this.gameSettingsService.gameSettings.timeSecond),
             visibilityInput: new FormControl('Publique'),
             levelInput: new FormControl('Débutant'),
+            channelInput: new FormControl(''),
             dictionaryInput: new FormControl(this.selectedDictionary.title, [Validators.required]),
         });
         this.adminService.initializeAiPlayers();
@@ -57,7 +68,6 @@ export class FormComponent implements OnInit, OnDestroy {
         this.snapshotSettings();
     }
 
-    // Checks if dictionary is not deleted and update the attributes
     async selectGameDictionary(dictionary: Dictionary): Promise<void> {
         const dictionaries = await this.communicationService.getDictionaries().toPromise();
         if (!dictionaries.find((dictionaryInArray: Dictionary) => dictionary.title === dictionaryInArray.title)) {
@@ -127,5 +137,17 @@ export class FormComponent implements OnInit, OnDestroy {
 
     private getLevel(): AiType {
         return this.form.controls.levelInput.value === 'Débutant' ? AiType.beginner : AiType.expert;
+    }
+
+    openChangeChatRoomDialog(): void {
+        this.changeChatRoomDialog.open(ChangeChatRoomComponent, { disableClose: true });
+    }
+
+    openJoinChatRoomDialog(): void {
+        this.joinChatRoomsDialog.open(JoinChatRoomsComponent, { disableClose: true });
+    }
+
+    openAddChatRoomDialog(): void {
+        this.addChatRoomDialog.open(AddChatRoomComponent, { disableClose: true });
     }
 }

@@ -34,9 +34,11 @@ export class AuthService {
                     this.currentUser = new User(userData.pseudonym, userData.ipAddress);
                     this.clientSocketService.socket = io(this.serverUrl);
                     this.clientSocketService.socket.connect();
+
                     this.clientSocketService.socket.emit(ChatEvents.JoinRoom);
                     this.clientSocketService.socket.emit(ChatEvents.GetMessages);
                     this.receiveUserSocket();
+                    this.clientSocketService.socket.emit('joinMainRoom', this.currentUser);
                     localStorage.setItem('ACCESS_TOKEN', 'access_token');
                     this.router.navigate(['/home']);
                     this.clientSocketService.initialize();

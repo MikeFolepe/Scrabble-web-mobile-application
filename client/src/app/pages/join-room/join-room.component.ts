@@ -4,13 +4,16 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginatorIntl, PageEvent } from '@angular/material/paginator';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { ERROR_MESSAGE_DELAY } from '@app/classes/constants';
 import { ErrorMessage } from '@app/classes/error-message-constants';
 import { Room, State } from '@app/classes/room';
+import { AddChatRoomComponent } from '@app/modules/game-view/add-chat-room/add-chat-room.component';
+import { ChangeChatRoomComponent } from '@app/modules/game-view/change-chat-room/change-chat-room.component';
+import { JoinChatRoomsComponent } from '@app/modules/game-view/join-chat-rooms/join-chat-rooms.component';
 import { NameSelectorComponent } from '@app/modules/initialize-game/name-selector/name-selector.component';
 import { AuthService } from '@app/services/auth.service';
+import { ChannelHandlerService } from '@app/services/channel-handler.service';
 import { ClientSocketService } from '@app/services/client-socket.service';
 import { PlayerService } from '@app/services/player.service';
 import { MAX_LENGTH_OBSERVERS } from '@common/constants';
@@ -31,15 +34,18 @@ export class JoinRoomComponent implements OnInit {
     errorMessage: string;
     maxObserversLength = MAX_LENGTH_OBSERVERS;
     // JUSTIFICATION : must name service as it is named in MatPaginatorIntl
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     constructor(
-        public clientSocketService: ClientSocketService,
+        private clientSocketService: ClientSocketService,
+        public channelHandlerService: ChannelHandlerService,
         public dialog: MatDialog,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
         public _MatPaginatorIntl: MatPaginatorIntl,
+        public joinChatRoomsDialog: MatDialog,
+        public changeChatRoomDialog: MatDialog,
+        public addChatRoomDialog: MatDialog,
         private authService: AuthService,
         private router: Router,
         public playerService: PlayerService,
-        public snackBar: MatSnackBar,
     ) {
         this.rooms = [];
         this.roomItemIndex = 0;
@@ -170,6 +176,18 @@ export class JoinRoomComponent implements OnInit {
                 this.isRandomButtonAvailable = true;
             }
         });
+    }
+
+    openChangeChatRoomDialog(): void {
+        this.changeChatRoomDialog.open(ChangeChatRoomComponent, { disableClose: true });
+    }
+
+    openJoinChatRoomDialog(): void {
+        this.joinChatRoomsDialog.open(JoinChatRoomsComponent, { disableClose: true });
+    }
+
+    openAddChatRoomDialog(): void {
+        this.addChatRoomDialog.open(AddChatRoomComponent, { disableClose: true });
     }
 
     private handleRoomUnavailability(): void {

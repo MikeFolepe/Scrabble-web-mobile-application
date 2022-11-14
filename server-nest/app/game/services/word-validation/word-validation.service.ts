@@ -10,29 +10,28 @@ export class WordValidationService {
     private newPositions: string[];
     private bonusesPositions: Map<string, string>;
     private foundWords: string[];
+    private validationState: boolean;
 
     constructor(dictFile: string) {
-        this.newWords = [];
+        this.newWords = new Array<string>();
         this.playedWords = new Map<string, string[]>();
         this.newPlayedWords = new Map<string, string[]>();
-        this.newPositions = [];
+        this.newPositions = new Array<string>();
         this.bonusesPositions = new Map<string, string>(BONUS_POSITIONS);
-        this.foundWords = [];
+        this.foundWords = new Array<string>();
         if (dictFile !== undefined) {
             this.dictionary = JSON.parse(fileSystem.readFileSync(`./dictionaries/${dictFile}`, 'utf8')).words;
         }
     }
-    receivePlayedWords(playedWords: string): void {
-        this.playedWords = new Map<string, string[]>(JSON.parse(playedWords));
-    }
-    isValidInDictionary(word: string): boolean {
-        if (word.length < 2) return false;
-        for (const item of this.dictionary) {
-            if (word === item) {
-                return true;
+
+    isValidInDictionary(): boolean {
+        for (const word of this.newPlayedWords.keys()) {
+            if (word.length < 2) return false;
+            if (!this.dictionary.includes(word.toLocaleLowerCase())) {
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
     findWords(words: string[]): string[] {
@@ -184,31 +183,55 @@ export class WordValidationService {
         return score;
     }
 
+    // async validateAllWordsOnBoard(scrabbleBoard: string[][], isEaselSize: boolean, isRow: boolean, isPermanent = true): Promise<ScoreValidation> {
+    //     let scoreTotal = 0;
+    //     this.passThroughAllRowsOrColumns(scrabbleBoard, isRow);
+    //     this.passThroughAllRowsOrColumns(scrabbleBoard, !isRow);
+
+    //     this.validationState = this.isValidInDictionary();
+
+    //     if (!this.validationState) {
+    //         this.newPlayedWords.clear();
+    //         return { validation: this.validationState, score: scoreTotal };
+    //     }
+    //     scoreTotal += this.calculateTotalScore(scoreTotal, this.newPlayedWords);
+
+    //     if (isEaselSize) scoreTotal += ALL_EASEL_BONUS;
+    //     if (!isPermanent) {
+    //         this.newPlayedWords.clear();
+    //         return { validation: false, score: scoreTotal };
+    //     }
+
+    //     this.removeBonuses(this.newPlayedWords);
+
+    //     for (const word of this.newPlayedWords.keys()) this.addToPlayedWords(word, this.newPlayedWords.get(word) as string[], this.playedWords);
+    //     this.newPlayedWords.clear();
+    //     return { validation: this.validationState, score: scoreTotal };
+    // }
     async validateAllWordsOnBoard(scrabbleBoard: string[][], isEaselSize: boolean, isRow: boolean, isPermanent = true): Promise<ScoreValidation> {
         let scoreTotal = 0;
         this.passThroughAllRowsOrColumns(scrabbleBoard, isRow);
         this.passThroughAllRowsOrColumns(scrabbleBoard, !isRow);
 
-        for (const word of this.newPlayedWords.keys()) {
-            const lowerCaseWord = word.toLowerCase();
-            if (!this.isValidInDictionary(lowerCaseWord)) {
-                this.newPlayedWords.clear();
-                return { validation: false, score: scoreTotal };
-            }
+        this.validationState = this.isValidInDictionary();
+
+        if (!this.validationState) {
+            this.newPlayedWords.clear();
+            return { validation: this.validationState, score: scoreTotal };
         }
         scoreTotal += this.calculateTotalScore(scoreTotal, this.newPlayedWords);
 
         if (isEaselSize) scoreTotal += ALL_EASEL_BONUS;
+
         if (!isPermanent) {
             this.newPlayedWords.clear();
-            return { validation: false, score: scoreTotal };
+            return { validation: this.validationState, score: scoreTotal };
         }
 
         this.removeBonuses(this.newPlayedWords);
 
         for (const word of this.newPlayedWords.keys()) this.addToPlayedWords(word, this.newPlayedWords.get(word) as string[], this.playedWords);
         this.newPlayedWords.clear();
-
-        return { validation: true, score: scoreTotal };
+        return { validation: this.validationState, score: scoreTotal };
     }
 }

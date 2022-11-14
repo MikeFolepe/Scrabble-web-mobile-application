@@ -32,12 +32,13 @@ class WaitingRoomActivity : AppCompatActivity() {
         setupRoomId()
         setupPlayersWaiting()
         receiveNewRequest()
+
+        Players.currentPlayerPosition = Players.opponents.size
     }
 
     private fun setupStartGameButton() {
         val startGameButton = findViewById<Button>(R.id.start_game_button)
         startGameButton.setOnClickListener {
-            Log.d("waiting", Players.currentPlayer.isCreator.toString())
             if(Players.opponents.size < Constants.MAX_OPPONENTS || !Players.currentPlayer.isCreator) {
                 Toast.makeText(this, "La partie ne peut pas être commencée", Toast.LENGTH_LONG).show()
                 return@setOnClickListener
@@ -69,19 +70,17 @@ class WaitingRoomActivity : AppCompatActivity() {
 
         val verticalLayoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         playersWaitingView.layoutManager = verticalLayoutManager
-        Log.d("waiting", playersWaiting.size.toString())
         playersWaitingAdapter = PlayersWaitingAdapter(playersWaiting)
         playersWaitingView.adapter = playersWaitingAdapter
         playersWaitingAdapter.updateData(playersWaiting)
     }
 
     private fun receiveNewOpponent() {
-        socket.on("Opponent") { response ->
+        socket.on("roomPlayers") { response ->
             val newOpponent = mapper.readValue(response[0].toString(), Player::class.java)
-            Players.opponents.add(newOpponent)
+            Players.opponents = newOpponent
             runOnUiThread {
                 playersWaiting.add(newOpponent)
-                Log.d("waiting", playersWaiting[playersWaiting.size - 1].name)
                 playersWaitingAdapter.notifyItemChanged(playersWaiting.size - 1)
             }
         }

@@ -55,6 +55,7 @@ export class PlaceLetterService implements OnDestroy {
         this.receiveSuccess();
         this.receivePlacement();
         this.initBoard();
+        this.receiveBoard();
     }
 
     async placeWithKeyboard(position: Vec2, letter: string, orientation: Orientation, indexLetterInWord: number): Promise<boolean> {
@@ -283,17 +284,27 @@ export class PlaceLetterService implements OnDestroy {
             }, THREE_SECONDS_DELAY);
         });
     }
+
+    private receiveBoard(): void {
+        this.clientSocketService.socket.on('receiveBoard', (scrabbleBoard: string) => {
+            this.scrabbleBoard = JSON.parse(scrabbleBoard);
+        });
+    }
+
     private receivePlacement(): void {
         this.clientSocketService.socket.on('receivePlacement', (scrabbleBoard: string, startPosition: string, orientation: string, word: string) => {
-            console.log('received');
+            console.log(word);
             this.placeByOpponent(JSON.parse(scrabbleBoard), JSON.parse(startPosition), JSON.parse(orientation), word);
+            console.log('pass');
         });
     }
 
     private placeByOpponent(scrabbleBoard: string[][], startPosition: Vec2, orientation: Orientation, word: string): void {
         const currentPosition = { x: startPosition.x, y: startPosition.y };
+
         this.scrabbleBoard = scrabbleBoard;
         for (const letter of word) {
+            console.log(letter);
             this.gridService.drawLetter(this.gridService.gridContextLettersLayer, letter, currentPosition, this.playerService.fontSize);
             this.placementsService.goToNextPosition(currentPosition, orientation);
         }

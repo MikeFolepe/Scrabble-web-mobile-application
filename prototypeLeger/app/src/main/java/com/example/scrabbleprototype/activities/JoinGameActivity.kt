@@ -34,7 +34,6 @@ class JoinGameActivity : AppCompatActivity() {
         receiveOpponents()
         receiveRoomId()
         receiveMyPlayer()
-        receiveNewOpponent()
         receiveGameSettings()
         routeToWaitingRoom()
         setupGameList()
@@ -54,7 +53,6 @@ class JoinGameActivity : AppCompatActivity() {
         }
         receiveRooms(gameListAdapter)
         handleRoomUnavailability()
-        routeToGameView()
     }
 
     private fun joinGame(position: Int) {
@@ -100,12 +98,6 @@ class JoinGameActivity : AppCompatActivity() {
         }
     }
 
-    private fun receiveNewOpponent() {
-        socket.on("Opponent") { response ->
-            Players.opponents.add(mapper.readValue(response[0].toString(), Player::class.java))
-        }
-    }
-
     private fun receiveGameSettings() {
         socket.on("yourGameSettings") { response ->
             val gameSettings = mapper.readValue(response[0].toString(), GameSettings::class.java)
@@ -116,12 +108,6 @@ class JoinGameActivity : AppCompatActivity() {
     private fun handleRoomUnavailability() {
         socket.on("roomAlreadyToken") {
             Toast.makeText(this, "Il est impossible de joindre cette partie", Toast.LENGTH_LONG).show()
-        }
-    }
-
-    private fun routeToGameView() {
-        socket.on("goToGameView") {
-            startActivity(Intent(this, GameActivity::class.java))
         }
     }
 

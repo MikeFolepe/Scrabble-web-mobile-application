@@ -1,5 +1,6 @@
 package com.example.scrabbleprototype.viewModel
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.scrabbleprototype.model.Orientation

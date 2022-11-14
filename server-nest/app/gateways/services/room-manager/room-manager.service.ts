@@ -35,26 +35,30 @@ export class RoomManagerService {
     addCustomer(customerName: string, roomId: string): boolean {
         const room = this.find(roomId);
         if (room === undefined) return false;
-
-        // if (room.aiPlayersNumber !== 0) {
-        //     // eslint-disable-next-line @typescript-eslint/prefer-for-of
-        //     for (let i = 0; i < room.playerService.players.length; i++) {
-        //         if (room.playerService.players[i] instanceof PlayerAI) {
-        //             const humanPlayer = new Player(customerName, room.playerService.players[i].letterTable);
-        //             room.playerService.players[i] = humanPlayer;
-        //             room.aiPlayersNumber--;
-        //             room.humanPlayersNumber++;
-        //             return true;
-        //         }
-        //     }
+        if (room.humanPlayersNumber === 4) return false;
+        if (room.aiPlayersNumber !== 0) {
+            // eslint-disable-next-line @typescript-eslint/prefer-for-of
+            for (let i = 0; i < room.playerService.players.length; i++) {
+                if (room.playerService.players[i].isAi) {
+                    const humanPlayer = new Player(customerName, room.playerService.players[i].letterTable);
+                    room.playerService.players[i] = humanPlayer;
+                    room.aiPlayersNumber--;
+                    room.humanPlayersNumber++;
+                    return true;
+                }
+            }
+        }
+        return false;
+        // if (isAi) {
+        //     room.playerService.players.push(new Player(room.createAi(), []));
+        //     room.playerService.players[room.playerService.players.length - 1].isAI = true;
+        //     return true;
         // }
 
-        if (room.humanPlayersNumber === 4) return false;
-
-        room.playerService.players.push(new Player(customerName, room.letter.getRandomLetters()));
-        room.aiPlayersNumber--;
-        room.humanPlayersNumber++;
-        return true;
+        // room.playerService.players.push(new Player(customerName, room.letter.getRandomLetters()));
+        // room.aiPlayersNumber--;
+        // room.humanPlayersNumber++;
+        // return true;
     }
 
     addObserver(observer: User, roomId: string): boolean {
@@ -81,23 +85,6 @@ export class RoomManagerService {
         const room = this.find(roomId) as Room;
         return room.gameSettings;
     }
-
-    // formatGameSettingsForCustomerIn(roomId: string): GameSettings {
-    //     const room = this.find(roomId) as Room;
-    //     const gameSettings = room.gameSettings;
-    //     const playerNames: string[] = [gameSettings.playersNames[PlayerIndex.CUSTOMER], gameSettings.playersNames[PlayerIndex.OWNER]];
-    //     const startingPlayer = gameSettings.startingPlayer ? StartingPlayer.Player1 : StartingPlayer.Player2;
-    //     const formattedGameSettings = new GameSettings(
-    //         playerNames,
-    //         startingPlayer,
-    //         gameSettings.timeMinute,
-    //         gameSettings.timeSecond,
-    //         gameSettings.level,
-    //         gameSettings.dictionary,
-    //     );
-
-    //     return formattedGameSettings;
-    // }
 
     deleteRoom(roomId: string): void {
         this.rooms.forEach((room, roomIndex) => {

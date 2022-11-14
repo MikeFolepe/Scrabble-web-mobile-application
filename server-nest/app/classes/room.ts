@@ -1,10 +1,13 @@
+import { PlayerAI } from '@app/game/models/player-ai.model';
 import { Player } from '@app/game/models/player.model';
 import { LetterService } from '@app/game/services/letter/letter.service';
 import { PlaceLetterService } from '@app/game/services/place-letter/place-letter.service';
 import { PlayerService } from '@app/game/services/player/player.service';
+import { SkipTurnService } from '@app/game/services/skip-turn-service/skip-turn-service';
 import { WordValidationService } from '@app/game/services/word-validation/word-validation.service';
 import { GameSettings } from '@common/game-settings';
 import { User } from '@common/user';
+import { AI_NAMES } from './aiNames';
 import { DEFAULT_AI_PLAYERS_NB, DEFAULT_HUMAN_PLAYERS_NB } from './constants';
 
 export enum State {
@@ -23,10 +26,12 @@ export class Room {
     letter: LetterService;
     placeLetter: PlaceLetterService;
     playerService: PlayerService;
+    skipTurnService: SkipTurnService;
     turnCounter: number;
     aiPlayersNumber: number;
     humanPlayersNumber: number;
-
+    ais: PlayerAI[];
+    aiTurn: number;
     constructor(roomId: string, socketId: string, gameSettings: GameSettings, state: State = State.Waiting) {
         this.aiPlayersNumber = DEFAULT_AI_PLAYERS_NB;
         this.humanPlayersNumber = DEFAULT_HUMAN_PLAYERS_NB;
@@ -41,48 +46,29 @@ export class Room {
         this.letter = new LetterService();
         this.playerService = new PlayerService(this.letter);
         this.placeLetter = new PlaceLetterService(this.wordValidation, this.playerService);
+        this.skipTurnService = new SkipTurnService(gameSettings, this.playerService.players);
         this.playerService.players[0] = new Player(this.gameSettings.creatorName, this.letter.getRandomLetters(), 0, true, true);
-        // this.playerService.players[1] = new PlayerAI(
-        //     'BOT1',
-        //     this.letter.getRandomLetters(),
-        //     this.playerService,
-        //     this.gameSettings,
-        //     this.placeLetter,
-        //     this.letter,
-        //     this.wordValidation,
-        // );
+        this.ais = [];
+        this.aiTurn = 0;
+        this.initializeAiPlayers();
+    }
 
-        // this.playerService.players[2] = new PlayerAI(
-        //     'BOT2',
-        //     this.letter.getRandomLetters(),
-        //     this.playerService,
-        //     this.gameSettings,
-        //     this.placeLetter,
-        //     this.letter,
-        //     this.wordValidation,
-        // );
-        // this.playerService.players[3] = new PlayerAI(
-        //     'BOT4',
-        //     this.letter.getRandomLetters(),
-        //     this.playerService,
-        //     this.gameSettings,
-        //     this.placeLetter,
-        //     this.letter,
-        //     this.wordValidation,
-        // );
-        // this.player = new Player('ok, ', this.letter.reserve, 0);
+    createAi(player: Player) {
+        this.ais.push(new PlayerAI(player.name, player.letterTable, player, this.gameSettings, this.placeLetter, this.letter, this.wordValidation));
+    }
 
-        // this.aiPlayers = new PlayerAI(
-        //     'ok',
-        //     this.letter.getRandomLetters(),
-        //     this.playerService,
-        //     this.player,
-        //     this.gameSettings,
-        //     this.placeLetter,
-        //     this.letter,
-        //     this.wordValidation,
-        // );
+    initializeAiPlayers(): void {
+        for (let i = 0; i < DEFAULT_AI_PLAYERS_NB; i++) {
+            this.playerService.players.push(
+                new Player(AI_NAMES[this.playerService.players.length - 1], this.letter.getRandomLetters(), 0, false, false, true),
+            );
+        }
+    }
 
-        // instancier placeLetterService avec wordValidation, instancier  world validation, instancier playerService           placer tout dans Ai
+    aiIturn(): number {
+        if (this.aiTurn === this.ais.length) this.aiTurn = 0;
+        const turn = this.aiTurn;
+        this.aiTurn++;
+        return turn;
     }
 }

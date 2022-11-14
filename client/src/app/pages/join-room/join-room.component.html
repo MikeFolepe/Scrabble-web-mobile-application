@@ -47,7 +47,14 @@
             </mat-card-actions>
         </mat-card>
     </div>
+
 </div>
+<!-- <button (click)="test()">click me</button> -->
+<!-- <div *ngFor="let channel of this.channelHandlerService.channels">
+    <mat-card-subtitle>
+        {{ channel }}
+    </mat-card-subtitle>
+</div> -->
 
 <div *ngIf="shouldDisplayError">
     <mat-card class="error-message"><span class="warning">Erreur</span>{{ errorMessage }}</mat-card>
@@ -65,3 +72,9 @@
         Placement aléatoire
     </button> -->
 </div>
+<div class="chatRooms-buttons">
+    <button mat-mini-fab class="addButton tooltip" (click)="openAddChatRoomDialog()"><span class="tooltiptext">Ajouter</span><mat-icon>add</mat-icon></button>
+    <button mat-mini-fab class="allRoomsButton tooltip" (click)="openJoinChatRoomDialog()"><span class="tooltiptext">Rejoindre</span><mat-icon>search</mat-icon></button>
+    <button mat-mini-fab class="joinedRoomsButton tooltip" (click)="openChangeChatRoomDialog()"><span class="tooltiptext">Changer</span><mat-icon>view_headline</mat-icon></button>
+</div>
+<app-chatrooms class = "chatRooms"></app-chatrooms>

@@ -1,0 +1,18 @@
+.radio-group {
+    display: flex;
+    //put space between elements
+    justify-content: space-between;
+    flex-direction: column;
+}
+.radio-button {
+    //separate
+    margin-bottom: 10px;
+}
+
+.button {
+    margin-top: 10px;
+}
+
+h1 {
+    color : #00804d;
+}

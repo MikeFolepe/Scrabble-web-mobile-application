@@ -62,6 +62,8 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
                 json()
             }
         }
+        receiveMyPlayer()
+        setupSpinners()
         setUpButtons()
         receiveMyPlayer()
         launch { setupSpinners() }
@@ -151,7 +153,7 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
                 position: Int,
                 id: Long
             ) {
-                dicoFileName = dictionariesTitle[position]
+                gameSetting.dictionary = dictionaries.find { it.title == dictionariesTitle[position] }!!.fileName
                 Log.d("dico", gameSetting.dictionary)
             }
 
