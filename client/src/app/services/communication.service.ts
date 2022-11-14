@@ -43,6 +43,10 @@ export class CommunicationService {
     checkPassword(pseudonym : string, password : string): Promise<Boolean> {
         return this.http.get<Boolean>(`http://localhost:3000/api/user/checkPassword/${pseudonym}/${password}`).toPromise();
     }
+
+    checkPseudonym(pseudonym: string): Promise<Boolean> {
+        return this.http.get<Boolean>(`http://localhost:3000/api/user/checkPseudonym/${pseudonym}`).toPromise();
+    }
     
     //ICIIIII
     addNewUserToDB(userData: User): Observable<User> {

@@ -16,7 +16,7 @@ export class UserController {
         const password = await bcrypt.hash(user.password, salt);
         
         const generatedId = await this.userService.insertUser(user.avatar, user.pseudonym, password, user.email);
-        return { id: generatedId };
+        return { id: generatedId, ...user };
     }
 
     //check if the password is correct. 
@@ -29,6 +29,13 @@ export class UserController {
         const hashed_password = userFound.password;
         const passwordMatch = await bcrypt.compare(password, hashed_password);
         return passwordMatch;
+    }
+
+    @Get('/checkPseudonym/:pseudonym')
+    async checkPseudonym(@Req() req) {
+        const pseudonym = req.params.pseudonym;
+        const userFound = await this.userService.getSingleUser(pseudonym);
+        return Boolean(userFound);
     }
 
     @Get('/users')
