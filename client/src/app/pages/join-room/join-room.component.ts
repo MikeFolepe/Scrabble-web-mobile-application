@@ -163,6 +163,7 @@ export class JoinRoomComponent implements OnInit {
         });
     }
 
+    // a retirer car pour le placement aleatoire
     receiveRoomAvailable(): void {
         this.clientSocketService.socket.on('roomAvailable', (numberOfRooms: number) => {
             if (numberOfRooms === 0) {

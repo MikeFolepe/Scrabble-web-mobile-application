@@ -44,7 +44,7 @@
     <string name="timer_format">%1$s:%2$s</string>
 
     //Waiting room
-    <string name="startGame">Démarrer la partie</string>
+    <string name="startGame">Démarrer</string>
     <string name="players_waiting_list">Liste des joueurs</string>
 
 </resources>

@@ -68,6 +68,8 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
 
         socket.on('sendRequestToCreator', (userJoining: string, roomId: string) => {
             console.log('requestSended');
+            console.log(roomId);
+            Logger.log(userJoining);
             const room = this.roomManagerService.find(roomId);
             console.log(room);
             this.logger.log(room.socketIds[0]);
@@ -76,6 +78,7 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
 
         socket.on('sendJoinResponse', (decision: boolean, userJoining: string, roomId: string) => {
             const user = this.userService.activeUsers.find((curUser) => curUser.pseudonym === userJoining);
+            Logger.log(user);
             this.server.to(user.socketId).emit('receiveJoinDecision', decision, roomId);
         });
         socket.on('startGame', (roomId: string) => {
@@ -189,6 +192,7 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
             this.server.to(roomId).emit('leaveToHome');
             this.roomManagerService.deleteRoom(roomId);
             this.server.emit('roomConfiguration', this.roomManagerService.rooms);
+            // a retirer car pour le placement aleatoire
             this.server.emit('roomAvailable', this.roomManagerService.getNumberOfRoomInWaitingState());
             this.server.socketsLeave(roomId);
         });
@@ -271,6 +275,7 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
             const room = this.roomManagerService.find(roomId);
             // socket.emit('curOps', room.playerService.players.slice(-3));
             const player = room.playerService.players.find((curPlayer) => curPlayer.name === gameSettings.creatorName);
+            console.log(player);
             socket.emit('MyPlayer', player);
             this.server.to(roomId).emit('roomPlayers', room.playerService.players);
             // room creation alerts all clients on the new rooms configurations

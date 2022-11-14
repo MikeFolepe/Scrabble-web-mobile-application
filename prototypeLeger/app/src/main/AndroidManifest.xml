@@ -36,6 +36,16 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+
+        <activity
+            android:name=".activities.PrivateGamePwd"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+
+
         <activity
             android:name=".activities.CreateGameActivity"
             android:exported="false">
