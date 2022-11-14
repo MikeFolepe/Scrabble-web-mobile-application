@@ -1,6 +1,8 @@
 /* eslint-disable max-lines */
+import { Message } from '@app/classes/message';
 import { Room, State } from '@app/classes/room';
 import { UsersService } from '@app/users/service/users.service';
+import { ChatRoomMessage } from '@common/chatRoomMessage';
 import { ONE_SECOND_DELAY, THREE_SECONDS_DELAY } from '@common/constants';
 import { GameSettings } from '@common/game-settings';
 import { Letter } from '@common/letter';
@@ -146,8 +148,15 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
             socket.to(roomId).emit('receiveReserve', reserve, reserveSize);
         });
 
-        socket.on('sendRoomMessage', (message: string, roomId: string) => {
-            socket.to(roomId).emit('receiveRoomMessage', message);
+        socket.on('sendRoomMessage', (message: ChatRoomMessage, roomId: string) => {
+            message.time =
+                new Date().getHours().toString().padStart(2, '0') +
+                ':' +
+                new Date().getMinutes().toString().padStart(2, '0') +
+                ':' +
+                new Date().getSeconds().toString().padStart(2, '0');
+
+            this.server.to(roomId).emit('receiveRoomMessage', message);
         });
 
         socket.on('sendGameConverservernMessage', (message: string, roomId: string) => {
@@ -167,16 +176,6 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
                 this.startAiTurn(room);
             }, THREE_SECONDS_DELAY);
             this.server.in(roomId).emit('eraseStartingCase');
-        });
-
-        socket.on('stopTimer', (roomId: string) => {
-            const room = this.roomManagerService.find(roomId);
-            room.skipTurnService.stopTimer();
-        });
-
-        socket.on('stopTimer', (roomId: string) => {
-            const room = this.roomManagerService.find(roomId);
-            room.skipTurnService.stopTimer();
         });
 
         socket.on('stopTimer', (roomId: string) => {

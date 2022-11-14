@@ -5,11 +5,20 @@ import kotlinx.serialization.Serializable
 import java.text.SimpleDateFormat
 
 @Serializable
-class Message(var message: String, var messageUser: String) {
+enum class MessageType {
+    System,
+    Opponent,
+    Player,
+    Error,
+}
 
-    var messageTime: String = getTimestamp()
+@Serializable
+class ChatRoomMessage(var text: String, var avatar: String ,var pseudonym: String) {
 
-    fun getTimestamp(): String {
+    var type: MessageType = MessageType.Player
+    var time: String = getTimestamp()
+
+     fun getTimestamp(): String {
         val time = Date().time
         val timestampFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
         return timestampFormat.format(time)

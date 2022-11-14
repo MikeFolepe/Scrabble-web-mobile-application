@@ -12,16 +12,16 @@ import com.example.scrabbleprototype.R
 import java.text.SimpleDateFormat
 import java.util.*
 
-class ChatAdapter(context: Context, @LayoutRes private val layoutResource: Int, private val messages: List<Message>):
-    ArrayAdapter<Message>(context, layoutResource, messages) {
+class ChatAdapter(context: Context, @LayoutRes private val layoutResource: Int, private val messages: List<ChatRoomMessage>):
+    ArrayAdapter<ChatRoomMessage>(context, layoutResource, messages) {
 
-    private var _messages: List<Message> = messages
+    private var _messages: List<ChatRoomMessage> = messages
 
     override fun getCount(): Int {
         return _messages.size
     }
 
-    override fun getItem(position: Int): Message? {
+    override fun getItem(position: Int): ChatRoomMessage? {
         return _messages[position]
     }
 
@@ -43,9 +43,9 @@ class ChatAdapter(context: Context, @LayoutRes private val layoutResource: Int, 
         val messageTime = view.findViewById<TextView>(R.id.message_time)
         val message = view.findViewById<TextView>(R.id.message)
 
-        messageUser.text = _messages[position].messageUser
-        messageTime.text = _messages[position].messageTime
-        message.text = _messages[position].message
+        messageUser.text = _messages[position].pseudonym
+        messageTime.text = _messages[position].time
+        message.text = _messages[position].text
 
         return view
     }
