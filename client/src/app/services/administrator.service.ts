@@ -76,6 +76,10 @@ export class AdministratorService {
         this.addUser(user);
     }
 
+    async checkPassword(pseudonym:string, password:string) {
+        return this.communicationService.checkPassword(pseudonym, password);
+    }
+
     addAiToDatabase(aiType: AiType, isNewAi: boolean, id: string = '', isDefault = false): void {
         if (isDefault) {
             this.displayMessage('Vous ne pouvez pas modifier un joueur par défaut!');

@@ -24,6 +24,7 @@
             <div *ngIf="formControls.password.errors.required">Veuillez entrer votre mot de passe</div>
           </div>
           <div class="forgottenPassword">Mot de passe oublié ?</div>
+          <div *ngIf="this.errorMessage != ''" class="errorMessage">{{this.errorMessage}}</div>
 
 
           <div id = "buttons">

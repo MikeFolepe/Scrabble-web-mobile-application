@@ -26,6 +26,7 @@ export class AuthPageComponent implements OnInit {
     emailValue = '';
     ipAddressValue = '';
     differentPasswords = false;
+    errorMessage = '';
     // choseAvatar = false;
     constructor(private administratorService : AdministratorService, public authService: AuthService, private formBuilder: FormBuilder, public avatarChoiceDialog : MatDialog) {
         
@@ -57,15 +58,24 @@ export class AuthPageComponent implements OnInit {
         return this.createAccountForm.controls;
     }
 
-    signIn() {
+    async signIn() {
         this.isSubmitted = true;
 
+
         if (this.authForm.invalid) {
-            console.log(this.administratorService.user[0]);
             return;
         }
-       
+
+        const userFound: Boolean = await this.findUser();
+
+        if (!userFound) {
+        
+            this.errorMessage = "Le pseudonyme ou le mot de passe entré est incorrect";
+            return;
+        }
+        
         this.authService.signIn(this.authForm.value);
+    
     }
 
     invalidPassword() {
@@ -88,7 +98,6 @@ export class AuthPageComponent implements OnInit {
         this.avatarValue = this.authService.chosenAvatar;
 
         if (this.createAccountForm.invalid || this.avatarValue === '') {
-            console.log(this.avatarValue);
             return;
         }
 
@@ -109,6 +118,19 @@ export class AuthPageComponent implements OnInit {
 
     createAccount() {
         this.hasAccount = false;
+    }
+
+    private async findUser() {
+        for (const user of this.administratorService.user) {
+
+            if (user.pseudonym === this.pseudonymValue) { 
+                
+                if(await this.administratorService.checkPassword(this.pseudonymValue, this.passwordValue)) {
+                    return true;
+                }
+            }      
+        }
+        return false;
     }
 
 }

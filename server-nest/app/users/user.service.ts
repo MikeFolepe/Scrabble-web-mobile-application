@@ -50,7 +50,6 @@ export class UserService {
 
     async getSingleUser(pseudonym : string) {
         const user = await this.findUser(pseudonym);
-        console.log(user.pseudonym);
         return user;
     }
     
