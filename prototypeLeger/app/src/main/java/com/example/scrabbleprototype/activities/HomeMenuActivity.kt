@@ -2,6 +2,7 @@ package com.example.scrabbleprototype.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Button
@@ -10,6 +11,11 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.scrabbleprototype.R
+import com.example.scrabbleprototype.model.GameListAdapter
+import com.example.scrabbleprototype.model.Room
+import com.example.scrabbleprototype.model.SocketHandler.playerSocket
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import org.json.JSONArray
 
 class HomeMenuActivity : AppCompatActivity() {
     var channelsNames = arrayOf("channel1", "channel2", "channel3", "channel4")
@@ -63,6 +69,27 @@ class HomeMenuActivity : AppCompatActivity() {
         alertDialog.setView(channelsList)
         dialog = alertDialog.create()
         dialog.show()
+    }
+
+    val socket = ;
+
+    private fun receiveChannels(channelsListAdapter: channelsListAdapter) {
+        playerSocket.on("roomConfiguration"){ response ->
+            var roomsAvailable = response[0] as JSONArray
+            for(i in 0 until roomsAvailable.length()) {
+                Log.d("room", roomsAvailable[i].toString())
+            }
+            roomsAvailable = roomsAvailable[0] as JSONArray
+            for(i in 0 until roomsAvailable.length()) {
+                val mapper = jacksonObjectMapper()
+                val roomToAdd = mapper.readValue(roomsAvailable.get(i).toString(), Room::class.java)
+                rooms.add(roomToAdd)
+            }
+            runOnUiThread {
+                gameListAdapter.updateData(rooms)
+            }
+        }
+        playerSocket.emit("getRoomsConfiguration")
     }
 
     fun cancel(view: View) {
