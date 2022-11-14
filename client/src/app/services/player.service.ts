@@ -99,7 +99,7 @@ export class PlayerService {
         // };
         // this.opponents[indexPlayer].letterTable.splice(indexToSwap, 1, letterToAdd);
 
-        this.clientSocketService.socket.emit('swap', this.getEasel(), indexToSwap, this.clientSocketService.currentRoom);
+        this.clientSocketService.socket.emit('swap', this.getEasel(), indexToSwap, this.clientSocketService.currentRoom.id);
     }
 
     private getUpdateEasel(): void {

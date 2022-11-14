@@ -83,8 +83,6 @@ export class PlaceLetterService {
             }
             this.goToNextPosition(currentPosition, orientation);
         }
-        console.log('boo');
-        console.log(this.scrabbleBoard);
         if (this.numLettersUsedFromEasel === EASEL_SIZE) this.isEaselSize = true;
 
         // Validation of the placement
@@ -133,13 +131,11 @@ export class PlaceLetterService {
         this.finalResult = await this.wordValidationService.validateAllWordsOnBoard(this.scrabbleBoard, this.isEaselSize, this.isRow);
 
         if (this.finalResult.validation) {
-            console.log('val');
             this.handleValidPlacement(this.finalResult, indexPlayer);
 
             return true;
         }
         this.handleInvalidPlacement(position, orientation, word, indexPlayer);
-        console.log('false');
         return false;
     }
 

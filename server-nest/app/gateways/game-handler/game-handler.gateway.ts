@@ -67,11 +67,8 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
         });
 
         socket.on('sendRequestToCreator', (userJoining: string, roomId: string) => {
-            console.log('requestSended');
-            console.log(roomId);
             Logger.log(userJoining);
             const room = this.roomManagerService.find(roomId);
-            console.log(room);
             this.logger.log(room.socketIds[0]);
             this.server.to(room.socketIds[0]).emit('newRequest', userJoining, roomId);
         });
@@ -165,6 +162,7 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
                 this.updateTurns(room);
                 this.startTimer(room.id);
                 this.startAiTurn(room);
+                console.log('oui');
             }, THREE_SECONDS_DELAY);
             this.server.in(roomId).emit('eraseStartingCase');
         });
@@ -174,11 +172,6 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
             room.playerService.players[room.skipTurnService.activePlayerIndex].letterTable = JSON.parse(easel);
             room.playerService.swap(indexToSwap, room.skipTurnService.activePlayerIndex);
             socket.emit('swapped', JSON.stringify(room.playerService.players[room.skipTurnService.activePlayerIndex].letterTable));
-        });
-
-        socket.on('stopTimer', (roomId: string) => {
-            const room = this.roomManagerService.find(roomId);
-            room.skipTurnService.stopTimer();
         });
 
         socket.on('stopTimer', (roomId: string) => {
@@ -225,15 +218,7 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
 
         socket.on(
             'validateDragPlacement',
-            async (
-                word: string,
-                isRow: boolean,
-                isEaselSize: boolean,
-                board: string,
-                roomId: string,
-                player: string,
-                dragWord: Map<string, Vec2>,
-            ) => {
+            async (word: string, isRow: boolean, isEaselSize: boolean, board: string, roomId: string, player: string, dragWord: string) => {
                 const room = this.roomManagerService.find(roomId);
                 const validationResult = await room.wordValidation.validateAllWordsOnBoard(JSON.parse(board), isEaselSize, isRow);
                 const playerReceived = JSON.parse(player);
@@ -312,7 +297,6 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
             const room = this.roomManagerService.find(roomId);
             // socket.emit('curOps', room.playerService.players.slice(-3));
             const player = room.playerService.players.find((curPlayer) => curPlayer.name === gameSettings.creatorName);
-            console.log(player);
             socket.emit('MyPlayer', player);
             this.server.to(roomId).emit('roomPlayers', room.playerService.players);
             // room creation alerts all clients on the new rooms configurations
@@ -383,15 +367,12 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
         if (room.skipTurnService.activePlayerIndex >= room.playerService.players.length) room.skipTurnService.activePlayerIndex = 0;
         room.playerService.players[room.skipTurnService.activePlayerIndex].isTurn = true;
         this.server.in(room.id).emit('turnSwitched', room.playerService.players[room.skipTurnService.activePlayerIndex].name);
-        console.log('update : ' + room.skipTurnService.activePlayerIndex);
     }
 
     private startAiTurn(room: Room) {
         const activePlayerIndex = room.skipTurnService.activePlayerIndex;
-        console.log(room.skipTurnService.players);
         if (!room.playerService.players[activePlayerIndex].isAi) return;
 
-        console.log('i am AI');
         setTimeout(async () => {
             const turn = room.aiIturn();
             await room.ais[turn].play(activePlayerIndex);

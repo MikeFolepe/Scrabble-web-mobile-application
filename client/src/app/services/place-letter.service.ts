@@ -97,14 +97,14 @@ export class PlaceLetterService implements OnDestroy {
         if (this.numLettersUsedFromEasel === EASEL_SIZE) this.isEaselSize = true;
         // Placing the first word
         if (this.isFirstRound) {
-            if (dragWord)
+            if (dragWord && this.placementsService.isFirstWordValid(position, orientation, word, dragWord))
                 this.clientSocketService.socket.emit(
                     'validateDragPlacement',
                     word,
                     this.isRow,
                     this.isEaselSize,
                     JSON.stringify(this.scrabbleBoard),
-                    this.clientSocketService.currentRoom,
+                    this.clientSocketService.currentRoom.id,
                     JSON.stringify(this.playerService.currentPlayer),
                     JSON.stringify(dragWord),
                 );
@@ -131,17 +131,30 @@ export class PlaceLetterService implements OnDestroy {
         }
         // Placing the following words
         if (this.isWordTouchingOthers(position, orientation, word)) {
-            this.clientSocketService.socket.emit(
-                'validatePlacement',
-                JSON.stringify(position),
-                word,
-                JSON.stringify(orientation),
-                this.isRow,
-                this.isEaselSize,
-                JSON.stringify(this.scrabbleBoard),
-                this.clientSocketService.currentRoom.id,
-                JSON.stringify(this.playerService.currentPlayer),
-            );
+            if (dragWord) {
+                this.clientSocketService.socket.emit(
+                    'validateDragPlacement',
+                    word,
+                    this.isRow,
+                    this.isEaselSize,
+                    JSON.stringify(this.scrabbleBoard),
+                    this.clientSocketService.currentRoom.id,
+                    JSON.stringify(this.playerService.currentPlayer),
+                    JSON.stringify(dragWord),
+                );
+            } else {
+                this.clientSocketService.socket.emit(
+                    'validatePlacement',
+                    JSON.stringify(position),
+                    word,
+                    JSON.stringify(orientation),
+                    this.isRow,
+                    this.isEaselSize,
+                    JSON.stringify(this.scrabbleBoard),
+                    this.clientSocketService.currentRoom.id,
+                    JSON.stringify(this.playerService.currentPlayer),
+                );
+            }
             return;
         }
 
@@ -149,15 +162,17 @@ export class PlaceLetterService implements OnDestroy {
         this.sendMessageService.displayMessageByType('ERREUR : Le placement est invalide', MessageType.Error);
     }
 
-    handleInvalidPlacement(position: Vec2, orientation: Orientation, word: string): void {
+    handleInvalidPlacement(position: Vec2, orientation: Orientation, word: string, dragWord?: Vec2[]): void {
         setTimeout(() => {
-            const currentPosition = { x: position.x, y: position.y };
-            for (let i = 0; i < this.validLetters.length; i++) {
-                if (this.validLetters[i] === undefined) this.validLetters[i] = true;
-                // If the word is invalid, we remove only the letters that we just placed on the grid and add them back to the easel.
-                if (!this.validLetters[i]) this.removePlacedLetter(currentPosition, word[i]);
-
-                this.placementsService.goToNextPosition(currentPosition, orientation);
+            for (let i = 0; i < word.length; ++i) {
+                if (dragWord !== undefined && dragWord[i].x !== undefined && dragWord[i].y !== undefined) {
+                    const currentPosition = { x: dragWord[i].x, y: dragWord[i].y };
+                    for (let j = 0; i < this.validLetters.length; i++) {
+                        if (this.validLetters[j] === undefined) this.validLetters[j] = true;
+                        // If the word is invalid, we remove only the letters that we just placed on the grid and add them back to the easel.
+                        if (!this.validLetters[j]) this.removePlacedLetter(currentPosition, word[j]);
+                    }
+                }
             }
         }, THREE_SECONDS_DELAY); // Waiting 3 seconds to erase the letters on the grid
     }

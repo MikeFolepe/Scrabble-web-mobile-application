@@ -81,7 +81,6 @@ export class PlaceLetterStrategy {
         const level = this.gameSettings.level;
         const isFirstRound = this.placeLetterService.isFirstRound;
         const scrabbleBoard = this.placeLetterService.scrabbleBoard;
-        console.log(scrabbleBoard);
         // console.log(scrabbleBoard);
         if (this.isFirstRoundAi) {
             // this.dictionary = this.wordValidation.dictionary;
@@ -96,18 +95,12 @@ export class PlaceLetterStrategy {
         const patterns = this.generateAllPatterns(this.getEasel(), isFirstRound);
         // Step2: Generate all words in the dictionary satisfying the patterns
         allPossibleWords = this.generateAllWords(this.dictionary, patterns);
-        console.log('96place stra');
-        console.log(allPossibleWords);
         // Step3: Clip words containing more letter than playable
         // allPossibleWords = this.removeIfNotEnoughLetter(allPossibleWords, playerAi);
         // Step4: Clip words that can not be on the board
         allPossibleWords = this.removeIfNotDisposable(allPossibleWords);
-        console.log('102place stra');
-        console.log(allPossibleWords);
         // Step5: Add the earning points to all words and update the
         allPossibleWords = await this.calculatePoints(allPossibleWords);
-        console.log('106place stra');
-        console.log(allPossibleWords);
         // Step6: Sort the words
         this.sortDecreasingPoints(allPossibleWords);
         // matchingPointingRangeWords = this.filterByRange(allPossibleWords, this.pointingRange);
