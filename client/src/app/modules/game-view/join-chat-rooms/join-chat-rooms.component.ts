@@ -24,6 +24,8 @@ export class JoinChatRoomsComponent {
         this.searchedRoom = '';
     }
 
+    ngOnInit(): void {}
+
     checkRoom(chatRoomName: string) {
         for (let i = 0; i < this.searchedRoom.length; i++) {
             if (this.searchedRoom[i] !== chatRoomName[i]) {
@@ -39,7 +41,7 @@ export class JoinChatRoomsComponent {
         setTimeout(() => console.log(this.chatRoomService.chatRooms), 2000);
     }
 
-    deleteChatRoom(index: number) {
+    deleteChatRoom(index: any) {
         // console.log(this.chatRoomService.chatRooms[this.chatRoomIndexService.chatRoomIndex])
         this.chatRoomService.chatRooms.splice(index, 1);
         this.clientSocketService.socket.emit('deleteChatRoom', index);

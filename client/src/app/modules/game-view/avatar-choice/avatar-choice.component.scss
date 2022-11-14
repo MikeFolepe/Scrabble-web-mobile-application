@@ -1,0 +1,33 @@
+.title {
+    text-align: center;
+    font-size: 24px;
+    //underline
+    text-decoration: underline;
+    color: rgb(35,80,31);
+}
+
+.avatar {
+    width: 200px;
+    height: 200px;
+    border-radius: 100%;
+    object-fit: cover;
+    margin-left: 10px;
+    margin-right : 10px;
+    margin-top:10px;
+    margin-bottom : 10px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    &:hover {
+        transform: scale(1.1);
+    }
+}
+
+.closeButton {
+    //align the button in the middle of the dialog
+    margin-left:46.5%;
+
+}

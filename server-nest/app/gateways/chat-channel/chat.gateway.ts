@@ -1,5 +1,3 @@
-// import { Message } from '@app/model/message';
-import { UsersService } from '@app/users/service/users.service';
 import { ChatRoomMessage } from '@common/chatRoomMessage';
 import { User } from '@common/user';
 import { Injectable, Logger } from '@nestjs/common';
@@ -12,7 +10,7 @@ import { ChatEvents } from './../../../../common/chat.gateway.events';
 export class ChatGateway {
     @WebSocketServer() private server: Server;
 
-    constructor(private readonly logger: Logger, private userService: UsersService, private chatRoomService: ChatRoomService) {}
+    constructor(private readonly logger: Logger, private chatRoomService: ChatRoomService) {}
 
     @SubscribeMessage(ChatEvents.Message)
     message(_: Socket, message: string) {
@@ -37,7 +35,7 @@ export class ChatGateway {
     }
 
     @SubscribeMessage('getChatRooms')
-    getChatRooms(socket: Socket) {
+    getChatRooms() {
         this.server.emit('updateChatRooms', this.chatRoomService.chatRooms);
     }
 
