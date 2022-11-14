@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { PLAYER_ONE_INDEX, PLAYER_TWO_INDEX } from '@app/classes/constants';
-import { Player } from '@app/models/player.model';
 import { ClientSocketService } from '@app/services/client-socket.service';
 import { GameSettingsService } from '@app/services/game-settings.service';
 import { EndGameService } from './end-game.service';
@@ -34,19 +33,17 @@ export class SkipTurnService {
         this.clientSocket.socket.on('turnSwitched', (playerName: string) => {
             if (playerName === this.playerService.currentPlayer.name) {
                 this.playerService.currentPlayer.isTurn = true;
-            } else {
-                const curPlayer = this.playerService.opponents.find((playerC) => playerC.name === playerName) as Player;
-                curPlayer.isTurn = true;
             }
+            const index = this.playerService.players.findIndex((playerC) => playerC.name === playerName);
+            this.playerService.players[index].isTurn = true;
         });
 
         this.clientSocket.socket.on('updatePlayerTurnToFalse', (playerName: string) => {
             if (playerName === this.playerService.currentPlayer.name) {
                 this.playerService.currentPlayer.isTurn = false;
-            } else {
-                const curPlayer = this.playerService.opponents.find((playerC) => playerC.name === playerName) as Player;
-                curPlayer.isTurn = false;
             }
+            const index = this.playerService.players.findIndex((playerC) => playerC.name === playerName);
+            this.playerService.players[index].isTurn = false;
         });
     }
 
@@ -59,7 +56,7 @@ export class SkipTurnService {
 
     switchAiTurn(): void {
         this.clientSocket.socket.on('switchAiTurn', (playerName: string) => {
-            this.clientSocket.socket.emit('switchTurn', this.clientSocket.roomId, playerName);
+            this.clientSocket.socket.emit('switchTurn', this.clientSocket.currentRoom.id, playerName);
         });
     }
 
@@ -69,7 +66,7 @@ export class SkipTurnService {
         if (this.playerService.currentPlayer.isTurn) this.shouldNotBeDisplayed = true;
         if (this.playerService.currentPlayer.isTurn) {
             this.shouldNotBeDisplayed = false;
-            this.clientSocket.socket.emit('switchTurn', this.clientSocket.roomId, this.playerService.currentPlayer.name);
+            this.clientSocket.socket.emit('switchTurn', this.clientSocket.currentRoom.id, this.playerService.currentPlayer.name);
             this.playerService.currentPlayer.isTurn = false;
         }
     }
@@ -80,8 +77,8 @@ export class SkipTurnService {
         if (this.endGameService.isEndGame) {
             this.endGameService.getFinalScore(PLAYER_ONE_INDEX);
             this.endGameService.getFinalScore(PLAYER_TWO_INDEX);
-            this.clientSocket.socket.emit('stopTimer', this.clientSocket.roomId);
-            this.clientSocket.socket.emit('sendEasel', this.playerService.opponents[PLAYER_ONE_INDEX].letterTable, this.clientSocket.roomId);
+            this.clientSocket.socket.emit('stopTimer', this.clientSocket.currentRoom.id);
+            this.clientSocket.socket.emit('sendEasel', this.playerService.opponents[PLAYER_ONE_INDEX].letterTable, this.clientSocket.currentRoom.id);
             this.sendMessageService.displayFinalMessage(PLAYER_ONE_INDEX);
             this.sendMessageService.displayFinalMessage(PLAYER_TWO_INDEX);
             this.shouldNotBeDisplayed = true;

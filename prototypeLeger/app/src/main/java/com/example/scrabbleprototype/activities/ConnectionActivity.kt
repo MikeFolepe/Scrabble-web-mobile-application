@@ -27,6 +27,7 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import org.json.JSONObject
 import java.lang.Exception
 import kotlin.coroutines.CoroutineContext
 
@@ -98,7 +99,7 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
 
         //validate username and ip
         launch {
-            val user = User(serverIp, username, null)
+            val user = User(serverIp, username, null, false)
 
             val response = postAuthentication(user)
             if(response != null) {

@@ -1,15 +1,8 @@
-<h2 mat-dialog-title>Nom du nouveau joueur</h2>
+<h2 mat-dialog-title>Veuillez entrer le mot de passe de la partie</h2>
 <div mat-dialog-content id="form-name">
     <mat-form-field appearance="fill">
-        <mat-label>Nom du joueur</mat-label>
+        <mat-label>Mot de passe</mat-label>
         <input matInput [formControl]="form" />
-        <mat-hint>
-            {{ nameSize.min }}-{{ nameSize.max }} caractères
-            <br />
-            Les 4 premiers caractères doivent être des lettres
-            <br />
-            {{ specialChar }} autorisés
-        </mat-hint>
     </mat-form-field>
 </div>
 <div mat-dialog-actions>
@@ -18,3 +11,5 @@
         Confirmer
     </button>
 </div>
+
+

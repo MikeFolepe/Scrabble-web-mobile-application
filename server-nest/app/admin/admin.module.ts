@@ -1,6 +1,6 @@
+import { AI_SCHEMA } from '@app/admin/model/ai.schema';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AI_SCHEMA } from '@app/model/ai.schema';
 import { AdminController } from './controller/admin.controller';
 import { AdminService } from './service/admin.service';
 

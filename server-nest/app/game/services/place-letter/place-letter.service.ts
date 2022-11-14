@@ -15,6 +15,7 @@ export class PlaceLetterService {
     lastPlacedWord: string;
     scrabbleBoard: string[][];
     finalResult: ScoreValidation;
+    firstOrientation: Orientation;
 
     startPosition: Vec2;
     orientation: Orientation;

@@ -1,10 +1,10 @@
+import { Ai, AiDocument } from '@app/admin/model/ai.schema';
 import { AiPlayer, AiType } from '@common/ai-name';
 import { Dictionary } from '@common/dictionary';
-import { Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Ai, AiDocument } from '@app/model/ai.schema';
 import * as fileSystem from 'fs';
+import { Model } from 'mongoose';
 @Injectable()
 export class AdminService {
     aiModels: Map<AiType, Model<AiDocument>>;

@@ -14,7 +14,8 @@ import { CommunicationService } from '@app/services/communication.service';
 import { GameSettingsService } from '@app/services/game-settings.service';
 import { AiType } from '@common/ai-name';
 import { Dictionary } from '@common/dictionary';
-import { GameSettings, StartingPlayer } from '@common/game-settings';
+import { GameSettings, RoomType, StartingPlayer } from '@common/game-settings';
+import { PasswordGameDialogComponent } from '../password-game-dialog/password-game-dialog.component';
 
 @Component({
     selector: 'app-form',
@@ -41,6 +42,7 @@ export class FormComponent implements OnInit, OnDestroy {
         private communicationService: CommunicationService,
         public adminService: AdministratorService,
         private authService: AuthService,
+        public dialog: MatDialog,
     ) {
         this.gameSettingsService.ngOnDestroy();
     }
@@ -52,6 +54,7 @@ export class FormComponent implements OnInit, OnDestroy {
             playerName: new FormControl(this.authService.currentUser.pseudonym),
             minuteInput: new FormControl(this.gameSettingsService.gameSettings.timeMinute),
             secondInput: new FormControl(this.gameSettingsService.gameSettings.timeSecond),
+            visibilityInput: new FormControl('Publique'),
             levelInput: new FormControl('Débutant'),
             channelInput: new FormControl(''),
             dictionaryInput: new FormControl(this.selectedDictionary.title, [Validators.required]),
@@ -63,9 +66,6 @@ export class FormComponent implements OnInit, OnDestroy {
         await this.selectGameDictionary(this.selectedDictionary);
         if (this.isDictionaryDeleted) return;
         this.snapshotSettings();
-        this.clientSocket.socket.emit('createRoom', this.gameSettingsService.gameSettings);
-        const nextUrl = 'waiting-room';
-        this.router.navigate([nextUrl]);
     }
 
     async selectGameDictionary(dictionary: Dictionary): Promise<void> {
@@ -94,6 +94,7 @@ export class FormComponent implements OnInit, OnDestroy {
     }
 
     private snapshotSettings(): void {
+        const type: RoomType = this.form.controls.visibilityInput.value === 'Publique' ? RoomType.public : RoomType.private;
         this.gameSettingsService.gameSettings = new GameSettings(
             this.form.controls.playerName.value,
             StartingPlayer.Player1,
@@ -101,11 +102,41 @@ export class FormComponent implements OnInit, OnDestroy {
             this.form.controls.secondInput.value,
             this.getLevel(),
             this.fileName,
+            type,
         );
+        this.handleGameType(type);
+    }
+
+    private handleGameType(type: RoomType): void {
+        if (type === RoomType.public) {
+            const ref = this.dialog.open(PasswordGameDialogComponent, {
+                disableClose: true,
+                width: '500px',
+                height: '300px',
+            });
+            ref.afterClosed().subscribe((password) => {
+                // if user closes the dialog box without input nothing
+                if (password == null) {
+                    this.goToWaiting();
+                    return;
+                }
+                // if decision is true the EndGame occurred
+                this.gameSettingsService.gameSettings.password = password;
+                this.goToWaiting();
+            });
+        } else {
+            this.goToWaiting();
+        }
+    }
+
+    private goToWaiting(): void {
+        this.clientSocket.socket.emit('createRoom', this.gameSettingsService.gameSettings);
+        const nextUrl = 'waiting-room';
+        this.router.navigate([nextUrl]);
     }
 
     private getLevel(): AiType {
-        return this.form.controls.levelInput.value === AiType.beginner ? AiType.beginner : AiType.expert;
+        return this.form.controls.levelInput.value === 'Débutant' ? AiType.beginner : AiType.expert;
     }
 
     openChangeChatRoomDialog(): void {

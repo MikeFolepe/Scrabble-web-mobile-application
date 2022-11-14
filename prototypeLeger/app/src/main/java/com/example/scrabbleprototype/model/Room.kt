@@ -9,7 +9,8 @@ enum class State {
 }
 
 @Serializable
-class Room(var id: String, var socketIds: ArrayList<String>, var gameSettings: GameSettings, var state: State) {
+class Room(var id: String, var socketIds: ArrayList<String>, var gameSettings: GameSettings, var state: State, var aiPlayersNumber: Int, var humanPlayersNumber: Int, var observers: ArrayList<User>
+) {
     @JsonIgnore
     var turnCounter: Int = 0
     @JsonIgnore
@@ -28,8 +29,6 @@ class Room(var id: String, var socketIds: ArrayList<String>, var gameSettings: G
     var skipTurnService: String = ""
     @JsonIgnore
     var ais: String = ""
-    @JsonIgnore
-    var nbOfAi: String = ""
     @JsonIgnore
     var aiTurn: String = ""
 }

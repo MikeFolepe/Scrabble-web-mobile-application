@@ -8,7 +8,7 @@
     <h2>Panneau d'information</h2>
     <div id="players-list">
         <p id="reserve-info">Nombres de lettres dans la réserve : {{ letterService.reserveSize }}</p>
-        <hr />
+        <!-- <hr />
         <div
             [ngClass]="{ 'player-turn': playerService.currentPlayer.isTurn}"
         >
@@ -25,20 +25,17 @@
                 Temps restant au tour : {{ skipTurnService.minutes }}:{{ displaySeconds() }}
             </div>
         </div>
-        <hr />
-        <div
-            *ngFor="let player of playerService.opponents"
-            [ngClass]="{ 'opponent-turn': player.isTurn }"
-        >
+        <hr /> -->
+        <div *ngFor="let player of playerService.players" [ngClass]="{ 'player-turn': player.isTurn }">
             <p>
-                <span *ngIf="player.isTurn ">></span>
+                <span *ngIf="player.isTurn">></span>
                 Nom : {{ player.name }}
             </p>
 
             <p>Score : {{ player.score }}</p>
             <p *ngIf="player.letterTable.length !== 7">Nombre de lettres sur le chevalet : {{ player.letterTable.length }}</p>
 
-            <div class="timer" *ngIf="player.isTurn ">
+            <div class="timer" *ngIf="player.isTurn">
                 Joueur actif<br />
                 Temps restant au tour : {{ skipTurnService.minutes }}:{{ displaySeconds() }}
             </div>

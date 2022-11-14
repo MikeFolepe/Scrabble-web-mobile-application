@@ -1,5 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { EASEL_SIZE, INVALID_INDEX, RESERVE } from '@app/classes/constants';
+import { INVALID_INDEX, RESERVE } from '@app/classes/constants';
 import { Letter } from '@common/letter';
 import { ClientSocketService } from './client-socket.service';
 @Injectable({ providedIn: 'root' })
@@ -9,7 +9,9 @@ export class LetterService implements OnDestroy {
 
     constructor(private clientSocketService: ClientSocketService) {
         this.reserve = [];
-        this.receiveReserve();
+        if (clientSocketService.socket) {
+            this.receiveReserve();
+        }
     }
 
     receiveReserve(): void {
@@ -47,7 +49,7 @@ export class LetterService implements OnDestroy {
         if (reserveIndex === INVALID_INDEX) return emptyLetter;
         this.reserve[reserveIndex].quantity--;
         this.reserveSize--;
-        // this.clientSocketService.socket.emit('sendReserve', this.reserve, this.reserveSize, this.clientSocketService.roomId);
+        // this.clientSocketService.socket.emit('sendReserve', this.reserve, this.reserveSize, this.clientSocketService.currentRoom.id);
         return randomLetter;
     }
 
@@ -56,40 +58,11 @@ export class LetterService implements OnDestroy {
             if (letter.toUpperCase() === letterReserve.value) {
                 letterReserve.quantity++;
                 this.reserveSize++;
-                // this.clientSocketService.socket.emit('sendReserve', this.reserve, this.reserveSize, this.clientSocketService.roomId);
+                // this.clientSocketService.socket.emit('sendReserve', this.reserve, this.reserveSize, this.clientSocketService.currentRoom.id);
                 return;
             }
         }
     }
-
-    removeLettersFromReserve(letters: Letter[]): void {
-        for (const letter of letters) {
-            for (const letterReserve of this.reserve) {
-                if (letter.value === letterReserve.value) {
-                    letterReserve.quantity--;
-                    this.reserveSize--;
-                }
-            }
-        }
-    }
-
-    // Draw seven letters from the reserve
-    // Useful for initialize player's easel
-    getRandomLetters(): Letter[] {
-        const tab: Letter[] = [];
-        for (let i = 0; i < EASEL_SIZE; i++) {
-            const letter = this.getRandomLetter();
-            tab[i] = {
-                value: letter.value,
-                quantity: letter.quantity,
-                points: letter.points,
-                isSelectedForSwap: letter.isSelectedForSwap,
-                isSelectedForManipulation: letter.isSelectedForManipulation,
-            };
-        }
-        return tab;
-    }
-
     ngOnDestroy(): void {
         this.reserve = JSON.parse(JSON.stringify(RESERVE));
         let size = 0;

@@ -35,7 +35,7 @@ export class SendMessageService {
     }
 
     sendMessageToOpponent(message: Message): void {
-        this.clientSocketService.socket.emit(ChatEvents.RoomMessage, message, this.clientSocketService.roomId);
+        this.clientSocketService.socket.emit('sendRoomMessage', message, this.clientSocketService.currentRoom.id);
     }
 
     // Function to send message of conversion to all players in the room
@@ -43,7 +43,7 @@ export class SendMessageService {
         this.clientSocketService.socket.emit(
             'sendGameConversionMessage',
             'Attention la partie est sur le point de se faire convertir en partie Solo.',
-            this.clientSocketService.roomId,
+            this.clientSocketService.currentRoom.id,
         );
     }
     // Function to receive the conversion Message to the players which is the room

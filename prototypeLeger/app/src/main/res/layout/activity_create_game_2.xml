@@ -158,20 +158,21 @@
                 android:orientation="horizontal">
 
                 <RadioGroup
+                    android:id="@+id/radio_group"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:orientation="horizontal">
 
                     <RadioButton
-                        android:id="@+id/public_party"
+                        android:id="@+id/public_game"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/everyone"
                         android:textColor="?android:textColor"/>
 
                     <RadioButton
-                        android:id="@+id/private_party"
+                        android:id="@+id/private_game"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/restricted"

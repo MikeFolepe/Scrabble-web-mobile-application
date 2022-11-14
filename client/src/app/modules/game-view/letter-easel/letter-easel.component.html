@@ -1,13 +1,35 @@
-<div id="easel" class="easel-container" (click)="onEaselClick()" (contextmenu)="onEaselClick()" tabindex="0" #easel>
-    <div
-        class="letter-container not-selectionnable"
-        *ngFor="let letter of playerService.currentPlayer.letterTable; let i = index"
-        [ngClass]="{ 'border-swap': playerService.currentPlayer.letterTable[i].isSelectedForSwap, 'border-manipulation': playerService.currentPlayer.letterTable[i].isSelectedForManipulation }"
-        (contextmenu)="onRightClick($event, i)"
-        (click)="onLeftClick($event, i)"
-    >
-        <h2 [style.font-size.px]="playerService.fontSize * 2">{{ letter.value }}</h2>
-        <p [style.font-size.px]="playerService.fontSize">{{ letter.points }}</p>
+<div *ngIf="!authService.currentUser.isObserver">
+    <div id="easel" class="easel-container" (click)="onEaselClick()" (contextmenu)="onEaselClick()" tabindex="0" #easel>
+        <div
+            class="letter-container not-selectionnable"
+            *ngFor="let letter of playerService.currentPlayer.letterTable; let i = index"
+            [ngClass]="{
+                'border-swap': playerService.currentPlayer.letterTable[i].isSelectedForSwap,
+                'border-manipulation': playerService.currentPlayer.letterTable[i].isSelectedForManipulation
+            }"
+            (contextmenu)="onRightClick($event, i)"
+            (click)="onLeftClick($event, i)"
+        >
+            <h2 [style.font-size.px]="playerService.fontSize * 2">{{ letter.value }}</h2>
+            <p [style.font-size.px]="playerService.fontSize">{{ letter.points }}</p>
+        </div>
+    </div>
+</div>
+<div id="easel" class="easel-container" tabindex="0" #easel *ngIf="authService.currentUser.isObserver">
+    <div *ngFor="let player of playerService.players">
+        <div *ngIf="player.isTurn">
+            <div
+                class="letter-container not-selectionnable"
+                *ngFor="let letter of player.letterTable; let i = index"
+                [ngClass]="{
+                    'border-swap': player.letterTable[i].isSelectedForSwap,
+                    'border-manipulation': player.letterTable[i].isSelectedForManipulation
+                }"
+            >
+                <h2 [style.font-size.px]="playerService.fontSize * 2">{{ letter.value }}</h2>
+                <p [style.font-size.px]="playerService.fontSize">{{ letter.points }}</p>
+            </div>
+        </div>
     </div>
 </div>
 <div>

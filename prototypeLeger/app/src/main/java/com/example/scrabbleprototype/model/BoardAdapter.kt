@@ -1,4 +1,4 @@
-package com.example.scrabbleprototype.model
+ package com.example.scrabbleprototype.model
 
 import android.content.ClipData
 import android.content.ClipDescription

@@ -43,7 +43,7 @@
     <string name="timer_format">%1$s:%2$s</string>
 
     //Waiting room
-    <string name="startGame">Démarrer la partie</string>
+    <string name="startGame">Démarrer</string>
     <string name="players_waiting_list">Liste des joueurs</string>
     <string name="title_activity_hamburger">hamburgerActivity</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
