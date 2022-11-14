@@ -4,6 +4,7 @@ import { Room } from '@app/classes/room';
 import { Player } from '@app/models/player.model';
 import { INVALID_INDEX, RESERVE, WHITE_LETTER_INDEX } from '@common/constants';
 import { Letter } from '@common/letter';
+import { AuthService } from './auth.service';
 
 import { ClientSocketService } from './client-socket.service';
 import { LetterService } from './letter.service';
@@ -18,7 +19,7 @@ export class PlayerService {
     currentPlayer: Player;
     currentRoom: Room;
 
-    constructor(private clientSocketService: ClientSocketService, private letterService: LetterService) {
+    constructor(private clientSocketService: ClientSocketService, private letterService: LetterService, private authService: AuthService) {
         this.currentPlayer = new Player('', []);
         this.fontSize = 14;
         this.opponents = [];
@@ -51,6 +52,12 @@ export class PlayerService {
 
     addEaselLetterToReserve(indexInEasel: number): void {
         this.letterService.addLetterToReserve(this.getEasel()[indexInEasel].value);
+    }
+
+    replaceAi(player: Player) {
+        const index = this.players.findIndex((curPlayer) => curPlayer.name === player.name);
+        this.authService.currentUser.isObserver = false;
+        this.clientSocketService.socket.emit('replaceAi', this.authService.currentUser.pseudonym, index, this.clientSocketService.currentRoom.id);
     }
 
     addLetterToEasel(letterToAdd: string): void {

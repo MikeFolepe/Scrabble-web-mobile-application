@@ -1,5 +1,7 @@
 /* eslint-disable max-lines */
 import { Room, State } from '@app/classes/room';
+import { PlayerAI } from '@app/game/models/player-ai.model';
+import { Player } from '@app/game/models/player.model';
 import { UsersService } from '@app/users/service/users.service';
 import { ONE_SECOND_DELAY, THREE_SECONDS_DELAY } from '@common/constants';
 import { GameSettings } from '@common/game-settings';
@@ -94,6 +96,7 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
             this.server.to(roomId).emit('receiveReserve', room.letter.reserve, room.letter.reserveSize);
             this.server.emit('roomAvailable', this.roomManagerService.getNumberOfRoomInWaitingState());
             this.server.to(roomId).emit('roomPlayers', players);
+            this.server.emit('roomConfiguration', this.roomManagerService.rooms);
             setTimeout(() => {
                 room.skipTurnService.findStartingPlayerIndex(room.playerService.players);
                 room.skipTurnService.players = players;
@@ -130,6 +133,29 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
         }, DELAY_OF_DISCONNECT);
     }
 
+    replaceAi(socket: Socket): void {
+        socket.on('replaceAi', (playerName, indexAiToReplace, roomId) => {
+            const room = this.roomManagerService.find(roomId);
+            const indexToRemove = room.ais.findIndex((curPlayer) => curPlayer.name === room.playerService.players[indexAiToReplace].name);
+            const indexToRemoveObserver = room.observers.findIndex((curPlayer) => curPlayer.pseudonym === playerName);
+            room.ais[indexToRemove] = {} as PlayerAI;
+            room.ais.splice(indexToRemove, 1);
+            room.observers.splice(indexToRemoveObserver, 1);
+
+            room.playerService.players[indexAiToReplace] = new Player(
+                playerName,
+                room.playerService.players[indexAiToReplace].letterTable,
+                0,
+                room.playerService.players[indexAiToReplace].isTurn,
+            );
+
+            this.logger.log('ai after replace', room.ais);
+            this.logger.log('players after replace', room.playerService.players);
+            socket.emit('MyPlayer', room.playerService.players[indexAiToReplace]);
+            this.server.to(roomId).emit('roomPlayers', room.playerService.players);
+        });
+    }
+
     handleConnection(socket: Socket) {
         socket.emit(ChatEvents.SocketId, socket.id);
         this.logger.log(`Connexion par l'utilisateur avec id : ${socket.id}`);
@@ -145,6 +171,8 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
         socket.on('sendReserve', (reserve: Letter[], reserveSize: number, roomId: string) => {
             socket.to(roomId).emit('receiveReserve', reserve, reserveSize);
         });
+
+        this.replaceAi(socket);
 
         socket.on('sendRoomMessage', (message: string, roomId: string) => {
             socket.to(roomId).emit('receiveRoomMessage', message);
