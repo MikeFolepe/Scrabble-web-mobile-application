@@ -42,6 +42,7 @@ class JoinGameActivity : AppCompatActivity() {
         routeToWaitingRoom()
         setupGameList()
         receiveJoinDecision()
+        sendObserverToGame()
         handleDeletedGame()
     }
 
@@ -66,19 +67,19 @@ class JoinGameActivity : AppCompatActivity() {
         val currentRoom = rooms[position]
         if (currentRoom.gameSettings.type == RoomType.public) {
             if(isObserver){
-                socket.emit("newRoomObserver", Users, rooms[position].id)
+                socket.emit("newRoomObserver", Users.currentUser, rooms[position].id)
             }
             else {
-                socket.emit("newRoomCustomer", Users.currentUser, rooms[position].id)
+                socket.emit("newRoomCustomer", Users.currentUser.pseudonym, rooms[position].id)
                 socketHandler.roomId = rooms[position].id
             }
         }
         else {
             if(isObserver){
-                socket.emit("newRoomObserver", Users, rooms[position].id)
+                socket.emit("newRoomObserver", Users.currentUser, rooms[position].id)
             }
             else {
-                socket.emit("sendRequestToCreator", Users.currentUser, currentRoom.id)
+                socket.emit("sendRequestToCreator", Users.currentUser.pseudonym, currentRoom.id)
                 socketHandler.roomId = rooms[position].id
             }
         }
@@ -133,7 +134,7 @@ class JoinGameActivity : AppCompatActivity() {
             Log.d("roomId" , roomId)
             Log.d("decision" , decision.toString())
             if (decision) {
-                socket.emit("newRoomCustomer", currentUser, roomId)
+                socket.emit("newRoomCustomer", currentUser.pseudonym, roomId)
             }
             else {
                 Snackbar.make(findViewById<LinearLayout>(R.id.snackbar_text), "Demande rejetée par le créateur", Snackbar.LENGTH_LONG).show()
