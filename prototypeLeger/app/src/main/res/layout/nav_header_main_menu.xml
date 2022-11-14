@@ -6,8 +6,7 @@
     android:background="@drawable/side_nav_bar"
     android:gravity="bottom"
     android:orientation="vertical"
-    android:padding="16dp"
-    android:theme="@style/ThemeOverlay.AppCompat.Dark">
+    android:padding="16dp">
 
     <ImageView
         android:id="@+id/imageView"
@@ -21,7 +20,7 @@
         android:layout_height="wrap_content"
         android:text="Équipe 110"
         android:textSize="14sp"
-        android:textColor="@color/white"
+        android:textColor="?android:textColorSecondary"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:layout_marginBottom="50dp"/>
 </LinearLayout>

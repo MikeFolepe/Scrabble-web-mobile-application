@@ -9,6 +9,7 @@ import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.model.ChatAdapter
 import com.example.scrabbleprototype.model.Message
 import com.example.scrabbleprototype.model.SocketHandler
+import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.objects.Users
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -32,7 +33,8 @@ class ChatFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_chat, container, false)
+        val inflaterWithTheme = ThemeManager.setFragmentTheme(layoutInflater, requireContext())
+        return inflaterWithTheme.inflate(R.layout.fragment_chat, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

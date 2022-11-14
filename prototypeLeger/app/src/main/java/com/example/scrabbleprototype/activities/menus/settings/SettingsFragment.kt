@@ -1,20 +1,23 @@
 package com.example.scrabbleprototype.activities.menus.settings
 
 import android.app.Dialog
+import android.content.res.Resources.Theme
 import android.os.Bundle
+import android.text.Editable
+import android.util.Log
+import android.view.ContextThemeWrapper
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.TextView
+import android.widget.*
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.databinding.FragmentSettingsBinding
 import com.example.scrabbleprototype.model.*
+import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.objects.Themes
 import com.example.scrabbleprototype.objects.Users
 import java.util.*
@@ -27,6 +30,7 @@ class SettingsFragment : Fragment() {
 
     private lateinit var boardItemsDialog: Dialog
     private lateinit var chatItemsDialog: Dialog
+    private var isAppThemeSpinnerInit = false
 
     private lateinit var binding: FragmentSettingsBinding
 
@@ -39,7 +43,8 @@ class SettingsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        binding = FragmentSettingsBinding.inflate(layoutInflater)
+        val inflaterWithTheme = ThemeManager.setFragmentTheme(layoutInflater, requireContext())
+        binding = FragmentSettingsBinding.inflate(inflaterWithTheme)
         return binding.root
     }
 
@@ -51,6 +56,13 @@ class SettingsFragment : Fragment() {
         setupBoardItems()
         setupChatItems()
         setupLanguages()
+        setupSaveButton()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        binding.profilePseudonym.setText(user.pseudonym)
+        binding.profileEmail.setText(user.email)
     }
 
     private fun setupUserInfos() {
@@ -59,12 +71,21 @@ class SettingsFragment : Fragment() {
     }
 
     private fun setupAppThemes() {
+        isAppThemeSpinnerInit = false
         val appThemeSpinner = binding.appThemeSpinner
         appThemeSpinner.adapter = AppThemeAdapter(this.requireContext(), R.layout.app_theme_spinner_item, Themes.appThemes)
 
         appThemeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long
-            ) { userPrefences.appThemeSelected = Themes.appThemes[position] }
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                if(userPrefences.appThemeSelected == Themes.appThemes[position] || !isAppThemeSpinnerInit) {
+                    isAppThemeSpinnerInit = true
+                    return
+                }
+                userPrefences.appThemeSelected = Themes.appThemes[position]
+
+                ThemeManager.changeToTheme(position)
+                recreateFragment()
+            }
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
     }
@@ -159,5 +180,21 @@ class SettingsFragment : Fragment() {
             ) { userPrefences.language = Language.values()[position] }
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
+    }
+
+    private fun setupSaveButton() {
+        binding.saveEditsBtn.setOnClickListener {
+            user.pseudonym = binding.profilePseudonym.text.toString()
+            user.email = binding.profileEmail.text.toString()
+            Toast.makeText(requireContext(), "Les changements ont été sauvegardés", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun recreateFragment() {
+        val supportFragmentManager = this@SettingsFragment.fragmentManager ?: return
+        val fragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_main_menu) ?: return
+        supportFragmentManager.beginTransaction().detach(fragment).commit()
+        supportFragmentManager.executePendingTransactions()
+        supportFragmentManager.beginTransaction().attach(fragment).commit()
     }
 }

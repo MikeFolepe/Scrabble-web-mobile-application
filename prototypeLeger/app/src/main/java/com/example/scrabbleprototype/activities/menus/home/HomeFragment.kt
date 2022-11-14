@@ -12,6 +12,7 @@ import com.example.scrabbleprototype.activities.CreateGameActivity
 import com.example.scrabbleprototype.activities.GameActivity
 import com.example.scrabbleprototype.activities.JoinGameActivity
 import com.example.scrabbleprototype.databinding.FragmentHomeBinding
+import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.objects.Users
 
 class HomeFragment : Fragment() {
@@ -24,15 +25,12 @@ class HomeFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        val homeViewModel =
-            ViewModelProvider(this)[HomeViewModel::class.java]
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?): View {
+        val homeViewModel = ViewModelProvider(this)[HomeViewModel::class.java]
 
-        _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        val inflaterWithTheme = ThemeManager.setFragmentTheme(layoutInflater, requireContext())
+        _binding = FragmentHomeBinding.inflate(inflaterWithTheme)
         val root: View = binding.root
 
         setupUserInfo()

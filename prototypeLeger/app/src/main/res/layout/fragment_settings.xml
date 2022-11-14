@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/settings_fragment"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,7 +10,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/light_green">
+        android:background="?attr/backgroundColor">
 
         <TextView
             android:id="@+id/parameters_title"
@@ -18,7 +19,7 @@
             android:layout_marginTop="70dp"
             android:layout_marginStart="20dp"
             android:text="@string/parameters"
-            android:textColor="@color/black"
+            android:textColor="?android:textColor"
             android:textSize="22sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -29,7 +30,7 @@
             android:layout_height="2dp"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
-            android:background="@color/black"
+            android:background="?attr/mainDividerColor"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/parameters_title" />
 
@@ -74,8 +75,8 @@
                         android:background="@drawable/white_button"
                         android:padding="6dp"
                         android:text="@string/edit_avatar_btn"
-                        android:textColor="@color/blue"
-                        android:textSize="12sp"
+                        android:textColor="?attr/textColorThird"
+                        android:textSize="16sp"
                         android:textStyle="bold" />
                 </LinearLayout>
 
@@ -83,14 +84,14 @@
                     android:id="@+id/divider_two"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@android:color/darker_gray" />
+                    android:background="?attr/dividerColor" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:text="@string/pseudonym"
-                    android:textColor="@color/dark_gray"
+                    android:textColor="?attr/titleTextColor"
                     android:textSize="16sp" />
 
                 <EditText
@@ -107,7 +108,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:text="@string/email"
-                    android:textColor="@color/dark_gray"
+                    android:textColor="?attr/titleTextColor"
                     android:textSize="16sp" />
 
                 <EditText
@@ -119,20 +120,32 @@
                     android:padding="5dp"
                     android:textSize="16sp" />
 
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/save_edits_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/save_edits"
+                    android:background="@drawable/blue_button"
+                    android:textColor="?android:textColorSecondary"
+                    android:padding="10dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="15dp"/>
+
                 <TextView
                     android:id="@+id/personalization_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:text="@string/personalization"
-                    android:textColor="@color/black"
+                    android:textColor="?android:textColor"
                     android:textSize="22sp" />
 
                 <View
                     android:id="@+id/divider_four"
                     android:layout_width="match_parent"
                     android:layout_height="2dp"
-                    android:background="@color/black" />
+                    android:background="?attr/mainDividerColor" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -149,7 +162,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/app_theme"
-                            android:textColor="@color/dark_gray"
+                            android:textColor="?attr/titleTextColor"
                             android:textSize="18sp" />
 
                         <RelativeLayout
@@ -184,7 +197,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/board_theme"
-                            android:textColor="@color/dark_gray"
+                            android:textColor="?attr/titleTextColor"
                             android:textSize="18sp" />
 
                         <LinearLayout
@@ -205,11 +218,11 @@
 
                             <com.google.android.material.floatingactionbutton.FloatingActionButton
                                 android:id="@+id/edit_board_theme"
-                                android:layout_width="40dp"
-                                android:layout_height="40dp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
                                 android:layout_marginStart="10dp"
                                 android:src="@drawable/ic_baseline_edit_24"
-                                app:fabCustomSize="40dp" />
+                                android:backgroundTint="?attr/floatButtonColor" />
                         </LinearLayout>
                     </LinearLayout>
                     <LinearLayout
@@ -222,7 +235,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/chat_theme"
-                            android:textColor="@color/dark_gray"
+                            android:textColor="?attr/titleTextColor"
                             android:textSize="18sp" />
 
                         <LinearLayout
@@ -243,11 +256,11 @@
 
                             <com.google.android.material.floatingactionbutton.FloatingActionButton
                                 android:id="@+id/edit_chat_theme"
-                                android:layout_width="40dp"
-                                android:layout_height="40dp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
                                 android:layout_marginStart="10dp"
                                 android:src="@drawable/ic_baseline_edit_24"
-                                app:fabCustomSize="40dp" />
+                                android:backgroundTint="?attr/floatButtonColor" />
                         </LinearLayout>
                     </LinearLayout>
                     <LinearLayout
@@ -259,7 +272,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/language"
-                            android:textColor="@color/dark_gray"
+                            android:textColor="?attr/titleTextColor"
                             android:textSize="18sp" />
 
                         <RelativeLayout
@@ -284,18 +297,6 @@
                         </RelativeLayout>
                     </LinearLayout>
                 </LinearLayout>
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/save_edits_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="@string/save_edits"
-                    android:background="@drawable/blue_button"
-                    android:textColor="@color/white"
-                    android:padding="10dp"
-                    android:layout_marginTop="25dp"
-                    android:layout_marginBottom="20dp"/>
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>

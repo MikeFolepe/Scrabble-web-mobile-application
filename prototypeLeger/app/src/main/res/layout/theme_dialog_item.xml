@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_margin="10dp"
     app:cardCornerRadius="8dp"
-    app:cardBackgroundColor="@color/white">
+    app:cardBackgroundColor="?attr/containerColor">
 
     <LinearLayout
         android:layout_width="210dp"
@@ -19,7 +19,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="20sp"
-            android:textColor="@color/black"
+            android:textColor="?android:textColor"
             android:layout_marginTop="10dp"/>
 
         <ImageView
@@ -33,7 +33,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="14sp"
-            android:textColor="@color/black"
+            android:textColor="?android:textColor"
             android:lines="2"
             android:layout_marginTop="5dp"
             android:layout_marginBottom="10dp"/>

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activities.CreateGameActivity"
-    android:background="@color/light_green">
+    android:background="?attr/backgroundColor">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" >
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:layout_width="wrap_content"
@@ -21,7 +21,7 @@
             android:text="Jeu du Scrabble - Équipe 107"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:textColor="@color/black"
+            android:textColor="?android:textColor"
             android:textSize="40sp"
             android:layout_gravity="center"
             android:id="@+id/toolbar_title" />
@@ -43,7 +43,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="@string/game_settings"
-            android:textColor="@color/black"
+            android:textColor="?android:textColor"
             android:textSize="20sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -64,7 +64,7 @@
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="10dp"
                 android:text="@string/duration"
-                android:textColor="@color/black"
+                android:textColor="?android:textColor"
                 android:textSize="18sp" />
 
             <LinearLayout
@@ -80,6 +80,7 @@
                     android:layout_width="370dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="20dp"
+                    android:backgroundTint="?attr/spinnerArrowColor"
                     android:hint="@string/minute"
                     />
                 <Spinner
@@ -87,6 +88,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="20dp"
+                    android:backgroundTint="?attr/spinnerArrowColor"
                     android:hint="@string/seconde"/>
             </LinearLayout>
         </LinearLayout>
@@ -108,7 +110,7 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
                 android:text="@string/dictionary"
-                android:textColor="@color/black"
+                android:textColor="?android:textColor"
                 android:textSize="18sp" />
 
             <LinearLayout
@@ -123,6 +125,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="20dp"
+                    android:backgroundTint="?attr/spinnerArrowColor"
                     android:hint="@string/dictionary"
                     />
             </LinearLayout>
@@ -145,7 +148,7 @@
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="10dp"
                 android:text="@string/party_type"
-                android:textColor="@color/black"
+                android:textColor="?android:textColor"
                 android:textSize="18sp" />
 
             <LinearLayout
@@ -164,13 +167,15 @@
                         android:id="@+id/public_party"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/everyone" />
+                        android:text="@string/everyone"
+                        android:textColor="?android:textColor"/>
 
                     <RadioButton
                         android:id="@+id/private_party"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/restricted" />
+                        android:text="@string/restricted"
+                        android:textColor="?android:textColor"/>
                 </RadioGroup>
 
             </LinearLayout>
@@ -193,18 +198,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="10dp"
-                android:background="@color/green"
+                android:background="?attr/buttonBarNegativeButtonStyle"
                 android:text="@string/back"
-                android:textColor="@color/white" />
+                android:padding="5dp"
+                android:textColor="?android:textColorSecondary" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/continue_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:background="@color/dark_green"
+                android:background="?attr/buttonBarPositiveButtonStyle"
                 android:text="@string/Continue"
-                android:textColor="@color/white" />
+                android:padding="5dp"
+                android:textColor="?android:textColorSecondary" />
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 

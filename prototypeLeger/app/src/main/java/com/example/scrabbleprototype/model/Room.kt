@@ -26,4 +26,10 @@ class Room(var id: String, var socketIds: ArrayList<String>, var gameSettings: G
     var player: String = ""
     @JsonIgnore
     var skipTurnService: String = ""
+    @JsonIgnore
+    var ais: String = ""
+    @JsonIgnore
+    var nbOfAi: String = ""
+    @JsonIgnore
+    var aiTurn: String = ""
 }

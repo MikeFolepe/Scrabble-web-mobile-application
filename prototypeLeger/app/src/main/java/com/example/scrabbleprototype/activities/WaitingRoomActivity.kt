@@ -16,6 +16,7 @@ import com.example.scrabbleprototype.model.PlayersWaitingAdapter
 import com.example.scrabbleprototype.model.SocketHandler
 import com.example.scrabbleprototype.objects.CurrentRoom
 import com.example.scrabbleprototype.objects.Players
+import com.example.scrabbleprototype.objects.ThemeManager
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 
 class WaitingRoomActivity : AppCompatActivity() {
@@ -28,6 +29,7 @@ class WaitingRoomActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        ThemeManager.setActivityTheme(this)
         setContentView(R.layout.waiting_room)
         receiveNewOpponent()
         goToGameView()

@@ -15,6 +15,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.databinding.ActivityMainMenuBinding
+import com.example.scrabbleprototype.objects.ThemeManager
 
 class MainMenuActivity : AppCompatActivity() {
 
@@ -23,7 +24,7 @@ class MainMenuActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        ThemeManager.setActivityTheme(this)
         setupDrawer()
     }
 

@@ -13,6 +13,7 @@ import com.example.scrabbleprototype.model.Connection
 import com.example.scrabbleprototype.model.ConnectionAdapter
 import com.example.scrabbleprototype.model.Game
 import com.example.scrabbleprototype.model.GameHistoryAdapter
+import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.objects.Users
 
 class StatsFragment : Fragment() {
@@ -31,7 +32,8 @@ class StatsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        binding = FragmentStatsBinding.inflate(layoutInflater)
+        val inflaterWithTheme = ThemeManager.setFragmentTheme(layoutInflater, requireContext())
+        binding = FragmentStatsBinding.inflate(inflaterWithTheme)
         return binding.root
     }
 

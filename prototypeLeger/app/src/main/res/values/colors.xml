@@ -33,4 +33,11 @@
     <color name="orange">#e66a00</color>
     <color name="light_orange">#FFE5B4</color>
     <color name="gold">#fcd21c</color>
+
+    <color name="darker_gray">#191A19</color>
+    <color name="container_gray">#323432</color>
+
+    <color name="gradient_start">#4DB6AC</color>
+    <color name="gradient_center">#009688</color>
+    <color name="gradient_end">#00695C</color>
 </resources>
