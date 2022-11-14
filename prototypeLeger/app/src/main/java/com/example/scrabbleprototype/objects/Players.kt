@@ -8,4 +8,6 @@ object Players {
     var currentPlayer: Player = Player()
     var currentPlayerPosition: Int = 0
     var opponents  = arrayListOf<Player>()
+
+    var players = arrayListOf<Player>()
 }

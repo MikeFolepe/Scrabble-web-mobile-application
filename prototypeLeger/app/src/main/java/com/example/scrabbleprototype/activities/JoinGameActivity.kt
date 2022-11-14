@@ -36,10 +36,9 @@ class JoinGameActivity : AppCompatActivity() {
         ThemeManager.setActivityTheme(this)
         setContentView(R.layout.activity_join_game)
 
-        receiveOpponents()
+        receivePlayers()
         receiveMyPlayer()
         currRoom()
-        receiveNewOpponent()
         routeToWaitingRoom()
         setupGameList()
         receiveJoinDecision()
@@ -111,13 +110,6 @@ class JoinGameActivity : AppCompatActivity() {
         socket.emit("getRoomsConfiguration")
     }
 
-    private fun receiveOpponents() {
-        socket.on("curOps") { response ->
-            val opponentsString = response[0].toString()
-            Players.opponents = mapper.readValue(opponentsString, object: TypeReference<ArrayList<Player>>() {})
-        }
-    }
-
     private fun receiveMyPlayer() {
         socket.on("MyPlayer") { response ->
             Players.currentPlayer = mapper.readValue(response[0].toString(), Player::class.java)
@@ -125,13 +117,13 @@ class JoinGameActivity : AppCompatActivity() {
         }
     }
 
-
-
-    private fun receiveNewOpponent() {
-        socket.on("Opponent") { response ->
-            Players.opponents.add(mapper.readValue(response[0].toString(), Player::class.java))
+    private fun receivePlayers() {
+        socket.on("roomPlayers") { response ->
+            Log.d("roomPlayers", "join")
+            Players.players = mapper.readValue(response[0].toString(), object: TypeReference<ArrayList<Player>>() {})
         }
     }
+
 
     private fun receiveJoinDecision() {
         socket.on("receiveJoinDecision") { response ->

@@ -17,6 +17,7 @@ import com.example.scrabbleprototype.model.SocketHandler.socket
 import com.example.scrabbleprototype.objects.CurrentRoom
 import com.example.scrabbleprototype.objects.Players
 import com.example.scrabbleprototype.objects.ThemeManager
+import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -41,13 +42,13 @@ class WaitingRoomActivity : AppCompatActivity() {
         setupPlayersWaiting()
         receiveNewRequest()
 
-        Players.currentPlayerPosition = Players.opponents.size
+        // Players.currentPlayerPosition = Players.opponents.size
     }
 
     private fun setupStartGameButton() {
         val startGameButton = findViewById<Button>(R.id.start_game_button)
         startGameButton.setOnClickListener {
-            if(Players.opponents.size < Constants.MAX_OPPONENTS || !Players.currentPlayer.isCreator) {
+            if((CurrentRoom.myRoom.humanPlayersNumber + CurrentRoom.myRoom.aiPlayersNumber) < Constants.MAX_PLAYERS || !Players.currentPlayer.isCreator) {
                 Toast.makeText(this, "La partie ne peut pas être commencée", Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             }
@@ -73,14 +74,11 @@ class WaitingRoomActivity : AppCompatActivity() {
     private fun setupPlayersWaiting() {
         val playersWaitingView = findViewById<RecyclerView>(R.id.players_waiting)
 
-        playersWaiting.add(Players.currentPlayer)
-        for(opponent in Players.opponents) { playersWaiting.add(opponent) }
-
         val verticalLayoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         playersWaitingView.layoutManager = verticalLayoutManager
-        playersWaitingAdapter = PlayersWaitingAdapter(playersWaiting)
+        playersWaitingAdapter = PlayersWaitingAdapter(Players.players)
         playersWaitingView.adapter = playersWaitingAdapter
-        playersWaitingAdapter.updateData(playersWaiting)
+        playersWaitingAdapter.updateData(Players.players)
     }
 
     private fun receiveNewOpponent() {
@@ -92,6 +90,11 @@ class WaitingRoomActivity : AppCompatActivity() {
                 playersWaiting.add(newOpponent)
                 playersWaitingAdapter.notifyItemChanged(playersWaiting.size - 1)
             }
+        }
+        socket.on("roomPlayers") { response ->
+            Log.d("roomPlayers", "waiting")
+            Players.players = mapper.readValue(response[0].toString(), object: TypeReference<ArrayList<Player>>() {})
+            playersWaitingAdapter.updateData(Players.players)
         }
     }
 
