@@ -23,6 +23,7 @@ import com.example.scrabbleprototype.model.SocketHandler
 import com.example.scrabbleprototype.objects.Board
 import com.example.scrabbleprototype.objects.LetterRack
 import com.example.scrabbleprototype.objects.Players
+import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.services.EndTurnCallback
 import com.example.scrabbleprototype.services.PlaceService
 import com.example.scrabbleprototype.services.SkipTurnService
@@ -75,7 +76,8 @@ class GameButtonsFragment : Fragment(), EndTurnCallback {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        _binding = FragmentGameButtonsBinding.inflate(inflater, container, false)
+        val inflaterWithTheme = ThemeManager.setFragmentTheme(layoutInflater, requireContext())
+        _binding = FragmentGameButtonsBinding.inflate(inflaterWithTheme)
         receivePlacementFail()
         receivePlacementSuccess()
         setupSkipButton()

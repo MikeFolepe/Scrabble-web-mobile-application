@@ -1,4 +1,4 @@
-import { Message } from '@app/model/message';
+// import { Message } from '@app/model/message';
 import { UsersService } from '@app/users/service/users.service';
 import { ChatRoomMessage } from '@common/chatRoomMessage';
 import { User } from '@common/user';
@@ -11,8 +11,6 @@ import { ChatEvents } from './../../../../common/chat.gateway.events';
 @Injectable()
 export class ChatGateway {
     @WebSocketServer() private server: Server;
-
-    messages: string[] = [];
 
     constructor(private readonly logger: Logger, private userService: UsersService, private chatRoomService: ChatRoomService) {}
 
@@ -88,25 +86,16 @@ export class ChatGateway {
         this.server.emit(ChatEvents.MassMessage, `${socket.id} : ${message}`);
     }
 
-    @SubscribeMessage(ChatEvents.RoomMessage)
-    roomMessage(socket: Socket, message: Message) {
-        Logger.log(message);
-        const messageObject = new Message(message.message, message.messageUser);
-        const messageString = JSON.stringify(messageObject);
-        this.messages.push(messageString);
-    }
+    // @SubscribeMessage(ChatEvents.RoomMessage)
+    // roomMessage(socket: Socket, message: Message) {
+    //     Logger.log(message);
+    //     const messageObject = new Message(message.message, message.messageUser);
+    //     const messageString = JSON.stringify(messageObject);
+    //     this.messages.push(messageString);
+    // }
 
-    @SubscribeMessage(ChatEvents.GetMessages)
-    getMessages(socket: Socket) {
-        socket.emit(ChatEvents.GetMessages, this.messages);
-    }
-
-    @SubscribeMessage(ChatEvents.UpdateUserSocket)
-    updateUser(_: Socket, user: User) {
-        for (const activeUser of this.userService.activeUsers) {
-            if (activeUser.pseudonym === user.pseudonym) {
-                activeUser.socketId = user.socketId;
-            }
-        }
-    }
+    // @SubscribeMessage(ChatEvents.GetMessages)
+    // getMessages(socket: Socket) {
+    //     socket.emit(ChatEvents.GetMessages, this.messages);
+    // }
 }

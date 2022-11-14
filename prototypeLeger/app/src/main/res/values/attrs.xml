@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <attr name="borderColor" format="reference"/>
+    <attr name="borderColorSecondary" format="reference"/>
+
+    <attr name="backgroundTextColor" format="reference"/>
+
+    <attr name="sideNavBarStart" format="reference"/>
+    <attr name="sideNavBarEnd" format="reference"/>
+    <attr name="sideNavBarCenter" format="reference"/>
+
+    <attr name="profileField" format="reference"/>
+    <attr name="profileFieldOutline" format="reference"/>
+
+    <attr name="buttonNeutralShadow" format="reference"/>
+    <attr name="buttonNegativeShadow" format="reference"/>
+    <attr name="buttonShadow" format="reference"/>
+    <attr name="floatButtonColor" format="reference"/>
+
+    <attr name="containerColor" format="reference"/>
+    <attr name="containerBorderColor" format="reference"/>
+
+    <attr name="spinnerArrowColor" format="reference"/>
+
+    <attr name="textColorThird" format="reference"/>
+
+    <attr name="messageInfoColor" format="reference"/>
+    <attr name="sendMessageBtnColor" format="reference"/>
+
+    <attr name="mainDividerColor" format="reference"/>
+</resources>

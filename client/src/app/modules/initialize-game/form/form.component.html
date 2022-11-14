@@ -12,13 +12,17 @@
     <form id="main-form-box" *ngIf="this.form">
         <fieldset>
             <legend id="main-form-name">Paramètres de la partie</legend>
-            <fieldset *ngIf="!gameSettingsService.isRedirectedFromMultiplayerGame" class="form-section" id="player-name-box">
+            <fieldset *ngIf="!gameSettingsService.isRedirectedFromMultiplayerGame" class="form-section" id="player-name-box" disabled>
                 <legend>Informations du joueur</legend>
                 <app-player-name-field [formGroup]="form" [parentForm]="form"></app-player-name-field>
             </fieldset>
             <fieldset *ngIf="!gameSettingsService.isRedirectedFromMultiplayerGame" class="form-section">
                 <legend>Durée</legend>
                 <app-timer-field [formGroup]="form" [parentForm]="form"></app-timer-field>
+            </fieldset>
+            <fieldset class="form-section">
+                <legend>Protection de la partie</legend>
+                <app-visibility-field [formGroup]="form" [parentForm]="form"></app-visibility-field>
             </fieldset>
             <fieldset *ngIf="gameSettingsService.isSoloMode" class="form-section">
                 <legend>Niveau du joueur virtuel</legend>

@@ -23,7 +23,6 @@ class SkipTurnService : Service() {
     private val socketHandler = SocketHandler
     private val socket = socketHandler.getPlayerSocket()
     private val player = Players.currentPlayer
-    private val opponents = Players.opponents
 
     private var activePlayerName: String = ""
 
@@ -56,16 +55,14 @@ class SkipTurnService : Service() {
                 activePlayerName = playerName
                 player.setTurn(true)
             }
-            else {
-                val activeOpponent: Player = opponents.find { it.name == playerName }!!
-                activeOpponent.setTurn(true)
-                activePlayerName = activeOpponent.name
-            }
+            val currentPlayer = Players.players.find { it.name == playerName }!!
+            currentPlayer.setTurn(true)
+            activePlayerName = currentPlayer.name
         }
 
         socket.on("updatePlayerTurnToFalse") { response ->
-            val opponentName = response[0] as String
-            opponents.find { it.name == opponentName }?.setTurn(false)
+            val playerToUpdateName = response[0] as String
+            Players.players.find { it.name == playerToUpdateName }?.setTurn(false)
         }
     }
 

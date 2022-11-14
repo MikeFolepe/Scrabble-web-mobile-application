@@ -15,6 +15,7 @@ export class PlaceLetterService {
     lastPlacedWord: string;
     scrabbleBoard: string[][];
     finalResult: ScoreValidation;
+    firstOrientation: Orientation;
 
     startPosition: Vec2;
     orientation: Orientation;
@@ -135,7 +136,6 @@ export class PlaceLetterService {
             console.log('val');
             this.handleValidPlacement(this.finalResult, indexPlayer);
 
-            this.isEmpty = false;
             return true;
         }
         this.handleInvalidPlacement(position, orientation, word, indexPlayer);
@@ -144,6 +144,7 @@ export class PlaceLetterService {
     }
 
     handleValidPlacement(finalResult: ScoreValidation, indexPlayer: number): void {
+        this.isEmpty = false;
         this.playerService.addScore(finalResult.score, indexPlayer);
         this.playerService.refillEasel(indexPlayer);
         this.isFirstRound = false;

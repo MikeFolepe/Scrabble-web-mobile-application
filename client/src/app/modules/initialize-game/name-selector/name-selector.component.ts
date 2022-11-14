@@ -20,11 +20,6 @@ export class NameSelectorComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.form.setValidators([
-            Validators.required,
-            Validators.pattern(VALIDATION_PATTERN),
-            Validators.minLength(NAME_SIZE.min),
-            Validators.maxLength(NAME_SIZE.max),
-        ]);
+        this.form.setValidators([Validators.required, Validators.pattern(VALIDATION_PATTERN)]);
     }
 }

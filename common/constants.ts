@@ -1,8 +1,8 @@
-import { Vec2 } from './vec2'
-import { CustomRange } from './range';
-import {AiType} from './ai-name'
-import { Letter } from './letter';
+import { AiType } from './ai-name';
 import { StartingPlayer } from './game-settings';
+import { Letter } from './letter';
+import { CustomRange } from './range';
+import { Vec2 } from './vec2';
 
 export const DEFAULT_WIDTH = 750;
 export const DEFAULT_HEIGHT = 750;
@@ -47,8 +47,11 @@ export const COLOR_BLACK = 'black';
 export const BEGINNER_POINTING_RANGE: CustomRange = { min: 1, max: 18 };
 
 export const NAME_SIZE: CustomRange = { min: 4, max: 12 };
+export const GAME_PASSWORD_SIZE: CustomRange = { min: 8, max: 12 };
 export const SPECIAL_CHAR = '@#$%^&*_';
 export const VALIDATION_PATTERN = '^([A-Za-z][A-Za-z][A-Za-z][A-Za-z])[A-Za-z0-9' + SPECIAL_CHAR + ']*';
+
+export const MAX_LENGTH_OBSERVERS = 6;
 
 // Positions are used for keys
 // Bonuses string are use for value
@@ -124,7 +127,6 @@ export const DEFAULT_GAME_SETTINGS = {
     dictionary: '',
     objectiveIds: [],
 };
-
 
 export const RESERVE: Letter[] = [
     {
@@ -317,5 +319,3 @@ export const RESERVE: Letter[] = [
         isSelectedForManipulation: false,
     },
 ];
-
-

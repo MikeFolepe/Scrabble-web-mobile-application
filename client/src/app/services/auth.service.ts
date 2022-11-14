@@ -1,12 +1,12 @@
-import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
-import { User } from '@common/user';
-
 import { HttpErrorResponse } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 import { ERROR_MESSAGE_DELAY } from '@app/classes/constants';
 import { ChatEvents } from '@common/chat.gateway.events';
+import { User } from '@common/user';
 import { io } from 'socket.io-client';
+import { environment } from 'src/environments/environment';
 import { ClientSocketService } from './client-socket.service';
 import { CommunicationService } from './communication.service';
 import { ErrorHandlerService } from './error-handler.service';
@@ -29,22 +29,19 @@ export class AuthService {
     }
 
     signIn(userData: User) {
-        this.serverUrl = 'http://localhost:3000';
+        this.serverUrl = environment.serverUrl;
         this.communicationService.baseUrl = this.serverUrl + '/api';
 
         this.communicationService.connectUser(userData).subscribe(
             (valid: boolean) => {
                 if (valid) {
-                    this.currentUser = userData;
+                    this.currentUser = new User(userData.pseudonym, userData.ipAddress);
                     this.clientSocketService.socket = io(this.serverUrl);
-                    this.clientSocketService.socket.on(ChatEvents.SocketId, (socketId: string) => {
-                        this.currentUser.socketId = socketId;
-                        // this.clientSocketService.socket.emit(ChatEvents.UpdateUserSocket, this.currentUser);
-                    });
                     this.clientSocketService.socket.connect();
 
                     this.clientSocketService.socket.emit(ChatEvents.JoinRoom);
                     this.clientSocketService.socket.emit(ChatEvents.GetMessages);
+                    this.receiveUserSocket();
                     this.clientSocketService.socket.emit('joinMainRoom', this.currentUser);
                     localStorage.setItem('ACCESS_TOKEN', 'access_token');
                     this.router.navigate(['/home']);

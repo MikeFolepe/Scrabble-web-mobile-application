@@ -54,6 +54,7 @@ export class PlaceLetterService implements OnDestroy {
         this.receiveFailure();
         this.receiveSuccess();
         this.receivePlacement();
+        this.initBoard();
         this.receiveBoard();
         this.receiveDragPlacement();
     }
@@ -116,7 +117,7 @@ export class PlaceLetterService implements OnDestroy {
                     this.isRow,
                     this.isEaselSize,
                     JSON.stringify(this.scrabbleBoard),
-                    this.clientSocketService.roomId,
+                    this.clientSocketService.currentRoom.id,
                     JSON.stringify(this.playerService.currentPlayer),
                 );
                 return;
@@ -138,7 +139,7 @@ export class PlaceLetterService implements OnDestroy {
                 this.isRow,
                 this.isEaselSize,
                 JSON.stringify(this.scrabbleBoard),
-                this.clientSocketService.roomId,
+                this.clientSocketService.currentRoom.id,
                 JSON.stringify(this.playerService.currentPlayer),
             );
             return;
@@ -277,7 +278,7 @@ export class PlaceLetterService implements OnDestroy {
         this.clientSocketService.socket.on('receiveSuccess', () => {
             console.log('success');
             this.endGameService.addActionsLog('placerSucces');
-            this.clientSocketService.socket.emit('sendActions', this.endGameService.actionsLog, this.clientSocketService.roomId);
+            this.clientSocketService.socket.emit('sendActions', this.endGameService.actionsLog, this.clientSocketService.currentRoom.id);
             this.handleValidPlacement();
             this.skipTurnService.switchTurn();
         });
@@ -287,7 +288,7 @@ export class PlaceLetterService implements OnDestroy {
         this.clientSocketService.socket.on('receiveFail', (position: Vec2, orientation: Orientation, word: string) => {
             console.log('invalid');
             this.endGameService.addActionsLog('placerEchec');
-            this.clientSocketService.socket.emit('sendActions', this.endGameService.actionsLog, this.clientSocketService.roomId);
+            this.clientSocketService.socket.emit('sendActions', this.endGameService.actionsLog, this.clientSocketService.currentRoom.id);
             this.handleInvalidPlacement(position, orientation, word);
             this.sendMessageService.displayMessageByType('ERREUR : Un ou des mots formés sont invalides', MessageType.Error);
             setTimeout(() => {
@@ -337,6 +338,23 @@ export class PlaceLetterService implements OnDestroy {
             this.placementsService.goToNextPosition(currentPosition, orientation);
         }
         this.isFirstRound = false;
+    }
+
+    private initBoard(): void {
+        this.clientSocketService.socket.on('giveBoardToObserver', (scrabbleBoard: string[][]) => {
+            for (let i = 0; i < BOARD_ROWS; i++) {
+                for (let j = 0; j < BOARD_COLUMNS; j++) {
+                    if (scrabbleBoard[j][i] !== '') {
+                        this.gridService.drawLetter(
+                            this.gridService.gridContextLettersLayer,
+                            scrabbleBoard[j][i],
+                            { x: i, y: j },
+                            this.playerService.fontSize,
+                        );
+                    }
+                }
+            }
+        });
     }
     private isLetterOnBoard(position: Vec2, letter: string): boolean {
         return letter.toUpperCase() === this.scrabbleBoard[position.y][position.x].toUpperCase();

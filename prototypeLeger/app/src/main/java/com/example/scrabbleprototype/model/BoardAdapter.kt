@@ -1,4 +1,4 @@
-package com.example.scrabbleprototype.model
+ package com.example.scrabbleprototype.model
 
 import android.content.ClipData
 import android.content.ClipDescription
@@ -30,6 +30,7 @@ class BoardAdapter(private var board: ArrayList<Letter>) :
      * Provide a reference to the type of views that you are using
      * (custom ViewHolder).
      */
+
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val case: CardView
 

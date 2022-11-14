@@ -41,7 +41,7 @@ export class PlacementsHandlerService {
     //     //     'updateCurrentWords',
     //     //     JSON.stringify(Array.from(this.wordValidationService.currentWords)),
     //     //     JSON.stringify(Array.from(this.wordValidationService.priorCurrentWords)),
-    //     //     this.clientSocketService.roomId,
+    //     //     this.clientSocketService.currentRoom.id,
     //     // );
     //     return this.extendedWords;
     // }

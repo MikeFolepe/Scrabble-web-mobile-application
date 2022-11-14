@@ -1,13 +1,12 @@
 export class User {
-    ipAddress: string;
     pseudonym: string;
-    socketId?: string;
-
-
-    constructor(ipAddress: string, pseudonym: string, socketId?: string) {
+    ipAddress: string;
+    socketId: string;
+    isObserver: boolean;
+    constructor(pseudo: string, ipAddress: string, socketId: string = '', isObserver: boolean = false) {
+        this.pseudonym = pseudo;
         this.ipAddress = ipAddress;
-        this.pseudonym = pseudonym;
         this.socketId = socketId;
+        this.isObserver = isObserver;
     }
-
 }

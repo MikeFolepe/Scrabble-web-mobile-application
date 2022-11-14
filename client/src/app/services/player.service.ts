@@ -1,22 +1,10 @@
 import { Injectable } from '@angular/core';
-// import {
-//     BOARD_COLUMNS,
-//     BOARD_ROWS,
-//     DEFAULT_FONT_SIZE,
-//     EASEL_SIZE,
-//     FONT_SIZE_MAX,
-//     FONT_SIZE_MIN,
-//     INVALID_INDEX,
-//     PLAYER_TWO_INDEX,
-//     RESERVE,
-//     WHITE_LETTER_INDEX
-// } from '@app/classes/constants';
+import { Room } from '@app/classes/room';
+
 import { Player } from '@app/models/player.model';
 import { INVALID_INDEX, RESERVE, WHITE_LETTER_INDEX } from '@common/constants';
 import { Letter } from '@common/letter';
-// import { GridService } from '@app/services/grid.service';
-// import { LetterService } from '@app/services/letter.service';
-// import { Letter } from '@common/letter';
+
 import { ClientSocketService } from './client-socket.service';
 import { LetterService } from './letter.service';
 
@@ -26,21 +14,28 @@ import { LetterService } from './letter.service';
 export class PlayerService {
     fontSize: number;
     opponents: Player[];
+    players: Player[];
     currentPlayer: Player;
+    currentRoom: Room;
 
     constructor(private clientSocketService: ClientSocketService, private letterService: LetterService) {
-        this.fontSize = 10;
+        this.currentPlayer = new Player('', []);
+        this.fontSize = 14;
         this.opponents = [];
+        this.players = [];
         this.getMyPlayer();
         this.getOpponent();
-        this.getAIs();
+        // this.getAIs();
         this.getExistingOpponents();
         this.updatePlayer();
         this.getUpdateEasel();
+        this.getPlayers();
     }
 
     clearPlayers(): void {
+        this.currentPlayer = new Player('', []);
         this.opponents = [];
+        this.players = [];
     }
 
     indexLetterInEasel(letter: string, startIndex: number): number {
@@ -104,7 +99,7 @@ export class PlayerService {
         // };
         // this.opponents[indexPlayer].letterTable.splice(indexToSwap, 1, letterToAdd);
 
-        this.clientSocketService.socket.emit('swap', this.getEasel(), indexToSwap, this.clientSocketService.roomId);
+        this.clientSocketService.socket.emit('swap', this.getEasel(), indexToSwap, this.clientSocketService.currentRoom);
     }
 
     private getUpdateEasel(): void {
@@ -120,23 +115,21 @@ export class PlayerService {
     }
 
     private getOpponent(): void {
-        this.clientSocketService.socket.on('Opponent', (player: Player) => {
-            this.opponents.push(player);
+        this.clientSocketService.socket.on('Opponent', (player: Player, indexAi: number) => {
+            this.opponents[indexAi] = player;
         });
     }
 
-    private getAIs(): void {
-        this.clientSocketService.socket.on('curAis', (player: Player) => {
-            this.opponents.push(player);
-        });
-    }
+    // private getAIs(): void {
+    //     this.clientSocketService.socket.on('curAis', (player: Player) => {
+    //         this.opponents.push(player);
+    //     });
+    // }
 
     private getExistingOpponents(): void {
         this.clientSocketService.socket.on('curOps', (players: Player[]) => {
-            for (const player of players) {
-                console.log(player);
-                this.opponents.push(player);
-            }
+            console.log(players);
+            this.opponents = players;
         });
     }
 
@@ -145,53 +138,17 @@ export class PlayerService {
             if (player.name === this.currentPlayer.name) {
                 this.currentPlayer.score = player.score;
                 this.currentPlayer.letterTable = player.letterTable;
-            } else {
-                const curPlayer = this.opponents.find((playerC) => playerC.name === player.name);
-                if (curPlayer) {
-                    curPlayer.score = player.score;
-                    curPlayer.letterTable = player.letterTable;
-                }
             }
+
+            const index = this.players.findIndex((playerC) => playerC.name === player.name);
+            this.players[index].score = player.score;
+            this.players[index].letterTable = player.letterTable;
         });
     }
 
-    // receiveOpponentEasel(): void {
-    //     this.clientSocketService.socket.on('receiveOpponentEasel', (letterTable: Letter[]) => {
-    //         this.players[PLAYER_TWO_INDEX].letterTable = letterTable;
-    //     });
-    // }
-
-    // addPlayer(user: Player): void {
-    //     this.players.push(user);
-    // }
-
-    // updateScrabbleBoard(scrabbleBoard: string[][]): void {
-    //     this.scrabbleBoard = scrabbleBoard;
-    // }
-
-    // updateFontSize(fontSize: number): void {
-    //     if (fontSize < FONT_SIZE_MIN) {
-    //         fontSize = FONT_SIZE_MIN;
-    //     } else if (fontSize > FONT_SIZE_MAX) {
-    //         fontSize = FONT_SIZE_MAX;
-    //     }
-    //     this.fontSize = fontSize;
-    //     this.updateGridFontSize();
-    // }
-
-    // // Update the font size of the letters placed on the grid
-    // updateGridFontSize(): void {
-    //     for (let i = 0; i < BOARD_ROWS; i++) {
-    //         for (let j = 0; j < BOARD_COLUMNS; j++) {
-    //             if (this.scrabbleBoard[i][j] !== '') {
-    //                 this.gridService.eraseLetter(this.gridService.gridContextLettersLayer, { x: j, y: i });
-    //                 this.gridService.drawLetter(this.gridService.gridContextLettersLayer, this.scrabbleBoard[i][j], { x: j, y: i }, this.fontSize);
-    //             }
-    //         }
-    //     }
-    // }
-
-    // isEaselEmpty(indexPlayer: number): boolean {
-    //     return this.players[indexPlayer].letterTable.length === 0;
-    // }
+    private getPlayers(): void {
+        this.clientSocketService.socket.on('roomPlayers', (players) => {
+            this.players = players;
+        });
+    }
 }

@@ -131,7 +131,7 @@ export class BoardHandlerService {
 
     cancelPlacement(): void {
         while (this.word.length) this.removePlacedLetter();
-        this.clientSocket.socket.emit('sendEraseStartingCase', this.clientSocket.roomId);
+        this.clientSocket.socket.emit('sendEraseStartingCase', this.clientSocket.currentRoom.id);
         this.currentCase.x = INVALID_INDEX;
         this.currentCase.y = INVALID_INDEX;
         this.isFirstCasePicked = false;
@@ -187,7 +187,7 @@ export class BoardHandlerService {
         this.isFirstCasePicked = true;
         this.orientation = Orientation.Horizontal;
         this.updateCaseDisplay();
-        this.clientSocket.socket.emit('sendStartingCase', this.firstCase, this.clientSocket.roomId);
+        this.clientSocket.socket.emit('sendStartingCase', this.firstCase, this.clientSocket.currentRoom.id);
     }
 
     private switchOrientation(): void {

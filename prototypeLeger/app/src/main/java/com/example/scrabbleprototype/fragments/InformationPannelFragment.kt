@@ -28,6 +28,7 @@ import com.example.scrabbleprototype.model.SocketHandler
 import com.example.scrabbleprototype.objects.CurrentRoom
 import com.example.scrabbleprototype.objects.Players
 import com.example.scrabbleprototype.objects.Reserve
+import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.services.SkipTurnService
 import com.example.scrabbleprototype.services.TurnUICallback
 import com.example.scrabbleprototype.viewModel.PlacementViewModel
@@ -68,7 +69,8 @@ class InformationPannelFragment : Fragment(), TurnUICallback {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        _binding = FragmentInformationPannelBinding.inflate(inflater, container, false)
+        val inflaterWithTheme = ThemeManager.setFragmentTheme(layoutInflater, requireContext())
+        _binding = FragmentInformationPannelBinding.inflate(inflaterWithTheme)
         return binding.root
     }
 

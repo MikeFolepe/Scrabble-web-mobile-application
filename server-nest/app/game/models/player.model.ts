@@ -4,19 +4,19 @@ export class Player {
     score: number;
     isTurn: boolean;
     isCreator: boolean;
-    isAI: boolean;
+    isAi: boolean;
     constructor(
         public name: string,
         public letterTable: Letter[],
         score: number = 0,
         isTurn: boolean = false,
         isCreator: boolean = false,
-        isAi?: boolean,
+        isAi: boolean = false,
     ) {
         this.score = score;
         this.isTurn = isTurn;
         this.isCreator = isCreator;
-        if (isAi) this.isAI = isAi;
+        this.isAi = isAi;
     }
     // getEasel(): string {
     //     let hand = '[';

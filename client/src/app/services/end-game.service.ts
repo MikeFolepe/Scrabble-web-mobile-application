@@ -41,7 +41,7 @@ export class EndGameService {
             this.clientSocketService.socket.emit(
                 'sendEasel',
                 this.playerService.opponents[PLAYER_ONE_INDEX].letterTable,
-                this.clientSocketService.roomId,
+                this.clientSocketService.currentRoom.id,
             );
             this.sendMessageService.displayFinalMessage(PLAYER_ONE_INDEX);
             this.sendMessageService.displayFinalMessage(PLAYER_TWO_INDEX);
@@ -66,7 +66,7 @@ export class EndGameService {
 
     addActionsLog(actionLog: string): void {
         this.actionsLog.push(actionLog);
-        this.clientSocketService.socket.emit('sendActions', this.actionsLog, this.clientSocketService.roomId);
+        this.clientSocketService.socket.emit('sendActions', this.actionsLog, this.clientSocketService.currentRoom.id);
     }
 
     checkEndGame(): void {
@@ -76,7 +76,7 @@ export class EndGameService {
                 'sendEndGame',
                 this.isEndGame,
                 this.playerService.opponents[PLAYER_ONE_INDEX].letterTable,
-                this.clientSocketService.roomId,
+                this.clientSocketService.currentRoom.id,
             );
         }
     }

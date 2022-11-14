@@ -51,7 +51,7 @@ export class LetterService {
         if (reserveIndex === INVALID_INDEX) return emptyLetter;
         this.reserve[reserveIndex].quantity--;
         this.reserveSize--;
-        // this.clientSocketService.socket.emit('sendReserve', this.reserve, this.reserveSize, this.clientSocketService.roomId);
+        // this.clientSocketService.socket.emit('sendReserve', this.reserve, this.reserveSize, this.clientSocketService.currentRoom.id);
         return randomLetter;
     }
 
@@ -60,7 +60,7 @@ export class LetterService {
             if (letter.toUpperCase() === letterReserve.value) {
                 letterReserve.quantity++;
                 this.reserveSize++;
-                // this.clientSocketService.socket.emit('sendReserve', this.reserve, this.reserveSize, this.clientSocketService.roomId);
+                // this.clientSocketService.socket.emit('sendReserve', this.reserve, this.reserveSize, this.clientSocketService.currentRoom.id);
                 return;
             }
         }

@@ -5,22 +5,31 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:cardCornerRadius="5dp"
-    app:cardBackgroundColor="@color/white"
+    app:cardBackgroundColor="?attr/colorPrimary"
     android:layout_margin="10dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="5dp">
+        android:padding="5dp"
+        android:id="@+id/snackbar_text">
         <TextView
             android:id="@+id/room_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:text="test"
-            android:textColor="@color/black"
+            android:textColor="?android:textColorSecondary"
             android:textAlignment="center"/>
+        <TextView
+            android:id="@+id/room_type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:textSize="10sp"
+            android:text="public"
+            android:background="@color/red"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -31,19 +40,31 @@
                 android:layout_height="wrap_content"
                 android:text="Statut : "
                 android:textSize="16sp"
-                android:textColor="@color/black"/>
+                android:textColor="?android:textColorSecondary"/>
             <TextView
                 android:id="@+id/game_status"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                
+            </TextView>
+
         </LinearLayout>
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/join_game_room_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Joindre"
-            android:background="@color/white"
-            android:textColor="@color/navy_blue"
+            android:padding="5dp"
+            android:background="@drawable/white_background"
+            android:textColor="?android:textColorPrimary"
             android:layout_gravity="center"
             android:layout_marginBottom="5dp"/>
 
