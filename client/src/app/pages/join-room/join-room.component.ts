@@ -4,11 +4,20 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginatorIntl, PageEvent } from '@angular/material/paginator';
+import { Router } from '@angular/router';
 import { ERROR_MESSAGE_DELAY } from '@app/classes/constants';
+import { ErrorMessage } from '@app/classes/error-message-constants';
+import { Room, State } from '@app/classes/room';
+import { AddChatRoomComponent } from '@app/modules/game-view/add-chat-room/add-chat-room.component';
+import { ChangeChatRoomComponent } from '@app/modules/game-view/change-chat-room/change-chat-room.component';
+import { JoinChatRoomsComponent } from '@app/modules/game-view/join-chat-rooms/join-chat-rooms.component';
 import { NameSelectorComponent } from '@app/modules/initialize-game/name-selector/name-selector.component';
+import { AuthService } from '@app/services/auth.service';
+import { ChannelHandlerService } from '@app/services/channel-handler.service';
 import { ClientSocketService } from '@app/services/client-socket.service';
-import { PlayerIndex } from '@common/player-index';
-import { Room, State } from '@common/room';
+import { PlayerService } from '@app/services/player.service';
+import { MAX_LENGTH_OBSERVERS } from '@common/constants';
+import { RoomType } from '@common/game-settings';
 
 @Component({
     selector: 'app-join-room',
@@ -19,36 +28,49 @@ export class JoinRoomComponent implements OnInit {
     rooms: Room[];
     roomItemIndex: number;
     pageSize: number;
-    shouldDisplayNameError: boolean;
-    shouldDisplayJoinError: boolean;
+    shouldDisplayError: boolean;
     isRoomAvailable: boolean;
     isRandomButtonAvailable: boolean;
-
+    errorMessage: string;
+    maxObserversLength = MAX_LENGTH_OBSERVERS;
     // JUSTIFICATION : must name service as it is named in MatPaginatorIntl
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    constructor(private clientSocketService: ClientSocketService, public dialog: MatDialog, public _MatPaginatorIntl: MatPaginatorIntl) {
+    constructor(
+        private clientSocketService: ClientSocketService,
+        public channelHandlerService: ChannelHandlerService,
+        public dialog: MatDialog,
+        public _MatPaginatorIntl: MatPaginatorIntl,
+        public joinChatRoomsDialog: MatDialog,
+        public changeChatRoomDialog: MatDialog,
+        public addChatRoomDialog: MatDialog,
+        private authService: AuthService,
+        private router: Router,
+        public playerService: PlayerService,
+    ) {
         this.rooms = [];
         this.roomItemIndex = 0;
         // 2 rooms per page
         this.pageSize = 2;
-        this.shouldDisplayNameError = false;
-        this.shouldDisplayJoinError = false;
+        this.shouldDisplayError = false;
         this.isRoomAvailable = false;
         this.isRandomButtonAvailable = false;
-        this.clientSocketService.socket.connect();
-        this.clientSocketService.socket.emit('getRoomsConfiguration');
-        this.clientSocketService.socket.emit('getRoomAvailable');
+        this.errorMessage = '';
+        // this.clientSocketService.socket.connect();
         // Method for button and others
-        this.receiveRoomAvailable();
-        this.receiveRandomPlacement();
-        this.clientSocketService.routeToGameView();
     }
 
     ngOnInit(): void {
         this.configureRooms();
-        this.receiveRoomAvailable();
         this.handleRoomUnavailability();
+        this.receiveRoomAvailable();
         this.receiveRandomPlacement();
+        this.receiveJoinDecision();
+        this.handleObservableRoomsAvailability();
+        this.sendObserverToGame();
+        this.clientSocketService.initialize();
+        this.confirm();
+        this.clientSocketService.socket.emit('getRoomsConfiguration');
+        this.clientSocketService.socket.emit('getRoomAvailable');
 
         this._MatPaginatorIntl.itemsPerPageLabel = 'Salons par page';
         this._MatPaginatorIntl.firstPageLabel = 'Première page';
@@ -79,47 +101,75 @@ export class JoinRoomComponent implements OnInit {
         return state === State.Waiting ? 'En attente' : 'Indisponible';
     }
 
-    join(room: Room): void {
+    computeRoomType(room: Room): string {
+        if (room.gameSettings.password !== '') {
+            return 'Publique avec mot de passe';
+        }
+        return room.gameSettings.type === RoomType.public ? 'Publique' : 'Privée';
+    }
+
+    join(room: Room, isObserver: boolean): void {
+        // if names are equals
+        if (room.gameSettings.creatorName === this.authService.currentUser.pseudonym) {
+            this.displayErrorMessage(ErrorMessage.NameAlreadyUsed);
+            return;
+        }
+
+        if (room.gameSettings.type === RoomType.private) {
+            this.clientSocketService.socket.emit('sendRequestToCreator', this.authService.currentUser.pseudonym, room.id);
+            console.log('emittedRequest');
+            return;
+        }
+
+        if (room.gameSettings.password === '') {
+            if (isObserver) {
+                this.clientSocketService.socket.emit('newRoomObserver', this.authService.currentUser, room.id);
+                return;
+            }
+            this.clientSocketService.socket.emit('newRoomCustomer', this.authService.currentUser.pseudonym, room.id);
+            return;
+        }
+
         this.dialog
             .open(NameSelectorComponent, { disableClose: true })
             .afterClosed()
-            .subscribe((playerName: string) => {
+            .subscribe((password: string) => {
                 // if user closes the dialog box without input nothing
-                if (playerName === null) return;
-                // if names are equals
-                if (room.gameSettings.playersNames[PlayerIndex.OWNER] === playerName) {
-                    this.shouldDisplayNameError = true;
-                    setTimeout(() => {
-                        this.shouldDisplayNameError = false;
-                    }, ERROR_MESSAGE_DELAY);
+                if (password === null) return;
+
+                if (password === room.gameSettings.password) {
+                    if (isObserver) {
+                        this.clientSocketService.socket.emit('newRoomObserver', this.authService.currentUser, room.id);
+
+                        return;
+                    }
+                    this.clientSocketService.socket.emit('newRoomCustomer', this.authService.currentUser.pseudonym, room.id);
                     return;
                 }
-                this.clientSocketService.socket.emit('newRoomCustomer', playerName, room.id);
+                this.displayErrorMessage(ErrorMessage.BadGamePassword);
+                return;
             });
     }
 
-    placeRandomly(): void {
-        this.dialog
-            .open(NameSelectorComponent, { disableClose: true })
-            .afterClosed()
-            .subscribe((playerName: string) => {
-                // if user closes the dialog box without input nothing
-                if (playerName === null) return;
-                this.clientSocketService.socket.emit('newRoomCustomerOfRandomPlacement', playerName, this.clientSocketService.gameType);
-            });
+    confirm() {
+        this.clientSocketService.socket.on('goToWaiting', () => {
+            this.router.navigate(['waiting-room']);
+        });
     }
+
     receiveRandomPlacement(): void {
         this.clientSocketService.socket.on('receiveCustomerOfRandomPlacement', (customerName: string, roomId: string) => {
             this.clientSocketService.socket.emit('newRoomCustomer', customerName, roomId);
         });
     }
 
+    // a retirer car pour le placement aleatoire
     receiveRoomAvailable(): void {
-        this.clientSocketService.socket.on('roomAvailable', (numberOfRooms: number[]) => {
-            if (numberOfRooms[this.clientSocketService.gameType] === 0) {
+        this.clientSocketService.socket.on('roomAvailable', (numberOfRooms: number) => {
+            if (numberOfRooms === 0) {
                 this.isRoomAvailable = false;
                 return;
-            } else if (numberOfRooms[this.clientSocketService.gameType] === 1) {
+            } else if (numberOfRooms === 1) {
                 this.isRoomAvailable = true;
                 this.isRandomButtonAvailable = false;
             } else {
@@ -129,18 +179,61 @@ export class JoinRoomComponent implements OnInit {
         });
     }
 
+    openChangeChatRoomDialog(): void {
+        this.changeChatRoomDialog.open(ChangeChatRoomComponent, { disableClose: true });
+    }
+
+    openJoinChatRoomDialog(): void {
+        this.joinChatRoomsDialog.open(JoinChatRoomsComponent, { disableClose: true });
+    }
+
+    openAddChatRoomDialog(): void {
+        this.addChatRoomDialog.open(AddChatRoomComponent, { disableClose: true });
+    }
+
     private handleRoomUnavailability(): void {
         this.clientSocketService.socket.on('roomAlreadyToken', () => {
-            this.shouldDisplayJoinError = true;
-            setTimeout(() => {
-                this.shouldDisplayJoinError = false;
-            }, ERROR_MESSAGE_DELAY);
-            return;
+            this.displayErrorMessage(ErrorMessage.RoomUnavailable);
+        });
+    }
+    private handleObservableRoomsAvailability(): void {
+        this.clientSocketService.socket.on('roomFullObservers', () => {
+            this.displayErrorMessage(ErrorMessage.NoMoreObservers);
+        });
+    }
+    private receiveJoinDecision(): void {
+        this.clientSocketService.socket.on('receiveJoinDecision', (decision: boolean, roomId: string) => {
+            if (decision) {
+                this.clientSocketService.socket.emit('newRoomCustomer', this.authService.currentUser.pseudonym, roomId);
+                return;
+            }
+            this.displayErrorMessage(ErrorMessage.JoinDisapproval);
         });
     }
     private configureRooms(): void {
-        this.clientSocketService.socket.on('roomConfiguration', (rooms: Room[][]) => {
-            this.rooms = rooms[this.clientSocketService.gameType];
+        this.clientSocketService.socket.on('roomConfiguration', (rooms) => {
+            this.rooms = [];
+            for (const room of rooms) {
+                this.rooms.push(
+                    new Room(room.id, room.gameSettings, room.state, room.socketIds, room.aiPlayersNumber, room.humanPlayersNumber, room.observers),
+                );
+            }
         });
+    }
+
+    private sendObserverToGame(): void {
+        this.clientSocketService.socket.on('ObserverToGameView', () => {
+            this.authService.currentUser.isObserver = true;
+            this.router.navigate(['game']);
+        });
+    }
+
+    private displayErrorMessage(message: string): void {
+        this.errorMessage = message;
+        this.shouldDisplayError = true;
+        setTimeout(() => {
+            this.shouldDisplayError = false;
+            this.errorMessage = '';
+        }, ERROR_MESSAGE_DELAY);
     }
 }

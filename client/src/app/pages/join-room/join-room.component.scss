@@ -1,21 +1,24 @@
 #paginator {
     margin-top: 2em;
     margin-bottom: 2em;
-    width: 45%;
+    width: 110%;
     margin-left: auto;
     margin-right: auto;
     text-align: center;
+    background-color: #00804d;
+    color: white;
+
 }
 
 #progress-bar-box {
-    width: 30%;
-    height: 45%;
+    margin-top: 5em;
+    width: 100%;
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
     top: 10%;
-    margin: auto auto;
-    background-color: linen;
+    background-color: #00804d;
     flex-direction: column;
 }
 
@@ -23,6 +26,7 @@
     text-align: center;
     font-size: x-large;
     margin-bottom: 3em;
+    color: white;
 }
 
 #buttons {
@@ -34,11 +38,12 @@
     flex-direction: row;
     flex-wrap: nowrap;
     align-items: center;
+    margin-top: 5em;
     justify-content: center;
 }
 
 .card {
-    width: 45%;
+    width: 100%;
     border-radius: 15px;
     margin-left: auto;
     margin-right: auto;
@@ -65,4 +70,69 @@
     width: 45%;
     margin-left: auto;
     margin-right: auto;
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: #23501F;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 1;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -60px;
+    
+}
+
+.tooltip .tooltiptext::after {
+    content: " ";
+    position: absolute;
+    top: 100%; /* At the bottom of the tooltip */
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #23501F transparent transparent transparent;
+  }
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+  }
+
+.chatRooms-buttons {
+    position:absolute;
+    bottom: 10px;
+    right : 400px;
+}
+
+.addButton {
+    background-color: #00804d;
+    margin-right : 10px;
+}
+
+.allRoomsButton {
+    background-color: #00804d;
+    margin-left : 10px;
+    margin-right : 10px;
+}
+
+.joinedRoomsButton {
+    background-color: #00804d;
+    margin-left : 10px;
+}
+
+.chatRooms {
+    //put the chatrooms at the botton left of the page
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
 }

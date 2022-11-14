@@ -1,50 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".fragments.GameButtonsFragment">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name="player"
+            type="com.example.scrabbleprototype.model.Player" />
+    </data>
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        tools:context=".fragments.GameButtonsFragment">
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/play_button"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:background="@drawable/teal_shadow_button"
-            android:textAllCaps="false"
-            android:textColor="@color/white"/>
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:layout_marginTop="6dp">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <androidx.appcompat.widget.AppCompatButton
-                android:layout_width="wrap_content"
+                android:id="@+id/play_turn_button"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/skip_turn_button"
+                android:text="@string/play_button"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
+                android:background="@drawable/button_selector"
                 android:textAllCaps="false"
-                android:textColor="@color/white"
-                android:layout_weight="1"
-                android:background="@drawable/teal_shadow_button"/>
-            <androidx.appcompat.widget.AppCompatButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/give_up_button"
-                android:layout_marginRight="10dp"
-                android:textColor="@color/white"
-                android:background="@drawable/red_shadow_button"
-                android:textAllCaps="false"/>
+                android:textColor="?android:textColorSecondary"
+                android:foreground="@drawable/ripple"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:layout_marginTop="6dp">
 
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/skip_turn_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/skip_turn_button"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:textAllCaps="false"
+                    android:textColor="?android:textColorSecondary"
+                    android:layout_weight="1"
+                    android:enabled="@{player.turn}"
+                    android:background="@drawable/button_selector"
+                    android:foreground="@drawable/ripple"/>
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/give_up_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/give_up_button"
+                    android:layout_marginRight="10dp"
+                    android:textColor="?android:textColorSecondary"
+                    android:background="@drawable/red_shadow_button"
+                    android:textAllCaps="false" />
+
+            </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
 
-</FrameLayout>
+    </FrameLayout>
+</layout>

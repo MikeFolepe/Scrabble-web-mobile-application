@@ -1,11 +1,54 @@
 <app-background></app-background>
 
-<div id="information-box">{{ status }}</div>
-
-<mat-card id="progress-bar-box">
+<!-- <mat-card id="progress-bar-box">
     <mat-spinner *ngIf="isWaiting" mode="indeterminate"></mat-spinner>
-</mat-card>
+</mat-card> -->
+<div *ngIf="!shouldDisplayError">
+    <div class="waiting-players-container">
+        <div class="display" #scrollMe>
+            <div id="list-display" *ngFor="let player of playerService.players; let i = index; let last = last">
+                <p>
+                    <span *ngIf="player.isCreator" class="creator"> > Createur :</span>
+                    {{ player.name }}
+                </p>
+                <hr style="color: black; width: 100%; height: 1px; background-color: black" />
+            </div>
+        </div>
+    </div>
+</div>
 
-<button mat-raised-button id="submit-button" color="primary" (click)="routeToGameView()">Jouer contre le joueur virtuel</button>
+<button
+    *ngIf="this.playerService.currentPlayer.isCreator && !shouldDisplayError"
+    mat-raised-button
+    color="primary"
+    id="submit-button-1"
+    (click)="startGame()"
+>
+    Commencer
+</button>
 
-<button mat-raised-button color="warn" id="submit-button-1" (click)="deleteGame()" routerLink="/solo-game-ai">Annuler</button>
+<button
+    *ngIf="this.playerService.currentPlayer.isCreator && !shouldDisplayError"
+    mat-raised-button
+    color="warn"
+    id="submit-button-1"
+    (click)="deleteGame()"
+>
+    Annuler
+</button>
+
+<!-- <button
+    *ngIf="!this.playerService.currentPlayer.isCreator && !shouldDisplayError"
+    mat-raised-button
+    color="warn"
+    id="submit-button-1"
+    (click)="leaveGame()"
+>
+    Annuler
+</button> -->
+
+<div *ngIf="shouldDisplayError">
+    <mat-card class="error-message"
+        ><span class="warning">Erreur: {{ errorMessage }}</span></mat-card
+    >
+</div>

@@ -54,14 +54,22 @@ class GameListAdapter(private var gameList: ArrayList<Room>) :
 
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
-        viewHolder.gameRoom.findViewById<TextView>(R.id.room_name).text = gameList[position].gameSettings.playersNames[0]
+        viewHolder.gameRoom.findViewById<TextView>(R.id.room_name).text = gameList[position].gameSettings.creatorName
         val gameStatus = viewHolder.gameRoom.findViewById<TextView>(R.id.game_status)
+        val roomType= viewHolder.gameRoom.findViewById<TextView>(R.id.room_type)
         if(gameList[position].state == State.Playing || gameList[position].state == State.Finish) {
             gameStatus.text = "Indisponible"
             gameStatus.setTextColor(ContextCompat.getColor(gameStatus.context, R.color.red))
         } else {
             gameStatus.text = "En attente"
-            gameStatus.setTextColor(ContextCompat.getColor(gameStatus.context, R.color.green))
+            gameStatus.setTextColor(ContextCompat.getColor(gameStatus.context, R.color.lime_green))
+        }
+        if(gameList[position].state == State.Playing || gameList[position].state == State.Finish) {
+            roomType.text = "Public"
+            roomType.setTextColor(ContextCompat.getColor(roomType.context, R.color.green))
+        } else {
+            roomType.text = "Privée"
+            roomType.setTextColor(ContextCompat.getColor(roomType.context, R.color.red))
         }
     }
 

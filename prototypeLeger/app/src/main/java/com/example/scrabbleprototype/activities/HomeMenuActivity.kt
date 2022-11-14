@@ -16,6 +16,7 @@ import com.example.scrabbleprototype.model.Room
 import com.example.scrabbleprototype.model.SocketHandler.playerSocket
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.json.JSONArray
+import com.example.scrabbleprototype.objects.ThemeManager
 
 class HomeMenuActivity : AppCompatActivity() {
     var channelsNames = arrayOf("channel1", "channel2", "channel3", "channel4")
@@ -27,6 +28,7 @@ class HomeMenuActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        ThemeManager.setActivityTheme(this)
         setContentView(R.layout.activity_home_menu)
 
         setupButtons()
@@ -71,7 +73,6 @@ class HomeMenuActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    val socket = ;
 
     private fun receiveChannels(channelsListAdapter: channelsListAdapter) {
         playerSocket.on("roomConfiguration"){ response ->

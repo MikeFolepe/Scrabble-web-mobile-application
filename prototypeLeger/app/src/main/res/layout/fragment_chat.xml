@@ -19,7 +19,7 @@
             android:layout_marginTop="20dp"
             android:text="Boite de Clavardage"
             android:textSize="24dp"
-            android:textColor="@color/white"
+            android:textColor="?android:textColorSecondary"
             android:layout_gravity="center"
             />
 
@@ -46,16 +46,16 @@
                 android:inputType="text"
                 android:layout_weight="1"
                 android:layout_marginLeft="8dp"
-                android:textColor="@color/white"
+                android:textColor="?android:textColorSecondary"
                 android:hint="@string/chatbox_hint"
-                android:textColorHint="@color/white"/>
+                android:textColorHint="?android:textColorSecondary"/>
 
             <ImageButton
                 android:id="@+id/send_button"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:padding="25dp"
-                android:background="@drawable/light_blue_background"
+                android:background="@drawable/send_message_background"
                 android:src="@drawable/ic_baseline_send_24" />
         </LinearLayout>
 

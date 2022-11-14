@@ -1,0 +1,36 @@
+<h1>Liste des canaux disponibles</h1>
+
+<div *ngIf="chatRoomService.chatRooms.length === 0">
+    <p>Il n'y a pas de canaux de discussion pour le moment</p>
+</div>
+<div *ngIf="chatRoomService.chatRooms.length !== 0">
+    <mat-form-field class="searchBar" appearance="fill">
+        <mat-label>Nom du canal de discussion:</mat-label>
+        <input matInput placeholder="Veuillez entrer le nom du canal recherché" [(ngModel)]="searchedRoom" />
+    </mat-form-field>
+
+    <mat-radio-group class="radio-group">
+        <mat-checkbox
+            (change)="onChange(chatRoom)"
+            color="primary"
+            class="radio-button"
+            value="solo"
+            [hidden]="!checkRoom(chatRoom.chatRoomName)"
+            [disabled]="alreadyInRoom(chatRoom)"
+            *ngFor="let chatRoom of chatRoomService.chatRooms"
+        >
+            {{ chatRoom.chatRoomName }}{{ ', par ' }}{{ chatRoom.creatorName }}
+
+            <span *ngIf="chatRoom.creatorName === this.authService.currentUser.pseudonym">
+                <button mat-button color="warn" (click)="deleteChatRoom(chatRoomService.chatRooms.indexOf(chatRoom))">Supprimer</button>
+            </span>
+        </mat-checkbox>
+    </mat-radio-group>
+</div>
+<button class="button" id="playButton" mat-raised-button color="primary" (click)="joinRoom(); this.joinChatRoomsDialogRef.close(true)">
+    Rejoindre!
+</button>
+
+<div mat-dialog-actions>
+    <button class="close-button" mat-raised-button mat-dialog-close (click)="this.joinChatRoomsDialogRef.close(true)" color="warn">Fermer</button>
+</div>

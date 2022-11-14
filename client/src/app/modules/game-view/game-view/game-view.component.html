@@ -16,7 +16,7 @@
                     mat-raised-button
                     color="primary"
                     id="regular-button-1"
-                    [disabled]="!this.skipTurnService.isTurn || this.skipTurnService.shouldNotBeDisplayed"
+                    [disabled]="!playerService.currentPlayer.isTurn || this.skipTurnService.shouldNotBeDisplayed"
                     (click)="this.chatBoxService.sendPlayerMessage('!passer')"
                 >
                     Passer son tour
@@ -34,7 +34,7 @@
                         mat-raised-button
                         color="warn"
                         id="regular-button-4"
-                        (click)="this.clientSocketService.socket.emit('deleteGame', this.clientSocketService.roomId); leaveGame()"
+                        (click)="this.clientSocketService.socket.emit('deleteGame', this.clientSocketService.currentRoom.id); leaveGame()"
                         routerLink="/home"
                     >
                         Quitter
@@ -48,7 +48,14 @@
     <app-letter-easel id="letter-easel"></app-letter-easel>
     <div id="chatbox">
         <app-chatbox></app-chatbox>
-        <app-objectives></app-objectives>
     </div>
 </div>
-<app-background [isDark]="!skipTurnService.isTurn"></app-background>
+<div class="chatRooms-buttons">
+    <button mat-mini-fab class="addButton tooltip" (click)="openAddChatRoomDialog()"><span class="tooltiptext">Ajouter</span><mat-icon>add</mat-icon></button>
+    <button mat-mini-fab class="allRoomsButton tooltip" (click)="openJoinChatRoomDialog()"><span class="tooltiptext">Rejoindre</span><mat-icon>search</mat-icon></button>
+    <button mat-mini-fab class="joinedRoomsButton tooltip" (click)="openChangeChatRoomDialog()"><span class="tooltiptext">Changer</span><mat-icon>view_headline</mat-icon></button>
+</div>
+<app-chatrooms class = "chatRooms"></app-chatrooms>
+
+
+<app-background [isDark]="!playerService.currentPlayer.isTurn"></app-background>

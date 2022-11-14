@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { EASEL_SIZE, INVALID_INDEX, PLAYER_ONE_INDEX } from '@app/classes/constants';
+import { EASEL_SIZE, INVALID_INDEX } from '@app/classes/constants';
 import { PlayerService } from '@app/services/player.service';
 import { Letter } from '@common/letter';
 
@@ -44,7 +44,7 @@ export class ManipulateService {
         // Pressing Shift doesn't unselect all so we can press Shift + 8 to select a '*'
         if (event.key === 'Shift') return;
         if (/([a-zA-Z]|[*])+/g.test(event.key) && event.key.length === 1) {
-            const letterPressedIndex = this.indexToSelect(event.key, PLAYER_ONE_INDEX);
+            const letterPressedIndex = this.indexToSelect(event.key);
             if (letterPressedIndex === INVALID_INDEX) {
                 this.usedLetters.fill(false, 0, this.usedLetters.length);
                 this.unselectAll();
@@ -73,7 +73,7 @@ export class ManipulateService {
         this.letterEaselTab = easel;
     }
 
-    indexToSelect(letterToSelect: string, indexPlayer: number): number {
+    indexToSelect(letterToSelect: string): number {
         let indexCurrentLetter = 0;
         if (
             this.usedLetters.some((letter) => {
@@ -84,16 +84,16 @@ export class ManipulateService {
                 this.usedLetters.fill(false, 0, this.usedLetters.length);
         }
 
-        indexCurrentLetter = this.playerService.indexLetterInEasel(letterToSelect, 0, indexPlayer);
+        indexCurrentLetter = this.playerService.indexLetterInEasel(letterToSelect, 0);
         // If we select the same letter 2 times, we verify that we're not using the same index in the easel
         while (this.usedLetters[indexCurrentLetter] && indexCurrentLetter !== INVALID_INDEX) {
-            indexCurrentLetter = this.playerService.indexLetterInEasel(letterToSelect, indexCurrentLetter + 1, indexPlayer);
+            indexCurrentLetter = this.playerService.indexLetterInEasel(letterToSelect, indexCurrentLetter + 1);
         }
 
         if (indexCurrentLetter === INVALID_INDEX) {
             this.usedLetters.fill(false, 0, this.usedLetters.length);
             // We find the first occurrence of the respective letter
-            indexCurrentLetter = this.playerService.indexLetterInEasel(letterToSelect, 0, indexPlayer);
+            indexCurrentLetter = this.playerService.indexLetterInEasel(letterToSelect, 0);
         }
 
         if (indexCurrentLetter !== INVALID_INDEX) this.usedLetters[indexCurrentLetter] = true;

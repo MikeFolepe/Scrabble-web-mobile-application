@@ -10,14 +10,12 @@ import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
-import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.model.SocketHandler
 import com.example.scrabbleprototype.model.User
-import com.example.scrabbleprototype.model.Users
-import com.google.android.material.snackbar.BaseTransientBottomBar
-import com.google.android.material.snackbar.Snackbar
+import com.example.scrabbleprototype.objects.ThemeManager
+import com.example.scrabbleprototype.objects.Users
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
@@ -29,6 +27,7 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import org.json.JSONObject
 import java.lang.Exception
 import kotlin.coroutines.CoroutineContext
 
@@ -50,6 +49,7 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        ThemeManager.setActivityTheme(this)
         setContentView(R.layout.activity_connection)
 
         val connectionButton = findViewById<Button>(R.id.connection_button)
@@ -99,13 +99,13 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
 
         //validate username and ip
         launch {
-            val user = User(serverIp, username, null)
+            val user = User(serverIp, username, null, false)
 
             val response = postAuthentication(user)
             if(response != null) {
                 if (response.status == HttpStatusCode.OK) {
                     if (response.body()) {
-                        users.currentUser = username
+                        users.currentUser = user
                         joinChat(serverIp, user)
                     } else {
                         usernameInput.error = "Cet utilisateur est déjà connecté"
@@ -130,7 +130,7 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
     }
 
     fun joinChat(serverIp: String, user: User) {
-        val intent = Intent(this, HomeMenuActivity::class.java)
+        val intent = Intent(this, MainMenuActivity::class.java)
 
         SocketHandler.setPlayerSocket(serverIp)
         SocketHandler.establishConnection()
@@ -138,8 +138,8 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
 
         chatSocket.emit("joinRoom")
         chatSocket.on("socketId") { response ->
-            user.socketId = response[0].toString()
-            chatSocket.emit("updateUserSocket", Json.encodeToString(user))
+            users.currentUser.socketId = response[0].toString()
+            chatSocket.emit("updateUserSocket", Json.encodeToString(users.currentUser))
         }
         startActivity(intent)
     }

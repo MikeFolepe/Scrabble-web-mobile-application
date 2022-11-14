@@ -1,6 +1,7 @@
 import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { EASEL_SIZE, PLAYER_ONE_INDEX } from '@app/classes/constants';
 import { MessageType } from '@app/classes/enum';
+import { AuthService } from '@app/services/auth.service';
 import { BoardHandlerService } from '@app/services/board-handler.service';
 import { EndGameService } from '@app/services/end-game.service';
 import { LetterService } from '@app/services/letter.service';
@@ -23,6 +24,7 @@ export class LetterEaselComponent implements OnInit {
 
     constructor(
         public playerService: PlayerService,
+        public authService: AuthService,
         private letterService: LetterService,
         private swapLetterService: SwapLetterService,
         private boardHandlerService: BoardHandlerService,
@@ -30,9 +32,7 @@ export class LetterEaselComponent implements OnInit {
         private manipulateService: ManipulateService,
         private skipTurnService: SkipTurnService,
         private endGameService: EndGameService,
-    ) {
-        this.letterEaselTab = [];
-    }
+    ) {}
 
     @HostListener('document:click', ['$event'])
     @HostListener('document:contextmenu', ['$event'])
@@ -62,9 +62,13 @@ export class LetterEaselComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.playerService.bindUpdateEasel(this.update.bind(this));
-        this.update();
+        // this.playerService.bindUpdateEasel(this.update.bind(this));
+        // this.update();
         this.manipulateService.sendEasel(this.letterEaselTab);
+    }
+
+    onDragEnd() {
+        this.boardHandlerService.isDragged = false;
     }
 
     onRightClick(event: MouseEvent, indexLetter: number): void {
@@ -90,7 +94,7 @@ export class LetterEaselComponent implements OnInit {
             }
         }
         // Display the respective message into the chatBox and pass the turn
-        const message = this.playerService.players[PLAYER_ONE_INDEX].name + ' : !échanger ' + lettersToSwap;
+        const message = this.playerService.currentPlayer + ' : !échanger ' + lettersToSwap;
         this.sendMessageService.displayMessageByType(message, MessageType.Player);
         this.endGameService.addActionsLog('echanger');
         this.skipTurnService.switchTurn();
@@ -106,7 +110,7 @@ export class LetterEaselComponent implements OnInit {
     isSwapButtonActive(): boolean {
         let isButtonActive = false;
         // Deactivated if it is not your turn
-        if (!this.skipTurnService.isTurn) return isButtonActive;
+        if (!this.playerService.currentPlayer.isTurn) return isButtonActive;
 
         // Deactivated if there's less than 7 letters in the reserve
         if (this.letterService.reserveSize < EASEL_SIZE) return isButtonActive;
@@ -127,9 +131,15 @@ export class LetterEaselComponent implements OnInit {
         return false;
     }
 
-    private update(): void {
-        this.letterEaselTab = this.playerService.getEasel(PLAYER_ONE_INDEX);
+    isDragged(letter: Letter) {
+        console.log('start');
+        this.boardHandlerService.isDragged = true;
+        this.boardHandlerService.currentDraggedLetter = letter;
     }
+
+    // private update(): void {
+    //     this.letterEaselTab = this.playerService.getEasel(PLAYER_ONE_INDEX);
+    // }
 
     private handleSwapSelection(indexLetter: number): void {
         this.manipulateService.unselectManipulation();

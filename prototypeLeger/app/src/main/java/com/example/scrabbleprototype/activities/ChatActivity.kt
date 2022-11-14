@@ -3,7 +3,6 @@ package com.example.scrabbleprototype.activities
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
@@ -14,11 +13,7 @@ import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.model.ChatAdapter
 import com.example.scrabbleprototype.model.Message
 import com.example.scrabbleprototype.model.SocketHandler
-import com.example.scrabbleprototype.model.Users
-import com.google.android.material.snackbar.BaseTransientBottomBar
-import com.google.android.material.snackbar.Snackbar
-import io.socket.client.Socket
-import kotlinx.serialization.decodeFromString
+import com.example.scrabbleprototype.objects.Users
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONArray
@@ -85,7 +80,7 @@ class ChatActivity : AppCompatActivity() {
 
     private fun sendMessage() {
         val messageInput = findViewById<EditText>(R.id.message_input)
-        val message = Message(messageInput.text.toString(), currentUser)
+        val message = Message(messageInput.text.toString(), currentUser.pseudonym)
 
         if(validateMessage(messageInput.text.toString())) {
             chatSocket.emit("roomMessage", JSONObject(Json.encodeToString(message)))

@@ -1,16 +1,21 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { BONUS_POSITIONS, DEFAULT_DICTIONARY_INDEX, INVALID_INDEX, PLAYER_ONE_INDEX } from '@app/classes/constants';
-import { NUMBER_OF_OBJECTIVES, NUMBER_OF_PUBLIC_OBJECTIVES, OBJECTIVES } from '@app/classes/objectives';
+import { DEFAULT_DICTIONARY_INDEX } from '@app/classes/constants';
+import { AddChatRoomComponent } from '@app/modules/game-view/add-chat-room/add-chat-room.component';
+import { ChangeChatRoomComponent } from '@app/modules/game-view/change-chat-room/change-chat-room.component';
+import { JoinChatRoomsComponent } from '@app/modules/game-view/join-chat-rooms/join-chat-rooms.component';
 import { AdministratorService } from '@app/services/administrator.service';
+import { AuthService } from '@app/services/auth.service';
+import { ChannelHandlerService } from '@app/services/channel-handler.service';
+import { ClientSocketService } from '@app/services/client-socket.service';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameSettingsService } from '@app/services/game-settings.service';
-import { RandomBonusesService } from '@app/services/random-bonuses.service';
 import { AiType } from '@common/ai-name';
 import { Dictionary } from '@common/dictionary';
-import { GameSettings, StartingPlayer } from '@common/game-settings';
-import { ObjectiveTypes } from '@common/objectives-type';
+import { GameSettings, RoomType, StartingPlayer } from '@common/game-settings';
+import { PasswordGameDialogComponent } from '../password-game-dialog/password-game-dialog.component';
 
 @Component({
     selector: 'app-form',
@@ -23,13 +28,21 @@ export class FormComponent implements OnInit, OnDestroy {
     selectedDictionary: Dictionary;
     isDictionaryDeleted: boolean;
     fileName: string;
+    channels: string[] = [];
+    channel: string;
 
     constructor(
+        private clientSocket: ClientSocketService,
         public gameSettingsService: GameSettingsService,
+        public channelHandlerService: ChannelHandlerService,
         private router: Router,
-        private randomBonusService: RandomBonusesService,
+        public joinChatRoomsDialog: MatDialog,
+        public changeChatRoomDialog: MatDialog,
+        public addChatRoomDialog: MatDialog,
         private communicationService: CommunicationService,
         public adminService: AdministratorService,
+        private authService: AuthService,
+        public dialog: MatDialog,
     ) {
         this.gameSettingsService.ngOnDestroy();
     }
@@ -38,12 +51,13 @@ export class FormComponent implements OnInit, OnDestroy {
         await this.initializeDictionaries();
         await this.selectGameDictionary(this.dictionaries[DEFAULT_DICTIONARY_INDEX]);
         this.form = new FormGroup({
-            playerName: new FormControl(this.gameSettingsService.gameSettings.playersNames[PLAYER_ONE_INDEX]),
+            playerName: new FormControl(this.authService.currentUser.pseudonym),
             minuteInput: new FormControl(this.gameSettingsService.gameSettings.timeMinute),
             secondInput: new FormControl(this.gameSettingsService.gameSettings.timeSecond),
+            visibilityInput: new FormControl('Publique'),
             levelInput: new FormControl('Débutant'),
+            channelInput: new FormControl(''),
             dictionaryInput: new FormControl(this.selectedDictionary.title, [Validators.required]),
-            randomBonus: new FormControl(this.gameSettingsService.gameSettings.randomBonus),
         });
         this.adminService.initializeAiPlayers();
     }
@@ -52,11 +66,8 @@ export class FormComponent implements OnInit, OnDestroy {
         await this.selectGameDictionary(this.selectedDictionary);
         if (this.isDictionaryDeleted) return;
         this.snapshotSettings();
-        const nextUrl = this.gameSettingsService.isSoloMode ? 'game' : 'waiting-room';
-        this.router.navigate([nextUrl]);
     }
 
-    // Checks if dictionary is not deleted and update the attributes
     async selectGameDictionary(dictionary: Dictionary): Promise<void> {
         const dictionaries = await this.communicationService.getDictionaries().toPromise();
         if (!dictionaries.find((dictionaryInArray: Dictionary) => dictionary.title === dictionaryInArray.title)) {
@@ -82,58 +93,61 @@ export class FormComponent implements OnInit, OnDestroy {
         this.dictionaries = await this.communicationService.getDictionaries().toPromise();
     }
 
-    private getRightBonusPositions(): string {
-        const bonusPositions = this.form.controls.randomBonus.value === 'Activer' ? this.randomBonusService.shuffleBonusPositions() : BONUS_POSITIONS;
-        return JSON.stringify(Array.from(bonusPositions));
-    }
-
-    private chooseStartingPlayer(): StartingPlayer {
-        return Math.floor((Math.random() * Object.keys(StartingPlayer).length) / 2);
-    }
-
-    private chooseRandomAIName(levelInput: AiType): string {
-        let randomName = '';
-        do {
-            // Random value [0, AI_NAME_DATABASE.length[
-            const randomNumber = Math.floor(Math.random() * this.adminService.aiBeginner.length);
-            randomName =
-                levelInput === AiType.beginner ? this.adminService.aiBeginner[randomNumber].aiName : this.adminService.aiExpert[randomNumber].aiName;
-        } while (randomName === this.form.controls.playerName.value);
-        return randomName;
-    }
-
     private snapshotSettings(): void {
-        const playersNames: string[] = [this.form.controls.playerName.value, this.chooseRandomAIName(this.form.controls.levelInput.value)];
+        const type: RoomType = this.form.controls.visibilityInput.value === 'Publique' ? RoomType.public : RoomType.private;
         this.gameSettingsService.gameSettings = new GameSettings(
-            playersNames,
-            this.chooseStartingPlayer(),
+            this.form.controls.playerName.value,
+            StartingPlayer.Player1,
             this.form.controls.minuteInput.value,
             this.form.controls.secondInput.value,
             this.getLevel(),
-            this.form.controls.randomBonus.value,
-            this.getRightBonusPositions(),
             this.fileName,
-            this.initializeObjective(),
+            type,
         );
+        this.handleGameType(type);
+    }
+
+    private handleGameType(type: RoomType): void {
+        if (type === RoomType.public) {
+            const ref = this.dialog.open(PasswordGameDialogComponent, {
+                disableClose: true,
+                width: '500px',
+                height: '300px',
+            });
+            ref.afterClosed().subscribe((password) => {
+                // if user closes the dialog box without input nothing
+                if (password == null) {
+                    this.goToWaiting();
+                    return;
+                }
+                // if decision is true the EndGame occurred
+                this.gameSettingsService.gameSettings.password = password;
+                this.goToWaiting();
+            });
+        } else {
+            this.goToWaiting();
+        }
+    }
+
+    private goToWaiting(): void {
+        this.clientSocket.socket.emit('createRoom', this.gameSettingsService.gameSettings);
+        const nextUrl = 'waiting-room';
+        this.router.navigate([nextUrl]);
     }
 
     private getLevel(): AiType {
-        return this.form.controls.levelInput.value === AiType.beginner ? AiType.beginner : AiType.expert;
+        return this.form.controls.levelInput.value === 'Débutant' ? AiType.beginner : AiType.expert;
     }
 
-    private initializeObjective(): number[][] {
-        const objectiveIds: number[] = [];
+    openChangeChatRoomDialog(): void {
+        this.changeChatRoomDialog.open(ChangeChatRoomComponent, { disableClose: true });
+    }
 
-        while (objectiveIds.length < NUMBER_OF_OBJECTIVES) {
-            const candidate = Math.floor(Number(Math.random()) * OBJECTIVES.length);
-            if (objectiveIds.indexOf(candidate) === INVALID_INDEX) objectiveIds.push(candidate);
-        }
+    openJoinChatRoomDialog(): void {
+        this.joinChatRoomsDialog.open(JoinChatRoomsComponent, { disableClose: true });
+    }
 
-        const objectiveByType: number[][] = [[], []];
-
-        objectiveByType[ObjectiveTypes.Public] = objectiveIds.slice(0, NUMBER_OF_PUBLIC_OBJECTIVES);
-        objectiveByType[ObjectiveTypes.Private] = objectiveIds.slice(NUMBER_OF_PUBLIC_OBJECTIVES, objectiveIds.length);
-
-        return objectiveByType;
+    openAddChatRoomDialog(): void {
+        this.addChatRoomDialog.open(AddChatRoomComponent, { disableClose: true });
     }
 }

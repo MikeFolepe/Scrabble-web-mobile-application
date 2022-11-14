@@ -1,18 +1,16 @@
 package com.example.scrabbleprototype.fragments
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import com.example.scrabbleprototype.R
-import com.example.scrabbleprototype.activities.ConnectionActivity
 import com.example.scrabbleprototype.model.ChatAdapter
 import com.example.scrabbleprototype.model.Message
 import com.example.scrabbleprototype.model.SocketHandler
-import com.example.scrabbleprototype.model.Users
+import com.example.scrabbleprototype.objects.ThemeManager
+import com.example.scrabbleprototype.objects.Users
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONArray
@@ -35,7 +33,8 @@ class ChatFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_chat, container, false)
+        val inflaterWithTheme = ThemeManager.setFragmentTheme(layoutInflater, requireContext())
+        return inflaterWithTheme.inflate(R.layout.fragment_chat, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -82,7 +81,7 @@ class ChatFragment : Fragment() {
 
     private fun sendMessage(view: View) {
         val messageInput = view.findViewById<EditText>(R.id.message_input)
-        val message = Message(messageInput.text.toString(), currentUser)
+        val message = Message(messageInput.text.toString(), currentUser.pseudonym)
 
         if(validateMessage(messageInput.text.toString())) {
             chatSocket.emit("roomMessage", JSONObject(Json.encodeToString(message)))

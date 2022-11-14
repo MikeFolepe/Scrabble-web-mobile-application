@@ -1,20 +1,26 @@
-import { AiType } from "./ai-name";
+import { AiType } from './ai-name';
 
 export enum StartingPlayer {
     Player1,
     Player2,
 }
 
+export enum RoomType {
+    public,
+    private,
+}
+
 export class GameSettings {
+    password: string;
     constructor(
-        public playersNames: string[],
+        public creatorName: string,
         public startingPlayer: StartingPlayer,
         public timeMinute: string,
         public timeSecond: string,
         public level: AiType,
-        public randomBonus: string,
-        public bonusPositions: string,
         public dictionary: string,
-        public objectiveIds: number[][] = [[], []],
-    ) {}
+        public type: RoomType,
+    ) {
+        this.password = '';
+    }
 }

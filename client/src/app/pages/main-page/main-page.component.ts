@@ -1,14 +1,16 @@
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { AddChatRoomComponent } from '@app/modules/game-view/add-chat-room/add-chat-room.component';
+import { ChangeChatRoomComponent } from '@app/modules/game-view/change-chat-room/change-chat-room.component';
+import { JoinChatRoomsComponent } from '@app/modules/game-view/join-chat-rooms/join-chat-rooms.component';
 import { BestScoresComponent } from '@app/pages/best-scores/best-scores.component';
-import { ClientSocketService } from '@app/services/client-socket.service';
+import { ChatRoomService } from '@app/services/chat-room.service';
 import { EndGameService } from '@app/services/end-game.service';
 import { GameSettingsService } from '@app/services/game-settings.service';
 import { GiveUpHandlerService } from '@app/services/give-up-handler.service';
 import { LetterService } from '@app/services/letter.service';
 import { PlaceLetterService } from '@app/services/place-letter.service';
-import { WordValidationService } from '@app/services/word-validation.service';
 import { GameType } from '@common/game-type';
 
 @Component({
@@ -20,6 +22,10 @@ export class MainPageComponent {
     selectedGameTypeIndex: number;
     selectedGameType: string | GameType;
     selectedGameMode?: string;
+    selectedChatRooms: string[];
+    chatRoomForm: boolean;
+    isOpen: boolean;
+    chatRoomName: string;
     readonly gameType: string[];
     readonly gameModes: string[];
 
@@ -27,25 +33,27 @@ export class MainPageComponent {
         public gameSettingsService: GameSettingsService,
         private router: Router,
         public bestScoresDialog: MatDialog,
-        private clientSocketService: ClientSocketService,
+        public joinChatRoomsDialog: MatDialog,
+        public changeChatRoomDialog: MatDialog,
+        public addChatRoomDialog: MatDialog,
         private letterService: LetterService,
         private placeLetterService: PlaceLetterService,
         private giveUpHandlerService: GiveUpHandlerService,
         private endGameService: EndGameService,
-        private wordValidationService: WordValidationService,
+        public chatRoomService: ChatRoomService,
     ) {
         this.selectedGameTypeIndex = 0;
-        this.gameType = ['Scrabble classique', 'Scrabble LOG2990'];
+        this.gameType = ['Scrabble classique'];
         this.gameModes = ['Jouer une partie en solo', 'Créer une partie multijoueur', 'Joindre une partie multijoueur'];
+        this.chatRoomService.getChatRooms();
+        this.selectedChatRooms = [];
+        this.chatRoomForm = false;
+        this.isOpen = false;
         this.resetServices();
     }
 
     routeToGameMode(): void {
         // Update game type and game mode, then route
-        this.selectedGameType = this.gameType[this.selectedGameTypeIndex];
-        const gameTypeIndex = this.gameType[0] === this.selectedGameType ? 0 : 1;
-        this.gameSettingsService.gameType = gameTypeIndex;
-        this.clientSocketService.gameType = gameTypeIndex;
         switch (this.selectedGameMode) {
             case this.gameModes[0]: {
                 this.gameSettingsService.isSoloMode = true;
@@ -65,14 +73,29 @@ export class MainPageComponent {
         }
     }
 
+    openChatRoomForm(): void {
+        this.chatRoomForm = true;
+    }
+
     openBestScoresDialog(): void {
         this.bestScoresDialog.open(BestScoresComponent, { disableClose: true });
+    }
+
+    openChangeChatRoomDialog(): void {
+        this.changeChatRoomDialog.open(ChangeChatRoomComponent, { disableClose: true });
+    }
+
+    openJoinChatRoomDialog(): void {
+        this.joinChatRoomsDialog.open(JoinChatRoomsComponent, { disableClose: true });
+    }
+
+    openAddChatRoomDialog(): void {
+        this.addChatRoomDialog.open(AddChatRoomComponent, { disableClose: true });
     }
 
     resetServices() {
         this.giveUpHandlerService.isGivenUp = false;
         this.endGameService.actionsLog = [];
-        this.wordValidationService.ngOnDestroy();
         this.letterService.ngOnDestroy();
         this.placeLetterService.ngOnDestroy();
         this.gameSettingsService.ngOnDestroy();

@@ -1,18 +1,23 @@
 import { Injectable } from '@angular/core';
-import { BOARD_COLUMNS, BOARD_ROWS, GRID_CASE_SIZE, INVALID_INDEX, LAST_INDEX, PLAYER_ONE_INDEX } from '@app/classes/constants';
+import { BOARD_COLUMNS, BOARD_ROWS, GRID_CASE_SIZE, INVALID_INDEX, LAST_INDEX } from '@app/classes/constants';
 import { MouseButton } from '@app/classes/enum';
 import { Orientation } from '@app/classes/scrabble-board-pattern';
+import { Letter } from '@common/letter';
 import { Vec2 } from '@common/vec2';
+import { ClientSocketService } from './client-socket.service';
 import { GridService } from './grid.service';
 import { PlaceLetterService } from './place-letter.service';
-import { SkipTurnService } from './skip-turn.service';
 import { PlacementsHandlerService } from './placements-handler.service';
+import { PlayerService } from './player.service';
 
 @Injectable({
     providedIn: 'root',
 })
 export class BoardHandlerService {
     word: string;
+    isDragged: boolean;
+    currentDraggedLetter: Letter;
+    isDragActivated: boolean;
     private currentCase: Vec2;
     private firstCase: Vec2;
     private placedLetters: boolean[];
@@ -23,8 +28,9 @@ export class BoardHandlerService {
     constructor(
         private gridService: GridService,
         private placeLetterService: PlaceLetterService,
-        private skipTurnService: SkipTurnService,
+        private playerService: PlayerService,
         private placementsService: PlacementsHandlerService,
+        private clientSocket: ClientSocketService,
     ) {
         this.currentCase = { x: INVALID_INDEX, y: INVALID_INDEX };
         this.firstCase = { x: INVALID_INDEX, y: INVALID_INDEX };
@@ -33,6 +39,7 @@ export class BoardHandlerService {
         this.isFirstCasePicked = false;
         this.isFirstCaseLocked = false;
         this.orientation = Orientation.Horizontal;
+        this.receiveOpponentStartingCase();
     }
 
     buttonDetect(event: KeyboardEvent): void {
@@ -43,7 +50,7 @@ export class BoardHandlerService {
             }
             case 'Enter': {
                 if (this.word.length) {
-                    if (this.skipTurnService.isTurn) {
+                    if (this.playerService.currentPlayer.isTurn) {
                         this.confirmPlacement();
                         break;
                     }
@@ -56,7 +63,7 @@ export class BoardHandlerService {
                 break;
             }
             default: {
-                if (!this.skipTurnService.isTurn) break;
+                if (!this.playerService.currentPlayer.isTurn || this.isDragged) break;
                 if (/([a-zA-Z\u00C0-\u00FF])+/g.test(event.key) && event.key.length === 1) {
                     // Removes accents from the letter to place
                     const letterNoAccents = event.key.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -67,7 +74,31 @@ export class BoardHandlerService {
         }
     }
 
+    placeDroppedLetter(event: MouseEvent, letter: Letter): void {
+        // if(this.playerService.getEasel().length === 6){}
+        // const caseClicked: Vec2 = this.calculateFirstCasePosition(event);
+        // if (!this.isCasePositionValid(caseClicked) || !this.playerService.currentPlayer.isTurn) return;
+        // this.selectStartingCase(caseClicked);
+        // this.placeLetter(letter.value);
+        // switch (this.word.length) {
+        //     case 1:
+        // }
+        this.isDragActivated = true;
+        const position: Vec2 = {
+            x: Math.floor((event.offsetX - GRID_CASE_SIZE) / GRID_CASE_SIZE),
+            y: Math.floor((event.offsetY - GRID_CASE_SIZE) / GRID_CASE_SIZE),
+        };
+        this.placeLetterService.placeLetter(position, letter.value, Orientation.Horizontal, this.word.length);
+        this.word += letter.value;
+        this.currentCase = position;
+        // faire un switch case pour si c'Est la premiere lettre ou non
+        // faire les vérifications nécessaires (est ce possible de jouer à cette case)
+        // si la verification passe jouer et incrémenter this.word
+    }
+
     mouseHitDetect(event: MouseEvent): void {
+        if (this.isDragActivated) return;
+        // if (this.playerService.currentPlayer.isTurn === false) return;
         if (event.button === MouseButton.Left) {
             if (this.isFirstCaseLocked) return;
             const caseClicked: Vec2 = this.calculateFirstCasePosition(event);
@@ -85,7 +116,7 @@ export class BoardHandlerService {
 
     async confirmPlacement(): Promise<void> {
         // Validation of the placement
-        await this.placeLetterService.validateKeyboardPlacement(this.firstCase, this.orientation, this.word, PLAYER_ONE_INDEX);
+        await this.placeLetterService.validateKeyboardPlacement(this.firstCase, this.orientation, this.word);
         this.word = '';
         this.placedLetters = [];
         this.isFirstCasePicked = false;
@@ -95,7 +126,7 @@ export class BoardHandlerService {
 
     cancelPlacement(): void {
         while (this.word.length) this.removePlacedLetter();
-        this.gridService.eraseLayer(this.gridService.gridContextPlacementLayer);
+        this.clientSocket.socket.emit('sendEraseStartingCase', this.clientSocket.currentRoom.id);
         this.currentCase.x = INVALID_INDEX;
         this.currentCase.y = INVALID_INDEX;
         this.isFirstCasePicked = false;
@@ -104,7 +135,7 @@ export class BoardHandlerService {
     private async placeLetter(letter: string): Promise<void> {
         if (this.isFirstCasePicked && !this.isFirstCaseLocked) {
             // Placing the 1st letter
-            if (await this.placeLetterService.placeWithKeyboard(this.currentCase, letter, this.orientation, this.word.length, PLAYER_ONE_INDEX)) {
+            if (await this.placeLetterService.placeWithKeyboard(this.currentCase, letter, this.orientation, this.word.length)) {
                 this.placedLetters[this.word.length] = true;
                 this.word += letter;
                 this.isFirstCaseLocked = true;
@@ -113,7 +144,7 @@ export class BoardHandlerService {
         } else if (this.isFirstCaseLocked) {
             // Placing following letters
             this.goToNextCase(this.orientation);
-            if (await this.placeLetterService.placeWithKeyboard(this.currentCase, letter, this.orientation, this.word.length, PLAYER_ONE_INDEX)) {
+            if (await this.placeLetterService.placeWithKeyboard(this.currentCase, letter, this.orientation, this.word.length)) {
                 this.placedLetters[this.word.length] = true;
                 this.word += letter;
                 this.updateCaseDisplay();
@@ -125,10 +156,11 @@ export class BoardHandlerService {
 
     private removePlacedLetter(): void {
         const letterToRemove = this.word[this.word.length - 1];
+        console.log(letterToRemove);
         // Verify that letterToRemove isn't undefined
         if (letterToRemove) {
             this.word = this.word.slice(0, LAST_INDEX);
-            this.placeLetterService.removePlacedLetter(this.currentCase, letterToRemove, PLAYER_ONE_INDEX);
+            this.placeLetterService.removePlacedLetter(this.currentCase, letterToRemove);
         }
         // If there's still at least one letter to remove
         if (this.word.length) {
@@ -150,6 +182,7 @@ export class BoardHandlerService {
         this.isFirstCasePicked = true;
         this.orientation = Orientation.Horizontal;
         this.updateCaseDisplay();
+        this.clientSocket.socket.emit('sendStartingCase', this.firstCase, this.clientSocket.currentRoom.id);
     }
 
     private switchOrientation(): void {
@@ -236,5 +269,15 @@ export class BoardHandlerService {
             } while (this.placeLetterService.scrabbleBoard[currentArrowIndex.y][currentArrowIndex.x] !== '');
         }
         this.gridService.drawArrow(this.gridService.gridContextPlacementLayer, currentArrowIndex, this.orientation);
+    }
+
+    private receiveOpponentStartingCase(): void {
+        this.clientSocket.socket.on('receiveStartingCase', (startingCase: Vec2) => {
+            this.gridService.eraseLayer(this.gridService.gridContextPlacementLayer);
+            this.gridService.drawBorder(this.gridService.gridContextPlacementLayer, startingCase);
+        });
+        this.clientSocket.socket.on('eraseStartingCase', () => {
+            this.gridService.eraseLayer(this.gridService.gridContextPlacementLayer);
+        });
     }
 }

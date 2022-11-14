@@ -1,0 +1,8 @@
+<div [formGroup]="parentForm">
+    <mat-radio-group [formControlName]="'visibilityInput'">
+        <mat-radio-button color="primary" class="level-radio-box" *ngFor="let selectionValue of visibilitySelectionList" value="{{ selectionValue }}">
+            {{ selectionValue }}
+        </mat-radio-button>
+    </mat-radio-group>
+</div>
+

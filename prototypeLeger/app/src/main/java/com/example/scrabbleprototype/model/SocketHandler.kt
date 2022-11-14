@@ -6,14 +6,15 @@ import java.net.URISyntaxException
 
 object SocketHandler {
 
-    lateinit var playerSocket: Socket
+    lateinit var socket: Socket
+    var roomId: String = ""
 
     @Synchronized
     fun setPlayerSocket(serverIp: String) {
         try {
 // "http://10.0.2.2:3000" --> emulator http://10.0.2.2:3000
 //  physical phone/tablet --> ip address plus :3000
-            playerSocket = IO.socket(serverIp + "/game-handler")
+            socket = IO.socket(serverIp)
         } catch (e: URISyntaxException) {
 
         }
@@ -21,21 +22,21 @@ object SocketHandler {
 
     @Synchronized
     fun getPlayerSocket(): Socket {
-        return playerSocket
+        return socket
     }
 
     @Synchronized
     fun establishConnection() {
-        playerSocket.connect()
+        socket.connect()
     }
 
     @Synchronized
     fun closeConnection() {
-        playerSocket.disconnect()
+        socket.disconnect()
     }
 
     @Synchronized
     fun establishConnection(){
-        playerSocket.connect()
+        socket.connect()
     }
 }

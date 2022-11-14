@@ -1,5 +1,5 @@
 import { AiType } from '@common/ai-name';
-import { StartingPlayer } from '@common/game-settings';
+import { RoomType, StartingPlayer } from '@common/game-settings';
 import { Letter } from '@common/letter';
 import { Vec2 } from '@common/vec2';
 import { CustomRange } from './range';
@@ -20,7 +20,7 @@ export const ONE_SECOND_DELAY = 1000;
 export const TWO_SECOND_DELAY = 2000;
 export const THREE_SECONDS_DELAY = 3000;
 export const DELAY_BEFORE_PLAYING = 3000;
-export const ERROR_MESSAGE_DELAY = 4000;
+export const ERROR_MESSAGE_DELAY = 2000;
 export const DELAY_TO_PASS_TURN = 5000;
 export const ONE_MINUTE = 60;
 
@@ -115,15 +115,14 @@ export const BONUS_POSITIONS: Map<string, string> = new Map<string, string>([
 ]);
 
 export const DEFAULT_GAME_SETTINGS = {
-    playersNames: ['', ''],
+    creatorName: '',
     startingPlayer: StartingPlayer.Player1,
     timeMinute: '01',
     timeSecond: '00',
     level: AiType.beginner,
-    randomBonus: 'Désactiver',
-    bonusPositions: JSON.stringify(Array.from(BONUS_POSITIONS)),
     dictionary: '',
-    objectiveIds: [],
+    type: RoomType.public,
+    password: '',
 };
 
 export const RESERVE: Letter[] = [

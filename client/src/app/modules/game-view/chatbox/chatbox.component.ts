@@ -1,12 +1,10 @@
 import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
-import { DEFAULT_CHAT_HEIGHT, LOG2990_CHAT_HEIGHT } from '@app/classes/constants';
 import { MessageType } from '@app/classes/enum';
 import { BoardHandlerService } from '@app/services/board-handler.service';
 import { ChatboxService } from '@app/services/chatbox.service';
 import { EndGameService } from '@app/services/end-game.service';
-import { GameSettingsService } from '@app/services/game-settings.service';
 import { SendMessageService } from '@app/services/send-message.service';
-import { GameType } from '@common/game-type';
+import { DEFAULT_CHAT_HEIGHT } from '@common/constants';
 
 @Component({
     selector: 'app-chatbox',
@@ -30,7 +28,6 @@ export class ChatboxComponent implements OnInit {
         private sendMessageService: SendMessageService,
         public endGameService: EndGameService,
         private boardHandlerService: BoardHandlerService,
-        private gameSettingsService: GameSettingsService,
     ) {
         this.message = '';
         this.listMessages = [];
@@ -45,13 +42,8 @@ export class ChatboxComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.sendMessageService.displayBound(this.displayMessageByType.bind(this));
         this.initializeChatHeight();
-        const gameType = this.gameSettingsService.gameType === GameType.Classic ? 'Classique' : 'LOG2990';
-        this.sendSystemMessage('Début de la partie, mode ' + gameType + '.');
-        this.sendSystemMessage(
-            "Affichez la liste des commandes disponibles en tapant la commande '!aide', puis en appuyant sur la touche 'Entrée' de votre clavier.",
-        );
+        this.sendMessageService.displayBound(this.displayMessageByType.bind(this));
     }
 
     handleKeyEvent(event: KeyboardEvent): void {
@@ -90,8 +82,7 @@ export class ChatboxComponent implements OnInit {
     initializeChatHeight(): void {
         const chatBox = document.getElementById('chat-box');
         if (chatBox) {
-            if (this.gameSettingsService.gameType) chatBox.style.height = LOG2990_CHAT_HEIGHT + 'vh';
-            else chatBox.style.height = DEFAULT_CHAT_HEIGHT + 'vh';
+            chatBox.style.height = DEFAULT_CHAT_HEIGHT + 'vh';
         }
     }
 }

@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { NUMBER_OF_SKIP, PLAYER_AI_INDEX, PLAYER_ONE_INDEX, PLAYER_TWO_INDEX } from '@app/classes/constants';
-import { PlayerAI } from '@app/models/player-ai.model';
+import { NUMBER_OF_SKIP, PLAYER_ONE_INDEX, PLAYER_TWO_INDEX } from '@app/classes/constants';
 import { DebugService } from '@app/services/debug.service';
 import { Letter } from '@common/letter';
 import { PlayerScore } from '@common/player';
@@ -38,11 +37,11 @@ export class EndGameService {
     receiveEndGameFromServer(): void {
         this.clientSocketService.socket.on('receiveEndGame', (isEndGame: boolean, letterTable: Letter[]) => {
             this.isEndGame = isEndGame;
-            this.playerService.players[PLAYER_TWO_INDEX].letterTable = letterTable;
+            this.playerService.opponents[PLAYER_TWO_INDEX].letterTable = letterTable;
             this.clientSocketService.socket.emit(
                 'sendEasel',
-                this.playerService.players[PLAYER_ONE_INDEX].letterTable,
-                this.clientSocketService.roomId,
+                this.playerService.opponents[PLAYER_ONE_INDEX].letterTable,
+                this.clientSocketService.currentRoom.id,
             );
             this.sendMessageService.displayFinalMessage(PLAYER_ONE_INDEX);
             this.sendMessageService.displayFinalMessage(PLAYER_TWO_INDEX);
@@ -56,18 +55,18 @@ export class EndGameService {
     }
 
     getWinnerName(): string {
-        if (this.playerService.players[PLAYER_ONE_INDEX].score > this.playerService.players[PLAYER_TWO_INDEX].score) {
-            return this.playerService.players[PLAYER_ONE_INDEX].name;
+        if (this.playerService.opponents[PLAYER_ONE_INDEX].score > this.playerService.opponents[PLAYER_TWO_INDEX].score) {
+            return this.playerService.opponents[PLAYER_ONE_INDEX].name;
         }
-        if (this.playerService.players[PLAYER_ONE_INDEX].score < this.playerService.players[PLAYER_TWO_INDEX].score) {
-            return this.playerService.players[PLAYER_TWO_INDEX].name;
+        if (this.playerService.opponents[PLAYER_ONE_INDEX].score < this.playerService.opponents[PLAYER_TWO_INDEX].score) {
+            return this.playerService.opponents[PLAYER_TWO_INDEX].name;
         }
-        return this.playerService.players[PLAYER_ONE_INDEX].name + '  ' + this.playerService.players[PLAYER_TWO_INDEX].name;
+        return this.playerService.opponents[PLAYER_ONE_INDEX].name + '  ' + this.playerService.opponents[PLAYER_TWO_INDEX].name;
     }
 
     addActionsLog(actionLog: string): void {
         this.actionsLog.push(actionLog);
-        this.clientSocketService.socket.emit('sendActions', this.actionsLog, this.clientSocketService.roomId);
+        this.clientSocketService.socket.emit('sendActions', this.actionsLog, this.clientSocketService.currentRoom.id);
     }
 
     checkEndGame(): void {
@@ -76,32 +75,32 @@ export class EndGameService {
             this.clientSocketService.socket.emit(
                 'sendEndGame',
                 this.isEndGame,
-                this.playerService.players[PLAYER_ONE_INDEX].letterTable,
-                this.clientSocketService.roomId,
+                this.playerService.opponents[PLAYER_ONE_INDEX].letterTable,
+                this.clientSocketService.currentRoom.id,
             );
         }
     }
 
     getFinalScore(indexPlayer: number): void {
-        for (const letter of this.playerService.players[indexPlayer].letterTable) {
-            this.playerService.players[indexPlayer].score -= letter.points;
+        for (const letter of this.playerService.opponents[indexPlayer].letterTable) {
+            this.playerService.opponents[indexPlayer].score -= letter.points;
             // Check if score decrease under 0 after substraction
 
-            if (this.playerService.players[indexPlayer].score <= 0) {
-                this.playerService.players[indexPlayer].score = 0;
+            if (this.playerService.opponents[indexPlayer].score <= 0) {
+                this.playerService.opponents[indexPlayer].score = 0;
             }
         }
-        if (this.playerService.players[indexPlayer] instanceof PlayerAI) return;
+        if (this.playerService.opponents[indexPlayer]) return;
 
         this.playersScores.push({
-            score: this.playerService.players[indexPlayer].score,
-            playerName: this.playerService.players[indexPlayer].name,
+            score: this.playerService.opponents[indexPlayer].score,
+            playerName: this.playerService.opponents[indexPlayer].name,
             isDefault: false,
         });
     }
 
     clearAllData(): void {
-        this.playerService.players = [];
+        this.playerService.opponents = [];
         this.isEndGameByGiveUp = false;
         this.winnerNameByGiveUp = '';
         this.isEndGame = false;
@@ -123,9 +122,7 @@ export class EndGameService {
     }
 
     isEndGameByEasel(): boolean {
-        return (
-            this.letterService.reserveSize === 0 &&
-            (this.playerService.isEaselEmpty(PLAYER_ONE_INDEX) || this.playerService.isEaselEmpty(PLAYER_AI_INDEX))
-        );
+        return this.letterService.reserveSize === 0;
+        // (this.playerService.isEaselEmpty(PLAYER_ONE_INDEX) || this.playerService.isEaselEmpty(PLAYER_AI_INDEX)));
     }
 }

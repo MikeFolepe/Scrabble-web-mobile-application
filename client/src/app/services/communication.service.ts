@@ -2,11 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AiPlayer, AiPlayerDB, AiType } from '@common/ai-name';
 import { Dictionary } from '@common/dictionary';
-import { GameType } from '@common/game-type';
-import { PlayerScore } from '@common/player';
 import { User } from '@common/user';
-import { Observable, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
@@ -31,17 +28,6 @@ export class CommunicationService {
         return this.http.get<string[]>(`${this.baseUrl}/game/dictionary/${fileName}`);
     }
 
-    addPlayersScores(players: PlayerScore[], gameType: GameType): Observable<void> {
-        return this.http
-            .post<void>(`${this.baseUrl}/game/best-scores-` + (gameType === GameType.Classic ? 'classic' : 'log2990'), players)
-            .pipe(catchError(this.handleError<void>('addPlayers')));
-    }
-
-    getBestPlayers(gameType: GameType): Observable<PlayerScore[]> {
-        return this.http
-            .get<PlayerScore[]>(`${this.baseUrl}/game/best-scores-` + (gameType === GameType.Classic ? 'classic' : 'log2990'))
-            .pipe(catchError(this.handleError<PlayerScore[]>('getBestPlayers')));
-    }
 
     getAiPlayers(aiType: AiType): Observable<AiPlayerDB[]> {
         return this.http.get<AiPlayerDB[]>(`${this.baseUrl}/admin/` + (aiType === AiType.expert ? 'aiExperts' : 'aiBeginners'));
@@ -92,9 +78,5 @@ export class CommunicationService {
     connectUser(userData: User): Observable<boolean> {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return this.http.post<boolean>(`${this.baseUrl}/auth/connect`, userData);
-    }
-
-    private handleError<T>(request: string, result?: T): (error: Error) => Observable<T> {
-        return () => of(result as T);
     }
 }
