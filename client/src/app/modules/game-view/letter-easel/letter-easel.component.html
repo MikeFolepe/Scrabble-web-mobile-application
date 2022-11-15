@@ -13,9 +13,26 @@
             (contextmenu)="onRightClick($event, i)"
             (click)="onLeftClick($event, i)"
         >
-            <h2 [style.font-size.px]="playerService.fontSize * 2">{{ letter.value }}</h2>
-            <p [style.font-size.px]="playerService.fontSize">{{ letter.points }}</p>
-        </div>
+        
+        <h2 [style.font-size.px]="playerService.fontSize * 2">{{ letter.value }}</h2>
+        <p [style.font-size.px]="playerService.fontSize">{{ letter.points }}</p>
+    </div>
+    <div class="letter-container not-selectionnable"   
+        draggable="true"
+        (drag)="isDragged(this.boardHandlerService.currentDraggedLetterFromBoard)"
+        (dragend)="onDragEnd()"
+        #letterFromBoard
+        [ngClass]="{
+        'border-swap': this.boardHandlerService.currentDraggedLetterFromBoard.isSelectedForSwap,
+        'border-manipulation': this.boardHandlerService.currentDraggedLetterFromBoard.isSelectedForManipulation
+    }"
+    *ngIf="this.boardHandlerService.isLetterDraggedFromBoard"
+    >
+        <h2 [style.font-size.px]="playerService.fontSize * 2">{{ this.boardHandlerService.currentDraggedLetterFromBoard.value }}</h2>
+        <p [style.font-size.px]="playerService.fontSize">{{ this.boardHandlerService.currentDraggedLetterFromBoard.points }}</p>
+
+    </div>
+    
     </div>
 </div>
 <div id="easel" class="easel-container" tabindex="0" #easel *ngIf="authService.currentUser.isObserver">

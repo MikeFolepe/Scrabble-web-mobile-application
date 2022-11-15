@@ -19,15 +19,15 @@ import { Letter } from '@common/letter';
 })
 export class LetterEaselComponent implements OnInit {
     @ViewChild('easel') easel: ElementRef;
-
+    @ViewChild('letterFromBoard') letterFromBoard: ElementRef;
     letterEaselTab: Letter[] = [];
 
     constructor(
+        public boardHandlerService: BoardHandlerService,
         public playerService: PlayerService,
         public authService: AuthService,
         private letterService: LetterService,
         private swapLetterService: SwapLetterService,
-        private boardHandlerService: BoardHandlerService,
         private sendMessageService: SendMessageService,
         private manipulateService: ManipulateService,
         private skipTurnService: SkipTurnService,
@@ -65,6 +65,11 @@ export class LetterEaselComponent implements OnInit {
         // this.playerService.bindUpdateEasel(this.update.bind(this));
         // this.update();
         this.manipulateService.sendEasel(this.letterEaselTab);
+        this.boardHandlerService.updateDrag.subscribe((isDragged) => {
+            if (isDragged) {
+                this.letterFromBoard.nativeElement.drag();
+            }
+        });
     }
 
     onDragEnd() {

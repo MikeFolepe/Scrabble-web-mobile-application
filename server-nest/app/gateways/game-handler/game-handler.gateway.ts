@@ -233,7 +233,7 @@ export class GameHandlerGateway implements OnGatewayConnection, OnGatewayDisconn
                     this.server.to(roomId).emit('receiveReserve', room.letter.reserve, room.letter.reserveSize);
                 }
                 // else {
-                //     socket.emit('receiveFail', JSON.parse(position), JSON.parse(orientation), word);
+                //     socket.emit('receiveFail', JSON.parse(position), JSON.parse(orientation), word, dragWord);
                 // }
             },
         );

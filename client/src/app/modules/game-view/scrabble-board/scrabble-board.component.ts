@@ -23,6 +23,10 @@ export class ScrabbleBoardComponent implements AfterViewInit {
         this.boardHandlerService.mouseHitDetect(event);
     }
 
+    isDragged(event: MouseEvent) {
+        this.boardHandlerService.isDraggedFromBoard(event);
+    }
+
     dragEnd(event: MouseEvent): void {
         if (this.boardHandlerService.isDragged) {
             console.log('Sdfdsf');

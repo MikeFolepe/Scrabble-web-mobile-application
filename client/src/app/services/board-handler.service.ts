@@ -4,6 +4,7 @@ import { MouseButton } from '@app/classes/enum';
 import { Orientation } from '@app/classes/scrabble-board-pattern';
 import { Letter } from '@common/letter';
 import { Vec2 } from '@common/vec2';
+import { Subject } from 'rxjs';
 import { ClientSocketService } from './client-socket.service';
 import { GridService } from './grid.service';
 import { PlaceLetterService } from './place-letter.service';
@@ -19,6 +20,9 @@ export class BoardHandlerService {
     currentDraggedLetter: Letter;
     isDragActivated: boolean;
     dragWord: Vec2[];
+    currentDraggedLetterFromBoard: Letter;
+    isLetterDraggedFromBoard: boolean;
+    updateDrag: Subject<boolean>;
     private currentCase: Vec2;
     private firstCase: Vec2;
     private placedLetters: boolean[];
@@ -42,6 +46,7 @@ export class BoardHandlerService {
         this.isFirstCaseLocked = false;
         this.orientation = Orientation.Horizontal;
         this.receiveOpponentStartingCase();
+        this.updateDrag = new Subject<boolean>();
     }
 
     buttonDetect(event: KeyboardEvent): void {
@@ -117,6 +122,26 @@ export class BoardHandlerService {
         }
     }
 
+    isDraggedFromBoard(event: MouseEvent) {
+        const position: Vec2 = {
+            x: Math.floor((event.offsetX - GRID_CASE_SIZE) / GRID_CASE_SIZE),
+            y: Math.floor((event.offsetY - GRID_CASE_SIZE) / GRID_CASE_SIZE),
+        };
+        if (this.placeLetterService.scrabbleBoard[position.x][position.y] !== '' && this.playerService.getEasel().length !== 7) {
+            const letterToAdd = {
+                value: this.placeLetterService.scrabbleBoard[position.x][position.y],
+                quantity: 0,
+                points: 0,
+                isSelectedForSwap: false,
+                isSelectedForManipulation: false,
+            };
+            this.currentDraggedLetterFromBoard = letterToAdd;
+            this.isLetterDraggedFromBoard = true;
+            this.gridService.eraseLetter(this.gridService.gridContextLettersLayer, position);
+            this.placeLetterService.scrabbleBoard[position.x][position.y] = '';
+            this.updateDrag.next(this.isLetterDraggedFromBoard);
+        }
+    }
     async confirmPlacement(): Promise<void> {
         // Validation of the placement
         if (this.isDragActivated) await this.placeLetterService.validateKeyboardPlacement(this.firstCase, this.orientation, this.word, this.dragWord);
