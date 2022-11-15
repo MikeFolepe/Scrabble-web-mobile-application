@@ -182,13 +182,8 @@ export class JoinRomService {
         });
     }
     private configureRooms(): void {
-        this.clientSocketService.socket.on('roomConfiguration', (rooms) => {
-            this.rooms = [];
-            for (const room of rooms) {
-                this.rooms.push(
-                    new Room(room.id, room.gameSettings, room.state, room.socketIds, room.aiPlayersNumber, room.humanPlayersNumber, room.observers),
-                );
-            }
+        this.clientSocketService.socket.on('roomConfiguration', (rooms: Room[]) => {
+            this.rooms = rooms;
         });
     }
 
