@@ -37,7 +37,7 @@ export class ChatGateway {
     }
 
     @SubscribeMessage('getChatRooms')
-    getChatRooms(socket: Socket) {
+    getChatRooms() {
         this.server.emit('updateChatRooms', this.chatRoomService.chatRooms);
     }
 

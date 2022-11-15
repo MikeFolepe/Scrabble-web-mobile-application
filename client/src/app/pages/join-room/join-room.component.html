@@ -1,11 +1,23 @@
 <app-background></app-background>
-<mat-card id="progress-bar-box" *ngIf="rooms.length === 0">
+<mat-card id="progress-bar-box" *ngIf="joinRoomService.rooms.length === 0">
     <p>En attente de création d'une partie</p>
     <mat-spinner mode="indeterminate"></mat-spinner>
 </mat-card>
-<mat-paginator id="paginator" *ngIf="rooms.length !== 0" [length]="rooms.length" [pageSize]="pageSize" (page)="onPageChange($event)"></mat-paginator>
-<div *ngIf="!shouldDisplayError">
-    <div *ngFor="let room of rooms ? rooms.slice(roomItemIndex, roomItemIndex + pageSize) : []">
+<mat-paginator
+    id="paginator"
+    *ngIf="joinRoomService.rooms.length !== 0"
+    [length]="joinRoomService.rooms.length"
+    [pageSize]="joinRoomService.pageSize"
+    (page)="joinRoomService.onPageChange($event)"
+></mat-paginator>
+<div *ngIf="!joinRoomService.shouldDisplayError">
+    <div
+        *ngFor="
+            let room of joinRoomService.rooms
+                ? joinRoomService.rooms.slice(joinRoomService.roomItemIndex, joinRoomService.roomItemIndex + joinRoomService.pageSize)
+                : []
+        "
+    >
         <mat-card class="card">
             <mat-card-title>{{ room.gameSettings.creatorName }} </mat-card-title>
             <br />
@@ -18,7 +30,7 @@
                 <br />
                 Nombre de joueurs virtuels: {{ room.aiPlayersNumber }}
                 <br />
-                Nombre d'obervateurs: {{ room.observers.length }} / {{ maxObserversLength }}
+                Nombre d'obervateurs: {{ room.observers.length }} / {{ joinRoomService.maxObserversLength }}
             </mat-card-subtitle>
             <mat-card-actions>
                 <span>Statut : </span>
@@ -28,7 +40,7 @@
 
                         green: room.state === 1
                     }"
-                    >{{ computeRoomState(room.state) }}</span
+                    >{{ joinRoomService.computeRoomState(room.state) }}</span
                 >
                 <br />
                 <span>Protection : </span>
@@ -38,16 +50,20 @@
 
                         green: room.gameSettings.type === 0
                     }"
-                    >{{ computeRoomType(room) }}</span
+                    >{{ joinRoomService.computeRoomType(room) }}</span
                 >
-                <button mat-button color="primary" *ngIf="room.state === 1" (click)="join(room, false)">Joindre</button>
-                <button mat-button color="primary" *ngIf="room.state === 0 && room.gameSettings.type === 0" (click)="join(room, true)">
+                <button mat-button color="primary" *ngIf="room.state === 1" (click)="joinRoomService.join(room, false)">Joindre</button>
+                <button
+                    mat-button
+                    color="primary"
+                    *ngIf="room.state === 0 && room.gameSettings.type === 0"
+                    (click)="joinRoomService.join(room, true)"
+                >
                     Observer
                 </button>
             </mat-card-actions>
         </mat-card>
     </div>
-
 </div>
 <!-- <button (click)="test()">click me</button> -->
 <!-- <div *ngFor="let channel of this.channelHandlerService.channels">
@@ -56,8 +72,8 @@
     </mat-card-subtitle>
 </div> -->
 
-<div *ngIf="shouldDisplayError">
-    <mat-card class="error-message"><span class="warning">Erreur</span>{{ errorMessage }}</mat-card>
+<div *ngIf="joinRoomService.shouldDisplayError">
+    <mat-card class="error-message"><span class="warning">Erreur</span>{{ joinRoomService.errorMessage }}</mat-card>
 </div>
 
 <div id="buttons">
@@ -73,8 +89,14 @@
     </button> -->
 </div>
 <div class="chatRooms-buttons">
-    <button mat-mini-fab class="addButton tooltip" (click)="openAddChatRoomDialog()"><span class="tooltiptext">Ajouter</span><mat-icon>add</mat-icon></button>
-    <button mat-mini-fab class="allRoomsButton tooltip" (click)="openJoinChatRoomDialog()"><span class="tooltiptext">Rejoindre</span><mat-icon>search</mat-icon></button>
-    <button mat-mini-fab class="joinedRoomsButton tooltip" (click)="openChangeChatRoomDialog()"><span class="tooltiptext">Changer</span><mat-icon>view_headline</mat-icon></button>
+    <button mat-mini-fab class="addButton tooltip" (click)="joinRoomService.openAddChatRoomDialog()">
+        <span class="tooltiptext">Ajouter</span><mat-icon>add</mat-icon>
+    </button>
+    <button mat-mini-fab class="allRoomsButton tooltip" (click)="joinRoomService.openJoinChatRoomDialog()">
+        <span class="tooltiptext">Rejoindre</span><mat-icon>search</mat-icon>
+    </button>
+    <button mat-mini-fab class="joinedRoomsButton tooltip" (click)="joinRoomService.openChangeChatRoomDialog()">
+        <span class="tooltiptext">Changer</span><mat-icon>view_headline</mat-icon>
+    </button>
 </div>
-<app-chatrooms class = "chatRooms"></app-chatrooms>
+<app-chatrooms class="chatRooms"></app-chatrooms>

@@ -30,8 +30,6 @@ export class WaitingRoomComponent implements OnInit {
         this.status = '';
         this.errorMessage = '';
         this.isWaiting = true;
-        this.clientSocket.routeToGameView();
-        this.clientSocket.initialize();
     }
 
     ngOnInit(): void {

@@ -21,12 +21,9 @@ export class PlayerService {
     constructor(private clientSocketService: ClientSocketService, private letterService: LetterService) {
         this.currentPlayer = new Player('', []);
         this.fontSize = 14;
-        this.opponents = [];
         this.players = [];
         this.getMyPlayer();
-        this.getOpponent();
         // this.getAIs();
-        this.getExistingOpponents();
         this.updatePlayer();
         this.getPlayers();
     }
@@ -47,10 +44,6 @@ export class PlayerService {
             }
         }
         return INVALID_INDEX;
-    }
-
-    addEaselLetterToReserve(indexInEasel: number): void {
-        this.letterService.addLetterToReserve(this.getEasel()[indexInEasel].value);
     }
 
     addLetterToEasel(letterToAdd: string): void {
@@ -102,25 +95,6 @@ export class PlayerService {
     private getMyPlayer(): void {
         this.clientSocketService.socket.on('MyPlayer', (player: Player) => {
             this.currentPlayer = player;
-        });
-    }
-
-    private getOpponent(): void {
-        this.clientSocketService.socket.on('Opponent', (player: Player, indexAi: number) => {
-            this.opponents[indexAi] = player;
-        });
-    }
-
-    // private getAIs(): void {
-    //     this.clientSocketService.socket.on('curAis', (player: Player) => {
-    //         this.opponents.push(player);
-    //     });
-    // }
-
-    private getExistingOpponents(): void {
-        this.clientSocketService.socket.on('curOps', (players: Player[]) => {
-            console.log(players);
-            this.opponents = players;
         });
     }
 

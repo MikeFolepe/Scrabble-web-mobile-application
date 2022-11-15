@@ -55,8 +55,8 @@ export class SkipTurnService {
     }
 
     switchAiTurn(): void {
-        this.clientSocket.socket.on('switchAiTurn', (playerName: string) => {
-            this.clientSocket.socket.emit('switchTurn', this.clientSocket.currentRoom.id, playerName);
+        this.clientSocket.socket.on('switchAiTurn', () => {
+            this.clientSocket.socket.emit('switchTurn', this.clientSocket.currentRoom.id);
         });
     }
 
