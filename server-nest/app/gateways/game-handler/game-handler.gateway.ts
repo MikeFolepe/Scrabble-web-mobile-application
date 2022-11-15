@@ -108,7 +108,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
         setTimeout(() => {
             room.skipTurnService.findStartingPlayerIndex(room.playerService.players);
             room.skipTurnService.players = players;
-            // this.startTimer(roomId);
+            this.startTimer(roomId);
         }, 5000);
     }
 
