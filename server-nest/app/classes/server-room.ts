@@ -16,7 +16,7 @@ export enum State {
     Finish,
 }
 
-export class Room {
+export class ServerRoom {
     id: string;
     gameSettings: GameSettings;
     state: State;

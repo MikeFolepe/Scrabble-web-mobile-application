@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Room } from '@app/classes/room';
+import { Room } from '@common/room';
 
 import { Player } from '@app/models/player.model';
 import { INVALID_INDEX, RESERVE, WHITE_LETTER_INDEX } from '@common/constants';

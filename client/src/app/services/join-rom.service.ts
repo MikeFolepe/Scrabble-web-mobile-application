@@ -3,7 +3,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatPaginatorIntl, PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
 import { ErrorMessage } from '@app/classes/error-message-constants';
-import { Room, State } from '@app/classes/room';
 import { AddChatRoomComponent } from '@app/modules/game-view/add-chat-room/add-chat-room.component';
 import { ChangeChatRoomComponent } from '@app/modules/game-view/change-chat-room/change-chat-room.component';
 import { JoinChatRoomsComponent } from '@app/modules/game-view/join-chat-rooms/join-chat-rooms.component';
@@ -14,6 +13,7 @@ import { AuthService } from './auth.service';
 import { ChannelHandlerService } from './channel-handler.service';
 import { ClientSocketService } from './client-socket.service';
 import { PlayerService } from './player.service';
+import { Room, State } from '@common/room';
 
 @Injectable({
     providedIn: 'root',

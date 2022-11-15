@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { Room, State } from '@app/classes/room';
+import { ServerRoom, State } from '@app/classes/server-room';
 import { UsersService } from '@app/users/service/users.service';
 import { DELAY_BEFORE_PLAYING, ONE_SECOND_DELAY, THREE_SECONDS_DELAY } from '@common/constants';
 import { GameSettings } from '@common/game-settings';
@@ -20,7 +20,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
 
     @SubscribeMessage('getRoomsConfiguration')
     getRoomsConfiguration(socket: Socket) {
-        socket.emit('roomConfiguration', this.roomManagerService.rooms);
+        socket.emit('roomConfiguration', this.roomManagerService.getRoomsToSend());
     }
 
     @SubscribeMessage('newRoomCustomer')
@@ -35,10 +35,10 @@ export class GameHandlerGateway implements OnGatewayConnection {
             socket.emit('roomAlreadyToken');
             return;
         }
-        this.roomManagerService.setSocket(this.roomManagerService.find(roomId[1]) as Room, socket.id);
-        this.server.emit('roomConfiguration', this.roomManagerService.rooms);
+        this.roomManagerService.setSocket(this.roomManagerService.find(roomId[1]) as ServerRoom, socket.id);
+        this.server.emit('roomConfiguration', this.roomManagerService.getRoomsToSend());
         socket.join(roomId[1]);
-        socket.emit('yourRoom', room);
+        socket.emit('yourRoom', this.roomManagerService.getRoomToSend(room));
         const player = room.playerService.players.find((curPlayer) => curPlayer.name === playerName[0]);
         socket.emit('MyPlayer', player);
         this.server.to(roomId[1]).emit('roomPlayers', room.playerService.players);
@@ -54,8 +54,8 @@ export class GameHandlerGateway implements OnGatewayConnection {
             socket.emit('roomFullObservers');
             return;
         }
-        this.server.emit('roomConfiguration', this.roomManagerService.rooms);
-        socket.emit('yourRoom', room);
+        this.server.emit('roomConfiguration', this.roomManagerService.getRoomsToSend());
+        socket.emit('yourRoom', this.roomManagerService.getRoomToSend(room));
         socket.join(roomId[1]);
         socket.emit('ObserverToGameView');
         socket.emit('giveBoardToObserver', room.placeLetter.scrabbleBoard);
@@ -69,13 +69,13 @@ export class GameHandlerGateway implements OnGatewayConnection {
         const createdRoom = this.roomManagerService.createRoom(socket.id, roomId, gameSettings);
         socket.join(roomId);
         // give the client his roomId to communicate later with server
-        socket.emit('yourRoom', createdRoom);
+        socket.emit('yourRoom', this.roomManagerService.getRoomToSend(createdRoom));
         const room = this.roomManagerService.find(roomId);
         const player = room.playerService.players.find((curPlayer) => curPlayer.name === gameSettings.creatorName);
         socket.emit('MyPlayer', player);
         socket.emit('roomPlayers', room.playerService.players);
         // room creation alerts all clients on the new rooms configurations
-        this.server.emit('roomConfiguration', this.roomManagerService.rooms);
+        this.server.emit('roomConfiguration', this.roomManagerService.getRoomsToSend());
         // Send number of rooms available
     }
 
@@ -138,7 +138,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
     deleteGame(@ConnectedSocket() socket, @MessageBody() roomId: string) {
         this.server.to(roomId).emit('leaveToHome');
         this.roomManagerService.deleteRoom(roomId);
-        this.server.emit('roomConfiguration', this.roomManagerService.rooms);
+        this.server.emit('roomConfiguration', this.roomManagerService.getRoomsToSend());
         this.server.socketsLeave(roomId);
     }
 
@@ -151,7 +151,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
     //                 isGiveUp,
     //                 this.roomManagerService.getWinnerName(roomId, this.roomManagerService.findLooserIndex(socket.id)),
     //             );
-    //         this.server.emit('roomConfiguration', this.roomManagerService.rooms);
+    //         this.server.emit('roomConfiguration', this.roomManagerService.getRoomsToSend());
     //         this.server.socketsLeave(roomId);
     //     });
     // }
@@ -243,7 +243,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
         room.skipTurnService.stopTimer();
         if (room.state === State.Waiting) {
             this.roomManagerService.deleteRoom(roomId);
-            this.server.emit('roomConfiguration', this.roomManagerService.rooms);
+            this.server.emit('roomConfiguration', this.roomManagerService.getRoomsToSend());
             return;
         }
         if (room.state === State.Playing) {
@@ -254,7 +254,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
         }
         // so after all if the state is finish, delete the room
         this.roomManagerService.deleteRoom(roomId);
-        this.server.emit('roomConfiguration', this.roomManagerService.rooms);
+        this.server.emit('roomConfiguration', this.roomManagerService.getRoomsToSend());
         this.server.socketsLeave(roomId);
     }
 
@@ -280,7 +280,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
         }, ONE_SECOND_DELAY);
     }
 
-    private updateTurns(room: Room) {
+    private updateTurns(room: ServerRoom) {
         room.playerService.players[room.skipTurnService.activePlayerIndex].isTurn = false;
         this.server.in(room.id).emit('updatePlayerTurnToFalse', room.playerService.players[room.skipTurnService.activePlayerIndex].name);
 
@@ -288,12 +288,10 @@ export class GameHandlerGateway implements OnGatewayConnection {
         if (room.skipTurnService.activePlayerIndex >= room.playerService.players.length) room.skipTurnService.activePlayerIndex = 0;
         room.playerService.players[room.skipTurnService.activePlayerIndex].isTurn = true;
         this.server.in(room.id).emit('turnSwitched', room.playerService.players[room.skipTurnService.activePlayerIndex].name);
-        console.log('update : ' + room.skipTurnService.activePlayerIndex);
     }
 
-    private startAiTurn(room: Room) {
+    private startAiTurn(room: ServerRoom) {
         const activePlayerIndex = room.skipTurnService.activePlayerIndex;
-        console.log(room.skipTurnService.players);
         if (!room.playerService.players[activePlayerIndex].isAi) return;
 
         console.log('i am AI');

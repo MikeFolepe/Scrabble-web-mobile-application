@@ -1,20 +1,21 @@
-import { Room, State } from '@app/classes/room';
+import { ServerRoom, State } from '@app/classes/server-room';
 import { Player } from '@app/game/models/player.model';
 import { MAX_LENGTH_OBSERVERS } from '@common/constants';
 import { GameSettings } from '@common/game-settings';
+import { Room } from '@common/room';
 import { User } from '@common/user';
 import { Injectable } from '@nestjs/common';
 import { OUT_BOUND_INDEX_OF_SOCKET } from '../../../classes/constants';
 @Injectable()
 export class RoomManagerService {
-    rooms: Room[];
+    rooms: ServerRoom[];
 
     constructor() {
         this.rooms = [];
     }
 
-    createRoom(socketId: string, roomId: string, gameSettings: GameSettings): Room {
-        const newRoom = new Room(roomId, socketId, gameSettings);
+    createRoom(socketId: string, roomId: string, gameSettings: GameSettings): ServerRoom {
+        const newRoom = new ServerRoom(roomId, socketId, gameSettings);
         this.rooms.push(newRoom);
         return newRoom;
     }
@@ -73,16 +74,16 @@ export class RoomManagerService {
     }
 
     setState(roomId: string, state: State): void {
-        const room = this.find(roomId) as Room;
+        const room = this.find(roomId) as ServerRoom;
         room.state = state;
     }
 
-    setSocket(room: Room, socketId: string): void {
+    setSocket(room: ServerRoom, socketId: string): void {
         room.socketIds.push(socketId);
     }
 
     getGameSettings(roomId: string): GameSettings {
-        const room = this.find(roomId) as Room;
+        const room = this.find(roomId) as ServerRoom;
         return room.gameSettings;
     }
 
@@ -111,7 +112,7 @@ export class RoomManagerService {
     }
 
     getWinnerName(roomId: string, indexOfLoser: number = 0): string {
-        const room = this.find(roomId) as Room;
+        const room = this.find(roomId) as ServerRoom;
         if (room === undefined) return '';
         return '';
     }
@@ -121,12 +122,12 @@ export class RoomManagerService {
         return room === undefined ? false : room.state === State.Playing;
     }
 
-    find(roomId: string): Room | undefined {
+    find(roomId: string): ServerRoom | undefined {
         return this.rooms.find((room) => room.id === roomId);
     }
 
-    findRoomInWaitingState(customerName: string): Room | undefined {
-        const roomWaiting: Room[] = [];
+    findRoomInWaitingState(customerName: string): ServerRoom | undefined {
+        const roomWaiting: ServerRoom[] = [];
         for (const room of this.rooms) {
             if (room.state === State.Waiting && room.gameSettings.creatorName !== customerName) {
                 roomWaiting.push(room);
@@ -134,7 +135,7 @@ export class RoomManagerService {
         }
         if (roomWaiting.length === 0) return;
         const roomIndex = Math.floor(Math.random() * roomWaiting.length);
-        return roomWaiting[roomIndex] as Room;
+        return roomWaiting[roomIndex] as ServerRoom;
     }
 
     getNumberOfRoomInWaitingState(): number {
@@ -147,5 +148,19 @@ export class RoomManagerService {
         }
 
         return numberOfRoom;
+    }
+
+    getRoomsToSend(): Room[] {
+        const roomsToSend: Room[] = [];
+        for (const room of this.rooms) {
+            roomsToSend.push(
+                new Room(room.id, room.gameSettings, room.state, room.socketIds, room.aiPlayersNumber, room.humanPlayersNumber, room.observers),
+            );
+        }
+        return roomsToSend;
+    }
+
+    getRoomToSend(room: ServerRoom): Room {
+        return new Room(room.id, room.gameSettings, room.state, room.socketIds, room.aiPlayersNumber, room.humanPlayersNumber, room.observers);
     }
 }
