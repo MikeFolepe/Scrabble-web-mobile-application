@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BOARD_COLUMNS, BOARD_ROWS, CENTRAL_CASE_POSITION, INVALID_INDEX } from '@app/classes/constants';
+import { BOARD_COLUMNS, BOARD_ROWS, CENTRAL_CASE_POSITION, INVALID_INDEX, MIN_FIRST_WORD_SIZE } from '@app/classes/constants';
 import { Direction } from '@app/classes/enum';
 import { Orientation } from '@app/classes/scrabble-board-pattern';
 import { Vec2 } from '@common/vec2';
@@ -46,6 +46,7 @@ export class PlacementsHandlerService {
     }
 
     isFirstWordValid(position: Vec2, orientation: Orientation, word: string): boolean {
+        if (word.length < MIN_FIRST_WORD_SIZE) return false;
         const currentPosition = { x: position.x, y: position.y };
         // JUSTIFICATION : Neither the variable 'word' nor 'i' are used inside the loop
         // eslint-disable-next-line @typescript-eslint/prefer-for-of

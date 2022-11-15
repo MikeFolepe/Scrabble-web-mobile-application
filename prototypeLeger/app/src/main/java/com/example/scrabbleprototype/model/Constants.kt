@@ -8,6 +8,7 @@ object Constants {
     val BOARD_SIZE = 225
     val LAST_BOARD_POSITION = 224
     val RACK_SIZE = 7
+    val MIN_FIRST_WORD_SIZE = 2
 
     val MAX_OPPONENTS = 3
     val MAX_PLAYERS = 4
