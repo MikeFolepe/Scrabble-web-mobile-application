@@ -48,8 +48,8 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         ThemeManager.setActivityTheme(this)
+        super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_connection)
 
         val connectionButton = findViewById<Button>(R.id.connection_button)

@@ -43,7 +43,7 @@
             <item
                 android:id="@+id/nav_store"
                 android:icon="@drawable/ic_baseline_local_grocery_store_24"
-                android:title="@string/store"/>
+                android:title="@string/store" />
         </menu>
 
     </item>

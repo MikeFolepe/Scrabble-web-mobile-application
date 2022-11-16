@@ -23,8 +23,8 @@ class MainMenuActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainMenuBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         ThemeManager.setActivityTheme(this)
+        super.onCreate(savedInstanceState)
         setupDrawer()
     }
 
@@ -40,7 +40,8 @@ class MainMenuActivity : AppCompatActivity() {
     }
 
     private fun setupDrawer() {
-        binding = ActivityMainMenuBinding.inflate(layoutInflater)
+        val layoutWithTheme = ThemeManager.setFragmentTheme(layoutInflater, this)
+        binding = ActivityMainMenuBinding.inflate(layoutWithTheme)
         setContentView(binding.root)
 
         setSupportActionBar(binding.appBarMainMenu.toolbar)

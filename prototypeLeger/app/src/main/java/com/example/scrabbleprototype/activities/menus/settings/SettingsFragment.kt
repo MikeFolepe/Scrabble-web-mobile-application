@@ -83,7 +83,7 @@ class SettingsFragment : Fragment() {
                 }
                 userPrefences.appThemeSelected = Themes.appThemes[position]
 
-                ThemeManager.changeToTheme(position)
+                ThemeManager.changeToTheme(position, activity)
                 recreateFragment()
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -196,5 +196,6 @@ class SettingsFragment : Fragment() {
         supportFragmentManager.beginTransaction().detach(fragment).commit()
         supportFragmentManager.executePendingTransactions()
         supportFragmentManager.beginTransaction().attach(fragment).commit()
+        activity?.recreate()
     }
 }
