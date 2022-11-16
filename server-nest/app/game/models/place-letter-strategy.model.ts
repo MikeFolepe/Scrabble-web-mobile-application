@@ -201,12 +201,9 @@ export class PlaceLetterStrategy {
         if (word1.point === word2.point) return equalSortNumbers;
         return word1.point < word2.point ? greaterSortNumber : lowerSortNumber;
     };
-    async place(word: PossibleWords, index: number): Promise<void> {
+    async place(word: PossibleWords, index: number): Promise<boolean> {
         const startPos = word.orientation ? { x: word.line, y: word.startIndex } : { x: word.startIndex, y: word.line };
-        if (await this.placeLetterService.placeCommand(startPos, word.orientation, word.word, index)) {
-            return;
-        }
-        // this.skip(false);
+        return await this.placeLetterService.placeCommand(startPos, word.orientation, word.word, index);
     }
 
     private async computeResults(possibilities: PossibleWords[], isExpertLevel = true, index: number): Promise<void> {
@@ -217,8 +214,11 @@ export class PlaceLetterStrategy {
 
         let wordIndex = 0;
         if (isExpertLevel) {
-            await this.place(possibilities[wordIndex], index);
-            possibilities.splice(0, 1);
+            let place = false;
+            while (!place && possibilities.length !== 0) {
+                place = await this.place(possibilities[wordIndex], index);
+                possibilities.splice(0, 1);
+            }
             return;
         }
 
