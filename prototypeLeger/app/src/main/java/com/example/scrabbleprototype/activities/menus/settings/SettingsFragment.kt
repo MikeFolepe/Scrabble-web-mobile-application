@@ -97,10 +97,6 @@ class SettingsFragment : Fragment() {
 
         boardItemSelected.text = userPrefences.boardItemSelected.name
         editBoardItemBtn.setOnClickListener {
-            userPrefences.boardItems.add(Themes.boardItems[0])
-            userPrefences.boardItems.add(Themes.boardItems[1])
-            userPrefences.boardItems.add(Themes.boardItems[2])
-
             boardItemsDialog.show()
         }
     }
@@ -138,8 +134,6 @@ class SettingsFragment : Fragment() {
 
         chatItemSelected.text = userPrefences.chatItemSelected.name
         editChatItemBtn.setOnClickListener {
-            userPrefences.chatItems.add(Themes.chatItems[0])
-            userPrefences.chatItems.add(Themes.chatItems[1])
             chatItemsDialog.show()
         }
 
