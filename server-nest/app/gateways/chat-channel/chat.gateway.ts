@@ -60,7 +60,7 @@ export class ChatGateway {
                 if (chatRoom.chatRoomName === roomName) {
                     const userInRoom = chatRoom.users.find((currentUser) => currentUser.pseudonym === user[0].pseudonym);
                     if (!userInRoom) {
-                        const newMessage = new ChatRoomMessage('a rejoint le canal de communication', '', user[0].pseudonym);
+                        const newMessage = new ChatRoomMessage('a rejoint le canal de communication', user[0].avatar, user[0].pseudonym);
                         chatRoom.messages.push(newMessage);
 
                         this.chatRoomService.addCustomer(user[0], chatRoom.chatRoomId);

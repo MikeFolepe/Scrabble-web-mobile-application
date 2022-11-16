@@ -27,13 +27,8 @@
     height : 30px;
     width : 30px;
     border-radius : 100%;
-    // margin-top : 50px;
-    
-    //center the image
-    // margin-left : auto;
-    // margin-right : auto;
-    // margin-top : 10px;
-    // display : block;
+    margin-right:5px;
+    margin-bottom:10px;
 }
 
 .sendButton {
@@ -69,21 +64,17 @@
     color: white;
     padding: 5px 5px;
     display: flex;
-    flex-direction: row;
-    align-items: baseline;
+    align-items:center;
 }
 
 .sendMessage {
-    //put in the bottom of the box
-    //make this class always stay at the bottom of the div
+
     position: absolute;
     bottom: 0;
-    //make the width of the div
     width: 100%;
     display: flex;
     flex-direction: row;
     align-items: baseline;
-    // margin-top: 200px;
 }
 
 .closedChat {
