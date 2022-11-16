@@ -11,7 +11,7 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.model.ChatAdapter
-import com.example.scrabbleprototype.model.Message
+import com.example.scrabbleprototype.model.ChatRoomMessage
 import com.example.scrabbleprototype.model.SocketHandler
 import com.example.scrabbleprototype.objects.Users
 import kotlinx.serialization.encodeToString
@@ -21,7 +21,7 @@ import org.json.JSONObject
 
 class ChatActivity : AppCompatActivity() {
 
-    val messages = mutableListOf<Message>()
+    val messages = mutableListOf<ChatRoomMessage>()
     val currentUser = Users.currentUser
     var chatSocket = SocketHandler.getPlayerSocket()
 
@@ -45,13 +45,13 @@ class ChatActivity : AppCompatActivity() {
         }
 
         chatSocket.on("roomMessage"){ response ->
-            val message = Json.decodeFromString(Message.serializer(), response[0] as String)
+            val message = Json.decodeFromString(ChatRoomMessage.serializer(), response[0] as String)
             addMessage(message)
         }
         chatSocket.on("getMessages") { response ->
             val messageArray: JSONArray = response[0] as JSONArray
             for(i in 0 until messageArray.length()) {
-                addMessage(Json.decodeFromString(Message.serializer(), messageArray.get(i).toString()))
+                addMessage(Json.decodeFromString(ChatRoomMessage.serializer(), messageArray.get(i).toString()))
             }
         }
         setupChatBox()
@@ -80,7 +80,7 @@ class ChatActivity : AppCompatActivity() {
 
     private fun sendMessage() {
         val messageInput = findViewById<EditText>(R.id.message_input)
-        val message = Message(messageInput.text.toString(), currentUser.pseudonym)
+        val message = ChatRoomMessage(messageInput.text.toString(), "", currentUser.pseudonym)
 
         if(validateMessage(messageInput.text.toString())) {
             chatSocket.emit("roomMessage", JSONObject(Json.encodeToString(message)))
@@ -92,7 +92,7 @@ class ChatActivity : AppCompatActivity() {
         return message.isNotBlank()
     }
 
-    private fun addMessage(message: Message) {
+    private fun addMessage(message: ChatRoomMessage) {
         val messagesList = findViewById<ListView>(R.id.chat_box)
         messages.add(message)
 

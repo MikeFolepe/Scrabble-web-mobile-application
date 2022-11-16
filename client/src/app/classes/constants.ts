@@ -12,6 +12,7 @@ export const CENTRAL_CASE_POSITION: Vec2 = { x: 7, y: 7 };
 const boardSize = 16;
 export const GRID_CASE_SIZE = DEFAULT_WIDTH / boardSize;
 export const EASEL_SIZE = 7;
+export const MIN_FIRST_WORD_SIZE = 2;
 export const ALL_EASEL_BONUS = 50;
 export const MAX_NUMBER_OF_POSSIBILITY = 3;
 export const NUMBER_OF_SKIP = 6;

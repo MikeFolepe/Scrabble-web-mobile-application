@@ -106,7 +106,7 @@ class SettingsFragment : Fragment() {
     }
 
     private fun setupBoardItemsDialog() {
-        boardItemsDialog = Dialog(this.requireContext())
+        boardItemsDialog = Dialog(ContextThemeWrapper(requireContext(), ThemeManager.getTheme()))
         boardItemsDialog.setContentView(R.layout.user_theme_dialog)
 
         boardItemsDialog.findViewById<TextView>(R.id.dialog_title).text = getString(R.string.themes_dialog_title, "plateau de jeu")
@@ -146,7 +146,7 @@ class SettingsFragment : Fragment() {
     }
 
     private fun setupChatItemsDialog() {
-        chatItemsDialog = Dialog(this.requireContext())
+        chatItemsDialog = Dialog(ContextThemeWrapper(requireContext(), ThemeManager.getTheme()))
         chatItemsDialog.setContentView(R.layout.user_theme_dialog)
 
         chatItemsDialog.findViewById<TextView>(R.id.dialog_title).text = getString(R.string.themes_dialog_title, "boite de communication")

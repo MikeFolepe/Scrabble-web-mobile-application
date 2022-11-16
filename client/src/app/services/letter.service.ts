@@ -53,16 +53,6 @@ export class LetterService implements OnDestroy {
         return randomLetter;
     }
 
-    addLetterToReserve(letter: string): void {
-        for (const letterReserve of this.reserve) {
-            if (letter.toUpperCase() === letterReserve.value) {
-                letterReserve.quantity++;
-                this.reserveSize++;
-                // this.clientSocketService.socket.emit('sendReserve', this.reserve, this.reserveSize, this.clientSocketService.currentRoom.id);
-                return;
-            }
-        }
-    }
     ngOnDestroy(): void {
         this.reserve = JSON.parse(JSON.stringify(RESERVE));
         let size = 0;

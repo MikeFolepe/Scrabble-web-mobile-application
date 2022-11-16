@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Room } from '@app/classes/room';
+import { Room } from '@common/room';
 import { Socket } from 'socket.io-client';
 
 @Injectable({

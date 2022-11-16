@@ -133,13 +133,11 @@ export class PlaceLetterService {
         this.finalResult = await this.wordValidationService.validateAllWordsOnBoard(this.scrabbleBoard, this.isEaselSize, this.isRow);
 
         if (this.finalResult.validation) {
-            console.log('val');
             this.handleValidPlacement(this.finalResult, indexPlayer);
 
             return true;
         }
         this.handleInvalidPlacement(position, orientation, word, indexPlayer);
-        console.log('false');
         return false;
     }
 
