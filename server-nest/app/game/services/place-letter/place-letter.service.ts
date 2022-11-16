@@ -72,6 +72,7 @@ export class PlaceLetterService {
             // this.sendMessageService.displayMessageByType('ERREUR : Le placement est invalide', MessageType.Error);
             return false;
         }
+
         // Placing all letters of the word
         for (let i = 0; i < wordNoAccents.length; i++) {
             if (!this.placeLetter(currentPosition, wordNoAccents[i], orientation, i, indexPlayer)) {
@@ -87,6 +88,7 @@ export class PlaceLetterService {
         // Validation of the placement
         return await this.validatePlacement(position, orientation, wordNoAccents, indexPlayer);
     }
+
     goToNextPosition(position: Vec2, orientation: Orientation, direction: Direction = Direction.Forwards): void {
         if (direction === Direction.Forwards)
             position = orientation === Orientation.Horizontal ? { x: position.x++, y: position.y } : { x: position.x, y: position.y++ };
@@ -122,13 +124,13 @@ export class PlaceLetterService {
             // If the word is invalid, we remove only the letters that we just placed on the grid and add them back to the easel.
             if (!this.validLetters[i]) this.removePlacedLetter(currentPosition, word[i], indexPlayer);
 
-            // this.placementsService.goToNextPosition(currentPosition, orientation);
+            this.goToNextPosition(currentPosition, orientation);
         }
     }
 
     async validatePlacement(position: Vec2, orientation: Orientation, word: string, indexPlayer: number): Promise<boolean> {
         this.finalResult = await this.wordValidationService.validateAllWordsOnBoard(this.scrabbleBoard, this.isEaselSize, this.isRow);
-
+        console.log(this.finalResult.validation);
         if (this.finalResult.validation) {
             this.handleValidPlacement(this.finalResult, indexPlayer);
 
@@ -157,15 +159,13 @@ export class PlaceLetterService {
                 isPossible =
                     // this.isFirstWordValid(position, orientation, word) && // If the 1st word is placed onto the central position
                     this.isWordValid(position, orientation, word, indexPlayer); // If the letters of the word are in the easel or the scrabble board
+                this.isFirstRound = false;
             }
         } else {
             if (this.isWordFitting(position, orientation, word)) {
-                // isPossible =
+                console.log(word);
+                isPossible = this.isWordTouchingOthers(position, orientation, word); // If the word is in contact with other letters on the board
                 // this.isWordValid(position, orientation, word, indexPlayer) && // If the letters of the word are in the easel or the scrabble board
-                // this.isWordTouchingOthers(position, orientation, word); // If the word is in contact with other letters on the board
-
-                console.log(isPossible);
-                return true;
             }
         }
         return isPossible;
@@ -188,17 +188,16 @@ export class PlaceLetterService {
 
         for (const letter of word) {
             isLetterExisting = this.isLetterOnBoard(currentPosition, letter);
-            // this.placementsService.goToNextPosition(currentPosition, orientation);
+            this.goToNextPosition(currentPosition, orientation);
 
             // If the letter isn't on the board, we look into the easel, else we cannot place the word
-            if (!isLetterExisting) {
-                // isLetterExisting = this.placementsService.isLetterInEasel(letter, indexPlayer, indexLetters);
-                if (!isLetterExisting) return false;
-            }
+            // if (!isLetterExisting) {
+            //     isLetterExisting = this.placementsService.isLetterInEasel(letter, indexPlayer, indexLetters);
+            //     if (!isLetterExisting) return false;
+            // }
         }
         return true;
     }
-
     isWordTouchingOthers(position: Vec2, orientation: Orientation, word: string): boolean {
         let isWordTouching = false;
         const currentPosition = { x: position.x, y: position.y };
