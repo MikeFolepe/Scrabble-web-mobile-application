@@ -33,9 +33,9 @@ export class AuthService {
         this.communicationService.baseUrl = this.serverUrl + '/api';
 
         this.communicationService.connectUser(userData).subscribe(
-            (valid: boolean) => {
-                if (valid) {
-                    this.currentUser = userData;
+            (newUser: User) => {
+                if (newUser) {
+                    this.currentUser = newUser;
                     this.clientSocketService.socket = io(this.serverUrl);
                     this.clientSocketService.socket.on(ChatEvents.SocketId, (socketId: string) => {
                         this.currentUser.socketId = socketId;

@@ -29,7 +29,8 @@ export class ChatGateway {
 
     @SubscribeMessage('newMessage')
     addNewMessage(@ConnectedSocket() socket, @MessageBody() chatRoomIndex: number, @MessageBody() user: User, @MessageBody() message: string) {
-        const newMessage = new ChatRoomMessage(message[2], '', user[1].pseudonym);
+        Logger.log(user[1].avatar);
+        const newMessage = new ChatRoomMessage(message[2], user[1].avatar, user[1].pseudonym);
         this.chatRoomService.chatRooms[chatRoomIndex[0]].messages.push(newMessage);
         this.server.emit('updateChatRooms', this.chatRoomService.chatRooms);
     }

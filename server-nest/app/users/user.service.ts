@@ -19,8 +19,8 @@ export class UserService {
     }
 
     // fonction 2 de Mike
-    async findOne(pseudonym: string): Promise<User | undefined> {
-        return this.activeUsers.find((user) => user.pseudonym === pseudonym);
+    checkIfConnected(pseudonym: string): boolean {
+        return Boolean(this.activeUsers.find((user) => user.pseudonym === pseudonym));
     }
 
     async insertUser(avatar: string, pseudonym: string, password: string, email: string) {

@@ -25,7 +25,6 @@ export class AuthPageComponent implements OnInit {
     avatarValue = '';
     emailValue = '';
     ipAddressValue = '';
-    differentPasswords = false;
     errorMessage = '';
     signUpError = '';
     // choseAvatar = false;
@@ -108,10 +107,9 @@ export class AuthPageComponent implements OnInit {
         this.signUpError = '';
 
         if (this.passwordValue !== this.confirmPasswordValue) {
-            this.differentPasswords = true;
+            this.signUpError = "Les mots de passe ne correspondent pas";
             return;
         }
-        this.differentPasswords = false;
 
         
         const user = new User(this.avatarValue, this.pseudonymValue, this.passwordValue, this.emailValue, false, '');

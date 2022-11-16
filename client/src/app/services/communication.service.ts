@@ -96,8 +96,8 @@ export class CommunicationService {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    connectUser(userData: User): Observable<boolean> {
+    connectUser(userData: User): Observable<User> {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return this.http.post<boolean>(`${this.baseUrl}/auth/connect`, userData);
+        return this.http.post<User>(`${this.baseUrl}/auth/connect`, userData);
     }
 }

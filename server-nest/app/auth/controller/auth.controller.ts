@@ -18,8 +18,8 @@ export class AuthController {
     async login(@Body() user: User, @Res() response: Response) {
         await this.authService
             .login(user)
-            .then((valid: boolean) => {
-                response.status(HttpStatus.OK).send(valid);
+            .then((newUser : User) => {
+                response.status(HttpStatus.OK).send(newUser);
             })
             .catch((error: Error) => {
                 console.log("yepppp");

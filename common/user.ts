@@ -4,7 +4,7 @@ export class User {
     ipAddress: string;
     socketId?: string;
     isObserver: boolean;
-    avatar?: string;
+    avatar: string;
     password?: string;
     email?: string;
 

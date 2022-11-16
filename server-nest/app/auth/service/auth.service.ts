@@ -6,10 +6,11 @@ import { Injectable } from '@nestjs/common';
 export class AuthService {
     constructor(private userService: UserService) {}
 
-    async login(userData: User): Promise<boolean> {
-        const user = await this.userService.findOne(userData.pseudonym);
-        if (user) return false;
-        await this.userService.addUser(userData);
-        return true; 
+    async login(userData: User): Promise<User> {
+        const isConnected = await this.userService.checkIfConnected(userData.pseudonym);
+        if (isConnected) return undefined;
+        const userFromDB = await this.userService.getSingleUser(userData.pseudonym);
+        await this.userService.addUser(userFromDB);
+        return userFromDB; 
     }
 }
