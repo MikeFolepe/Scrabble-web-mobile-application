@@ -6,7 +6,6 @@ import { INVALID_INDEX, RESERVE, WHITE_LETTER_INDEX } from '@common/constants';
 import { Letter } from '@common/letter';
 
 import { ClientSocketService } from './client-socket.service';
-import { LetterService } from './letter.service';
 
 @Injectable({
     providedIn: 'root',
@@ -18,7 +17,8 @@ export class PlayerService {
     currentPlayer: Player;
     currentRoom: Room;
 
-    constructor(private clientSocketService: ClientSocketService, private letterService: LetterService) {
+    private updateEasel: () => void;
+    constructor(private clientSocketService: ClientSocketService) {
         this.currentPlayer = new Player('', []);
         this.fontSize = 14;
         this.players = [];
@@ -26,6 +26,7 @@ export class PlayerService {
         // this.getAIs();
         this.updatePlayer();
         this.getPlayers();
+        this.receiveSwap();
     }
 
     clearPlayers(): void {
@@ -75,21 +76,32 @@ export class PlayerService {
     getEasel(): Letter[] {
         return this.currentPlayer.letterTable;
     }
+    bindUpdateEasel(fn: () => void) {
+        this.updateEasel = fn;
+    }
 
     removeLetter(indexToRemove: number): void {
         this.currentPlayer.letterTable.splice(indexToRemove, 1);
+        this.updateEasel();
     }
-    swap(indexToSwap: number, indexPlayer: number): void {
-        const letterFromReserve = this.letterService.getRandomLetter();
-        // Add a copy of the random letter from the reserve
-        const letterToAdd = {
-            value: letterFromReserve.value,
-            quantity: letterFromReserve.quantity,
-            points: letterFromReserve.points,
-            isSelectedForSwap: letterFromReserve.isSelectedForSwap,
-            isSelectedForManipulation: letterFromReserve.isSelectedForManipulation,
-        };
-        this.opponents[indexPlayer].letterTable.splice(indexToSwap, 1, letterToAdd);
+    receiveSwap() {
+        this.clientSocketService.socket.on('swapped', (easel: string) => {
+            this.currentPlayer.letterTable = JSON.parse(easel);
+            this.updateEasel();
+        });
+    }
+    swap(indexToSwap: number[]): void {
+        // const letterFromReserve = this.letterService.getRandomLetter();
+        // // Add a copy of the random letter from the reserve
+        // const letterToAdd = {
+        //     value: letterFromReserve.value,
+        //     quantity: letterFromReserve.quantity,
+        //     points: letterFromReserve.points,
+        //     isSelectedForSwap: letterFromReserve.isSelectedForSwap,
+        //     isSelectedForManipulation: letterFromReserve.isSelectedForManipulation,
+        // };
+        // this.opponents[indexPlayer].letterTable.splice(indexToSwap, 1, letterToAdd);
+        this.clientSocketService.socket.emit('swap', this.clientSocketService.currentRoom.id, JSON.stringify(this.getEasel()), indexToSwap);
     }
 
     private getMyPlayer(): void {

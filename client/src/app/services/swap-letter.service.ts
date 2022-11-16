@@ -24,16 +24,16 @@ export class SwapLetterService {
             return false;
         }
 
-        const lettersToSwapIndexes: number[] = this.lettersToSwapIntoIndexes(lettersToSwap);
-        for (const indexLetter of lettersToSwapIndexes) {
-            this.swap(indexLetter, indexPlayer);
-        }
+        // const lettersToSwapIndexes: number[] = this.lettersToSwapIntoIndexes(lettersToSwap);
+        // for (const indexLetter of lettersToSwapIndexes) {
+        //     // this.swap(indexLetter, indexPlayer);
+        // }
         this.endGameService.addActionsLog('echanger');
         return true;
     }
 
-    swap(indexLetter: number, indexPlayer: number): void {
-        this.playerService.swap(indexLetter, indexPlayer);
+    swap(indexLetter: number[]): void {
+        this.playerService.swap(indexLetter);
     }
 
     private lettersToSwapIntoIndexes(lettersToSwap: string): number[] {

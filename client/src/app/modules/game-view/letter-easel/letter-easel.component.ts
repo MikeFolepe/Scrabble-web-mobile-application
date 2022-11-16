@@ -1,5 +1,5 @@
 import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
-import { EASEL_SIZE, PLAYER_ONE_INDEX } from '@app/classes/constants';
+import { EASEL_SIZE } from '@app/classes/constants';
 import { MessageType } from '@app/classes/enum';
 import { AuthService } from '@app/services/auth.service';
 import { BoardHandlerService } from '@app/services/board-handler.service';
@@ -21,6 +21,7 @@ export class LetterEaselComponent implements OnInit {
     @ViewChild('easel') easel: ElementRef;
 
     letterEaselTab: Letter[] = [];
+    indexOfLetterToSwap: number[];
 
     constructor(
         public playerService: PlayerService,
@@ -62,9 +63,10 @@ export class LetterEaselComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        // this.playerService.bindUpdateEasel(this.update.bind(this));
-        // this.update();
+        this.playerService.bindUpdateEasel(this.update.bind(this));
+        this.update();
         this.manipulateService.sendEasel(this.letterEaselTab);
+        this.indexOfLetterToSwap = [];
     }
 
     onDragEnd() {
@@ -87,12 +89,14 @@ export class LetterEaselComponent implements OnInit {
 
     swap(): void {
         let lettersToSwap = '';
+        this.indexOfLetterToSwap = [];
         for (let i = 0; i < this.letterEaselTab.length; i++) {
             if (this.letterEaselTab[i].isSelectedForSwap) {
                 lettersToSwap += this.letterEaselTab[i].value.toLowerCase();
-                this.swapLetterService.swap(i, PLAYER_ONE_INDEX);
+                this.indexOfLetterToSwap.push(i);
             }
         }
+        this.swapLetterService.swap(this.indexOfLetterToSwap);
         // Display the respective message into the chatBox and pass the turn
         const message = this.playerService.currentPlayer + ' : !échanger ' + lettersToSwap;
         this.sendMessageService.displayMessageByType(message, MessageType.Player);
@@ -137,15 +141,19 @@ export class LetterEaselComponent implements OnInit {
         this.boardHandlerService.currentDraggedLetter = letter;
     }
 
-    // private update(): void {
-    //     this.letterEaselTab = this.playerService.getEasel(PLAYER_ONE_INDEX);
-    // }
-
     private handleSwapSelection(indexLetter: number): void {
         this.manipulateService.unselectManipulation();
         // Unselect swap
+        console.log(indexLetter);
+        console.log(this.letterEaselTab[indexLetter].value);
         if (this.letterEaselTab[indexLetter].isSelectedForSwap) this.letterEaselTab[indexLetter].isSelectedForSwap = false;
         // Select to swap if the letter is not already selected for manipulation
-        else if (!this.letterEaselTab[indexLetter].isSelectedForManipulation) this.letterEaselTab[indexLetter].isSelectedForSwap = true;
+        else if (!this.letterEaselTab[indexLetter].isSelectedForManipulation) {
+            this.letterEaselTab[indexLetter].isSelectedForSwap = true;
+            console.log('swap');
+        }
+    }
+    private update(): void {
+        this.letterEaselTab = this.playerService.getEasel();
     }
 }

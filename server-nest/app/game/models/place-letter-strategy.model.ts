@@ -48,6 +48,7 @@ export class PlaceLetterStrategy {
         }
 
         for (let i = 0; orientation === Orientation.Vertical && i < word.length; i++) {
+            scrabbleBoard[start.x + i] = [];
             scrabbleBoard[start.x + i][start.y] = word[i];
         }
 
@@ -77,18 +78,9 @@ export class PlaceLetterStrategy {
     }
 
     async execute(index: number): Promise<void> {
-        const playerAi = this.player as PlayerAI;
-        const level = this.gameSettings.level;
         const isFirstRound = this.placeLetterService.isFirstRound;
         const scrabbleBoard = this.placeLetterService.scrabbleBoard;
-        console.log(scrabbleBoard);
-        // console.log(scrabbleBoard);
-        if (this.isFirstRoundAi) {
-            // this.dictionary = this.wordValidation.dictionary;
-            this.isFirstRoundAi = false;
-        }
         let allPossibleWords: PossibleWords[];
-        const matchingPointingRangeWords: PossibleWords[] = [];
 
         this.initializeArray(scrabbleBoard);
 
@@ -99,8 +91,12 @@ export class PlaceLetterStrategy {
         console.log('96place stra');
         // Step3: Clip words containing more letter than playable
         // allPossibleWords = this.removeIfNotEnoughLetter(allPossibleWords, playerAi);
-        // Step4: Clip words that can not be on the board
-        allPossibleWords = this.removeIfNotDisposable(allPossibleWords);
+
+        if (isFirstRound) {
+            allPossibleWords.forEach((word) => (word.startIndex = CENTRAL_CASE_POSITION.x));
+            this.placeLetterService.isFirstRound = false;
+        }
+
         console.log('102place stra');
         // Step5: Add the earning points to all words and update the
         allPossibleWords = await this.calculatePoints(allPossibleWords);

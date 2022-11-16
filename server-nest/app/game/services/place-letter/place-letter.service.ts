@@ -72,7 +72,6 @@ export class PlaceLetterService {
             // this.sendMessageService.displayMessageByType('ERREUR : Le placement est invalide', MessageType.Error);
             return false;
         }
-
         // Placing all letters of the word
         for (let i = 0; i < wordNoAccents.length; i++) {
             if (!this.placeLetter(currentPosition, wordNoAccents[i], orientation, i, indexPlayer)) {
@@ -83,8 +82,6 @@ export class PlaceLetterService {
             }
             this.goToNextPosition(currentPosition, orientation);
         }
-        console.log('boo');
-        console.log(this.scrabbleBoard);
         if (this.numLettersUsedFromEasel === EASEL_SIZE) this.isEaselSize = true;
 
         // Validation of the placement
@@ -158,17 +155,20 @@ export class PlaceLetterService {
         if (this.isFirstRound) {
             if (this.isWordFitting(position, orientation, word)) {
                 isPossible =
-                    // this.placementsService.isFirstWordValid(position, orientation, word) && // If the 1st word is placed onto the central position
+                    // this.isFirstWordValid(position, orientation, word) && // If the 1st word is placed onto the central position
                     this.isWordValid(position, orientation, word, indexPlayer); // If the letters of the word are in the easel or the scrabble board
             }
         } else {
             if (this.isWordFitting(position, orientation, word)) {
-                isPossible = this.isWordValid(position, orientation, word, indexPlayer); // && // If the letters of the word are in the easel or the scrabble board
+                // isPossible =
+                // this.isWordValid(position, orientation, word, indexPlayer) && // If the letters of the word are in the easel or the scrabble board
                 // this.isWordTouchingOthers(position, orientation, word); // If the word is in contact with other letters on the board
+
+                console.log(isPossible);
+                return true;
             }
         }
-        // return isPossible;
-        return true;
+        return isPossible;
     }
 
     isWordFitting(position: Vec2, orientation: Orientation, word: string): boolean {
@@ -199,32 +199,35 @@ export class PlaceLetterService {
         return true;
     }
 
-    // isWordTouchingOthers(position: Vec2, orientation: Orientation, word: string): boolean {
-    //     let isWordTouching = false;
-    //     const currentPosition = { x: position.x, y: position.y };
-    //     let x = 0;
-    //     let y = 0;
-    //     if (orientation === Orientation.Horizontal) x = 1;
-    //     else if (orientation === Orientation.Vertical) y = 1;
+    isWordTouchingOthers(position: Vec2, orientation: Orientation, word: string): boolean {
+        let isWordTouching = false;
+        const currentPosition = { x: position.x, y: position.y };
+        let x = 0;
+        let y = 0;
+        if (orientation === Orientation.Horizontal) x = 1;
+        else if (orientation === Orientation.Vertical) y = 1;
 
-    //     // Search each position around the word that are in bounds of the board
-    //     for (let i = 0; i < word.length; i++) {
-    //         if (this.placementsService.isPositionFilled({ x: currentPosition.x + y, y: currentPosition.y + x }, this.scrabbleBoard))
-    //             isWordTouching = true;
-    //         if (this.placementsService.isPositionFilled({ x: currentPosition.x - y, y: currentPosition.y - x }, this.scrabbleBoard))
-    //             isWordTouching = true;
-    //         if (this.placementsService.isPositionFilled({ x: currentPosition.x + x, y: currentPosition.y + y }, this.scrabbleBoard)) {
-    //             if (word.length === 1 || i === word.length - 1) isWordTouching = true;
-    //             else if (this.validLetters[i + 1]) isWordTouching = true;
-    //         }
-    //         if (this.placementsService.isPositionFilled({ x: currentPosition.x - x, y: currentPosition.y - y }, this.scrabbleBoard)) {
-    //             if (i === 0) isWordTouching = true;
-    //             if (this.validLetters[i - 1]) isWordTouching = true;
-    //         }
-    //         this.placementsService.goToNextPosition(currentPosition, orientation);
-    //     }
-    //     return isWordTouching;
-    // }
+        // Search each position around the word that are in bounds of the board
+        for (let i = 0; i < word.length; i++) {
+            if (this.isPositionFilled({ x: currentPosition.x + y, y: currentPosition.y + x }, this.scrabbleBoard)) isWordTouching = true;
+            if (this.isPositionFilled({ x: currentPosition.x - y, y: currentPosition.y - x }, this.scrabbleBoard)) isWordTouching = true;
+            if (this.isPositionFilled({ x: currentPosition.x + x, y: currentPosition.y + y }, this.scrabbleBoard)) {
+                if (word.length === 1 || i === word.length - 1) isWordTouching = true;
+                else if (this.validLetters[i + 1]) isWordTouching = true;
+            }
+            if (this.isPositionFilled({ x: currentPosition.x - x, y: currentPosition.y - y }, this.scrabbleBoard)) {
+                if (i === 0) isWordTouching = true;
+                if (this.validLetters[i - 1]) isWordTouching = true;
+            }
+            this.goToNextPosition(currentPosition, orientation);
+        }
+        return isWordTouching;
+    }
+
+    isPositionFilled(position: Vec2, scrabbleBoard: string[][]): boolean {
+        const isInBounds = position.x >= 0 && position.y >= 0 && position.x < BOARD_ROWS && position.y < BOARD_COLUMNS;
+        return isInBounds ? scrabbleBoard[position.y][position.x] !== '' : false;
+    }
 
     // ngOnDestroy() {
     //     this.isFirstRound = true;
