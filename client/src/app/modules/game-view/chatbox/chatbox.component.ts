@@ -59,6 +59,7 @@ export class ChatboxComponent implements OnInit {
             this.listTypes.push(this.sendMessageService.messageType);
             this.listMessages.push(this.message);
         }
+        console.log('display message');
         this.listTypes.push(this.sendMessageService.messageType);
         this.listMessages.push(this.sendMessageService.message);
         // Clear input

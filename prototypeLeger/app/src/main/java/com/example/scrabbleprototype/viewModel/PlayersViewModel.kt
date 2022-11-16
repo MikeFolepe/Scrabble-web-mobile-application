@@ -11,11 +11,7 @@ class PlayersViewModel: ViewModel() {
     var playerUpdatedPosition: MutableLiveData<Int> = MutableLiveData(0)
 
     fun initializePlayersOrder() {
-        var numberOfOpponentsAdded = 0
-        for(i in 0 until Constants.MAX_PLAYERS) {
-            if(i == Players.currentPlayerPosition) playersInGame.add(Players.currentPlayer)
-            else playersInGame.add(Players.opponents[numberOfOpponentsAdded++])
-        }
+        playersInGame = Players.players
     }
 
     fun notifyItemChangedAt(position: Int) {

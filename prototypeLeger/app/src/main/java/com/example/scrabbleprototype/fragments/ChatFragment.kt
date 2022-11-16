@@ -2,15 +2,18 @@ package com.example.scrabbleprototype.fragments
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import android.widget.*
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.model.ChatAdapter
-import com.example.scrabbleprototype.model.Message
+import com.example.scrabbleprototype.model.ChatRoomMessage
 import com.example.scrabbleprototype.model.SocketHandler
+import com.example.scrabbleprototype.objects.CurrentRoom
 import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.objects.Users
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONArray
@@ -19,7 +22,7 @@ import org.json.JSONObject
 
 class ChatFragment : Fragment() {
 
-    val messages = mutableListOf<Message>()
+    val messages = mutableListOf<ChatRoomMessage>()
     val currentUser = Users.currentUser
     var chatSocket = SocketHandler.getPlayerSocket()
     lateinit var activityContext: Context
@@ -40,14 +43,15 @@ class ChatFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        chatSocket.on("roomMessage"){ response ->
-            val message = Json.decodeFromString(Message.serializer(), response[0] as String)
+        chatSocket.on("receiveRoomMessage"){ response ->
+            val mapper = jacksonObjectMapper()
+            val message = mapper.readValue(response[0].toString(), ChatRoomMessage::class.java)
             addMessage(message, view)
         }
         chatSocket.on("getMessages") { response ->
             val messageArray: JSONArray = response[0] as JSONArray
             for(i in 0 until messageArray.length()) {
-                addMessage(Json.decodeFromString(Message.serializer(), messageArray.get(i).toString()), view)
+                addMessage(Json.decodeFromString(ChatRoomMessage.serializer(), messageArray.get(i).toString()), view)
             }
         }
         setupChatBox(view)
@@ -81,10 +85,10 @@ class ChatFragment : Fragment() {
 
     private fun sendMessage(view: View) {
         val messageInput = view.findViewById<EditText>(R.id.message_input)
-        val message = Message(messageInput.text.toString(), currentUser.pseudonym)
+        val message = ChatRoomMessage(messageInput.text.toString(), "", currentUser.pseudonym)
 
         if(validateMessage(messageInput.text.toString())) {
-            chatSocket.emit("roomMessage", JSONObject(Json.encodeToString(message)))
+            chatSocket.emit("sendRoomMessage", JSONObject(Json.encodeToString(message)), CurrentRoom.myRoom.id)
             messageInput.setText("")
         } else messageInput.error = "Le message ne peut pas être vide"
     }
@@ -93,7 +97,7 @@ class ChatFragment : Fragment() {
         return message.isNotBlank()
     }
 
-    private fun addMessage(message: Message, view: View) {
+    private fun addMessage(message: ChatRoomMessage, view: View) {
         val messagesList = view.findViewById<ListView>(R.id.chat_box)
         messages.add(message)
 

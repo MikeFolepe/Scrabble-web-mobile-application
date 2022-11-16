@@ -143,7 +143,7 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
         chatSocket.emit("joinRoom")
         chatSocket.on("socketId") { response ->
             users.currentUser.socketId = response[0].toString()
-            chatSocket.emit("updateUserSocket", Json.encodeToString(users.currentUser))
+            chatSocket.emit("updateUserSocket", JSONObject(Json.encodeToString(users.currentUser)))
         }
         startActivity(intent)
     }

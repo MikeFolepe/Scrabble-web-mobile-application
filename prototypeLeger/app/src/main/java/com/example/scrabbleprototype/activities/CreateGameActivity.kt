@@ -50,6 +50,8 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
     lateinit var client: HttpClient
     val socket = SocketHandler.getPlayerSocket()
 
+    val mapper = jacksonObjectMapper()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         ThemeManager.setActivityTheme(this)
@@ -67,6 +69,7 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
         setUpButtons()
         receiveMyPlayer()
         currRoom()
+        receiveAis()
         launch { setupSpinners() }
     }
 
@@ -236,7 +239,6 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
 
     private fun currRoom() {
         socket.on("yourRoom") {response ->
-            val mapper = jacksonObjectMapper()
             var myRoom =  mapper.readValue(response[0].toString(), Room::class.java)
             CurrentRoom.myRoom =  myRoom
             SocketHandler.roomId = myRoom.id
@@ -246,10 +248,16 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
 
     private fun receiveMyPlayer() {
         socket.on("MyPlayer") { response ->
-            val mapper = jacksonObjectMapper()
             Players.currentPlayer = mapper.readValue(response[0].toString(), Player::class.java)
             Log.d("waiting11", Players.currentPlayer.name)
             startActivity(Intent(this, WaitingRoomActivity::class.java))
+        }
+    }
+
+    private fun receiveAis() {
+        socket.on("roomPlayers") { response ->
+            Log.d("roomPlayers", "create")
+            Players.players = mapper.readValue(response[0].toString(), object: TypeReference<ArrayList<Player>>() {})
         }
     }
 }

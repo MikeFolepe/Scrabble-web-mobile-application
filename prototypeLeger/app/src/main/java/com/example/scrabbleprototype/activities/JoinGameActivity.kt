@@ -36,13 +36,13 @@ class JoinGameActivity : AppCompatActivity() {
         ThemeManager.setActivityTheme(this)
         setContentView(R.layout.activity_join_game)
 
-        receiveOpponents()
+        receivePlayers()
         receiveMyPlayer()
         currRoom()
-        receiveNewOpponent()
         routeToWaitingRoom()
         setupGameList()
         receiveJoinDecision()
+        sendObserverToGame()
         handleDeletedGame()
     }
 
@@ -67,19 +67,19 @@ class JoinGameActivity : AppCompatActivity() {
         val currentRoom = rooms[position]
         if (currentRoom.gameSettings.type == RoomType.public) {
             if(isObserver){
-                socket.emit("newRoomObserver", Users, rooms[position].id)
+                socket.emit("newRoomObserver", Users.currentUser, rooms[position].id)
             }
             else {
-                socket.emit("newRoomCustomer", Users.currentUser, rooms[position].id)
+                socket.emit("newRoomCustomer", Users.currentUser.pseudonym, rooms[position].id)
                 socketHandler.roomId = rooms[position].id
             }
         }
         else {
             if(isObserver){
-                socket.emit("newRoomObserver", Users, rooms[position].id)
+                socket.emit("newRoomObserver", Users.currentUser, rooms[position].id)
             }
             else {
-                socket.emit("sendRequestToCreator", Users.currentUser, currentRoom.id)
+                socket.emit("sendRequestToCreator", Users.currentUser.pseudonym, currentRoom.id)
                 socketHandler.roomId = rooms[position].id
             }
         }
@@ -111,13 +111,6 @@ class JoinGameActivity : AppCompatActivity() {
         socket.emit("getRoomsConfiguration")
     }
 
-    private fun receiveOpponents() {
-        socket.on("curOps") { response ->
-            val opponentsString = response[0].toString()
-            Players.opponents = mapper.readValue(opponentsString, object: TypeReference<ArrayList<Player>>() {})
-        }
-    }
-
     private fun receiveMyPlayer() {
         socket.on("MyPlayer") { response ->
             Players.currentPlayer = mapper.readValue(response[0].toString(), Player::class.java)
@@ -125,13 +118,13 @@ class JoinGameActivity : AppCompatActivity() {
         }
     }
 
-
-
-    private fun receiveNewOpponent() {
-        socket.on("Opponent") { response ->
-            Players.opponents.add(mapper.readValue(response[0].toString(), Player::class.java))
+    private fun receivePlayers() {
+        socket.on("roomPlayers") { response ->
+            Log.d("roomPlayers", "join")
+            Players.players = mapper.readValue(response[0].toString(), object: TypeReference<ArrayList<Player>>() {})
         }
     }
+
 
     private fun receiveJoinDecision() {
         socket.on("receiveJoinDecision") { response ->
@@ -141,7 +134,7 @@ class JoinGameActivity : AppCompatActivity() {
             Log.d("roomId" , roomId)
             Log.d("decision" , decision.toString())
             if (decision) {
-                socket.emit("newRoomCustomer", currentUser, roomId)
+                socket.emit("newRoomCustomer", currentUser.pseudonym, roomId)
             }
             else {
                 Snackbar.make(findViewById<LinearLayout>(R.id.snackbar_text), "Demande rejetée par le créateur", Snackbar.LENGTH_LONG).show()
