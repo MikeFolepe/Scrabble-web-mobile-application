@@ -99,6 +99,11 @@
           </div>
 
           <!--check if the passwords are the same-->
+          <div *ngIf="signUpError !== ''">
+            <div class="errorPasswords">
+              {{this.signUpError}}
+            </div>
+          </div>
           <div *ngIf = "differentPasswords">
             <div class="errorPasswords">
               <div>Les mots de passe ne correspondent pas</div>

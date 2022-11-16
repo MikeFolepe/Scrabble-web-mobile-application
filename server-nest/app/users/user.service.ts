@@ -19,8 +19,8 @@ export class UserService {
     }
 
     // fonction 2 de Mike
-    async findOne(username: string): Promise<User | undefined> {
-        return this.activeUsers.find((user) => user.pseudonym === username);
+    async findOne(pseudonym: string): Promise<User | undefined> {
+        return this.activeUsers.find((user) => user.pseudonym === pseudonym);
     }
 
     async insertUser(avatar: string, pseudonym: string, password: string, email: string) {
@@ -43,6 +43,7 @@ export class UserService {
             socketId: '',
         }));
     }
+
     async getSingleUser(pseudonym: string) {
         const user = await this.findUser(pseudonym);
         return user;
@@ -58,7 +59,7 @@ export class UserService {
         }
 
         if (!user) {
-            throw new Error("Le pseudonyme n'existe pas");
+            return;
         }
 
         return {

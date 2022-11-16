@@ -27,6 +27,7 @@ export class AuthPageComponent implements OnInit {
     ipAddressValue = '';
     differentPasswords = false;
     errorMessage = '';
+    signUpError = '';
     // choseAvatar = false;
     constructor(
         private administratorService: AdministratorService,
@@ -72,7 +73,9 @@ export class AuthPageComponent implements OnInit {
             return;
         }
 
+       
         this.authService.signIn(this.authForm.value);
+        
     }
 
     invalidPassword() {
@@ -87,7 +90,7 @@ export class AuthPageComponent implements OnInit {
         return true;
     }
 
-    signUp() {
+    async signUp() {
         this.isSubmitted = true;
 
         this.avatarValue = this.authService.chosenAvatar;
@@ -96,22 +99,33 @@ export class AuthPageComponent implements OnInit {
             return;
         }
 
+        const pseudonymExists : Boolean = await this.administratorService.checkPseudonym(this.pseudonymValue);
+
+        if (pseudonymExists) {
+            this.signUpError = 'Ce pseudonyme est déjà utilisé';
+            return;
+        }
+        this.signUpError = '';
+
         if (this.passwordValue !== this.confirmPasswordValue) {
             this.differentPasswords = true;
             return;
         }
         this.differentPasswords = false;
 
+        
         const user = new User(this.avatarValue, this.pseudonymValue, this.passwordValue, this.emailValue, false, '');
         this.administratorService.addUserToDatabase(user);
+        this.pseudonymValue = '';
+        this.passwordValue = '';
+        this.confirmPasswordValue = '';
+        this.authService.chosenAvatar = '';
+        this.emailValue = '';
+        this.hasAccount = true;
     }
 
     openDialog() {
         this.avatarChoiceDialog.open(AvatarChoiceComponent, { disableClose: true });
-    }
-
-    createAccount() {
-        this.hasAccount = false;
     }
 
     private async findUser() {
