@@ -88,15 +88,18 @@ export class PlaceLetterStrategy {
         const patterns = this.generateAllPatterns(this.getEasel(), isFirstRound);
         // Step2: Generate all words in the dictionary satisfying the patterns
         allPossibleWords = this.generateAllWords(this.dictionary, patterns);
-        console.log('96place stra');
-        // Step3: Clip words containing more letter than playable
-        // allPossibleWords = this.removeIfNotEnoughLetter(allPossibleWords, playerAi);
-
         if (isFirstRound) {
             allPossibleWords.forEach((word) => (word.startIndex = CENTRAL_CASE_POSITION.x));
             this.placeLetterService.isFirstRound = false;
+        } else {
+            // Step4: Clip words that can not be on the board
+            allPossibleWords = this.removeIfNotDisposable(allPossibleWords);
         }
 
+        console.log('96place stra');
+        // Step3: Clip words containing more letter than playable
+        // allPossibleWords = this.removeIfNotEnoughLetter(allPossibleWords, playerAi);
+        // Step4: Clip words that can not be on the board
         console.log('102place stra');
         // Step5: Add the earning points to all words and update the
         allPossibleWords = await this.calculatePoints(allPossibleWords);
@@ -189,12 +192,9 @@ export class PlaceLetterStrategy {
         if (word1.point === word2.point) return equalSortNumbers;
         return word1.point < word2.point ? greaterSortNumber : lowerSortNumber;
     };
-    async place(word: PossibleWords, index: number): Promise<void> {
+    async place(word: PossibleWords, index: number): Promise<boolean> {
         const startPos = word.orientation ? { x: word.line, y: word.startIndex } : { x: word.startIndex, y: word.line };
-        if (await this.placeLetterService.placeCommand(startPos, word.orientation, word.word, index)) {
-            return;
-        }
-        // this.skip(false);
+        return await this.placeLetterService.placeCommand(startPos, word.orientation, word.word, index);
     }
 
     private async computeResults(possibilities: PossibleWords[], isExpertLevel = true, index: number): Promise<void> {
@@ -205,8 +205,11 @@ export class PlaceLetterStrategy {
 
         let wordIndex = 0;
         if (isExpertLevel) {
-            await this.place(possibilities[wordIndex], index);
-            possibilities.splice(0, 1);
+            let place = false;
+            while (!place && possibilities.length !== 0) {
+                place = await this.place(possibilities[wordIndex], index);
+                possibilities.splice(0, 1);
+            }
             return;
         }
 
