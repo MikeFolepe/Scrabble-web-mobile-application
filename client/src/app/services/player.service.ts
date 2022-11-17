@@ -27,6 +27,7 @@ export class PlayerService {
         this.updatePlayer();
         this.getPlayers();
         this.receiveSwap();
+        this.clientSocketService.initialize();
     }
 
     clearPlayers(): void {
