@@ -10,7 +10,7 @@
 
             <div class="conversation" #scrollMe>
                 <div class="text" *ngFor="let message of this.chatRoomService.chatRooms[this.chatRoomIndexService.chatRoomIndex].messages">
-                    <img src="{{message.avatar}}" class="avatar" alt="Avatar"/><p>{{ message.pseudonym }}: {{ message.text }}</p>
+                    <img src="{{message.avatar}}" class="avatar" alt="Avatar"/><p> {{ message.pseudonym }}: {{ message.text }}</p>
                 </div>
             </div>
 
