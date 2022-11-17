@@ -77,7 +77,9 @@ export class ChatroomsComponent implements OnInit {
 
     scrollToBottom(): void {
         setTimeout(() => {
-            this.myScrollContainer.nativeElement.scrollTop = this.myScrollContainer.nativeElement.scrollHeight;
+            if (this.myScrollContainer) {
+                this.myScrollContainer.nativeElement.scrollTop = this.myScrollContainer.nativeElement.scrollHeight;
+            }
         }, 10);
     }
 }

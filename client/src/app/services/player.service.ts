@@ -26,6 +26,7 @@ export class PlayerService {
         // this.getAIs();
         this.updatePlayer();
         this.getPlayers();
+        this.clientSocketService.initialize();
     }
 
     clearPlayers(): void {
