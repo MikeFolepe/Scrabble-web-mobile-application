@@ -5,6 +5,7 @@ import { UsersService } from '@app/users/service/users.service';
 import { ChatRoomMessage } from '@common/chatRoomMessage';
 import { DELAY_BEFORE_PLAYING, ONE_SECOND_DELAY, THREE_SECONDS_DELAY } from '@common/constants';
 import { GameSettings } from '@common/game-settings';
+import { Letter } from '@common/letter';
 import { User } from '@common/user';
 import { Vec2 } from '@common/vec2';
 import { Logger } from '@nestjs/common';
@@ -137,6 +138,25 @@ export class GameHandlerGateway implements OnGatewayConnection {
     stopTimer(@ConnectedSocket() socket, @MessageBody() roomId: string) {
         const room = this.roomManagerService.find(roomId);
         room.skipTurnService.stopTimer();
+    }
+    @SubscribeMessage('swap')
+    swap(@ConnectedSocket() socket, @MessageBody() data: { roomId: string; easel: Letter[]; indexToSwap: number[] }) {
+        const room = this.roomManagerService.find(data[0]);
+        room.playerService.players[room.skipTurnService.activePlayerIndex].letterTable = JSON.parse(data[1]);
+        // eslint-disable-next-line guard-for-in
+        for (const i in data[2]) {
+            const letterFromReserve = room.letter.getRandomLetter();
+            // Add a copy of the random letter from the reserve
+            const letterToAdd = {
+                value: letterFromReserve.value,
+                quantity: letterFromReserve.quantity,
+                points: letterFromReserve.points,
+                isSelectedForSwap: letterFromReserve.isSelectedForSwap,
+                isSelectedForManipulation: letterFromReserve.isSelectedForManipulation,
+            };
+            room.playerService.players[room.skipTurnService.activePlayerIndex].letterTable.splice(data[2][i], 1, letterToAdd);
+        }
+        socket.emit('swapped', JSON.stringify(room.playerService.players[room.skipTurnService.activePlayerIndex].letterTable));
     }
 
     @SubscribeMessage('deleteGame')
@@ -289,6 +309,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
                 setTimeout(() => {
                     this.updateTurns(room);
                     this.startTimer(room.id);
+                    this.startAiTurn(room);
                 }, THREE_SECONDS_DELAY);
             } else {
                 room.skipTurnService.seconds = room.skipTurnService.seconds - 1;
