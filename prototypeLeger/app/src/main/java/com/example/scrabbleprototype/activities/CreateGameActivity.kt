@@ -13,6 +13,8 @@ import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.model.*
 import com.example.scrabbleprototype.objects.CurrentRoom
 import com.example.scrabbleprototype.objects.Players
+import com.example.scrabbleprototype.objects.ThemeManager
+import com.example.scrabbleprototype.objects.Users
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.client.*
@@ -40,7 +42,7 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
     }
     var dicoFileName= ""
     var currentRoom = CurrentRoom;
-    var gameSetting: GameSettings = GameSettings(Users.currentUser, StartingPlayer.Player1, "00", "00", AiType.beginner, "", RoomType.public, "")
+    var gameSetting: GameSettings = GameSettings(Users.currentUser.pseudonym, StartingPlayer.Player1, "00", "00", AiType.beginner, "", RoomType.public)
     val minutes = arrayListOf("00", "01", "02", "03")
     val seconds = arrayListOf("00", "30")
     var dictionaries = listOf<Dictionary>()
@@ -48,8 +50,11 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
     lateinit var client: HttpClient
     val socket = SocketHandler.getPlayerSocket()
 
+    val mapper = jacksonObjectMapper()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        ThemeManager.setActivityTheme(this)
         setContentView(R.layout.activity_create_game_2)
 
         client = HttpClient() {
@@ -58,10 +63,13 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
             }
         }
         receiveMyPlayer()
-        setupSpinners()
+        launch {
+            setupSpinners()
+        }
         setUpButtons()
         receiveMyPlayer()
         currRoom()
+        receiveAis()
         launch { setupSpinners() }
     }
 
@@ -97,7 +105,7 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
     suspend fun getDictionaries(): HttpResponse? {
         var response: HttpResponse?
         try {
-            response = client.get(Users.ipAddress + "/api/admin/dictionaries") {
+            response = client.get(Users.currentUser.ipAddress + "/api/admin/dictionaries") {
                 contentType(ContentType.Application.Json)
             }
         } catch (err: Exception) {
@@ -166,7 +174,7 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
         }
         val backButton = findViewById<Button>(R.id.back_button)
         backButton.setOnClickListener {
-            startActivity(Intent(this, HomeMenuActivity::class.java))
+            startActivity(Intent(this, MainMenuActivity::class.java))
         }
         findViewById<RadioGroup>(R.id.radio_group).setOnCheckedChangeListener { group, checkedId ->
             val radio: RadioButton = findViewById(checkedId)
@@ -222,7 +230,8 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
             val roomReceived = Room(response[0].toString(), arrayListOf(socket.id()), gameSetting, State.Waiting, 3 , 1, arrayListOf())
             currentRoom.myRoom = roomReceived;
         }
-        gameSetting.dictionary = dictionaries.find { it.title == dicoFileName }!!.fileName
+        //gameSetting.dictionary = dictionaries.find { it.title == dicoFileName }!!.fileName
+        gameSetting.dictionary = dictionaries[0].fileName
         Log.d("game" , gameSetting.toString())
         socket.emit("createRoom", JSONObject(Json.encodeToString(gameSetting)))
     }
@@ -230,7 +239,6 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
 
     private fun currRoom() {
         socket.on("yourRoom") {response ->
-            val mapper = jacksonObjectMapper()
             var myRoom =  mapper.readValue(response[0].toString(), Room::class.java)
             CurrentRoom.myRoom =  myRoom
             SocketHandler.roomId = myRoom.id
@@ -240,10 +248,16 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
 
     private fun receiveMyPlayer() {
         socket.on("MyPlayer") { response ->
-            val mapper = jacksonObjectMapper()
             Players.currentPlayer = mapper.readValue(response[0].toString(), Player::class.java)
             Log.d("waiting11", Players.currentPlayer.name)
             startActivity(Intent(this, WaitingRoomActivity::class.java))
+        }
+    }
+
+    private fun receiveAis() {
+        socket.on("roomPlayers") { response ->
+            Log.d("roomPlayers", "create")
+            Players.players = mapper.readValue(response[0].toString(), object: TypeReference<ArrayList<Player>>() {})
         }
     }
 }

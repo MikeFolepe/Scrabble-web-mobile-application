@@ -62,7 +62,7 @@ class GameListAdapter(private var gameList: ArrayList<Room>) :
             gameStatus.setTextColor(ContextCompat.getColor(gameStatus.context, R.color.red))
         } else {
             gameStatus.text = "En attente"
-            gameStatus.setTextColor(ContextCompat.getColor(gameStatus.context, R.color.green))
+            gameStatus.setTextColor(ContextCompat.getColor(gameStatus.context, R.color.lime_green))
         }
         if(gameList[position].state == State.Playing || gameList[position].state == State.Finish) {
             roomType.text = "Public"

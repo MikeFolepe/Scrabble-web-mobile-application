@@ -19,10 +19,7 @@ import androidx.recyclerview.widget.RecyclerView.Recycler
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.activities.GameActivity
 import com.example.scrabbleprototype.model.*
-import com.example.scrabbleprototype.objects.Board
-import com.example.scrabbleprototype.objects.LetterRack
-import com.example.scrabbleprototype.objects.Players
-import com.example.scrabbleprototype.objects.Reserve
+import com.example.scrabbleprototype.objects.*
 import com.example.scrabbleprototype.services.SwapLetterService
 import com.example.scrabbleprototype.viewModel.PlacementViewModel
 import com.example.scrabbleprototype.viewModel.PlayersViewModel
@@ -79,7 +76,8 @@ class LetterRackFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_letter_rack, container, false)
+        val inflaterWithTheme = ThemeManager.setFragmentTheme(layoutInflater, requireContext())
+        return inflaterWithTheme.inflate(R.layout.fragment_letter_rack, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -126,11 +124,11 @@ class LetterRackFragment : Fragment() {
                     Players.currentPlayer.letterTable = playerReceived.letterTable
                     Players.currentPlayer.score = playerReceived.score
                     LetterRack.letters = Players.currentPlayer.letterTable
-                } else {
-                    val opponentToUpdate = Players.opponents.find { it.name == playerReceived.name }
-                    opponentToUpdate?.letterTable = playerReceived.letterTable
-                    opponentToUpdate?.score = playerReceived.score
                 }
+                val playerToUpdate = Players.players.find { it.name == playerReceived.name }
+                playerToUpdate?.letterTable = playerReceived.letterTable
+                playerToUpdate?.score = playerReceived.score
+
                 letterRackAdapter = LetterRackAdapter(LetterRack.letters)
                 letterRackView.adapter = letterRackAdapter
 

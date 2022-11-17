@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/light_green"
+    android:background="?attr/backgroundColor"
     tools:context=".activities.WaitingRoomActivity">
 
     <androidx.appcompat.widget.Toolbar
@@ -21,7 +21,7 @@
             android:text="Jeu du Scrabble - Équipe 107"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:textColor="@color/black"
+            android:textColor="?android:textColor"
             android:textSize="40sp"
             android:layout_gravity="center"
             android:id="@+id/toolbar_title" />
@@ -34,7 +34,7 @@
         app:layout_constraintTop_toBottomOf="@id/toolbar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:textColor="@color/black"
+        android:textColor="?android:textColor"
         android:textSize="30sp"
         android:layout_margin="20dp"
         android:id="@+id/roomId" />
@@ -52,7 +52,7 @@
             android:layout_height="wrap_content"
             android:text="@string/players_waiting_list"
             android:textSize="24sp"
-            android:textColor="@color/black"
+            android:textColor="?android:textColor"
             android:layout_marginStart="20dp"/>
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/players_waiting"
@@ -79,7 +79,9 @@
         android:indeterminate = "true"
         android:max="100"
         android:layout_centerInParent="true"
-        android:progress="0" />
+        android:progress="0"
+        android:indeterminateTintMode="src_atop"
+        android:indeterminateTint="?attr/progressBarStyle"/>
 
     <LinearLayout
         android:id="@+id/buttons_layout"
@@ -98,7 +100,7 @@
         android:layout_height="wrap_content"
         android:text="@string/startGame"
         android:background="@drawable/teal_shadow_button"
-        android:textColor="@color/white"
+        android:textColor="?android:textColorSecondary"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"

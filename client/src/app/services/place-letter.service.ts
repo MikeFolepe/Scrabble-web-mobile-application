@@ -295,7 +295,6 @@ export class PlaceLetterService implements OnDestroy {
         this.clientSocketService.socket.on('receivePlacement', (scrabbleBoard: string, startPosition: string, orientation: string, word: string) => {
             console.log(word);
             this.placeByOpponent(JSON.parse(scrabbleBoard), JSON.parse(startPosition), JSON.parse(orientation), word);
-            console.log('pass');
         });
     }
 
@@ -303,8 +302,9 @@ export class PlaceLetterService implements OnDestroy {
         const currentPosition = { x: startPosition.x, y: startPosition.y };
 
         this.scrabbleBoard = scrabbleBoard;
+
+        console.log(scrabbleBoard);
         for (const letter of word) {
-            console.log(letter);
             this.gridService.drawLetter(this.gridService.gridContextLettersLayer, letter, currentPosition, this.playerService.fontSize);
             this.placementsService.goToNextPosition(currentPosition, orientation);
         }

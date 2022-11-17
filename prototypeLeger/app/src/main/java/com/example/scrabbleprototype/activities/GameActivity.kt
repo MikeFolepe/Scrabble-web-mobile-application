@@ -17,6 +17,7 @@ import com.example.scrabbleprototype.model.SocketHandler
 import com.example.scrabbleprototype.objects.LetterRack
 import com.example.scrabbleprototype.objects.Players
 import com.example.scrabbleprototype.objects.Reserve
+import com.example.scrabbleprototype.objects.ThemeManager
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 
@@ -26,6 +27,7 @@ class GameActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        ThemeManager.setActivityTheme(this)
         setContentView(R.layout.activity_game)
 
         findViewById<ConstraintLayout>(R.id.game_layout).setOnTouchListener { v, event ->

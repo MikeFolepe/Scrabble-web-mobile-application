@@ -55,8 +55,8 @@ export class SkipTurnService {
     }
 
     switchAiTurn(): void {
-        this.clientSocket.socket.on('switchAiTurn', (playerName: string) => {
-            this.clientSocket.socket.emit('switchTurn', this.clientSocket.currentRoom.id, playerName);
+        this.clientSocket.socket.on('switchAiTurn', () => {
+            this.clientSocket.socket.emit('switchTurn', this.clientSocket.currentRoom.id);
         });
     }
 
@@ -66,7 +66,7 @@ export class SkipTurnService {
         if (this.playerService.currentPlayer.isTurn) this.shouldNotBeDisplayed = true;
         if (this.playerService.currentPlayer.isTurn) {
             this.shouldNotBeDisplayed = false;
-            this.clientSocket.socket.emit('switchTurn', this.clientSocket.currentRoom.id, this.playerService.currentPlayer.name);
+            this.clientSocket.socket.emit('switchTurn', this.clientSocket.currentRoom.id);
             this.playerService.currentPlayer.isTurn = false;
         }
     }

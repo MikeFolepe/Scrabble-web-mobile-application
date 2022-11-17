@@ -5,7 +5,7 @@
         <div class="fake-buttons fake-zoom"></div>
     </div>
 
-    <h2>Boite de communication</h2>
+    <h2>Chat de la partie</h2>
 
     <div class="display" #scrollMe>
         <p
@@ -22,11 +22,5 @@
         </p>
     </div>
 
-    <input
-        type="text"
-        placeholder="Veuillez entrer un message ou une commande"
-        maxlength="512"
-        [(ngModel)]="message"
-        (keypress)="handleKeyEvent($event)"
-    />
+    <input type="text" placeholder="Veuillez entrer un message" maxlength="512" [(ngModel)]="message" (keypress)="handleKeyEvent($event)" />
 </div>

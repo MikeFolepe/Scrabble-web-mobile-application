@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { TWO_SECOND_DELAY } from '@app/classes/constants';
 import { MessageType } from '@app/classes/enum';
-import { Message } from '@app/classes/message';
-import { ChatEvents } from '@common/chat.gateway.events';
+import { ChatRoomMessage } from '@common/chatRoomMessage';
 import { AuthService } from './auth.service';
 import { ClientSocketService } from './client-socket.service';
 import { PlayerService } from './player.service';
@@ -16,7 +15,7 @@ export class SendMessageService {
     private displayMessage: () => void;
 
     constructor(private clientSocketService: ClientSocketService, private playerService: PlayerService, private authService: AuthService) {
-        // this.receiveMessageFromOpponent();
+        this.receiveMessageFromOpponent();
         // To display message in real time in chat box
         this.receiveConversionMessage();
     }
@@ -28,14 +27,14 @@ export class SendMessageService {
 
     displayMessageByType(message: string, messageType: MessageType): void {
         this.messageType = messageType;
-        const messageObject = new Message(message, this.authService.currentUser.pseudonym);
+        const messageObject = new ChatRoomMessage(message, '', this.authService.currentUser.pseudonym);
         if (this.messageType === MessageType.Player) this.sendMessageToOpponent(messageObject);
 
         // this.displayMessage();
     }
 
-    sendMessageToOpponent(message: Message): void {
-        this.clientSocketService.socket.emit('sendRoomMessage', message, this.clientSocketService.currentRoom.id);
+    sendMessageToOpponent(messageToSend: ChatRoomMessage): void {
+        this.clientSocketService.socket.emit('sendRoomMessage', messageToSend, this.clientSocketService.currentRoom.id);
     }
 
     // Function to send message of conversion to all players in the room
@@ -59,10 +58,9 @@ export class SendMessageService {
     }
 
     receiveMessageFromOpponent(): void {
-        this.clientSocketService.socket.on(ChatEvents.RoomMessage, (message: string) => {
-            const messageObject = JSON.parse(message);
-            const messageString = messageObject.messageUser + ' [' + messageObject.messageTime + ']' + ' : ' + messageObject.message;
-            if (messageObject.messageUser === this.authService.currentUser.pseudonym) {
+        this.clientSocketService.socket.on('receiveRoomMessage', (opponentMessage: ChatRoomMessage) => {
+            const messageString = opponentMessage.pseudonym + ' [' + opponentMessage.time + ']' + ' : ' + opponentMessage.text;
+            if (opponentMessage.pseudonym === this.authService.currentUser.pseudonym) {
                 this.messageType = MessageType.Player;
                 this.message = messageString;
                 this.displayMessage();

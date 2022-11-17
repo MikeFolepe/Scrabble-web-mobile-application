@@ -133,18 +133,16 @@ export class PlaceLetterService {
         this.finalResult = await this.wordValidationService.validateAllWordsOnBoard(this.scrabbleBoard, this.isEaselSize, this.isRow);
 
         if (this.finalResult.validation) {
-            console.log('val');
             this.handleValidPlacement(this.finalResult, indexPlayer);
 
-            this.isEmpty = false;
             return true;
         }
         this.handleInvalidPlacement(position, orientation, word, indexPlayer);
-        console.log('false');
         return false;
     }
 
     handleValidPlacement(finalResult: ScoreValidation, indexPlayer: number): void {
+        this.isEmpty = false;
         this.playerService.addScore(finalResult.score, indexPlayer);
         this.playerService.refillEasel(indexPlayer);
         this.isFirstRound = false;

@@ -5,13 +5,15 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import com.example.scrabbleprototype.R
+import com.example.scrabbleprototype.objects.ThemeManager
 
 class HomeMenuActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        ThemeManager.setActivityTheme(this)
         setContentView(R.layout.activity_home_menu)
 
-        setupButtons()
+        //setupButtons()
     }
 
     private fun setupButtons() {
