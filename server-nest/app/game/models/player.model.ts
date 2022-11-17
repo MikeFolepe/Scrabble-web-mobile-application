@@ -25,13 +25,4 @@ export class Player {
 
         return quantity;
     }
-
-    // getEasel(): string {
-    //     let hand = '[';
-    //     for (const letter of this.letterTable) {
-    //         hand += letter.value;
-    //     }
-
-    //     return hand + ']';
-    // }
 }
