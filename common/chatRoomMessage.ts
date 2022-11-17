@@ -7,15 +7,17 @@ export enum MessageType {
 }
 
 export class ChatRoomMessage {
-    text : string;
     type : MessageType;
-    avatar : string;
-    pseudonym : string;
+    time: string;
 
-    constructor(text : string, avatar : string, pseudonym : string) {
-        this.text = text; 
-        this.avatar = avatar;
-        this.pseudonym = pseudonym;
+    constructor(public text : string, public avatar : string, public pseudonym : string) {
+        console.log('construct');
+        this.time =
+        new Date().getHours().toString().padStart(2, '0') +
+        ':' +
+        new Date().getMinutes().toString().padStart(2, '0') +
+        ':' +
+        new Date().getSeconds().toString().padStart(2, '0');
     }
 
 }

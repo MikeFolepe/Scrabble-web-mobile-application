@@ -52,5 +52,4 @@ class PlayersAdapter(private var players: ArrayList<Player>) :
         players = newPlayers
         this.notifyDataSetChanged()
     }
-
 }

@@ -66,7 +66,6 @@ export class PlacementsHandlerService {
     reverseString(string: string): string {
         return string.split('').reverse().join('');
     }
-
     isLetterInEasel(letter: string, indexPlayer: number, indexLetters: number[]): boolean {
         let isLetterExisting = false;
         let currentLetterIndex = this.playerService.indexLetterInEasel(letter, 0);

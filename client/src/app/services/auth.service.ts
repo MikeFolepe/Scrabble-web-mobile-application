@@ -22,11 +22,7 @@ export class AuthService {
         private communicationService: CommunicationService,
         public errorHandler: ErrorHandlerService,
         public snackBar: MatSnackBar,
-    ) {
-        if (this.clientSocketService.socket) {
-            this.receiveUserSocket();
-        }
-    }
+    ) {}
 
     signIn(userData: User) {
         this.serverUrl = environment.serverUrl;
@@ -45,7 +41,6 @@ export class AuthService {
                     this.clientSocketService.socket.emit('joinMainRoom', this.currentUser);
                     localStorage.setItem('ACCESS_TOKEN', 'access_token');
                     this.router.navigate(['/home']);
-                    this.clientSocketService.initialize();
                 } else {
                     this.displayMessage('Cet utilisateur est déjà connecté');
                 }

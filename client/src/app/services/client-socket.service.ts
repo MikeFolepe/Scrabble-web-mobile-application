@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Room } from '@app/classes/room';
+import { Room } from '@common/room';
 import { Socket } from 'socket.io-client';
 
 @Injectable({
@@ -24,14 +24,15 @@ export class ClientSocketService {
     }
 
     initializeRoomId(): void {
-        this.socket.on('yourRoom', (roomFromServer) => {
+        this.socket.on('yourRoom', (roomFromServer: Room) => {
+            console.log('myRoom', roomFromServer);
             this.currentRoom = new Room(
                 roomFromServer.id,
                 roomFromServer.gameSettings,
                 roomFromServer.state,
                 roomFromServer.socketIds,
-                roomFromServer.aiNumber,
-                roomFromServer.humanNumber,
+                roomFromServer.aiPlayersNumber,
+                roomFromServer.humanPlayersNumber,
                 roomFromServer.observers,
             );
         });

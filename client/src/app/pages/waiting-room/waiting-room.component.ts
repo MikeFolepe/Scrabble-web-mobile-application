@@ -30,8 +30,6 @@ export class WaitingRoomComponent implements OnInit {
         this.status = '';
         this.errorMessage = '';
         this.isWaiting = true;
-        this.clientSocket.routeToGameView();
-        this.clientSocket.initialize();
     }
 
     ngOnInit(): void {
@@ -92,6 +90,7 @@ export class WaitingRoomComponent implements OnInit {
     }
 
     startGame(): void {
+        console.log('start exec', this.clientSocket.currentRoom);
         if (this.clientSocket.currentRoom.humanPlayersNumber < 2) {
             this.displayErrorMessage(ErrorMessage.NotEnoughPlayers);
             return;

@@ -43,6 +43,7 @@ class PlaceService : Service() {
     }
 
     private fun isFirstWordValid(placementPositions: IntArray): Boolean {
+        if(placementPositions.size < Constants.MIN_FIRST_WORD_SIZE) return false
         for(position in placementPositions) {
             if(position == Constants.BOARD_CENTER) return true
         }

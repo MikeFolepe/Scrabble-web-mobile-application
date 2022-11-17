@@ -22,38 +22,20 @@ object ThemeManager {
     }
 
     fun setActivityTheme(activity: Activity) {
-        when(currentTheme) {
-            0 -> {
-                activity.setTheme(R.style.Theme_ScrabblePrototype)
-            }
-            1 -> {
-                activity.setTheme(R.style.Theme_ScrabblePrototype_Dark)
-            }
-            2 -> {
-                activity.setTheme(R.style.Theme_ScrabblePrototype_Blue)
-            }
-            3 -> {
-                activity.setTheme(R.style.Theme_ScrabblePrototype_Orange)
-            }
-        }
+        activity.setTheme(getTheme())
     }
 
     fun setFragmentTheme(layoutInflater: LayoutInflater, fragmentContext: Context): LayoutInflater {
+        return layoutInflater.cloneInContext(ContextThemeWrapper(fragmentContext, getTheme()))
+    }
+
+    fun getTheme(): Int {
         when(currentTheme) {
-            0 -> {
-                return layoutInflater.cloneInContext(ContextThemeWrapper(fragmentContext, R.style.Theme_ScrabblePrototype))
-            }
-            1 -> {
-                Log.d("changetheme", "dark")
-                return layoutInflater.cloneInContext(ContextThemeWrapper(fragmentContext, R.style.Theme_ScrabblePrototype_Dark))
-            }
-            2 -> {
-                return layoutInflater.cloneInContext(ContextThemeWrapper(fragmentContext, R.style.Theme_ScrabblePrototype_Blue))
-            }
-            3 -> {
-                return layoutInflater.cloneInContext(ContextThemeWrapper(fragmentContext, R.style.Theme_ScrabblePrototype_Orange))
-            }
+            THEME_DEFAULT -> return R.style.Theme_ScrabblePrototype
+            THEME_DARK -> return R.style.Theme_ScrabblePrototype_Dark
+            THEME_BLUE -> return R.style.Theme_ScrabblePrototype_Blue
+            THEME_ORANGE -> return R.style.Theme_ScrabblePrototype_Orange
         }
-        return layoutInflater
+        return R.style.Theme_ScrabblePrototype
     }
 }
