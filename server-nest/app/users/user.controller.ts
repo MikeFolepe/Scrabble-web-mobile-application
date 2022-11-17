@@ -1,25 +1,22 @@
 import { User } from '@common/user';
-import { Body, Controller, Get, Post, Req } from '@nestjs/common';
+import { Body, Controller, Get, Logger, Post, Req } from '@nestjs/common';
 import { UserService } from './user.service';
 
 @Controller('user')
 export class UserController {
-
-    constructor(private readonly userService: UserService) {
-    }
+    constructor(private readonly userService: UserService) {}
 
     @Post('/users')
-    async addUser(@Body() user : User) {
-
+    async addUser(@Body() user: User) {
         const salt = 10;
         const bcrypt = require('bcrypt');
         const password = await bcrypt.hash(user.password, salt);
-        
+
         const generatedId = await this.userService.insertUser(user.avatar, user.pseudonym, password, user.email);
         return { id: generatedId, ...user };
     }
 
-    //check if the password is correct. 
+    // check if the password is correct.
     @Get('/checkPassword/:pseudonym/:password')
     async checkPassword(@Req() req) {
         const pseudonym = req.params.pseudonym;
@@ -33,8 +30,11 @@ export class UserController {
 
     @Get('/checkPseudonym/:pseudonym')
     async checkPseudonym(@Req() req) {
+        console.log('requete recu');
         const pseudonym = req.params.pseudonym;
+        console.log(pseudonym);
         const userFound = await this.userService.getSingleUser(pseudonym);
+        Logger.log(userFound);
         return Boolean(userFound);
     }
 

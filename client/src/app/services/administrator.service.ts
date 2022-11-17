@@ -14,14 +14,13 @@ import Ajv from 'ajv';
 import { saveAs } from 'file-saver';
 import { ErrorHandlerService } from './error-handler.service';
 
-
 @Injectable({
     providedIn: 'root',
 })
 export class AdministratorService {
     aiBeginner: AiPlayerDB[];
     aiExpert: AiPlayerDB[];
-    user : User[];
+    user: User[];
     dictionaries: Dictionary[] = [];
     currentDictionary: Dictionary;
     fileInput: ElementRef;
@@ -58,13 +57,11 @@ export class AdministratorService {
     }
 
     initializeUsers() {
-        this.communicationService.getUsers().subscribe(
-            (users: User[]) => {
-                this.user = users;
-                console.log(this.user)
-            });
+        this.communicationService.getUsers().subscribe((users: User[]) => {
+            this.user = users;
+            console.log(this.user);
+        });
     }
-
 
     initializeDictionaries(): void {
         this.communicationService.getDictionaries().subscribe((dictionariesServer: Dictionary[]) => {
@@ -72,11 +69,11 @@ export class AdministratorService {
         });
     }
 
-    addUserToDatabase(user : User) {
+    addUserToDatabase(user: User) {
         this.addUser(user);
     }
 
-    async checkPassword(pseudonym:string, password:string) {
+    async checkPassword(pseudonym: string, password: string) {
         return this.communicationService.checkPassword(pseudonym, password);
     }
 
@@ -114,7 +111,6 @@ export class AdministratorService {
     // addNewUser(user : User) {
     //     this.communicationService.addNewUserToDB(user).subscribe(
     //     );
-
 
     // }
 
@@ -296,12 +292,11 @@ export class AdministratorService {
         );
     }
 
-    private addUser(user : User) : void {
-        this.communicationService.addNewUserToDB(user).subscribe(
-            (userFromDB: User) => {
-                this.user.push(userFromDB);
-                this.displayMessage('Utilisateur ajouté');
-            });
+    private addUser(user: User): void {
+        this.communicationService.addNewUserToDB(user).subscribe((userFromDB: User) => {
+            this.user.push(userFromDB);
+            this.displayMessage('Utilisateur ajouté');
+        });
     }
 
     private updateAiPlayer(id: string, aiPlayer: AiPlayer, aiType: AiType): void {

@@ -102,7 +102,7 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
         }
 
         //validate username and ip
-        launch {
+       /* launch {
             val user = User(serverIp, username, null, false)
 
             val response = postAuthentication(user)
@@ -117,7 +117,7 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
                 } else if (response.status == HttpStatusCode.NotFound) serverIpInput.error = serverError
                 else serverIpInput.error = serverError
             } else serverIpInput.error = serverError
-        }
+        }*/
     }
 
     suspend fun postAuthentication(user: User): HttpResponse? {

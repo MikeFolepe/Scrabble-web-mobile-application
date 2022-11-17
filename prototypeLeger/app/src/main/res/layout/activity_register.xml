@@ -66,14 +66,14 @@
                         android:text="Choisir un avatar"
                         android:textSize="8sp"
                         android:layout_marginTop="50dp"
-                        app:layout_constraintBottom_toTopOf="@+id/username"
+                        app:layout_constraintBottom_toTopOf="@+id/pseudonym"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
 
                     <EditText
-                        android:id="@+id/username"
+                        android:id="@+id/pseudonym"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
                         android:layout_weight="1"
@@ -104,15 +104,15 @@
                         android:inputType="text"
                         android:textColor="@color/black"
                         android:textColorHint="@color/gray"
-                        app:layout_constraintBottom_toTopOf="@+id/server_ip"
+                        app:layout_constraintBottom_toTopOf="@+id/password"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintRight_toRightOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/username"
+                        app:layout_constraintTop_toBottomOf="@+id/pseudonym"
                         app:layout_constraintVertical_bias="0.52" />
 
                     <EditText
-                        android:id="@+id/server_ip"
+                        android:id="@+id/password"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
                         android:layout_marginLeft="20dp"
@@ -147,7 +147,7 @@
                         app:layout_constraintBottom_toBottomOf="@+id/connection_button"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintRight_toRightOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/server_ip" />
+                        app:layout_constraintTop_toBottomOf="@+id/password" />
 
                     <Button
                         android:id="@+id/connection_button"
