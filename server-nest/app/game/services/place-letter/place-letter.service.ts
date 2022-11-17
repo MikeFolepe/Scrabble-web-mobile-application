@@ -49,8 +49,6 @@ export class PlaceLetterService {
         }
         this.isEmpty = true;
         this.finalResult = { validation: false, score: 0 };
-        // this.playerService.updateScrabbleBoard(this.scrabbleBoard);
-        // this.receivePlacement();
     }
 
     async placeCommand(position: Vec2, orientation: Orientation, word: string, indexPlayer = PLAYER_AI_INDEX): Promise<boolean> {
@@ -112,8 +110,6 @@ export class PlaceLetterService {
             // Otherwise we remove the respective letter from the easel
             this.playerService.removeLetter(this.playerService.indexLetterInEasel(letter, 0, indexPlayer), indexPlayer);
         }
-        // Display the letter on the scrabble board grid
-        // this.gridService.drawLetter(this.gridService.gridContextLettersLayer, letter, position, this.playerService.fontSize);
         return true;
     }
 
@@ -130,7 +126,6 @@ export class PlaceLetterService {
 
     async validatePlacement(position: Vec2, orientation: Orientation, word: string, indexPlayer: number): Promise<boolean> {
         this.finalResult = await this.wordValidationService.validateAllWordsOnBoard(this.scrabbleBoard, this.isEaselSize, this.isRow);
-        console.log(this.finalResult.validation);
         if (this.finalResult.validation) {
             this.handleValidPlacement(this.finalResult, indexPlayer);
 
@@ -156,16 +151,12 @@ export class PlaceLetterService {
         let isPossible = false;
         if (this.isFirstRound) {
             if (this.isWordFitting(position, orientation, word)) {
-                isPossible =
-                    // this.isFirstWordValid(position, orientation, word) && // If the 1st word is placed onto the central position
-                    this.isWordValid(position, orientation, word, indexPlayer); // If the letters of the word are in the easel or the scrabble board
+                isPossible = this.isWordValid(position, orientation, word, indexPlayer); // If the letters of the word are in the easel or the scrabble board
                 this.isFirstRound = false;
             }
         } else {
             if (this.isWordFitting(position, orientation, word)) {
-                console.log(word);
                 isPossible = this.isWordTouchingOthers(position, orientation, word); // If the word is in contact with other letters on the board
-                // this.isWordValid(position, orientation, word, indexPlayer) && // If the letters of the word are in the easel or the scrabble board
             }
         }
         return isPossible;
@@ -189,12 +180,6 @@ export class PlaceLetterService {
         for (const letter of word) {
             isLetterExisting = this.isLetterOnBoard(currentPosition, letter);
             this.goToNextPosition(currentPosition, orientation);
-
-            // If the letter isn't on the board, we look into the easel, else we cannot place the word
-            // if (!isLetterExisting) {
-            //     isLetterExisting = this.placementsService.isLetterInEasel(letter, indexPlayer, indexLetters);
-            //     if (!isLetterExisting) return false;
-            // }
         }
         return true;
     }
@@ -227,21 +212,6 @@ export class PlaceLetterService {
         const isInBounds = position.x >= 0 && position.y >= 0 && position.x < BOARD_ROWS && position.y < BOARD_COLUMNS;
         return isInBounds ? scrabbleBoard[position.y][position.x] !== '' : false;
     }
-
-    // ngOnDestroy() {
-    //     this.isFirstRound = true;
-    //     this.scrabbleBoard = [];
-    //     this.validLetters = [];
-    //     this.isEaselSize = false;
-    //     this.numLettersUsedFromEasel = 0;
-    //     this.isRow = false;
-    //     for (let i = 0; i < BOARD_ROWS; i++) {
-    //         this.scrabbleBoard[i] = [];
-    //         for (let j = 0; j < BOARD_COLUMNS; j++) {
-    //             this.scrabbleBoard[i][j] = '';
-    //         }
-    //     }
-    // }
 
     private isLetterOnBoard(position: Vec2, letter: string): boolean {
         return letter.toUpperCase() === this.scrabbleBoard[position.y][position.x].toUpperCase();

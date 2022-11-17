@@ -20,7 +20,6 @@ import { Letter } from '@common/letter';
 export class LetterEaselComponent implements OnInit {
     @ViewChild('easel') easel: ElementRef;
 
-    letterEaselTab: Letter[] = [];
     indexOfLetterToSwap: number[];
 
     constructor(
@@ -40,7 +39,7 @@ export class LetterEaselComponent implements OnInit {
     clickEvent(event: MouseEvent): void {
         if (this.easel.nativeElement.contains(event.target)) return;
         // Disable all easel selections made when a click occurs outside the easel
-        for (const letterEasel of this.letterEaselTab) {
+        for (const letterEasel of this.playerService.currentPlayer.letterTable) {
             letterEasel.isSelectedForSwap = false;
             letterEasel.isSelectedForManipulation = false;
             this.manipulateService.usedLetters.fill(false, 0, this.manipulateService.usedLetters.length);
@@ -57,15 +56,13 @@ export class LetterEaselComponent implements OnInit {
 
     @HostListener('document:wheel', ['$event'])
     onMouseWheelTick(event: WheelEvent): void {
-        if (this.letterEaselTab.some((letter) => letter.isSelectedForManipulation)) {
+        if (this.playerService.currentPlayer.letterTable.some((letter) => letter.isSelectedForManipulation)) {
             this.manipulateService.onMouseWheelTick(event);
         }
     }
 
     ngOnInit(): void {
-        this.playerService.bindUpdateEasel(this.update.bind(this));
-        this.update();
-        this.manipulateService.sendEasel(this.letterEaselTab);
+        this.manipulateService.sendEasel(this.playerService.currentPlayer.letterTable);
         this.indexOfLetterToSwap = [];
     }
 
@@ -90,9 +87,9 @@ export class LetterEaselComponent implements OnInit {
     swap(): void {
         let lettersToSwap = '';
         this.indexOfLetterToSwap = [];
-        for (let i = 0; i < this.letterEaselTab.length; i++) {
-            if (this.letterEaselTab[i].isSelectedForSwap) {
-                lettersToSwap += this.letterEaselTab[i].value.toLowerCase();
+        for (let i = 0; i < this.playerService.currentPlayer.letterTable.length; i++) {
+            if (this.playerService.currentPlayer.letterTable[i].isSelectedForSwap) {
+                lettersToSwap += this.playerService.currentPlayer.letterTable[i].value.toLowerCase();
                 this.indexOfLetterToSwap.push(i);
             }
         }
@@ -105,7 +102,7 @@ export class LetterEaselComponent implements OnInit {
     }
 
     cancelSelection(): void {
-        for (const letter of this.letterEaselTab) {
+        for (const letter of this.playerService.currentPlayer.letterTable) {
             letter.isSelectedForSwap = false;
             letter.isSelectedForManipulation = false;
         }
@@ -120,7 +117,7 @@ export class LetterEaselComponent implements OnInit {
         if (this.letterService.reserveSize < EASEL_SIZE) return isButtonActive;
 
         // Activated if at least one letter is selected to swap
-        for (const letter of this.letterEaselTab) {
+        for (const letter of this.playerService.currentPlayer.letterTable) {
             if (letter.isSelectedForSwap) isButtonActive = true;
         }
 
@@ -129,14 +126,13 @@ export class LetterEaselComponent implements OnInit {
 
     isCancelButtonActive(): boolean {
         // Activated if at least one letter is selected to swap or to manipulate
-        for (const letter of this.letterEaselTab) {
+        for (const letter of this.playerService.currentPlayer.letterTable) {
             if (letter.isSelectedForSwap || letter.isSelectedForManipulation) return true;
         }
         return false;
     }
 
     isDragged(letter: Letter) {
-        console.log('start');
         this.boardHandlerService.isDragged = true;
         this.boardHandlerService.currentDraggedLetter = letter;
     }
@@ -144,16 +140,11 @@ export class LetterEaselComponent implements OnInit {
     private handleSwapSelection(indexLetter: number): void {
         this.manipulateService.unselectManipulation();
         // Unselect swap
-        console.log(indexLetter);
-        console.log(this.letterEaselTab[indexLetter].value);
-        if (this.letterEaselTab[indexLetter].isSelectedForSwap) this.letterEaselTab[indexLetter].isSelectedForSwap = false;
+        if (this.playerService.currentPlayer.letterTable[indexLetter].isSelectedForSwap)
+            this.playerService.currentPlayer.letterTable[indexLetter].isSelectedForSwap = false;
         // Select to swap if the letter is not already selected for manipulation
-        else if (!this.letterEaselTab[indexLetter].isSelectedForManipulation) {
-            this.letterEaselTab[indexLetter].isSelectedForSwap = true;
-            console.log('swap');
+        else if (!this.playerService.currentPlayer.letterTable[indexLetter].isSelectedForManipulation) {
+            this.playerService.currentPlayer.letterTable[indexLetter].isSelectedForSwap = true;
         }
-    }
-    private update(): void {
-        this.letterEaselTab = this.playerService.getEasel();
     }
 }
