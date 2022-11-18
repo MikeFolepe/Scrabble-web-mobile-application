@@ -58,7 +58,7 @@ export class BoardHandlerService {
                 break;
             }
             case 'Enter': {
-                if (this.word.length) {
+                if (this.word.length || this.isDragActivated) {
                     if (this.playerService.currentPlayer.isTurn) {
                         this.confirmPlacement();
                         break;
@@ -102,8 +102,16 @@ export class BoardHandlerService {
             this.playerService.removeLetter(this.currentDraggedLetterIndex);
         }
         // this.placeLetterService.placeLetter(position, letter.value, Orientation.Horizontal, this.word.length);
-        this.word += letter.value;
+        position.word = letter.value;
         this.dragWord.push(position);
+        // eslint-disable-next-line @typescript-eslint/prefer-for-of
+        this.dragWord.sort((a, b) => {
+            if (a.x - b.x === 0) {
+                return a.y - b.y;
+            } else {
+                return a.x - b.x;
+            }
+        });
         this.currentCase = position;
     }
 
@@ -148,10 +156,19 @@ export class BoardHandlerService {
         // Validation of the placement
         if (this.isDragActivated) {
             // verify if each letter is correctly placed
-            for (let i = 0; i < this.word.length; ++i) {
-                await this.placeLetterService.placeCommand(this.dragWord[i], this.orientation, this.word[i]);
+            if (this.dragWord[0].x === this.dragWord[1].x) {
+                this.orientation = Orientation.Vertical;
+            } else {
+                this.orientation = Orientation.Horizontal;
             }
+            let myWord = '';
+            for (const i of this.dragWord) {
+                myWord += i.word;
+            }
+            const pos = this.dragWord[0];
+            await this.placeLetterService.placeCommand(pos, this.orientation, myWord, this.dragWord);
         } else await this.placeLetterService.validateKeyboardPlacement(this.firstCase, this.orientation, this.word);
+        alert(this.dragWord);
         this.word = '';
         this.placedLetters = [];
         this.dragWord = [];
@@ -192,7 +209,6 @@ export class BoardHandlerService {
 
     private removePlacedLetter(): void {
         const letterToRemove = this.word[this.word.length - 1];
-        console.log(letterToRemove);
         // Verify that letterToRemove isn't undefined
         if (letterToRemove) {
             this.word = this.word.slice(0, LAST_INDEX);

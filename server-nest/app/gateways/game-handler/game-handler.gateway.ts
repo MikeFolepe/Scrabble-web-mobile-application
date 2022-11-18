@@ -192,6 +192,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
         @MessageBody() roomId: string,
         @MessageBody() player: string,
     ) {
+        console.log(roomId[2]);
         const room = this.roomManagerService.find(roomId[6]);
         const validationResult = await room.wordValidation.validateAllWordsOnBoard(JSON.parse(board[5]), isEaselSize[4], isRow[3]);
         const playerReceived = JSON.parse(player[7]);

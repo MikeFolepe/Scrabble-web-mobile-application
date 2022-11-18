@@ -89,7 +89,7 @@ export class GridService implements OnDestroy {
         );
     }
 
-    eraseLetter(context: CanvasRenderingContext2D, positionTab: Vec2): void {
+    async eraseLetter(context: CanvasRenderingContext2D, positionTab: Vec2): Promise<void> {
         const gridPosition = this.positionTabToPositionGrid(positionTab.x, positionTab.y);
         context.clearRect(gridPosition.x, gridPosition.y, GRID_CASE_SIZE, GRID_CASE_SIZE);
     }
