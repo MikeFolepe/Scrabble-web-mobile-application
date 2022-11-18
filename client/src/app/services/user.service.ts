@@ -24,7 +24,7 @@ export class UserService {
   }
 
   private addUser(user: User) : void {
-    this.communicationService.addNewUserToDB(user).subscribe((userFromDB: User) => {
+    this.communicationService.addNewUserToDB(user).subscribe(() => {
         this.administratorService.displayMessage('Utilisateur ajouté');
     });
   }
