@@ -83,26 +83,16 @@ export class BoardHandlerService {
     }
 
     placeDroppedLetter(event: MouseEvent, letter: Letter): void {
-        // if(this.playerService.getEasel().length === 6){}
-        // const caseClicked: Vec2 = this.calculateFirstCasePosition(event);
-        // if (!this.isCasePositionValid(caseClicked) || !this.playerService.currentPlayer.isTurn) return;
-        // this.selectStartingCase(caseClicked);
-        // this.placeLetter(letter.value);
-        // switch (this.word.length) {
-        //     case 1:
-        // }
         this.isDragActivated = true;
         const position: Vec2 = {
             x: Math.floor((event.offsetX - GRID_CASE_SIZE) / GRID_CASE_SIZE),
             y: Math.floor((event.offsetY - GRID_CASE_SIZE) / GRID_CASE_SIZE),
         };
         this.placeLetterService.placeLetter(position, letter.value, Orientation.Horizontal, this.word.length);
-        this.word += letter.value;
-        this.dragWord.push(position);
-        this.currentCase = position;
-        // faire un switch case pour si c'Est la premiere lettre ou non
-        // faire les vérifications nécessaires (est ce possible de jouer à cette case)
-        // si la verification passe jouer et incrémenter this.word
+        this.placeLetterService.placeCommand(position, this.orientation, letter.value);
+        // this.word += letter.value;
+        // this.dragWord.push(position);
+        // this.currentCase = position;
     }
 
     mouseHitDetect(event: MouseEvent): void {

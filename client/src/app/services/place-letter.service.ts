@@ -90,6 +90,42 @@ export class PlaceLetterService implements OnDestroy {
         return true;
     }
 
+    async placeCommand(position: Vec2, orientation: Orientation, word: string): Promise<void> {
+        const currentPosition: Vec2 = { x: position.x, y: position.y };
+        this.startPosition = position;
+        this.orientation = orientation;
+        this.word = word;
+        this.isRow = orientation === Orientation.Horizontal;
+        this.validLetters = [];
+
+        // Remove accents from the word to place
+        const wordNoAccents = word.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        // Reset the array containing the valid letters by making them all valid
+        for (let i = 0; i < word.length; i++) this.validLetters[i] = true;
+        // Reset the number of letters used from the easel for next placement
+        this.numLettersUsedFromEasel = 0;
+
+        if (!this.isPossible(position, orientation, wordNoAccents)) {
+            // this.sendMessageService.displayMessageByType('ERREUR : Le placement est invalide', MessageType.Error);
+            return;
+        }
+
+        // Placing all letters of the word
+        for (let i = 0; i < wordNoAccents.length; i++) {
+            if (!this.placeLetter(currentPosition, wordNoAccents[i], orientation, i)) {
+                // If the placement of one letter is invalid, we erase all letters placed
+                this.handleInvalidPlacement(position, orientation, wordNoAccents);
+                // this.sendMessageService.displayMessageByType('ERREUR : Le placement est invalide', MessageType.Error);
+                return;
+            }
+            this.placementsService.goToNextPosition(currentPosition, orientation);
+        }
+        if (this.numLettersUsedFromEasel === EASEL_SIZE) this.isEaselSize = true;
+
+        // Validation of the placement
+        await this.validateKeyboardPlacement(position, orientation, wordNoAccents);
+    }
+
     async validateKeyboardPlacement(position: Vec2, orientation: Orientation, word: string, dragWord?: Vec2[]): Promise<void> {
         this.startPosition = position;
         this.orientation = orientation;
@@ -162,19 +198,15 @@ export class PlaceLetterService implements OnDestroy {
         this.sendMessageService.displayMessageByType('ERREUR : Le placement est invalide', MessageType.Error);
     }
 
-    handleInvalidPlacement(position: Vec2, orientation: Orientation, word: string, dragWord?: Vec2[]): void {
-        setTimeout(() => {
-            for (let i = 0; i < word.length; ++i) {
-                if (dragWord !== undefined && dragWord[i].x !== undefined && dragWord[i].y !== undefined) {
-                    const currentPosition = { x: dragWord[i].x, y: dragWord[i].y };
-                    for (let j = 0; i < this.validLetters.length; i++) {
-                        if (this.validLetters[j] === undefined) this.validLetters[j] = true;
-                        // If the word is invalid, we remove only the letters that we just placed on the grid and add them back to the easel.
-                        if (!this.validLetters[j]) this.removePlacedLetter(currentPosition, word[j]);
-                    }
-                }
-            }
-        }, THREE_SECONDS_DELAY); // Waiting 3 seconds to erase the letters on the grid
+    handleInvalidPlacement(position: Vec2, orientation: Orientation, word: string): void {
+        const currentPosition = { x: position.x, y: position.y };
+        for (let i = 0; i < this.validLetters.length; i++) {
+            if (this.validLetters[i] === undefined) this.validLetters[i] = true;
+            // If the word is invalid, we remove only the letters that we just placed on the grid and add them back to the easel.
+            if (!this.validLetters[i]) this.removePlacedLetter(currentPosition, word[i]);
+
+            this.placementsService.goToNextPosition(currentPosition, orientation);
+        }
     }
 
     handleValidPlacement(): void {
@@ -191,18 +223,18 @@ export class PlaceLetterService implements OnDestroy {
         this.playerService.addLetterToEasel(letter);
     }
 
-    isPossible(position: Vec2, orientation: Orientation, word: string, indexPlayer: number): boolean {
+    isPossible(position: Vec2, orientation: Orientation, word: string): boolean {
         let isPossible = false;
         if (this.isFirstRound) {
             if (this.isWordFitting(position, orientation, word)) {
                 isPossible =
                     this.placementsService.isFirstWordValid(position, orientation, word) && // If the 1st word is placed onto the central position
-                    this.isWordValid(position, orientation, word, indexPlayer); // If the letters of the word are in the easel or the scrabble board
+                    this.isWordValid(position, orientation, word); // If the letters of the word are in the easel or the scrabble board
             }
         } else {
             if (this.isWordFitting(position, orientation, word)) {
                 isPossible =
-                    this.isWordValid(position, orientation, word, indexPlayer) && // If the letters of the word are in the easel or the scrabble board
+                    this.isWordValid(position, orientation, word) && // If the letters of the word are in the easel or the scrabble board
                     this.isWordTouchingOthers(position, orientation, word); // If the word is in contact with other letters on the board
             }
         }
@@ -218,7 +250,7 @@ export class PlaceLetterService implements OnDestroy {
         return true;
     }
 
-    isWordValid(position: Vec2, orientation: Orientation, word: string, indexPlayer: number): boolean {
+    isWordValid(position: Vec2, orientation: Orientation, word: string): boolean {
         let isLetterExisting = false;
         // Array containing indexes of the easel that are used by the word we want to place.
         const indexLetters: number[] = [];
@@ -230,7 +262,7 @@ export class PlaceLetterService implements OnDestroy {
 
             // If the letter isn't on the board, we look into the easel, else we cannot place the word
             if (!isLetterExisting) {
-                isLetterExisting = this.placementsService.isLetterInEasel(letter, indexPlayer, indexLetters);
+                isLetterExisting = this.placementsService.isLetterInEasel(letter, indexLetters);
                 if (!isLetterExisting) return false;
             }
         }
