@@ -39,6 +39,8 @@
 
         <item name="borderColor">@color/black</item>
         <item name="borderColorSecondary">@color/white</item>
+        <item name="lightBorderColor">@color/white</item>
+
 
         <item name="appBarLayoutStyle">@color/orange</item>
         <item name="appBarTitleColor">@color/white</item>

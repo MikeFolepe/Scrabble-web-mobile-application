@@ -6,6 +6,7 @@ import { ChatRoomMessage } from '@common/chatRoomMessage';
 import { DELAY_BEFORE_PLAYING, ONE_SECOND_DELAY, THREE_SECONDS_DELAY } from '@common/constants';
 import { GameSettings } from '@common/game-settings';
 import { User } from '@common/user';
+import { Friend } from '@common/friend';
 import { Vec2 } from '@common/vec2';
 import { Logger } from '@nestjs/common';
 import { ConnectedSocket, MessageBody, OnGatewayConnection, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
@@ -208,6 +209,15 @@ export class GameHandlerGateway implements OnGatewayConnection {
         if (currentUser) {
             currentUser.socketId = user.socketId;
         }
+    }
+
+    @SubscribeMessage('sendActiveUsers')
+    sendActiveUsers(@ConnectedSocket() socket, @MessageBody() senderName) {
+        const simplifiedUsers: Friend[] = [];
+        for (const user of this.userService.activeUsers) {
+            if (senderName !== user.pseudonym) simplifiedUsers.push(new Friend(user.pseudonym, '', 0));
+        }
+        socket.emit('activeUsers', simplifiedUsers);
     }
 
     // onEndGameByGiveUp(socket: Socket): void {

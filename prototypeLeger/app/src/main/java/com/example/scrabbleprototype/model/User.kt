@@ -11,4 +11,6 @@ class User(var ipAddress: String, var pseudonym: String, var socketId: String?, 
     var email: String = "test@gmail.com"
     @JsonIgnore
     var avatar: String = ""
+    @JsonIgnore
+    val friendsList = arrayListOf<Friend>()
 }

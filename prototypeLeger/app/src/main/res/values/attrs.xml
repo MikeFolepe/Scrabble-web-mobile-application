@@ -3,6 +3,7 @@
 
     <attr name="borderColor" format="reference"/>
     <attr name="borderColorSecondary" format="reference"/>
+    <attr name="lightBorderColor" format="reference"/>
 
     <attr name="textPrimary" format="reference"/>
     <attr name="backgroundTextColor" format="reference"/>
