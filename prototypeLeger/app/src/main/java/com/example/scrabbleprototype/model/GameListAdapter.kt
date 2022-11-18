@@ -70,10 +70,10 @@ class GameListAdapter(private var gameList: ArrayList<Room>) :
             gameStatus.text = "En attente"
             gameStatus.setTextColor(ContextCompat.getColor(gameStatus.context, R.color.lime_green))
         }
-        if(gameList[position].gameSettings.password == "" && gameList[position].gameSettings.type == RoomType.public) {
+        if(gameList[position].gameSettings.password == "" && gameList[position].gameSettings.type == RoomType.public.ordinal) {
             roomType.text = "Public"
             roomType.setTextColor(ContextCompat.getColor(roomType.context, R.color.green))
-        } else if(gameList[position].gameSettings.type == RoomType.private) {
+        } else if(gameList[position].gameSettings.type == RoomType.private.ordinal) {
             roomType.text = "Privée"
             roomType.setTextColor(ContextCompat.getColor(roomType.context, R.color.red))
         }

@@ -61,7 +61,7 @@ class JoinGameActivity : AppCompatActivity() {
         gameListAdapter.updateData(rooms)
 
         gameListAdapter.onJoinGame = { position ->
-            if (rooms[position].state == State.Playing && rooms[position].gameSettings.type == RoomType.public) {
+            if (rooms[position].state == State.Playing && rooms[position].gameSettings.type == RoomType.public.ordinal) {
                 Users.isObserver = true;
             }
             joinGame(position, Users.isObserver)
@@ -104,7 +104,7 @@ class JoinGameActivity : AppCompatActivity() {
     private fun joinGame(position: Int, isObserver: Boolean) {
         Log.d("room", rooms.toString())
         val currentRoom = rooms[position]
-        if(currentRoom.gameSettings.type === RoomType.private){
+        if(currentRoom.gameSettings.type == RoomType.private.ordinal) {
             socket.emit("sendRequestToCreator", Users.currentUser.pseudonym, currentRoom.id)
             socketHandler.roomId = rooms[position].id
             return;
@@ -189,7 +189,7 @@ class JoinGameActivity : AppCompatActivity() {
         socket.on("leaveToHome") {
             runOnUiThread {
                 Toast.makeText(this, "Le createur a supprimé la partie", Toast.LENGTH_LONG).show()
-                startActivity(Intent(this, HomeMenuActivity::class.java))
+                startActivity(Intent(this, MainMenuActivity::class.java))
             }
         }
     }

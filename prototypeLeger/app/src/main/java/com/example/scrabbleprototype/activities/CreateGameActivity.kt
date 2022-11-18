@@ -42,7 +42,7 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
     }
     var dicoFileName= ""
     var currentRoom = CurrentRoom;
-    var gameSetting: GameSettings = GameSettings(Users.currentUser.pseudonym, StartingPlayer.Player1, "00", "00", AiType.beginner, "", RoomType.public)
+    var gameSetting: GameSettings = GameSettings(Users.currentUser.pseudonym, StartingPlayer.Player1, "00", "00", AiType.beginner, "", RoomType.public.ordinal)
     val minutes = arrayListOf("00", "01", "02", "03")
     val seconds = arrayListOf("00", "30")
     var dictionaries = listOf<Dictionary>()
@@ -179,7 +179,7 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
         findViewById<RadioGroup>(R.id.radio_group).setOnCheckedChangeListener { group, checkedId ->
             val radio: RadioButton = findViewById(checkedId)
             if (radio.text == "Public") {
-                gameSetting.type = RoomType.public;
+                gameSetting.type = RoomType.public.ordinal
                 val builder = AlertDialog.Builder(this)
                 builder.setMessage("Voulez vous protégez la partie en ajoutant un mot de passe");
                 // Set Alert Title
@@ -219,7 +219,7 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
                 // Show the Alert Dialog box
                 alertDialog.show()
             } else {
-                gameSetting.type = RoomType.private;
+                gameSetting.type = RoomType.private.ordinal
             }
             Log.d("type:", gameSetting.type.toString())
         }
@@ -232,7 +232,7 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
         }
         //gameSetting.dictionary = dictionaries.find { it.title == dicoFileName }!!.fileName
         gameSetting.dictionary = dictionaries[0].fileName
-        Log.d("game" , gameSetting.toString())
+        Log.d("game" , gameSetting.password)
         socket.emit("createRoom", JSONObject(Json.encodeToString(gameSetting)))
     }
 

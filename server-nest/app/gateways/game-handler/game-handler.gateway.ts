@@ -69,6 +69,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
 
     @SubscribeMessage('createRoom')
     createNewRoom(@ConnectedSocket() socket, @MessageBody() gameSettings: GameSettings) {
+        if (gameSettings.password === undefined) gameSettings.password = '';
         this.logger.log(gameSettings);
         const roomId = this.roomManagerService.createRoomId(gameSettings.creatorName, socket.id);
         const createdRoom = this.roomManagerService.createRoom(socket.id, roomId, gameSettings);
