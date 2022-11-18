@@ -40,17 +40,16 @@ export class CommunicationService {
 
     }
 
-    checkPassword(pseudonym : string, password : string): Promise<Boolean> {
-        return this.http.get<Boolean>(`http://localhost:3000/api/user/checkPassword/${pseudonym}/${password}`).toPromise();
+    findUserInDb(pseudonym : string, password : string): Promise<boolean> {
+        return this.http.get<boolean>(`http://localhost:3000/api/user/findUserInDb/${pseudonym}/${password}`).toPromise();
     }
 
-    checkPseudonym(pseudonym: string): Promise<Boolean> {
-        return this.http.get<Boolean>(`http://localhost:3000/api/user/checkPseudonym/${pseudonym}`).toPromise();
+    checkPseudonym(pseudonym: string): Promise<boolean> {
+        return this.http.get<boolean>(`http://localhost:3000/api/user/checkPseudonym/${pseudonym}`).toPromise();
     }
     
     //ICIIIII
     addNewUserToDB(userData: User): Observable<User> {
-        console.log("test helloooooo hey ")
         return this.http.post<User>(`http://localhost:3000/api/user/users`, userData);
     }
 

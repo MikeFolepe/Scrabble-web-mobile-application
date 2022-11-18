@@ -33,7 +33,6 @@ import { PrototypeChatBoxComponent } from './pages/prototype-chat-box/prototype-
         PageNotFoundComponent,
         WaitingRoomComponent,
         JoinRoomComponent,
-        // ChatroomsComponent,
         AdminPageComponent,
         EditDictionaryDialogComponent,
         BestScoresComponent,

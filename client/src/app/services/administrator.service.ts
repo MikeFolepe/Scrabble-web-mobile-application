@@ -9,7 +9,6 @@ import { CommunicationService } from '@app/services/communication.service';
 import { AiPlayer, AiPlayerDB, AiType } from '@common/ai-name';
 import { Dictionary } from '@common/dictionary';
 import dictionarySchema from '@common/dictionarySchema.json';
-import { User } from '@common/user';
 import Ajv from 'ajv';
 import { saveAs } from 'file-saver';
 import { ErrorHandlerService } from './error-handler.service';
@@ -20,7 +19,6 @@ import { ErrorHandlerService } from './error-handler.service';
 export class AdministratorService {
     aiBeginner: AiPlayerDB[];
     aiExpert: AiPlayerDB[];
-    user: User[];
     dictionaries: Dictionary[] = [];
     currentDictionary: Dictionary;
     fileInput: ElementRef;
@@ -35,7 +33,6 @@ export class AdministratorService {
         public errorHandler: ErrorHandlerService,
     ) {
         this.ajv = new Ajv();
-        this.user = [];
         this.file = null;
         this.isResetting = false;
     }
@@ -56,29 +53,10 @@ export class AdministratorService {
         );
     }
 
-    initializeUsers() {
-        this.communicationService.getUsers().subscribe((users: User[]) => {
-            this.user = users;
-            console.log(this.user);
-        });
-    }
-
     initializeDictionaries(): void {
         this.communicationService.getDictionaries().subscribe((dictionariesServer: Dictionary[]) => {
             this.dictionaries = dictionariesServer;
         });
-    }
-
-    addUserToDatabase(user: User) {
-        this.addUser(user);
-    }
-
-    async checkPassword(pseudonym: string, password: string) {
-        return this.communicationService.checkPassword(pseudonym, password);
-    }
-
-    async checkPseudonym(pseudonym: string) {
-        return this.communicationService.checkPseudonym(pseudonym);
     }
 
     addAiToDatabase(aiType: AiType, isNewAi: boolean, id: string = '', isDefault = false): void {
@@ -107,12 +85,6 @@ export class AdministratorService {
             }
         });
     }
-
-    // addNewUser(user : User) {
-    //     this.communicationService.addNewUserToDB(user).subscribe(
-    //     );
-
-    // }
 
     deleteAiPlayer(aiPlayer: AiPlayerDB, aiType: AiType): void {
         if (aiPlayer.isDefault) {
@@ -292,12 +264,7 @@ export class AdministratorService {
         );
     }
 
-    private addUser(user: User): void {
-        this.communicationService.addNewUserToDB(user).subscribe((userFromDB: User) => {
-            this.user.push(userFromDB);
-            this.displayMessage('Utilisateur ajouté');
-        });
-    }
+
 
     private updateAiPlayer(id: string, aiPlayer: AiPlayer, aiType: AiType): void {
         this.communicationService.updateAiPlayer(id, aiPlayer, aiType).subscribe(
@@ -315,7 +282,7 @@ export class AdministratorService {
         );
     }
 
-    private displayMessage(message: string): void {
+    displayMessage(message: string): void {
         if (this.isResetting) return;
         this.snackBar.open(message, 'OK', {
             duration: ERROR_MESSAGE_DELAY,

@@ -1,5 +1,4 @@
 export class User {
-    _id?: string;
     pseudonym: string;
     ipAddress: string;
     socketId?: string;

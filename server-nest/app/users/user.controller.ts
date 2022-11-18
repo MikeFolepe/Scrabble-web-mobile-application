@@ -1,5 +1,5 @@
 import { User } from '@common/user';
-import { Body, Controller, Get, Logger, Post, Req } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req } from '@nestjs/common';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -12,17 +12,18 @@ export class UserController {
         const bcrypt = require('bcrypt');
         const password = await bcrypt.hash(user.password, salt);
 
-        const generatedId = await this.userService.insertUser(user.avatar, user.pseudonym, password, user.email);
-        return { id: generatedId, ...user };
+        await this.userService.insertUser(user.avatar, user.pseudonym, password, user.email);
+        return { ...user };
     }
 
     // check if the password is correct.
-    @Get('/checkPassword/:pseudonym/:password')
-    async checkPassword(@Req() req) {
+    @Get('/findUserInDb/:pseudonym/:password')
+    async findUserInDb(@Req() req) {
         const pseudonym = req.params.pseudonym;
         const password = req.params.password;
         const bcrypt = require('bcrypt');
         const userFound = await this.userService.getSingleUser(pseudonym);
+        if(!userFound) return false;
         const hashed_password = userFound.password;
         const passwordMatch = await bcrypt.compare(password, hashed_password);
         return passwordMatch;
@@ -30,11 +31,8 @@ export class UserController {
 
     @Get('/checkPseudonym/:pseudonym')
     async checkPseudonym(@Req() req) {
-        console.log('requete recu');
         const pseudonym = req.params.pseudonym;
-        console.log(pseudonym);
         const userFound = await this.userService.getSingleUser(pseudonym);
-        Logger.log(userFound);
         return Boolean(userFound);
     }
 

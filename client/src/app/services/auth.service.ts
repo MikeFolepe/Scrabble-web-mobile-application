@@ -37,9 +37,6 @@ export class AuthService {
                 if (newUser) {
                     this.currentUser = newUser;
                     this.clientSocketService.socket = io(this.serverUrl);
-                    this.clientSocketService.socket.on(ChatEvents.SocketId, (socketId: string) => {
-                        this.currentUser.socketId = socketId;
-                    });
                     this.clientSocketService.socket.connect();
 
                     this.clientSocketService.socket.emit(ChatEvents.JoinRoom);

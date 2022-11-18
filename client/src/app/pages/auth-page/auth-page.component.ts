@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { AvatarChoiceComponent } from '@app/modules/game-view/avatar-choice/avatar-choice.component';
-import { AdministratorService } from '@app/services/administrator.service';
 import { AuthService } from '@app/services/auth.service';
+import { UserService } from '@app/services/user.service';
 import { User } from '@common/user';
 
 @Component({
@@ -29,7 +29,7 @@ export class AuthPageComponent implements OnInit {
     signUpError = '';
     // choseAvatar = false;
     constructor(
-        private administratorService: AdministratorService,
+        public userService: UserService,
         public authService: AuthService,
         private formBuilder: FormBuilder,
         public avatarChoiceDialog: MatDialog,
@@ -41,13 +41,11 @@ export class AuthPageComponent implements OnInit {
             password: ['', Validators.required],
         });
         this.createAccountForm = this.formBuilder.group({
-            // avatar : ['', Validators.required],
             pseudonym: ['', Validators.required],
             email: ['', Validators.required],
             password: ['', Validators.required],
             confirmPassword: ['', Validators.required],
         });
-        this.administratorService.initializeUsers();
     }
 
     get formControls() {
@@ -65,28 +63,14 @@ export class AuthPageComponent implements OnInit {
             return;
         }
 
-        const userFound: Boolean = await this.findUser();
+        const userFound: boolean = await this.userService.findUserInDb(this.pseudonymValue, this.passwordValue);
 
         if (!userFound) {
             this.errorMessage = 'Le pseudonyme ou le mot de passe entré est incorrect';
             return;
         }
 
-       
         this.authService.signIn(this.authForm.value);
-        
-    }
-
-    invalidPassword() {
-        if (this.passwordValue === '') {
-            return false;
-        }
-        // regex that checks if password contains at least 8 characters, one uppercase, one lowercase, one number and one special character
-        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-        if (this.passwordValue.match(regex)) {
-            return false;
-        }
-        return true;
     }
 
     async signUp() {
@@ -98,7 +82,7 @@ export class AuthPageComponent implements OnInit {
             return;
         }
 
-        const pseudonymExists : Boolean = await this.administratorService.checkPseudonym(this.pseudonymValue);
+        const pseudonymExists : boolean = await this.userService.checkIfPseudonymExists(this.pseudonymValue);
 
         if (pseudonymExists) {
             this.signUpError = 'Ce pseudonyme est déjà utilisé';
@@ -111,9 +95,8 @@ export class AuthPageComponent implements OnInit {
             return;
         }
 
-        
         const user = new User(this.avatarValue, this.pseudonymValue, this.passwordValue, this.emailValue, false, '');
-        this.administratorService.addUserToDatabase(user);
+        this.userService.addUserToDatabase(user);
         this.pseudonymValue = '';
         this.passwordValue = '';
         this.confirmPasswordValue = '';
@@ -122,18 +105,20 @@ export class AuthPageComponent implements OnInit {
         this.hasAccount = true;
     }
 
-    openDialog() {
-        this.avatarChoiceDialog.open(AvatarChoiceComponent, { disableClose: true });
+    invalidPassword() {
+        if (this.passwordValue === '') {
+            return false;
+        }
+
+        //regex qui verifie qu'il y a au moins 8 caracteres, une majuscule, une minuscule, un chiffre et un caractere special
+        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        if (this.passwordValue.match(regex)) {
+            return false;
+        }
+        return true;
     }
 
-    private async findUser() {
-        for (const user of this.administratorService.user) {
-            if (user.pseudonym === this.pseudonymValue) {
-                if (await this.administratorService.checkPassword(this.pseudonymValue, this.passwordValue)) {
-                    return true;
-                }
-            }
-        }
-        return false;
+    openDialog() {
+        this.avatarChoiceDialog.open(AvatarChoiceComponent, { disableClose: true });
     }
 }

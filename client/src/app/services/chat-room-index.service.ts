@@ -16,6 +16,4 @@ export class ChatRoomIndexService {
         this.amountOfChatRooms = this.selectedChatRooms.length;
         this.chatRoomIndex = 0;
     }
-
-    ngOnInit() {}
 }

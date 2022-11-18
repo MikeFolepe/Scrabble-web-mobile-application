@@ -10,7 +10,7 @@ import { AuthService } from '@app/services/auth.service';
 export class AvatarChoiceComponent implements OnInit {
 
 
-  constructor(public addChatRoomDialogRef: MatDialogRef<AvatarChoiceComponent>, public authService : AuthService) { 
+  constructor(public avatarChoice: MatDialogRef<AvatarChoiceComponent>, public authService : AuthService) { 
   }
 
   ngOnInit(): void {
