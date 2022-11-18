@@ -11,19 +11,19 @@ export class UserService {
   constructor(private communicationService: CommunicationService, private administratorService: AdministratorService) { 
   }
 
-  addUserToDatabase(user: User) {
+  addUserToDatabase(user: User) : void {
     this.addUser(user);   
   }
 
-  async findUserInDb(pseudonym: string, password: string) {
+  async findUserInDb(pseudonym: string, password: string) : Promise<boolean> {
     return this.communicationService.findUserInDb(pseudonym, password);
   }
 
-  async checkIfPseudonymExists(pseudonym: string) {
+  async checkIfPseudonymExists(pseudonym: string) : Promise<boolean> {
       return this.communicationService.checkPseudonym(pseudonym);
   }
 
-  private addUser(user: User): void {
+  private addUser(user: User) : void {
     this.communicationService.addNewUserToDB(user).subscribe((userFromDB: User) => {
         this.administratorService.displayMessage('Utilisateur ajouté');
     });
