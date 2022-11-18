@@ -16,15 +16,16 @@ export class PlayerService {
     players: Player[];
     currentPlayer: Player;
     currentRoom: Room;
+    letterForDrag: Letter[];
 
     constructor(private clientSocketService: ClientSocketService) {
         this.currentPlayer = new Player('', []);
+        this.letterForDrag = [];
         this.fontSize = 14;
         this.players = [];
         this.getMyPlayer();
         // this.getAIs();
         this.updatePlayer();
-        this.getUpdateEasel();
         this.getPlayers();
         this.receiveSwap();
         this.clientSocketService.initialize();
@@ -80,6 +81,9 @@ export class PlayerService {
 
     removeLetter(indexToRemove: number): void {
         this.currentPlayer.letterTable.splice(indexToRemove, 1);
+    }
+    addLetterForDrag(indexToAdd: number) {
+        this.letterForDrag.push(this.currentPlayer.letterTable[indexToAdd]);
     }
     receiveSwap() {
         this.clientSocketService.socket.on('swapped', (easel: string) => {

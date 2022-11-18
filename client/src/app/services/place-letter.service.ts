@@ -105,20 +105,19 @@ export class PlaceLetterService implements OnDestroy {
         // Reset the number of letters used from the easel for next placement
         this.numLettersUsedFromEasel = 0;
 
-        if (!this.isPossible(position, orientation, wordNoAccents)) {
-            // this.sendMessageService.displayMessageByType('ERREUR : Le placement est invalide', MessageType.Error);
-            return;
-        }
-
         // Placing all letters of the word
         for (let i = 0; i < wordNoAccents.length; i++) {
+            if (!this.isPossible(position, orientation, wordNoAccents[i])) {
+                // this.sendMessageService.displayMessageByType('ERREUR : Le placement est invalide', MessageType.Error);
+                this.skipTurnService.switchTurn();
+                return;
+            }
             if (!this.placeLetter(currentPosition, wordNoAccents[i], orientation, i)) {
                 // If the placement of one letter is invalid, we erase all letters placed
                 this.handleInvalidPlacement(position, orientation, wordNoAccents);
                 // this.sendMessageService.displayMessageByType('ERREUR : Le placement est invalide', MessageType.Error);
                 return;
             }
-            this.placementsService.goToNextPosition(currentPosition, orientation);
         }
         if (this.numLettersUsedFromEasel === EASEL_SIZE) this.isEaselSize = true;
 

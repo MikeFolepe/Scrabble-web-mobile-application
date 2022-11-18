@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { EASEL_SIZE } from '@app/classes/constants';
 import { MessageType } from '@app/classes/enum';
 import { AuthService } from '@app/services/auth.service';
@@ -17,7 +17,7 @@ import { Letter } from '@common/letter';
     templateUrl: './letter-easel.component.html',
     styleUrls: ['./letter-easel.component.scss'],
 })
-export class LetterEaselComponent implements OnInit {
+export class LetterEaselComponent {
     @ViewChild('easel') easel: ElementRef;
 
     indexOfLetterToSwap: number[];
@@ -61,16 +61,16 @@ export class LetterEaselComponent implements OnInit {
         }
     }
 
-    ngOnInit(): void {
-        // this.playerService.bindUpdateEasel(this.update.bind(this));
-        // this.update();
-        this.manipulateService.sendEasel(this.letterEaselTab);
-        this.boardHandlerService.updateDrag.subscribe((isDragged) => {
-            if (isDragged) {
-                this.letterFromBoard.nativeElement.drag();
-            }
-        });
-    }
+    // ngOnInit(): void {
+    //     //     // this.playerService.bindUpdateEasel(this.update.bind(this));
+    //     //     // this.update();
+    //     //     this.manipulateService.sendEasel(this.letterEaselTab);
+    //     //     this.boardHandlerService.updateDrag.subscribe((isDragged) => {
+    //     //         if (isDragged) {
+    //     //             this.letterFromBoard.nativeElement.drag();
+    //     //         }
+    //     //     });
+    // }
 
     onDragEnd() {
         this.boardHandlerService.isDragged = true;
@@ -137,10 +137,11 @@ export class LetterEaselComponent implements OnInit {
         return false;
     }
 
-    isDragged(letter: Letter) {
+    isDragged(letter: Letter, index: number) {
         console.log('start');
         this.boardHandlerService.isDragged = false;
         this.boardHandlerService.currentDraggedLetter = letter;
+        this.boardHandlerService.currentDraggedLetterIndex = index;
     }
 
     private handleSwapSelection(indexLetter: number): void {
