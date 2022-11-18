@@ -1,21 +1,19 @@
 package com.example.scrabbleprototype.activities
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
-import android.widget.Button
-import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.navigation.NavigationView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import androidx.drawerlayout.widget.DrawerLayout
-import androidx.appcompat.app.AppCompatActivity
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.databinding.ActivityMainMenuBinding
+import com.example.scrabbleprototype.fragments.ChannelButtonsFragment
 import com.example.scrabbleprototype.objects.ThemeManager
+import com.google.android.material.navigation.NavigationView
 
 class MainMenuActivity : AppCompatActivity() {
 
@@ -26,6 +24,17 @@ class MainMenuActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         ThemeManager.setActivityTheme(this)
         setupDrawer()
+
+        if(savedInstanceState == null) {
+            setUpFragments()
+        }
+    }
+
+    private fun setUpFragments() {
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
+        fragmentTransaction.add(R.id.channel_buttons, ChannelButtonsFragment())
+        fragmentTransaction.addToBackStack(null)
+        fragmentTransaction.commit()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

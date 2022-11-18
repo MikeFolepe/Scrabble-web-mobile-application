@@ -3,13 +3,13 @@ package com.example.scrabbleprototype.activities
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
+import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.model.SocketHandler
@@ -18,22 +18,22 @@ import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.objects.Users
 import io.ktor.client.*
 import io.ktor.client.call.*
+import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import io.ktor.serialization.kotlinx.json.*
 import io.socket.client.Socket
 import kotlinx.coroutines.*
-import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONObject
-import java.lang.Exception
 import kotlin.coroutines.CoroutineContext
 
 
 class ConnectionActivity : AppCompatActivity(), CoroutineScope {
     val users = Users
+    val serverUrl = "http://ec2-15-222-249-18.ca-central-1.compute.amazonaws.com:3000"
     lateinit var client: HttpClient
     lateinit var chatSocket: Socket
 
@@ -56,8 +56,6 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
         connectionButton.setOnClickListener {
             onConnection()
         }
-        val serverIpText = findViewById<EditText>(R.id.server_ip)
-        serverIpText.setText(resources.getString(R.string.mobile_server_ip))
 
         client = HttpClient() {
             install(ContentNegotiation) {
@@ -83,36 +81,31 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
     fun onConnection() {
         val usernameInput = findViewById<EditText>(R.id.username);
         val username = usernameInput.text.toString()
-        val serverIpInput = findViewById<EditText>(R.id.server_ip)
-        val serverIp = resources.getString(R.string.http) + serverIpInput.text.toString()
-        Log.d("ipserver", serverIp)
-        val serverError = "Ce serveur est déconnecté"
+        //val serverUrl = "http://ec2-15-222-249-18.ca-central-1.compute.amazonaws.com:3000"
+        Log.d("urlServer", serverUrl)
+        val serverError = "Le serveur est déconnecté"
 
         if(username.isEmpty())  {
             usernameInput.error = "Le pseudonyme ne peut pas être vide"
             return
         }
-        if(serverIpInput.text.isEmpty()) {
-            serverIpInput.error = "Le IP du serveur ne peut pas être vide"
-            return
-        }
 
         //validate username and ip
         launch {
-            val user = User(serverIp, username, null, false)
+            val user = User(serverUrl, username, null, false)
 
             val response = postAuthentication(user)
             if(response != null) {
                 if (response.status == HttpStatusCode.OK) {
                     if (response.body()) {
                         users.currentUser = user
-                        joinChat(serverIp, user)
+                        joinChat(serverUrl, user)
                     } else {
                         usernameInput.error = "Cet utilisateur est déjà connecté"
                     }
-                } else if (response.status == HttpStatusCode.NotFound) serverIpInput.error = serverError
-                else serverIpInput.error = serverError
-            } else serverIpInput.error = serverError
+                } else if (response.status == HttpStatusCode.NotFound) usernameInput.error = serverError
+                else usernameInput.error = serverError
+            } else usernameInput.error = serverError
         }
     }
 
@@ -129,10 +122,10 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
         return response
     }
 
-    fun joinChat(serverIp: String, user: User) {
+    fun joinChat(serverUrl: String, user: User) {
         val intent = Intent(this, MainMenuActivity::class.java)
 
-        SocketHandler.setPlayerSocket(serverIp)
+        SocketHandler.setPlayerSocket(serverUrl)
         SocketHandler.establishConnection()
         chatSocket = SocketHandler.getPlayerSocket()
 
