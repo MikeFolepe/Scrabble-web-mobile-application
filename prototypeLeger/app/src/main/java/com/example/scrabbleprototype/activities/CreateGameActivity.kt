@@ -183,7 +183,7 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
                 val builder = AlertDialog.Builder(this)
                 builder.setMessage("Voulez vous protégez la partie en ajoutant un mot de passe");
                 // Set Alert Title
-                builder.setTitle("Mot de passe partie public");
+                builder.setTitle("Mot de passe partie publique");
 
                 // Set Cancelable false for when the user clicks on the outside the Dialog Box then it will remain show
                 builder.setCancelable(false);

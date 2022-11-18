@@ -48,7 +48,7 @@ class JoinGameActivity : AppCompatActivity() {
         setupGameList()
         receiveJoinDecision()
         sendObserverToGame()
-        handleDeletedGame()
+        // handleDeletedGame()
     }
 
     private fun setupGameList() {
@@ -185,7 +185,7 @@ class JoinGameActivity : AppCompatActivity() {
         }
     }
 
-    private fun handleDeletedGame() {
+   /* private fun handleDeletedGame() {
         socket.on("leaveToHome") {
             runOnUiThread {
                 Toast.makeText(this, "Le createur a supprimé la partie", Toast.LENGTH_LONG).show()
@@ -193,6 +193,8 @@ class JoinGameActivity : AppCompatActivity() {
             }
         }
     }
+
+    */
 
     private fun handleRoomUnavailability() {
         socket.on("roomAlreadyToken") {

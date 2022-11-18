@@ -105,6 +105,9 @@ export class WaitingRoomComponent implements OnInit {
         this.router.navigate(['solo-game-ai']);
     }
 
+    leaveGame(): void {
+        this.clientSocket.socket.emit('leaveGame', this.playerService.currentPlayer.name, this.clientSocket.currentRoom.id);
+    }
     private acceptNewPlayer(): void {
         this.clientSocket.socket.on('newRequest', (joiningUser: string, roomId: string) => {
             const joiningConfirmation = this.dialog.open(JoiningConfirmationDialogComponent, { disableClose: true });
@@ -114,10 +117,6 @@ export class WaitingRoomComponent implements OnInit {
             });
         });
     }
-
-    // leaveGame(): void {
-    //     this.clientSocket.socket.emit('leaveGame', this.pla)
-    // }
 
     private displayErrorMessage(message: string): void {
         this.errorMessage = message;

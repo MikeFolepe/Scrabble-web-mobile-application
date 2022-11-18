@@ -16,12 +16,15 @@ import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
+import com.example.scrabbleprototype.objects.Players
+import com.example.scrabbleprototype.objects.Users
 import org.w3c.dom.Text
 
 class GameListAdapter(private var gameList: ArrayList<Room>) :
     RecyclerView.Adapter<GameListAdapter.ViewHolder>() {
 
     var onJoinGame: ((position: Int) -> Unit)? = null
+    val currentUser = Users.currentUser
 
     /**
      * Provide a reference to the type of views that you are using
@@ -34,6 +37,9 @@ class GameListAdapter(private var gameList: ArrayList<Room>) :
             // Define click listener for the ViewHolder's View.
             gameRoom = view.findViewById(R.id.game_room)
             val joinGameButton = view.findViewById<Button>(R.id.join_game_room_button)
+            if(currentUser.isObserver){
+                joinGameButton.text ="Observer"
+            }
             joinGameButton.setOnClickListener {
                 onJoinGame?.invoke(layoutPosition)
             }
@@ -64,11 +70,15 @@ class GameListAdapter(private var gameList: ArrayList<Room>) :
             gameStatus.text = "En attente"
             gameStatus.setTextColor(ContextCompat.getColor(gameStatus.context, R.color.lime_green))
         }
-        if(gameList[position].state == State.Playing || gameList[position].state == State.Finish) {
+        if(gameList[position].gameSettings.password == "" && gameList[position].gameSettings.type == RoomType.public) {
             roomType.text = "Public"
             roomType.setTextColor(ContextCompat.getColor(roomType.context, R.color.green))
-        } else {
+        } else if(gameList[position].gameSettings.type == RoomType.private) {
             roomType.text = "Privée"
+            roomType.setTextColor(ContextCompat.getColor(roomType.context, R.color.red))
+        }
+        else {
+            roomType.text = "Publique avec mot de passe"
             roomType.setTextColor(ContextCompat.getColor(roomType.context, R.color.red))
         }
     }
