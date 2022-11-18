@@ -204,7 +204,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
             room.placeLetter.handleValidPlacement(validationResult, index);
             room.placeLetter.scrabbleBoard = JSON.parse(board[5]);
             socket.emit('receiveSuccess');
-            socket.to(roomId[6]).emit('receivePlacement', board[5], position[0], orientation, word[1]);
+            socket.to(roomId[6]).emit('receivePlacement', board[5], position[0], orientation[2], word[1]);
             this.server.to(roomId[6]).emit('updatePlayer', room.playerService.players[index]);
             this.server.to(roomId[6]).emit('receiveReserve', room.letter.reserve, room.letter.reserveSize);
         } else {
