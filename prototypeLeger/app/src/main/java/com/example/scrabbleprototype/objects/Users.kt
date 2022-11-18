@@ -10,5 +10,4 @@ object Users {
     lateinit var currentUser: User
     var userPreferences = UserPreferences()
     var userStats = UserStats()
-    var isObserver: Boolean = false
 }

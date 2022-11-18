@@ -62,9 +62,9 @@ class JoinGameActivity : AppCompatActivity() {
 
         gameListAdapter.onJoinGame = { position ->
             if (rooms[position].state == State.Playing && rooms[position].gameSettings.type == RoomType.public.ordinal) {
-                Users.isObserver = true;
+                Users.currentUser.isObserver = true;
             }
-            joinGame(position, Users.isObserver)
+            joinGame(position, Users.currentUser.isObserver)
         }
         receiveRooms(gameListAdapter)
         handleRoomUnavailability()
@@ -130,7 +130,7 @@ class JoinGameActivity : AppCompatActivity() {
 
     private fun sendObserverToGame() {
         socket.on("ObserverToGameView") { response ->
-            Users.isObserver = true;
+            Users.currentUser.isObserver = true;
             startActivity(Intent(this, GameActivity::class.java))
         }
     }

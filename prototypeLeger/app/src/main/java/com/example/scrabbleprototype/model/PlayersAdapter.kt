@@ -1,6 +1,7 @@
 package com.example.scrabbleprototype.model
 
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -52,8 +53,14 @@ class PlayersAdapter(private var players: ArrayList<Player>) :
 
     private fun setUpReplace(viewHolder:ViewHolder,  position: Int){
         val replaceButton = viewHolder.player.findViewById<Button>(R.id.button_replace)
+        Log.d("enterSet", "here")
+        Log.d("enterSet",  Users.currentUser.isObserver.toString())
+        Log.d("enterSet",  players[position].isAi.toString())
+        Log.d("enterSet",  players[position].getTurn().toString())
+
 
         if( Users.currentUser.isObserver && players[position].isAi && !players[position].getTurn()){
+            Log.d("ai", players[position].isAi.toString())
             replaceButton.visibility = View.VISIBLE
         }
 

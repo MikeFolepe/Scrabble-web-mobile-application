@@ -145,13 +145,17 @@ class BoardFragment : Fragment() {
     private fun receiveObserverBoard(){
         socket.on("giveBoardToObserver"){ response ->
             val receivedBoard = mapper.readValue(response[0].toString(), object:TypeReference<Array<Array<String>>>(){})
-            for(i in 0 until board.size){
-                for(j in 0 until board.size){
+            for(i in 0 until Constants.BOARD_HEIGHT){
+                for(j in 0 until Constants.BOARD_HEIGHT){
                     val letterToAdd = Reserve.RESERVE.find{
                         it.value == receivedBoard[i][j].uppercase()
                     }
-                    board[i+Constants.BOARD_HEIGHT* j] = letterToAdd as Letter
-                    Log.d("item", board[i+Constants.BOARD_HEIGHT* j].value)
+                    if(letterToAdd != null){
+                        val newLetter = Letter(letterToAdd.value,letterToAdd.quantity,letterToAdd.points, letterToAdd.isSelectedForSwap, letterToAdd.isSelectedForManipulation)
+                        board[j+Constants.BOARD_HEIGHT* i] = newLetter
+                        Log.d("item", newLetter.value)
+                    }
+
                 }
             }
 

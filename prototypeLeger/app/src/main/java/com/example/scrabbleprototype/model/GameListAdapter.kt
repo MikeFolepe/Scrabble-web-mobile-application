@@ -37,9 +37,6 @@ class GameListAdapter(private var gameList: ArrayList<Room>) :
             // Define click listener for the ViewHolder's View.
             gameRoom = view.findViewById(R.id.game_room)
             val joinGameButton = view.findViewById<Button>(R.id.join_game_room_button)
-            if(currentUser.isObserver){
-                joinGameButton.text ="Observer"
-            }
             joinGameButton.setOnClickListener {
                 onJoinGame?.invoke(layoutPosition)
             }
@@ -80,6 +77,10 @@ class GameListAdapter(private var gameList: ArrayList<Room>) :
         else {
             roomType.text = "Publique avec mot de passe"
             roomType.setTextColor(ContextCompat.getColor(roomType.context, R.color.red))
+        }
+        val joinGameButton = viewHolder.gameRoom.findViewById<Button>(R.id.join_game_room_button)
+        if(gameList[position].state == State.Playing && gameList[position].gameSettings.type == RoomType.public.ordinal){
+            joinGameButton.text ="Observer"
         }
     }
 

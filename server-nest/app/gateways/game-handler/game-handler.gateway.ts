@@ -224,6 +224,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
         room.ais[indexToRemove] = {} as PlayerAI;
         room.ais.splice(indexToRemove, 1);
         room.observers.splice(indexToRemoveObserver, 1);
+        this.roomManagerService.setSocket(room, socket.id);
 
         room.playerService.players[indexAiToReplace[1]] = new Player(
             playerName[0],
