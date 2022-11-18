@@ -86,7 +86,7 @@ export class ChatboxService {
         if (this.playerService.currentPlayer.isTurn) {
             const messageSplitted = this.message.split(/\s/);
 
-            if (this.swapLetterService.swapCommand(messageSplitted[1], PLAYER_ONE_INDEX)) {
+            if (this.swapLetterService.swapCommand(messageSplitted[1])) {
                 this.message = this.playerService.opponents[PLAYER_ONE_INDEX].name + ' : ' + this.message;
                 this.sendMessageService.displayMessageByType(this.message, this.messageType);
                 this.skipTurnService.switchTurn();

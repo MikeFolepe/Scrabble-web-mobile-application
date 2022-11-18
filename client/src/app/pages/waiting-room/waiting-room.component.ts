@@ -90,6 +90,7 @@ export class WaitingRoomComponent implements OnInit {
     }
 
     startGame(): void {
+        console.log('start exec', this.clientSocket.currentRoom);
         if (this.clientSocket.currentRoom.humanPlayersNumber < 2) {
             this.displayErrorMessage(ErrorMessage.NotEnoughPlayers);
             return;

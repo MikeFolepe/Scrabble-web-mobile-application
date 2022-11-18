@@ -48,6 +48,7 @@ export class PlaceLetterStrategy {
         }
 
         for (let i = 0; orientation === Orientation.Vertical && i < word.length; i++) {
+            scrabbleBoard[start.x + i] = [];
             scrabbleBoard[start.x + i][start.y] = word[i];
         }
 
@@ -77,18 +78,9 @@ export class PlaceLetterStrategy {
     }
 
     async execute(index: number): Promise<void> {
-        const playerAi = this.player as PlayerAI;
-        const level = this.gameSettings.level;
         const isFirstRound = this.placeLetterService.isFirstRound;
         const scrabbleBoard = this.placeLetterService.scrabbleBoard;
-        console.log(scrabbleBoard);
-        // console.log(scrabbleBoard);
-        if (this.isFirstRoundAi) {
-            // this.dictionary = this.wordValidation.dictionary;
-            this.isFirstRoundAi = false;
-        }
         let allPossibleWords: PossibleWords[];
-        const matchingPointingRangeWords: PossibleWords[] = [];
 
         this.initializeArray(scrabbleBoard);
 
@@ -96,20 +88,24 @@ export class PlaceLetterStrategy {
         const patterns = this.generateAllPatterns(this.getEasel(), isFirstRound);
         // Step2: Generate all words in the dictionary satisfying the patterns
         allPossibleWords = this.generateAllWords(this.dictionary, patterns);
-        console.log('96place stra');
+        allPossibleWords = this.removeIfNotEnoughLetter(allPossibleWords, this.player);
+
+        if (isFirstRound) {
+            allPossibleWords.forEach((word) => (word.startIndex = CENTRAL_CASE_POSITION.x));
+        } else {
+            // Step4: Clip words that can not be on the board
+            allPossibleWords = this.removeIfNotDisposable(allPossibleWords);
+        }
+
         // Step3: Clip words containing more letter than playable
         // allPossibleWords = this.removeIfNotEnoughLetter(allPossibleWords, playerAi);
         // Step4: Clip words that can not be on the board
-        allPossibleWords = this.removeIfNotDisposable(allPossibleWords);
-        console.log('102place stra');
         // Step5: Add the earning points to all words and update the
         allPossibleWords = await this.calculatePoints(allPossibleWords);
-        console.log('106place stra');
         // Step6: Sort the words
         this.sortDecreasingPoints(allPossibleWords);
         // matchingPointingRangeWords = this.filterByRange(allPossibleWords, this.pointingRange);
         // Step7: Place one word between all the words that have passed the steps
-        // console.log(allPossibleWords);
         await this.computeResults(allPossibleWords, true, index);
         // await this.computeResults(matchingPointingRangeWords, false, index);
 
@@ -193,12 +189,9 @@ export class PlaceLetterStrategy {
         if (word1.point === word2.point) return equalSortNumbers;
         return word1.point < word2.point ? greaterSortNumber : lowerSortNumber;
     };
-    async place(word: PossibleWords, index: number): Promise<void> {
+    async place(word: PossibleWords, index: number): Promise<boolean> {
         const startPos = word.orientation ? { x: word.line, y: word.startIndex } : { x: word.startIndex, y: word.line };
-        if (await this.placeLetterService.placeCommand(startPos, word.orientation, word.word, index)) {
-            return;
-        }
-        // this.skip(false);
+        return await this.placeLetterService.placeCommand(startPos, word.orientation, word.word, index);
     }
 
     private async computeResults(possibilities: PossibleWords[], isExpertLevel = true, index: number): Promise<void> {
@@ -209,8 +202,11 @@ export class PlaceLetterStrategy {
 
         let wordIndex = 0;
         if (isExpertLevel) {
-            await this.place(possibilities[wordIndex], index);
-            possibilities.splice(0, 1);
+            let place = false;
+            while (!place && possibilities.length !== 0) {
+                place = await this.place(possibilities[wordIndex], index);
+                possibilities.splice(0, 1);
+            }
             return;
         }
 
@@ -303,7 +299,7 @@ export class PlaceLetterStrategy {
         return false;
     }
 
-    private removeIfNotEnoughLetter(allPossibleWords: PossibleWords[], player: PlayerAI): PossibleWords[] {
+    private removeIfNotEnoughLetter(allPossibleWords: PossibleWords[], player: Player): PossibleWords[] {
         const filteredWords: PossibleWords[] = [];
 
         for (const wordObject of allPossibleWords) {
@@ -315,7 +311,7 @@ export class PlaceLetterStrategy {
                 const amountOfLetterPresent: number = (
                     this.board[wordObject.orientation][wordObject.line].toString().replace(regex2, '').match(regex1) || []
                 ).length;
-                const playerAmount = 0;
+                const playerAmount: number = player.getLetterQuantityInEasel(letter);
 
                 if (amountOfLetterNeeded > playerAmount + amountOfLetterPresent) {
                     // Not add the words that need more letter than available
