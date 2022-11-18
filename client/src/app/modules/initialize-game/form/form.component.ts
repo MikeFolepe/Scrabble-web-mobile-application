@@ -15,7 +15,7 @@ import { GameSettingsService } from '@app/services/game-settings.service';
 import { AiType } from '@common/ai-name';
 import { Dictionary } from '@common/dictionary';
 import { GameSettings, RoomType, StartingPlayer } from '@common/game-settings';
-import { PasswordGameDialogComponent } from '../password-game-dialog/password-game-dialog.component';
+import { PasswordGameDialogComponent } from '@app/modules/initialize-game/password-game-dialog/password-game-dialog.component';
 
 @Component({
     selector: 'app-form',
@@ -89,6 +89,18 @@ export class FormComponent implements OnInit, OnDestroy {
         this.gameSettingsService.isRedirectedFromMultiplayerGame = false;
     }
 
+    openChangeChatRoomDialog(): void {
+        this.changeChatRoomDialog.open(ChangeChatRoomComponent, { disableClose: true });
+    }
+
+    openJoinChatRoomDialog(): void {
+        this.joinChatRoomsDialog.open(JoinChatRoomsComponent, { disableClose: true });
+    }
+
+    openAddChatRoomDialog(): void {
+        this.addChatRoomDialog.open(AddChatRoomComponent, { disableClose: true });
+    }
+
     private async initializeDictionaries(): Promise<void> {
         this.dictionaries = await this.communicationService.getDictionaries().toPromise();
     }
@@ -137,17 +149,5 @@ export class FormComponent implements OnInit, OnDestroy {
 
     private getLevel(): AiType {
         return this.form.controls.levelInput.value === 'Débutant' ? AiType.beginner : AiType.expert;
-    }
-
-    openChangeChatRoomDialog(): void {
-        this.changeChatRoomDialog.open(ChangeChatRoomComponent, { disableClose: true });
-    }
-
-    openJoinChatRoomDialog(): void {
-        this.joinChatRoomsDialog.open(JoinChatRoomsComponent, { disableClose: true });
-    }
-
-    openAddChatRoomDialog(): void {
-        this.addChatRoomDialog.open(AddChatRoomComponent, { disableClose: true });
     }
 }
