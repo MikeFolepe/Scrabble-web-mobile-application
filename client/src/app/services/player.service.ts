@@ -28,6 +28,7 @@ export class PlayerService {
         this.updatePlayer();
         this.getPlayers();
         this.clientSocketService.initialize();
+        this.onReplaceAi();
     }
 
     clearPlayers(): void {
@@ -52,6 +53,14 @@ export class PlayerService {
         const index = this.players.findIndex((curPlayer) => curPlayer.name === player.name);
         this.authService.currentUser.isObserver = false;
         this.clientSocketService.socket.emit('replaceAi', this.authService.currentUser.pseudonym, index, this.clientSocketService.currentRoom.id);
+    }
+
+    onReplaceAi() {
+        this.clientSocketService.socket.on('newUser', (player: Player, indexAiToReplace: number) => {
+            this.players[indexAiToReplace] = {} as Player;
+            this.players[indexAiToReplace] = player;
+            this.currentPlayer = player;
+        });
     }
 
     addLetterToEasel(letterToAdd: string): void {

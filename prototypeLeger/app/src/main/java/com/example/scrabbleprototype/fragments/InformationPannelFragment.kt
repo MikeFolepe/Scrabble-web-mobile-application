@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet.Constraint
@@ -25,14 +26,13 @@ import com.example.scrabbleprototype.model.Constants
 import com.example.scrabbleprototype.model.Player
 import com.example.scrabbleprototype.model.PlayersAdapter
 import com.example.scrabbleprototype.model.SocketHandler
-import com.example.scrabbleprototype.objects.CurrentRoom
-import com.example.scrabbleprototype.objects.Players
-import com.example.scrabbleprototype.objects.Reserve
-import com.example.scrabbleprototype.objects.ThemeManager
+import com.example.scrabbleprototype.objects.*
 import com.example.scrabbleprototype.services.SkipTurnService
 import com.example.scrabbleprototype.services.TurnUICallback
 import com.example.scrabbleprototype.viewModel.PlacementViewModel
 import com.example.scrabbleprototype.viewModel.PlayersViewModel
+import com.fasterxml.jackson.module.kotlin.jacksonMapperBuilder
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 
 class InformationPannelFragment : Fragment(), TurnUICallback {
 
@@ -50,6 +50,7 @@ class InformationPannelFragment : Fragment(), TurnUICallback {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        receiveNewPlayer()
     }
 
     private val connection = object: ServiceConnection {
@@ -78,6 +79,7 @@ class InformationPannelFragment : Fragment(), TurnUICallback {
         super.onAttach(context)
         activityContext = context
     }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -140,6 +142,16 @@ class InformationPannelFragment : Fragment(), TurnUICallback {
             val timerTitleView = activePlayerView?.findViewById<TextView>(R.id.timer_title)
             timerView?.text = getString(R.string.timer_format, minutesDisplay, secondsDisplay)
             setTimeUiColor(timerView, timerTitleView, minutes.toInt() + seconds.toInt())
+        }
+    }
+
+    private fun receiveNewPlayer(){
+        SocketHandler.socket.on("newPlayer") { response ->
+            val newPlayer = jacksonObjectMapper().readValue(response[0].toString(), Player::class.java)
+            val position = response[1] as Int
+            Players.players[position] = newPlayer
+            Players.currentPlayer = newPlayer
+
         }
     }
 

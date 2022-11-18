@@ -63,8 +63,10 @@ export class GameHandlerGateway implements OnGatewayConnection {
         socket.emit('yourRoom', this.roomManagerService.getRoomToSend(room));
         socket.join(roomId[1]);
         socket.emit('ObserverToGameView');
-        socket.emit('giveBoardToObserver', room.placeLetter.scrabbleBoard);
-        socket.emit('receiveReserve', room.letter.reserve, room.letter.reserveSize);
+        setTimeout(() => {
+            socket.emit('giveBoardToObserver', room.placeLetter.scrabbleBoard);
+            socket.emit('receiveReserve', room.letter.reserve, room.letter.reserveSize);
+        }, 500);
     }
 
     @SubscribeMessage('createRoom')
@@ -232,8 +234,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
 
         console.log('ai after replace', room.ais);
         console.log('players after replace', room.playerService.players);
-        socket.emit('MyPlayer', room.playerService.players[indexAiToReplace[1]]);
-        this.server.to(roomId[2]).emit('roomPlayers', room.playerService.players);
+        this.server.to(roomId[2]).emit('newPlayer', room.playerService.players[indexAiToReplace[1]], indexAiToReplace[1]);
         socket.emit('giveBoardToObserver', room.placeLetter.scrabbleBoard);
     }
 

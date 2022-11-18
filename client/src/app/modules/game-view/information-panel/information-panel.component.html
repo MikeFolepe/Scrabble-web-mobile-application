@@ -42,7 +42,7 @@
             <hr />
 
             <button
-                *ngIf="this.authService.currentUser.isObserver && player.isAi"
+                *ngIf="this.authService.currentUser.isObserver && player.isAi && !player.isTurn"
                 mat-raised-button
                 color="primary"
                 (click)="playerService.replaceAi(player)"

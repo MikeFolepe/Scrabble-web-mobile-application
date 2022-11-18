@@ -8,6 +8,7 @@ import com.example.scrabbleprototype.model.Player
 import com.example.scrabbleprototype.model.SocketHandler
 import com.example.scrabbleprototype.objects.CurrentRoom
 import com.example.scrabbleprototype.objects.Players
+import com.example.scrabbleprototype.objects.Users
 import java.util.*
 import kotlin.concurrent.timerTask
 

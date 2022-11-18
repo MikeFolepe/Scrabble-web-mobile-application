@@ -21,11 +21,13 @@ import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.model.*
 import com.example.scrabbleprototype.objects.Board
 import com.example.scrabbleprototype.objects.LetterRack
+import com.example.scrabbleprototype.objects.Reserve
 import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.services.PlaceService
 import com.example.scrabbleprototype.services.SkipTurnService
 import com.example.scrabbleprototype.services.SwapLetterService
 import com.example.scrabbleprototype.viewModel.PlacementViewModel
+import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 
 
@@ -35,6 +37,7 @@ class BoardFragment : Fragment() {
     private lateinit var boardView: RecyclerView
     private var opponentStartingCase: Int? = null
     private val socket = SocketHandler.getPlayerSocket()
+    private lateinit var boardAdapter : BoardAdapter
 
     private lateinit var placeService: PlaceService
     private var placeBound: Boolean = false
@@ -57,6 +60,7 @@ class BoardFragment : Fragment() {
         Intent(activity, PlaceService::class.java).also { intent ->
             activity?.bindService(intent, connection, Context.BIND_AUTO_CREATE)
         }
+        receiveObserverBoard()
     }
 
     override fun onCreateView(
@@ -98,7 +102,7 @@ class BoardFragment : Fragment() {
         boardView = view.findViewById(R.id.board)
         val gridLayoutManager = GridLayoutManager(activity, 15, GridLayoutManager.VERTICAL, false)
         boardView.layoutManager = gridLayoutManager
-        val boardAdapter = BoardAdapter(board)
+        boardAdapter = BoardAdapter(board)
         boardView.adapter = boardAdapter
         boardAdapter.updateData(board)
 
@@ -135,6 +139,25 @@ class BoardFragment : Fragment() {
         }
         socket.on("eraseStartingCase") {
             eraseStartingCase()
+        }
+    }
+
+    private fun receiveObserverBoard(){
+        socket.on("giveBoardToObserver"){ response ->
+            val receivedBoard = mapper.readValue(response[0].toString(), object:TypeReference<Array<Array<String>>>(){})
+            for(i in 0 until board.size){
+                for(j in 0 until board.size){
+                    val letterToAdd = Reserve.RESERVE.find{
+                        it.value == receivedBoard[i][j].uppercase()
+                    }
+                    board[i+Constants.BOARD_HEIGHT* j] = letterToAdd as Letter
+                    Log.d("item", board[i+Constants.BOARD_HEIGHT* j].value)
+                }
+            }
+
+            activity?.runOnUiThread {
+                boardAdapter.updateData(board)
+            }
         }
     }
 
