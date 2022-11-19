@@ -24,33 +24,28 @@ export class CommunicationService {
         return this.http.post<boolean>(`${this.baseUrl}/game/validateWords/${fileName}`, this.wordsToValidate);
     }
 
-
-
     getGameDictionary(fileName: string): Observable<string[]> {
         return this.http.get<string[]>(`${this.baseUrl}/game/dictionary/${fileName}`);
     }
-
 
     getAiPlayers(aiType: AiType): Observable<AiPlayerDB[]> {
         return this.http.get<AiPlayerDB[]>(`${this.baseUrl}/admin/` + (aiType === AiType.expert ? 'aiExperts' : 'aiBeginners'));
     }
 
     getUsers(): Observable<User[]> {
-        return this.http.get<User[]>(`http://localhost:3000/api/user/users`);
-
+        return this.http.get<User[]>(`${this.baseUrl}/user/users`);
     }
 
-    findUserInDb(pseudonym : string, password : string): Promise<boolean> {
-        return this.http.get<boolean>(`http://localhost:3000/api/user/findUserInDb/${pseudonym}/${password}`).toPromise();
+    async findUserInDb(pseudonym: string, password: string): Promise<boolean> {
+        return this.http.get<boolean>(`${this.baseUrl}/user/findUserInDb/${pseudonym}/${password}`).toPromise();
     }
 
-    checkPseudonym(pseudonym: string): Promise<boolean> {
-        return this.http.get<boolean>(`http://localhost:3000/api/user/checkPseudonym/${pseudonym}`).toPromise();
+    async checkPseudonym(pseudonym: string): Promise<boolean> {
+        return this.http.get<boolean>(`${this.baseUrl}/user/checkPseudonym/${pseudonym}`).toPromise();
     }
-    
-    //ICIIIII
+
     addNewUserToDB(userData: User): Observable<User> {
-        return this.http.post<User>(`http://localhost:3000/api/user/users`, userData);
+        return this.http.post<User>(`${this.baseUrl}/user/users`, userData);
     }
 
     addAiPlayer(aiPlayer: AiPlayer, aiType: AiType): Observable<AiPlayerDB> {

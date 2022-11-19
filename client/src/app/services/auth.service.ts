@@ -25,20 +25,17 @@ export class AuthService {
         public snackBar: MatSnackBar,
     ) {
         this.chosenAvatar = '';
-
+        this.serverUrl = environment.serverUrl;
+        this.communicationService.baseUrl = this.serverUrl + '/api';
     }
 
     signIn(userData: User) {
-        this.serverUrl = environment.serverUrl;
-        this.communicationService.baseUrl = this.serverUrl + '/api';
-
         this.communicationService.connectUser(userData).subscribe(
             (newUser: User) => {
                 if (newUser) {
                     this.currentUser = newUser;
                     this.clientSocketService.socket = io(this.serverUrl);
                     this.clientSocketService.socket.connect();
-
                     this.clientSocketService.socket.emit(ChatEvents.JoinRoom);
                     this.clientSocketService.socket.emit(ChatEvents.GetMessages);
                     this.receiveUserSocket();

@@ -5,6 +5,7 @@ import { UserService } from '@app/users/user.service';
 import { ChatRoomMessage } from '@common/chatRoomMessage';
 import { DELAY_BEFORE_PLAYING, ONE_SECOND_DELAY, THREE_SECONDS_DELAY } from '@common/constants';
 import { GameSettings } from '@common/game-settings';
+import { Letter } from '@common/letter';
 import { User } from '@common/user';
 import { Vec2 } from '@common/vec2';
 import { Logger } from '@nestjs/common';
@@ -138,6 +139,25 @@ export class GameHandlerGateway implements OnGatewayConnection {
         const room = this.roomManagerService.find(roomId);
         room.skipTurnService.stopTimer();
     }
+    @SubscribeMessage('swap')
+    swap(@ConnectedSocket() socket, @MessageBody() data: { roomId: string; easel: Letter[]; indexToSwap: number[] }) {
+        const room = this.roomManagerService.find(data[0]);
+        room.playerService.players[room.skipTurnService.activePlayerIndex].letterTable = JSON.parse(data[1]);
+        // eslint-disable-next-line guard-for-in
+        for (const i in data[2]) {
+            const letterFromReserve = room.letter.getRandomLetter();
+            // Add a copy of the random letter from the reserve
+            const letterToAdd = {
+                value: letterFromReserve.value,
+                quantity: letterFromReserve.quantity,
+                points: letterFromReserve.points,
+                isSelectedForSwap: letterFromReserve.isSelectedForSwap,
+                isSelectedForManipulation: letterFromReserve.isSelectedForManipulation,
+            };
+            room.playerService.players[room.skipTurnService.activePlayerIndex].letterTable.splice(data[2][i], 1, letterToAdd);
+        }
+        socket.emit('swapped', JSON.stringify(room.playerService.players[room.skipTurnService.activePlayerIndex].letterTable));
+    }
 
     @SubscribeMessage('deleteGame')
     deleteGame(@ConnectedSocket() socket, @MessageBody() roomId: string) {
@@ -184,7 +204,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
             room.placeLetter.handleValidPlacement(validationResult, index);
             room.placeLetter.scrabbleBoard = JSON.parse(board[5]);
             socket.emit('receiveSuccess');
-            socket.to(roomId[6]).emit('receivePlacement', board[5], position[0], orientation, word[1]);
+            socket.to(roomId[6]).emit('receivePlacement', board[5], position[0], orientation[2], word[1]);
             this.server.to(roomId[6]).emit('updatePlayer', room.playerService.players[index]);
             this.server.to(roomId[6]).emit('receiveReserve', room.letter.reserve, room.letter.reserveSize);
         } else {
@@ -289,6 +309,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
                 setTimeout(() => {
                     this.updateTurns(room);
                     this.startTimer(room.id);
+                    this.startAiTurn(room);
                 }, THREE_SECONDS_DELAY);
             } else {
                 room.skipTurnService.seconds = room.skipTurnService.seconds - 1;

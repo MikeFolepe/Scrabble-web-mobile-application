@@ -82,7 +82,7 @@ export class AuthPageComponent implements OnInit {
             return;
         }
 
-        const pseudonymExists : boolean = await this.userService.checkIfPseudonymExists(this.pseudonymValue);
+        const pseudonymExists: boolean = await this.userService.checkIfPseudonymExists(this.pseudonymValue);
 
         if (pseudonymExists) {
             this.signUpError = 'Ce pseudonyme est déjà utilisé';
@@ -91,7 +91,7 @@ export class AuthPageComponent implements OnInit {
         this.signUpError = '';
 
         if (this.passwordValue !== this.confirmPasswordValue) {
-            this.signUpError = "Les mots de passe ne correspondent pas";
+            this.signUpError = 'Les mots de passe ne correspondent pas';
             return;
         }
 
@@ -110,7 +110,7 @@ export class AuthPageComponent implements OnInit {
             return false;
         }
 
-        //regex qui verifie qu'il y a au moins 8 caracteres, une majuscule, une minuscule, un chiffre et un caractere special
+        // regex qui verifie qu'il y a au moins 8 caracteres, une majuscule, une minuscule, un chiffre et un caractere special
         const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
         if (this.passwordValue.match(regex)) {
             return false;

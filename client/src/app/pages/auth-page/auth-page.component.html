@@ -24,7 +24,7 @@
             <div *ngIf="formControls.password.errors.required">Veuillez entrer votre mot de passe</div>
           </div>
           <div class="forgottenPassword">Mot de passe oublié ?</div>
-          <div *ngIf="this.errorMessage != ''" class="errorMessage">{{this.errorMessage}}</div>
+          <div *ngIf="this.errorMessage !== ''" class="errorMessage">{{this.errorMessage}}</div>
 
 
           <div id = "buttons">
@@ -38,19 +38,19 @@
             {{ authService.errorHandler.serverError }}
            </div>
       </div>
-      
+
       <!-- Creation de compte -->
-      
+
       <div *ngIf ="!hasAccount">
         <form [formGroup]="createAccountForm" class="createAccount-container">
-          
-          
+
+
           <div class = "signUpHeader">
             <button class="goBack" (click)="hasAccount = true"><mat-icon>arrow_back</mat-icon></button>
             <h2 class="createAccountTitle">Création de compte</h2>
           </div>
-         
-          
+
+
           <!--avatar section-->
           <div *ngIf ="this.authService.chosenAvatar === ''" id = "buttons">
             <button mat-flat-button color="basic" class="chooseAvatarButton" (click)="openDialog()">Choisir un avatar</button>
@@ -70,7 +70,7 @@
           <div *ngIf="isSubmitted && formControlsCreateAccount.pseudonym.errors && notEmpty" class="help-block">
             <div *ngIf="formControlsCreateAccount.pseudonym.errors.required">Veuillez entrer un pseudonyme</div>
           </div>
-          
+
           <!--email-->
           <p [ngClass]="{ 'has-error': isSubmitted && formControlsCreateAccount.email.errors }">
             <input type="text" placeholder="Adresse courriel" formControlName="email" [(ngModel)]="emailValue">
@@ -78,18 +78,18 @@
           <div *ngIf="isSubmitted && formControlsCreateAccount.email.errors && notEmpty" class="help-block">
             <div *ngIf="formControlsCreateAccount.email.errors.required">Veuillez entrer votre adresse courriel</div>
           </div>
-          
+
           <!--password-->
           <p [ngClass]="{ 'has-error': isSubmitted && formControlsCreateAccount.password.errors }">
             <input type="password" placeholder="Mot de passe" formControlName="password" [(ngModel)]="passwordValue">
           </p>
           <div *ngIf="invalidPassword()">
-            <div class="invalidPassword">Le mot de passe doit contenir au moins 8 caracteres, 1 majuscule, 1 minuscule et 1 caractère spécial.</div>  
+            <div class="invalidPassword">Le mot de passe doit contenir au moins 8 caracteres, 1 majuscule, 1 minuscule et 1 caractère spécial.</div>
           </div>
           <div *ngIf="isSubmitted && formControlsCreateAccount.password.errors && notEmpty" class="help-block">
             <div *ngIf="formControlsCreateAccount.password.errors.required">Veuillez entrer un mot de passe</div>
           </div>
-          
+
           <!--confirm password-->
           <p [ngClass]="{ 'has-error': isSubmitted && formControlsCreateAccount.confirmPassword.errors }">
             <input type="password" placeholder="Confirmez votre mot de passe" formControlName="confirmPassword" [(ngModel)]="confirmPasswordValue">
@@ -104,12 +104,12 @@
               {{this.signUpError}}
             </div>
           </div>
-          
+
           <!-- sign up button-->
           <div id = "buttons">
             <button [disabled]="invalidPassword()" class="connectButton" mat-raised-button color ="basic" (click)="signUp()">Créer un compte</button>
           </div>
-          
+
 
         </form>
       </div>

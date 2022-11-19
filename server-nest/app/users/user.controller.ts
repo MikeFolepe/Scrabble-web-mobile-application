@@ -1,5 +1,6 @@
 import { User } from '@common/user';
 import { Body, Controller, Get, Post, Req } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -9,9 +10,7 @@ export class UserController {
     @Post('/users')
     async addUser(@Body() user: User) {
         const salt = 10;
-        const bcrypt = require('bcrypt');
         const password = await bcrypt.hash(user.password, salt);
-
         await this.userService.insertUser(user.avatar, user.pseudonym, password, user.email);
         return { ...user };
     }
@@ -21,11 +20,10 @@ export class UserController {
     async findUserInDb(@Req() req) {
         const pseudonym = req.params.pseudonym;
         const password = req.params.password;
-        const bcrypt = require('bcrypt');
         const userFound = await this.userService.getSingleUser(pseudonym);
-        if(!userFound) return false;
-        const hashed_password = userFound.password;
-        const passwordMatch = await bcrypt.compare(password, hashed_password);
+        if (!userFound) return false;
+        const hashedPassword = userFound.password;
+        const passwordMatch = await bcrypt.compare(password, hashedPassword);
         return passwordMatch;
     }
 

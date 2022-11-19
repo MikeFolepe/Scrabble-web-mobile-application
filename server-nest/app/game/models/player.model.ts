@@ -18,12 +18,11 @@ export class Player {
         this.isCreator = isCreator;
         this.isAi = isAi;
     }
-    // getEasel(): string {
-    //     let hand = '[';
-    //     for (const letter of this.letterTable) {
-    //         hand += letter.value;
-    //     }
+    getLetterQuantityInEasel(character: string): number {
+        let quantity = 0;
 
-    //     return hand + ']';
-    // }
+        for (const letter of this.letterTable) if (letter.value === character.toUpperCase()) quantity++;
+
+        return quantity;
+    }
 }

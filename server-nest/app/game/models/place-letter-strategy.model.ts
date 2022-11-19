@@ -78,18 +78,9 @@ export class PlaceLetterStrategy {
     }
 
     async execute(index: number): Promise<void> {
-        const playerAi = this.player as PlayerAI;
-        const level = this.gameSettings.level;
         const isFirstRound = this.placeLetterService.isFirstRound;
         const scrabbleBoard = this.placeLetterService.scrabbleBoard;
-        console.log(scrabbleBoard);
-        // console.log(scrabbleBoard);
-        if (this.isFirstRoundAi) {
-            // this.dictionary = this.wordValidation.dictionary;
-            this.isFirstRoundAi = false;
-        }
         let allPossibleWords: PossibleWords[];
-        const matchingPointingRangeWords: PossibleWords[] = [];
 
         this.initializeArray(scrabbleBoard);
 
@@ -97,27 +88,24 @@ export class PlaceLetterStrategy {
         const patterns = this.generateAllPatterns(this.getEasel(), isFirstRound);
         // Step2: Generate all words in the dictionary satisfying the patterns
         allPossibleWords = this.generateAllWords(this.dictionary, patterns);
+        allPossibleWords = this.removeIfNotEnoughLetter(allPossibleWords, this.player);
+
         if (isFirstRound) {
             allPossibleWords.forEach((word) => (word.startIndex = CENTRAL_CASE_POSITION.x));
-            this.placeLetterService.isFirstRound = false;
         } else {
             // Step4: Clip words that can not be on the board
             allPossibleWords = this.removeIfNotDisposable(allPossibleWords);
         }
 
-        console.log('96place stra');
         // Step3: Clip words containing more letter than playable
         // allPossibleWords = this.removeIfNotEnoughLetter(allPossibleWords, playerAi);
         // Step4: Clip words that can not be on the board
-        console.log('102place stra');
         // Step5: Add the earning points to all words and update the
         allPossibleWords = await this.calculatePoints(allPossibleWords);
-        console.log('106place stra');
         // Step6: Sort the words
         this.sortDecreasingPoints(allPossibleWords);
         // matchingPointingRangeWords = this.filterByRange(allPossibleWords, this.pointingRange);
         // Step7: Place one word between all the words that have passed the steps
-        // console.log(allPossibleWords);
         await this.computeResults(allPossibleWords, true, index);
         // await this.computeResults(matchingPointingRangeWords, false, index);
 
@@ -311,7 +299,7 @@ export class PlaceLetterStrategy {
         return false;
     }
 
-    private removeIfNotEnoughLetter(allPossibleWords: PossibleWords[], player: PlayerAI): PossibleWords[] {
+    private removeIfNotEnoughLetter(allPossibleWords: PossibleWords[], player: Player): PossibleWords[] {
         const filteredWords: PossibleWords[] = [];
 
         for (const wordObject of allPossibleWords) {
@@ -323,7 +311,7 @@ export class PlaceLetterStrategy {
                 const amountOfLetterPresent: number = (
                     this.board[wordObject.orientation][wordObject.line].toString().replace(regex2, '').match(regex1) || []
                 ).length;
-                const playerAmount = 0;
+                const playerAmount: number = player.getLetterQuantityInEasel(letter);
 
                 if (amountOfLetterNeeded > playerAmount + amountOfLetterPresent) {
                     // Not add the words that need more letter than available
