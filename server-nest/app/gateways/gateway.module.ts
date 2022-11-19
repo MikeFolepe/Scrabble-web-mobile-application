@@ -1,4 +1,5 @@
-import { UsersModule } from '@app/users/users.module';
+// import { UsersModule } from '@app/gateways/services/user/users.module';
+import { UsersModule } from '@app/users/user.module';
 import { Logger, Module } from '@nestjs/common';
 import { ChatGateway } from './chat-channel/chat.gateway';
 import { GameHandlerGateway } from './game-handler/game-handler.gateway';

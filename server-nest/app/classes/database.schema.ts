@@ -14,11 +14,15 @@ const aiNameSchema = new mongoose.Schema({
     isDefault: { type: Boolean, required: true },
 });
 
+
+// const accountModel = mongoose.model('Account', accountSchema);
+
 const beginnerNameModel = mongoose.model('AiBeginnerName', aiNameSchema);
 const expertNameModel = mongoose.model('AiExpertName', aiNameSchema);
 
 const scoreModelClassic = mongoose.model('ScoresClassic', scoreSchema);
 const scoreModelLog2990 = mongoose.model('ScoresLog2990', scoreSchema);
+
 
 export const AI_MODELS: Map<AiType, mongoose.Model<AiPlayer>> = new Map<AiType, mongoose.Model<AiPlayer>>([
     [AiType.beginner, beginnerNameModel],

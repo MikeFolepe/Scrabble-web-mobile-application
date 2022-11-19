@@ -1,7 +1,7 @@
-import { Body, Controller, HttpStatus, Post, Res } from '@nestjs/common';
 import { AuthService } from '@app/auth/service/auth.service';
-import { ApiCreatedResponse, ApiNotFoundResponse } from '@nestjs/swagger';
 import { User } from '@common/user';
+import { Body, Controller, HttpStatus, Post, Res } from '@nestjs/common';
+import { ApiCreatedResponse, ApiNotFoundResponse } from '@nestjs/swagger';
 import { Response } from 'express';
 
 @Controller('auth')
@@ -18,10 +18,11 @@ export class AuthController {
     async login(@Body() user: User, @Res() response: Response) {
         await this.authService
             .login(user)
-            .then((valid: boolean) => {
-                response.status(HttpStatus.OK).send(valid);
+            .then((newUser : User) => {
+                response.status(HttpStatus.OK).send(newUser);
             })
             .catch((error: Error) => {
+                console.log("yepppp");
                 response.status(HttpStatus.NOT_FOUND).send('An error occurred while trying to connect to the server' + error.message);
             });
     }

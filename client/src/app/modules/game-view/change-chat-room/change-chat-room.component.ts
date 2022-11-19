@@ -15,7 +15,6 @@ export class ChangeChatRoomComponent {
     userChatsRooms: ChatRoom[];
     selectedChatRoom?: ChatRoom;
     selectedChatRoomIndex: number;
-
     constructor(
         private chatRoomIndexService: ChatRoomIndexService,
         public changeChatRoomDialogRef: MatDialogRef<ChangeChatRoomComponent>,
