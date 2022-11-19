@@ -16,6 +16,7 @@ import com.example.scrabbleprototype.model.SocketHandler
 import com.example.scrabbleprototype.model.User
 import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.objects.Users
+import environments.Environment.serverUrl
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
@@ -33,7 +34,6 @@ import kotlin.coroutines.CoroutineContext
 
 class ConnectionActivity : AppCompatActivity(), CoroutineScope {
     val users = Users
-    val serverUrl = "http://ec2-15-222-249-18.ca-central-1.compute.amazonaws.com:3000"
     lateinit var client: HttpClient
     lateinit var chatSocket: Socket
 

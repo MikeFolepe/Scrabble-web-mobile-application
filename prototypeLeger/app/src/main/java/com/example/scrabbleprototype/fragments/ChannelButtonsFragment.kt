@@ -2,7 +2,6 @@ package com.example.scrabbleprototype.fragments
 
 import android.app.Dialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,13 +11,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.databinding.FragmentChannelButtonsBinding
-import com.example.scrabbleprototype.databinding.FragmentSettingsBinding
 import com.example.scrabbleprototype.model.ChatRoom
 import com.example.scrabbleprototype.model.ChatRoomsAdapter
+import com.example.scrabbleprototype.model.SocketHandler
 import com.example.scrabbleprototype.objects.ChatRooms
+import com.example.scrabbleprototype.objects.ChatRooms.chatRooms
 import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.objects.Users
-import com.google.android.material.floatingactionbutton.FloatingActionButton
+import environments.Environment.serverUrl
 
 class ChannelButtonsFragment : Fragment() {
 
@@ -33,11 +33,21 @@ class ChannelButtonsFragment : Fragment() {
         if(savedInstanceState == null) {
             setUpFragments()
         }
-        ChatRooms.chatRooms.add(ChatRoom("chat", Users.currentUser, "chat number 1"))
-        ChatRooms.chatRooms.add(ChatRoom("chat", Users.currentUser, "chat number 2"))
-        ChatRooms.chatRooms.add(ChatRoom("chat", Users.currentUser, "chat number 3"))
-        ChatRooms.chatRooms.add(ChatRoom("chat", Users.currentUser, "chat number 4"))
+        SocketHandler.setPlayerSocket(serverUrl)
+        SocketHandler.establishConnection()
+        val socket = SocketHandler.getPlayerSocket()
+        socket.on("updateChatRooms") {Response ->
+            ChatRooms = arrayListOf<ChatRoom>(chatRooms)
+            // this.scrollDown()
+        }
 
+        this.clientSocketService.socket.on('newChatRoom', (chatRoom: ChatRoom) => {
+            this.chatRooms.push(chatRoom);
+        })
+        ChatRooms.chatRooms.add(ChatRoom("chat1", Users.currentUser, "chat number 1"))
+        ChatRooms.chatRooms.add(ChatRoom("chat2", Users.currentUser, "chat number 2"))
+        ChatRooms.chatRooms.add(ChatRoom("chat3", Users.currentUser, "chat number 3"))
+        ChatRooms.chatRooms.add(ChatRoom("chat4", Users.currentUser, "chat number 4"))
     }
 
     override fun onCreateView(
