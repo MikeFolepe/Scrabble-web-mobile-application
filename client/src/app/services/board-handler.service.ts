@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BOARD_COLUMNS, BOARD_ROWS, GRID_CASE_SIZE, INVALID_INDEX, LAST_INDEX } from '@app/classes/constants';
 import { MouseButton } from '@app/classes/enum';
 import { Orientation } from '@app/classes/scrabble-board-pattern';
+import { RESERVE } from '@common/constants';
 import { Letter } from '@common/letter';
 import { Vec2 } from '@common/vec2';
 import { Subject } from 'rxjs';
@@ -16,7 +17,7 @@ import { PlayerService } from './player.service';
 })
 export class BoardHandlerService {
     word: string;
-    isDragged: boolean;
+    isDropped: boolean;
     currentDraggedLetter: Letter;
     isDragActivated: boolean;
     dragWord: Vec2[];
@@ -72,7 +73,7 @@ export class BoardHandlerService {
                 break;
             }
             default: {
-                if (!this.playerService.currentPlayer.isTurn || this.isDragged) break;
+                if (!this.playerService.currentPlayer.isTurn || this.isDropped) break;
                 if (/([a-zA-Z\u00C0-\u00FF])+/g.test(event.key) && event.key.length === 1) {
                     // Removes accents from the letter to place
                     const letterNoAccents = event.key.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -116,7 +117,10 @@ export class BoardHandlerService {
     }
 
     mouseHitDetect(event: MouseEvent): void {
-        if (this.isDragActivated) return;
+        if (this.isDragActivated) {
+            this.isDraggedFromBoard(event);
+            return;
+        }
         if (event.button === MouseButton.Left) {
             if (this.isFirstCaseLocked) return;
             const caseClicked: Vec2 = this.calculateFirstCasePosition(event);
@@ -137,21 +141,29 @@ export class BoardHandlerService {
             x: Math.floor((event.offsetX - GRID_CASE_SIZE) / GRID_CASE_SIZE),
             y: Math.floor((event.offsetY - GRID_CASE_SIZE) / GRID_CASE_SIZE),
         };
-        if (this.placeLetterService.scrabbleBoard[position.x][position.y] !== '' && this.playerService.getEasel().length !== 7) {
-            const letterToAdd = {
-                value: this.placeLetterService.scrabbleBoard[position.x][position.y],
-                quantity: 0,
-                points: 0,
-                isSelectedForSwap: false,
-                isSelectedForManipulation: false,
-            };
-            this.currentDraggedLetterFromBoard = letterToAdd;
-            this.isLetterDraggedFromBoard = true;
-            this.gridService.eraseLetter(this.gridService.gridContextLettersLayer, position);
-            this.placeLetterService.scrabbleBoard[position.x][position.y] = '';
-            this.updateDrag.next(this.isLetterDraggedFromBoard);
+        let isLetterHere = false;
+        let letter = '';
+        // eslint-disable-next-line @typescript-eslint/prefer-for-of
+        for (let i = 0; i < this.dragWord.length; ++i) {
+            if (this.dragWord[i].x === position.x && this.dragWord[i].y === position.y) {
+                isLetterHere = true;
+                letter = this.dragWord[i].word as string;
+                this.gridService.eraseLetter(this.gridService.gridContextLettersLayer, position);
+                delete this.dragWord[i];
+                break;
+            }
         }
+        if (!isLetterHere || this.playerService.currentPlayer.letterTable.length === 7) return;
+        for (const i of RESERVE) {
+            if (i.value === letter) {
+                this.currentDraggedLetterFromBoard = i;
+                break;
+            }
+        }
+        this.isLetterDraggedFromBoard = true;
+        this.playerService.currentPlayer.letterTable.push(this.currentDraggedLetterFromBoard);
     }
+
     async confirmPlacement(): Promise<void> {
         // Validation of the placement
         if (this.isDragActivated) {

@@ -18,6 +18,7 @@
             <h2 [style.font-size.px]="playerService.fontSize * 2">{{ letter.value }}</h2>
             <p [style.font-size.px]="playerService.fontSize">{{ letter.points }}</p>
         </div>
+        
     </div>
 </div>
 <div id="easel" class="easel-container" tabindex="0" #easel *ngIf="authService.currentUser.isObserver">

@@ -28,9 +28,9 @@ export class ScrabbleBoardComponent implements AfterViewInit {
     }
 
     dragEnd(event: MouseEvent): void {
-        if (this.boardHandlerService.isDragged) {
+        if (!this.boardHandlerService.isDropped) {
             console.log('Sdfdsf');
-            this.boardHandlerService.isDragged = false;
+            this.boardHandlerService.isDropped = false;
             this.boardHandlerService.placeDroppedLetter(event, this.boardHandlerService.currentDraggedLetter);
         }
     }

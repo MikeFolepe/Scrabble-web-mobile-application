@@ -73,7 +73,7 @@ export class LetterEaselComponent {
     // }
 
     onDragEnd() {
-        this.boardHandlerService.isDragged = true;
+        this.boardHandlerService.isDropped = true;
     }
 
     onRightClick(event: MouseEvent, indexLetter: number): void {
@@ -92,6 +92,7 @@ export class LetterEaselComponent {
 
     swap(): void {
         let lettersToSwap = '';
+
         this.indexOfLetterToSwap = [];
         for (let i = 0; i < this.playerService.currentPlayer.letterTable.length; i++) {
             if (this.playerService.currentPlayer.letterTable[i].isSelectedForSwap) {
@@ -139,7 +140,7 @@ export class LetterEaselComponent {
 
     isDragged(letter: Letter, index: number) {
         console.log('start');
-        this.boardHandlerService.isDragged = false;
+        this.boardHandlerService.isDropped = false;
         this.boardHandlerService.currentDraggedLetter = letter;
         this.boardHandlerService.currentDraggedLetterIndex = index;
     }
