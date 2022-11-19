@@ -2,6 +2,7 @@ package com.example.scrabbleprototype.fragments
 
 import android.app.Dialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,18 +14,27 @@ import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.databinding.FragmentChannelButtonsBinding
 import com.example.scrabbleprototype.model.ChatRoom
 import com.example.scrabbleprototype.model.ChatRoomsAdapter
+import com.example.scrabbleprototype.model.Room
 import com.example.scrabbleprototype.model.SocketHandler
 import com.example.scrabbleprototype.objects.ChatRooms
 import com.example.scrabbleprototype.objects.ChatRooms.chatRooms
 import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.objects.Users
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import environments.Environment.serverUrl
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import org.json.JSONObject
 
 class ChannelButtonsFragment : Fragment() {
 
-    lateinit var adapter: ChatRoomsAdapter
+    private var selectedChatRooms = arrayListOf<String>()
+
+    private var adapter: ChatRoomsAdapter? = null
     lateinit var chatsView: RecyclerView
     lateinit var  chatRoomsDialog: Dialog
+    private val socket = SocketHandler.socket
 
     private lateinit var binding: FragmentChannelButtonsBinding
 
@@ -33,21 +43,8 @@ class ChannelButtonsFragment : Fragment() {
         if(savedInstanceState == null) {
             setUpFragments()
         }
-        SocketHandler.setPlayerSocket(serverUrl)
-        SocketHandler.establishConnection()
-        val socket = SocketHandler.getPlayerSocket()
-        socket.on("updateChatRooms") {Response ->
-            ChatRooms = arrayListOf<ChatRoom>(chatRooms)
-            // this.scrollDown()
-        }
-
-        this.clientSocketService.socket.on('newChatRoom', (chatRoom: ChatRoom) => {
-            this.chatRooms.push(chatRoom);
-        })
-        ChatRooms.chatRooms.add(ChatRoom("chat1", Users.currentUser, "chat number 1"))
-        ChatRooms.chatRooms.add(ChatRoom("chat2", Users.currentUser, "chat number 2"))
-        ChatRooms.chatRooms.add(ChatRoom("chat3", Users.currentUser, "chat number 3"))
-        ChatRooms.chatRooms.add(ChatRoom("chat4", Users.currentUser, "chat number 4"))
+        receiveChatRooms()
+        receiveNewChatRoom()
     }
 
     override fun onCreateView(
@@ -62,8 +59,10 @@ class ChannelButtonsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        setupJoinDialog()
         binding.allChannelsButton.setOnClickListener {
-            openChannelsDialog()
+            chatRoomsDialog.show()
         }
     }
 
@@ -75,19 +74,50 @@ class ChannelButtonsFragment : Fragment() {
         fragmentTransaction.commit()
     }
 
-    fun openChannelsDialog() {
+    private fun receiveChatRooms() {
+        socket.on("updateChatRooms") { response ->
+            chatRooms = jacksonObjectMapper().readValue(response[0].toString(), object: TypeReference<ArrayList<ChatRoom>>() {})
+            activity?.runOnUiThread {
+                Log.d("chats", chatRooms.last().chatRoomName)
+                adapter?.updateData(chatRooms)
+            }
+        }
+        socket.emit("getChatRooms")
+    }
+
+    private fun receiveNewChatRoom() {
+        socket.on("newChatRoom") { response ->
+            chatRooms.add(jacksonObjectMapper().readValue(response[0].toString(), ChatRoom::class.java))
+            activity?.runOnUiThread {
+                Log.d("chats", chatRooms.last().chatRoomName)
+                adapter?.updateData(chatRooms)
+            }
+        }
+    }
+
+    private fun setupJoinDialog() {
         chatRoomsDialog = Dialog(requireContext())
         chatRoomsDialog.setContentView(R.layout.channels_list_dialog)
 
         chatsView = chatRoomsDialog.findViewById(R.id.all_chatrooms)
         chatsView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        adapter = ChatRoomsAdapter(ChatRooms.chatRooms)
+        adapter = ChatRoomsAdapter(chatRooms)
         chatsView.adapter = adapter
 
-        chatRoomsDialog.findViewById<Button>(R.id.join_button).setOnClickListener { //TODO
+        adapter?.onChatRoomClick = { position, isChecked ->
+            val chatName = chatRooms[position].chatRoomName
+            if(isChecked) selectedChatRooms.add(chatName)
+            else selectedChatRooms.remove(chatName)
         }
-        chatRoomsDialog.findViewById<Button>(R.id.cancel_button).setOnClickListener { chatRoomsDialog.dismiss()}
 
-        chatRoomsDialog.show()
+        chatRoomsDialog.findViewById<Button>(R.id.join_button).setOnClickListener {
+            // TODO send selected to server doest work
+            socket.emit("joinChatRoom", JSONObject(Json.encodeToString(Users.currentUser)), selectedChatRooms.toTypedArray())
+            this.selectedChatRooms.clear()
+        }
+        chatRoomsDialog.findViewById<Button>(R.id.cancel_button).setOnClickListener {
+            this.selectedChatRooms.clear()
+            chatRoomsDialog.dismiss()
+        }
     }
 }

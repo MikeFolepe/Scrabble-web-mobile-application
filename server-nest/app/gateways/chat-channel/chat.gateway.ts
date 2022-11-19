@@ -23,7 +23,6 @@ export class ChatGateway {
 
         this.chatRoomService.addCustomer(creator[0], roomId);
         socket.join(roomId);
-
         this.server.emit('newChatRoom', this.chatRoomService.createRoom(roomId, creator[0], chatRoomName[1]));
     }
 
@@ -54,6 +53,7 @@ export class ChatGateway {
 
     @SubscribeMessage('joinChatRoom')
     joinChatRoom(@ConnectedSocket() socket, @MessageBody() user: User, @MessageBody() roomNames: string[]) {
+        console.log(roomNames);
         for (const chatRoom of this.chatRoomService.chatRooms) {
             for (const roomName of roomNames[1]) {
                 if (chatRoom.chatRoomName === roomName) {

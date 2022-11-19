@@ -12,7 +12,7 @@
             [disabled]="disableJoinCurrentRoom(chatRoom)"
             *ngFor="let chatRoom of userChatsRooms"
             [value]="chatRoom"
-            >{{ chatRoom.chatRoomName }}{{ ', par ' }}{{ chatRoom.creatorName }}
+            >{{ chatRoom.chatRoomName }}{{ ', par ' }}{{ chatRoom.creator.pseudonym }}
             <button
                 mat-button
                 color="warn"
