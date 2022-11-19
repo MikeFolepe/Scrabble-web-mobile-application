@@ -10,4 +10,8 @@ object Players {
     var opponents  = arrayListOf<Player>()
 
     var players = arrayListOf<Player>()
+
+    fun getActivePlayer(): Player {
+        return players.find { it.getTurn() }!!
+    }
 }

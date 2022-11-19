@@ -55,6 +55,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
         const room = this.roomManagerService.find(roomId[1]);
         const players = room.playerService.players;
         socket.emit('roomPlayers', players);
+
         if (!this.roomManagerService.addObserver(observer[0], roomId[1])) {
             socket.emit('roomFullObservers');
             return;

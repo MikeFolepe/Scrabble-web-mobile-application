@@ -18,6 +18,9 @@ interface TurnUICallback {
 interface EndTurnCallback {
     fun handleInvalidPlacement()
 }
+interface ObserverRackCallback {
+    fun switchRack(activePlayerName: String)
+}
 
 class SkipTurnService : Service() {
 
@@ -30,13 +33,14 @@ class SkipTurnService : Service() {
     private val binder = LocalBinder()
     private var turnUICallback: TurnUICallback? = null
     private var endTurnCallback: EndTurnCallback? = null
+    private var observerRackCallback: ObserverRackCallback? = null
 
     inner class LocalBinder: Binder() {
         fun getService(): SkipTurnService = this@SkipTurnService
     }
 
     override fun onBind(intent: Intent): IBinder {
-        activePlayerName = CurrentRoom.myRoom.gameSettings.creatorName
+        activePlayerName = Players.getActivePlayer().name
         receiveNewTurn()
         receiveTimer()
         return binder
@@ -47,6 +51,9 @@ class SkipTurnService : Service() {
     }
     fun setEndTurnCallback(callBack: EndTurnCallback?) {
         endTurnCallback = callBack
+    }
+    fun setObserverRackCallback(callBack: ObserverRackCallback?) {
+        observerRackCallback = callBack
     }
 
     private fun receiveNewTurn() {
@@ -59,6 +66,7 @@ class SkipTurnService : Service() {
             val currentPlayer = Players.players.find { it.name == playerName }!!
             currentPlayer.setTurn(true)
             activePlayerName = currentPlayer.name
+            if(Users.currentUser.isObserver) observerRackCallback?.switchRack(activePlayerName)
         }
 
         socket.on("updatePlayerTurnToFalse") { response ->

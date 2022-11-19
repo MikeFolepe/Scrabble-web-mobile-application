@@ -20,12 +20,15 @@ import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.activities.GameActivity
 import com.example.scrabbleprototype.model.*
 import com.example.scrabbleprototype.objects.*
+import com.example.scrabbleprototype.services.ObserverRackCallback
+import com.example.scrabbleprototype.services.PlaceService
+import com.example.scrabbleprototype.services.SkipTurnService
 import com.example.scrabbleprototype.services.SwapLetterService
 import com.example.scrabbleprototype.viewModel.PlacementViewModel
 import com.example.scrabbleprototype.viewModel.PlayersViewModel
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 
-class LetterRackFragment : Fragment() {
+class LetterRackFragment : Fragment(), ObserverRackCallback {
 
     private val reserve = Reserve.RESERVE
     private val hashMap = hashMapOf<String, Letter>()
@@ -37,6 +40,8 @@ class LetterRackFragment : Fragment() {
     private val placementViewModel: PlacementViewModel by activityViewModels()
     private val playersViewModel: PlayersViewModel by activityViewModels()
 
+    private lateinit var skipTurnService: SkipTurnService
+    private var skipTurnBound: Boolean = false
     private lateinit var swapLetterService: SwapLetterService
     private var swapLetterBound: Boolean = false
 
@@ -44,17 +49,26 @@ class LetterRackFragment : Fragment() {
 
     private val connection = object: ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            val binder = service as SwapLetterService.LocalBinder
-            swapLetterService = binder.getService()
-            swapLetterBound = true
+            if(service is SkipTurnService.LocalBinder) {
+                skipTurnService = service.getService()
+                skipTurnBound = true
+                skipTurnService.setObserverRackCallback(this@LetterRackFragment)
+            } else if (service is SwapLetterService.LocalBinder) {
+                swapLetterService = service.getService()
+                swapLetterBound = true
+            }
         }
         override fun onServiceDisconnected(name: ComponentName?) {
+            skipTurnBound = false
             swapLetterBound = false
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Intent(activityContext, SkipTurnService::class.java).also { intent ->
+            activityContext.bindService(intent, connection, Context.BIND_AUTO_CREATE)
+        }
         Intent(activityContext, SwapLetterService::class.java).also { intent ->
             activityContext.bindService(intent, connection, Context.BIND_AUTO_CREATE)
         }
@@ -63,7 +77,9 @@ class LetterRackFragment : Fragment() {
     override fun onStop() {
         super.onStop()
         activityContext.unbindService(connection)
+        skipTurnBound = false
         swapLetterBound = false
+        skipTurnService.setObserverRackCallback(null)
     }
 
     override fun onAttach(context: Context) {
@@ -94,7 +110,9 @@ class LetterRackFragment : Fragment() {
 
     private fun setupLetterRack(view: View) {
         LetterRack.letters = Players.currentPlayer.letterTable
-        letterRackView = view.findViewById<RecyclerView>(R.id.letter_rack)
+        if(Users.currentUser.isObserver) LetterRack.letters = Players.getActivePlayer().letterTable
+
+        letterRackView = view.findViewById(R.id.letter_rack)
         val horizontalLayoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false)
         letterRackView.layoutManager = horizontalLayoutManager
         letterRackAdapter = LetterRackAdapter(LetterRack.letters)
@@ -196,5 +214,14 @@ class LetterRackFragment : Fragment() {
         val boardAdapter = activity?.findViewById<RecyclerView>(R.id.board)?.adapter
         boardAdapter?.notifyItemChanged(dragStartPosition)
         placementViewModel.removeLetter(dragStartPosition)
+    }
+
+    override fun switchRack(activePlayerName: String) {
+        // Update observer rack
+        activity?.runOnUiThread {
+            val currentPlayer = Players.players.find { it.name == activePlayerName } ?: return@runOnUiThread
+            LetterRack.letters = currentPlayer.letterTable
+            letterRackAdapter.updateData(LetterRack.letters)
+        }
     }
 }
