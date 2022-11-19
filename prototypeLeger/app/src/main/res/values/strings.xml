@@ -69,8 +69,6 @@
     <string name="store">Boutique</string>
     <string name="friend_store_title">Autres</string>
     <string name="title_activity_main_menu">MainMenuActivity</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
     //Settings fragment
     <string name="parameters">Paramètres</string>
@@ -107,6 +105,9 @@
 
     //Items Dialog
     <string name="themes_dialog_title">Veuillez choisir un thème de %1s</string>
-    <string name="supprimerUnCanal">supprimer</string>
+
+    //Chat rooms
+    <string name="join_chatroom">Rejoindre</string>
+    <string name="delete_chatroom">Supprimer</string>
 
 </resources>

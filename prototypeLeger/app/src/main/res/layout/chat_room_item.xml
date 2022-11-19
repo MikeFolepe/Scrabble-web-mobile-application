@@ -2,23 +2,25 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="horizontal">
     <TextView
         android:id="@+id/name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="15sp"
-        android:layout_gravity="center_horizontal"
-        android:textColor="@color/black"
+        android:layout_gravity="center"
+        android:textColor="?android:textColor"
         android:layout_weight="1"
         android:textStyle="bold" />
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/delete"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/supprimerUnCanal"
+        android:text="@string/delete_chatroom"
         android:textSize="15sp"
-        android:textColor="@color/red"/>
-
+        android:textColor="@color/red"
+        android:textStyle="bold"
+        android:padding="10dp"
+        android:background="@drawable/white_background"/>
 </LinearLayout>
