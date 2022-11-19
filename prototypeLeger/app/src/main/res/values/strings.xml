@@ -107,5 +107,6 @@
 
     //Items Dialog
     <string name="themes_dialog_title">Veuillez choisir un thème de %1s</string>
+    <string name="supprimerUnCanal">supprimer</string>
 
 </resources>

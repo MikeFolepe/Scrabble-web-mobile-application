@@ -22,7 +22,6 @@ export class ChatroomsComponent implements OnInit {
         private clientSocketService: ClientSocketService,
         private authService: AuthService,
     ) {
-        // this.chatRoomService.getChatRooms();
         this.currentMessage = '';
         this.scrollToBottom();
         this.isOpen = false;

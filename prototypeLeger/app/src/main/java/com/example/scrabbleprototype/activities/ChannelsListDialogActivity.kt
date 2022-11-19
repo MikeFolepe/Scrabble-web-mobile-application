@@ -1,13 +1,8 @@
 package com.example.scrabbleprototype.activities
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.DialogFragment
-import com.example.scrabbleprototype.R
+/*class ChannelsListDialogActivity: DialogFragment() {
+    val chatRooms: ChatRoom[] = [];
 
-class ChannelsListDialogActivity: DialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -17,4 +12,24 @@ class ChannelsListDialogActivity: DialogFragment() {
 
         return rootView
     }
+
+    constructor(public clientSocketService: ClientSocketService) {
+        this.clientSocketService.socket.on('updateChatRooms', (chatRooms: ChatRoom[]) => {
+            this.chatRooms = chatRooms;
+            this.scrollDown();
+        });
+
+        this.clientSocketService.socket.on('newChatRoom', (chatRoom: ChatRoom) => {
+            this.chatRooms.push(chatRoom);
+        });
+    }
+
+    displayBound(fn: () => void) {
+        this.scrollDown = fn;
+    }
+
+    getChatRooms() {
+        this.clientSocketService.socket.emit('getChatRooms');
+    }
 }
+*/

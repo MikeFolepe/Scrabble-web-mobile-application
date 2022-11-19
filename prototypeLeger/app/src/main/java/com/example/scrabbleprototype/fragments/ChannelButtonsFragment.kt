@@ -5,17 +5,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.ListView
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
+import com.example.scrabbleprototype.model.ChatRoom
+import com.example.scrabbleprototype.model.ChatRoomsAdapter
+import com.example.scrabbleprototype.objects.ChatRooms
+import com.example.scrabbleprototype.objects.Users
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class ChannelButtonsFragment : Fragment() {
-    var channelsNames = arrayOf("channel1", "channel2", "channel3", "channel4")
 
-    lateinit var adapter: ArrayAdapter<String>
-    lateinit var channelsListView: ListView
+    lateinit var adapter: ChatRoomsAdapter
+    lateinit var channelsListView: RecyclerView
     lateinit var  dialog: Dialog
     lateinit var channelsDialog: Dialog
 
@@ -24,6 +26,7 @@ class ChannelButtonsFragment : Fragment() {
         if(savedInstanceState == null) {
             setUpFragments()
         }
+        ChatRooms.chatRooms.add(ChatRoom("chat", Users.currentUser, "param3"))
     }
 
     override fun onCreateView(
@@ -52,8 +55,8 @@ class ChannelButtonsFragment : Fragment() {
     fun openChannelsDialog() {
         dialog = Dialog(requireContext())
         dialog.setContentView(R.layout.channels_list_dialog)
-        channelsListView = dialog.findViewById(R.id.listView)
-        adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, channelsNames)
+        channelsListView = dialog.findViewById(R.id.recyclerView)
+        adapter = ChatRoomsAdapter(ChatRooms.chatRooms)
         channelsListView.adapter = adapter
         adapter.notifyDataSetChanged()
         dialog.show()
