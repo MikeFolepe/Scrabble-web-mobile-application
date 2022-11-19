@@ -150,7 +150,12 @@ class InformationPannelFragment : Fragment(), TurnUICallback {
             val newPlayer = jacksonObjectMapper().readValue(response[0].toString(), Player::class.java)
             val position = response[1] as Int
             Players.players[position] = newPlayer
-            Players.currentPlayer = newPlayer
+            activity?.runOnUiThread {
+                playersAdapter.updateData(Players.players)
+            }
+            if(Users.currentUser.pseudonym == newPlayer.name){
+                Players.currentPlayer = newPlayer
+            }
 
         }
     }

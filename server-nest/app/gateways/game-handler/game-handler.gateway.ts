@@ -220,6 +220,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
     replaceAi(@ConnectedSocket() socket, @MessageBody() playerName: string, @MessageBody() indexAiToReplace: number, @MessageBody() roomId: string) {
         const room = this.roomManagerService.find(roomId[2]);
         console.log(room);
+        console.log('indexReplace', indexAiToReplace);
         const indexToRemove = room.ais.findIndex((curPlayer) => curPlayer.name === room.playerService.players[indexAiToReplace[1]].name);
         const indexToRemoveObserver = room.observers.findIndex((curPlayer) => curPlayer.pseudonym === playerName[0]);
         room.ais[indexToRemove] = {} as PlayerAI;

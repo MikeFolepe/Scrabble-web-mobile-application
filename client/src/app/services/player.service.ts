@@ -56,10 +56,13 @@ export class PlayerService {
     }
 
     onReplaceAi() {
-        this.clientSocketService.socket.on('newUser', (player: Player, indexAiToReplace: number) => {
+        this.clientSocketService.socket.on('newPlayer', (player: Player, indexAiToReplace: number) => {
+            console.log(indexAiToReplace);
             this.players[indexAiToReplace] = {} as Player;
             this.players[indexAiToReplace] = player;
-            this.currentPlayer = player;
+            if (this.currentPlayer.name === player.name) {
+                this.currentPlayer = player;
+            }
         });
     }
 

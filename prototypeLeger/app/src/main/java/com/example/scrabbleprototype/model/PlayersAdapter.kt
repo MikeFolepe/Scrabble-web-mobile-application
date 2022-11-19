@@ -66,6 +66,7 @@ class PlayersAdapter(private var players: ArrayList<Player>) :
 
         replaceButton.setOnClickListener {
             Users.currentUser.isObserver = false
+            Log.d("aipos",position.toString())
             SocketHandler.socket.emit("replaceAi", Users.currentUser.pseudonym, position, CurrentRoom.myRoom.id)
         }
 
