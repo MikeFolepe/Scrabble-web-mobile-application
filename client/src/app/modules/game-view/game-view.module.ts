@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { AppRoutingModule } from '@app/modules/app-routing.module';
 import { ChatboxComponent } from '@app/modules/game-view/chatbox/chatbox.component';
 import { FontSizeComponent } from '@app/modules/game-view/font-size/font-size.component';
@@ -10,10 +10,19 @@ import { LetterEaselComponent } from '@app/modules/game-view/letter-easel/letter
 import { ScrabbleBoardComponent } from '@app/modules/game-view/scrabble-board/scrabble-board.component';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { SharedModule } from '@app/modules/shared/shared.module';
+import { AvatarChoiceComponent } from './avatar-choice/avatar-choice.component';
 
 @NgModule({
-    declarations: [GameViewComponent, ScrabbleBoardComponent, InformationPanelComponent, LetterEaselComponent, FontSizeComponent, ChatboxComponent],
-    imports: [CommonModule, AppRoutingModule, FormsModule, SharedModule, AppMaterialModule, ReactiveFormsModule],
+    declarations: [
+        GameViewComponent,
+        ScrabbleBoardComponent,
+        InformationPanelComponent,
+        LetterEaselComponent,
+        FontSizeComponent,
+        ChatboxComponent,
+        AvatarChoiceComponent,
+    ],
+    imports: [CommonModule, AppRoutingModule, FormsModule, SharedModule, AppMaterialModule],
     exports: [GameViewComponent],
     bootstrap: [GameViewComponent],
 })

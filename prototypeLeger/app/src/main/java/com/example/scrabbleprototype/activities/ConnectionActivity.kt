@@ -5,11 +5,14 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.style.UnderlineSpan
 import android.util.Log
 import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.model.SocketHandler
@@ -73,6 +76,7 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
             }
             v?.onTouchEvent(event) ?: true
         }
+        createAccount()
     }
 
     private fun hideKeyboard() {
@@ -98,7 +102,7 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
         }
 
         //validate username and ip
-        launch {
+       /* launch {
             val user = User(serverIp, username, null, false)
 
             val response = postAuthentication(user)
@@ -113,7 +117,7 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
                 } else if (response.status == HttpStatusCode.NotFound) serverIpInput.error = serverError
                 else serverIpInput.error = serverError
             } else serverIpInput.error = serverError
-        }
+        }*/
     }
 
     suspend fun postAuthentication(user: User): HttpResponse? {
@@ -142,5 +146,16 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
             chatSocket.emit("updateUserSocket", JSONObject(Json.encodeToString(users.currentUser)))
         }
         startActivity(intent)
+    }
+
+    fun createAccount(){
+        val textAccount = findViewById<TextView>(R.id.create_account)
+        val mString = "Pas de compte? Créez-en un."
+        val mSpannableString = SpannableString(mString)
+        mSpannableString.setSpan(UnderlineSpan(), 0, mSpannableString.length, 0)
+        textAccount.text = mSpannableString
+        textAccount.setOnClickListener {
+            startActivity(Intent(this, RegisterActivity::class.java))
+        }
     }
 }

@@ -264,6 +264,8 @@ export class AdministratorService {
         );
     }
 
+
+
     private updateAiPlayer(id: string, aiPlayer: AiPlayer, aiType: AiType): void {
         this.communicationService.updateAiPlayer(id, aiPlayer, aiType).subscribe(
             (aiPlayers) => {
@@ -280,7 +282,7 @@ export class AdministratorService {
         );
     }
 
-    private displayMessage(message: string): void {
+    displayMessage(message: string): void {
         if (this.isResetting) return;
         this.snackBar.open(message, 'OK', {
             duration: ERROR_MESSAGE_DELAY,

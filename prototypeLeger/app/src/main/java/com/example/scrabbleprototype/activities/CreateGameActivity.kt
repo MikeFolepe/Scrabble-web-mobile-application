@@ -63,9 +63,6 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
             }
         }
         receiveMyPlayer()
-        launch {
-            setupSpinners()
-        }
         setUpButtons()
         receiveMyPlayer()
         currRoom()

@@ -6,7 +6,7 @@
     background-image: linear-gradient(0deg, #000000 25%, #005634 25%, #005634 50%, #000000 50%, #000000 75%, #005634 75%, #005634 100%);
     background-size: 4px 4px;
     color: white;
-    font: 1.3rem Inconsolata, monospace;
+    font: 1rem Inconsolata, monospace;
     text-shadow: 0 0 5px #c8c8c8;
     display: flex;
     flex-direction: column;
@@ -21,6 +21,14 @@
     outline: none;
     line-height: 0px;
     width: auto;
+}
+
+.avatar {
+    height : 30px;
+    width : 30px;
+    border-radius : 100%;
+    margin-right:5px;
+    margin-bottom:10px;
 }
 
 .sendButton {
@@ -54,20 +62,19 @@
 
 .text {
     color: white;
-    padding: 15px 15px;
+    padding: 5px 5px;
+    display: flex;
+    align-items:center;
 }
 
 .sendMessage {
-    //put in the bottom of the box
-    //make this class always stay at the bottom of the div
+
     position: absolute;
     bottom: 0;
-    //make the width of the div
     width: 100%;
     display: flex;
     flex-direction: row;
     align-items: baseline;
-    // margin-top: 200px;
 }
 
 .closedChat {
