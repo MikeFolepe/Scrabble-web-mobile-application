@@ -1,139 +1,212 @@
 .login {
-  width: 400px;
-  margin: 16px auto;
-  font-size: 16px;
-
+    width: 400px;
+    margin: 16px auto;
+    font-size: 16px;
 }
 
 .login-header,
 .login p {
-  margin-top: 25px;
-  margin-bottom: 0;
-
+    margin-top: 25px;
+    margin-bottom: 0;
 }
 
 .login-triangle {
-  width: 0;
-  margin-right: auto;
-  margin-left: auto;
-  border: 12px solid transparent;
-  border-bottom-color: rgb(35,80,31);
+    width: 0;
+    margin-right: auto;
+    margin-left: auto;
+    border: 12px solid transparent;
+    border-bottom-color: rgb(35, 80, 31);
 }
 
+.createAccountTitle {
+    text-align: center;
+    color: white;
+}
 
 .login-container {
-  background: rgb(35,80,31);
-  border-radius: 15px;
-  padding: 12px;
+    background: rgb(35, 80, 31);
+    border-radius: 15px;
+    padding: 12px;
+}
+
+.createAccount-container {
+    background: rgb(35, 80, 31);
+    margin-top: 25px;
+    border-radius: 15px;
+    padding: 12px;
 }
 
 .login p {
-  padding: 12px;
+    padding: 12px;
 }
 
 .login input {
-  box-sizing: border-box;
-  display: block;
-  width: 100%;
-  border-width: 1px;
-  border-style: solid;
-  padding: 16px;
-  outline: 0;
-  font-family: inherit;
-  font-size: 0.95em;
+    box-sizing: border-box;
+    display: block;
+    width: 100%;
+    border-width: 1px;
+    border-style: solid;
+    padding: 16px;
+    outline: 0;
+    font-family: inherit;
+    font-size: 0.95em;
 }
 
-.login input[type="email"],
-.login input[type="password"] {
-  background: #fff;
-  border-color: #bbb;
-  color: #555;
+.login input[type='email'],
+.login input[type='password'] {
+    background: #fff;
+    border-color: #bbb;
+    color: #555;
 }
 
-.login input[type="email"]:focus,
-.login input[type="password"]:focus {
-  border-color: #888;
+.login input[type='email']:focus,
+.login input[type='password']:focus {
+    border-color: #888;
 }
 
-.login input[type="submit"] {
-  background: rgb(0,128,77);
-  border-radius: 10px;
-  border-color: rgb(35,80,31);
-  color: white;
-  cursor: pointer;
+.login input[type='submit'] {
+    background: rgb(0, 128, 77);
+    border-radius: 10px;
+    border-color: rgb(35, 80, 31);
+    color: white;
+    cursor: pointer;
 }
 
 .login .forgottenPassword {
-    margin-left: 5px;
-    background: rgb(35,80,31);
-    margin-bottom:18px;
+    margin-left: 12px;
+    background: rgb(35, 80, 31);
+    margin-bottom: 18px;
     border-color: transparent;
     color: white;
 }
 
+.signUpHeader {
+    //align all the items vertically
+    display: flex;
+    flex-direction: row;
+}
 
-.login .newAccount {
-    background: rgb(35,80,31);
-    border-color: transparent;
-    color: white;
+.errorPasswords {
+    color: red;
+    font-size: 16px;
     text-align: center;
-    margin-top: 6px;
-    margin-bottom: -6px;
+}
+
+.goBack {
+    background-color: rgb(35, 80, 31);
+    margin-right: 65px;
+    transform: scale(1.2);
+    margin-bottom: 14px;
+    color: white;
+    border-style: none;
+    top: 0;
+    left: 0;
+}
+
+.goBack:hover {
+    cursor: pointer;
+}
+
+.avatar {
+    height: 120px;
+    width: 120px;
+    border-radius: 100%;
+    //center the image
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10px;
+    display: block;
+}
+
+.changeAvatar {
+    //center the text
+    text-align: center;
+    color: white;
+    //undeline
+    text-decoration: underline;
+    margin-top: 5px;
+}
+
+.changeAvatar:hover {
+    cursor: pointer;
+    color: rgb(166, 202, 188);
+}
+
+.invalidPassword {
+    color: red;
+    font-size: 16px;
+    text-align: center;
+}
+
+.errorMessage {
+    color: red;
+    font-size: 16px;
+    text-align: center;
 }
 
 #buttons {
-
     margin-top: 24px;
     margin-bottom: 24px;
-    display:flex;
-    flex-direction:column;
-    align-content : center;
+    display: flex;
+    flex-direction: column;
+    align-content: center;
     justify-content: center;
     align-items: center;
     gap: 24px;
+}
 
+.connectButton {
+    color: rgb(35, 80, 31);
+}
+
+.chooseAvatarButton {
+    color: white;
+    background-color: rgb(35, 80, 31);
+    border-style: solid;
+    border-color: black;
 }
 
 .createAccount {
-  background: rgb(0,128,77);
-  border-radius: 10px;
-  border-color: rgb(35,80,31);
-  color: white;
-  cursor: pointer;
-  margin-top: 24px;
-  margin-bottom: 24px;
+    text-align: center;
+    border-radius: 10px;
+    border-color: rgb(35, 80, 31);
+    text-decoration: underline;
+    color: white;
+    cursor: pointer;
+    margin-top: 40px;
+    margin-bottom: 10px;
 }
 
 .login .forgottenPassword:hover {
-    color: rgb(166,202,188);
-    cursor:pointer;
+    color: rgb(166, 202, 188);
+    cursor: pointer;
 }
 
-.login .newAccount:hover {
-    color: rgb(166,202,188);
-    cursor:pointer;
+.login .createAccount:hover {
+    color: rgb(166, 202, 188);
+    text-decoration: underline;
+    cursor: pointer;
 }
 
-.login input[type="submit"]:hover {
-  background: rgb(166,202,188);
+.login input[type='submit']:hover {
+    background: rgb(166, 202, 188);
 }
 
-.login input[type="submit"]:focus {
-  border-color: #05a;
+.login input[type='submit']:focus {
+    border-color: #05a;
 }
 
-.has-error input[type="email"],
-.has-error input[type="password"] {
+.has-error input[type='email'],
+.has-error input[type='password'] {
     border-color: rgb(216, 12, 12);
     color: rgb(230, 14, 14);
 }
 
 .help-block {
-  color: rgb(166,202,188);
-  margin-top: -6px;
-  margin-left: 12px;
+    color: rgb(243, 13, 13);
+    margin-top: -6px;
+    margin-left: 12px;
 }
-
 
 .alert {
     width: 28em;

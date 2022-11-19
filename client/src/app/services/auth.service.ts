@@ -16,25 +16,26 @@ import { ErrorHandlerService } from './error-handler.service';
 export class AuthService {
     currentUser: User;
     serverUrl: string;
+    chosenAvatar: string;
     constructor(
         private clientSocketService: ClientSocketService,
         private router: Router,
         private communicationService: CommunicationService,
         public errorHandler: ErrorHandlerService,
         public snackBar: MatSnackBar,
-    ) {}
-
-    signIn(userData: User) {
+    ) {
+        this.chosenAvatar = '';
         this.serverUrl = environment.serverUrl;
         this.communicationService.baseUrl = this.serverUrl + '/api';
+    }
 
+    signIn(userData: User) {
         this.communicationService.connectUser(userData).subscribe(
-            (valid: boolean) => {
-                if (valid) {
-                    this.currentUser = new User(userData.pseudonym, userData.ipAddress);
+            (newUser: User) => {
+                if (newUser) {
+                    this.currentUser = newUser;
                     this.clientSocketService.socket = io(this.serverUrl);
                     this.clientSocketService.socket.connect();
-
                     this.clientSocketService.socket.emit(ChatEvents.JoinRoom);
                     this.clientSocketService.socket.emit(ChatEvents.GetMessages);
                     this.receiveUserSocket();

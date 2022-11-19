@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-imports */
 /* eslint-disable max-lines */
 import { ServerRoom, State } from '@app/classes/server-room';
-import { UsersService } from '@app/users/service/users.service';
+import { UserService } from '@app/users/user.service';
 import { ChatRoomMessage } from '@common/chatRoomMessage';
 import { DELAY_BEFORE_PLAYING, ONE_SECOND_DELAY, THREE_SECONDS_DELAY } from '@common/constants';
 import { GameSettings } from '@common/game-settings';
@@ -18,7 +18,7 @@ import { ChatEvents } from './../../../../common/chat.gateway.events';
 export class GameHandlerGateway implements OnGatewayConnection {
     @WebSocketServer() private server: Server;
 
-    constructor(private readonly logger: Logger, private userService: UsersService, private roomManagerService: RoomManagerService) {}
+    constructor(private readonly logger: Logger, private userService: UserService, private roomManagerService: RoomManagerService) {}
 
     // TODO: set a socket id in player class to easily find the player
 
