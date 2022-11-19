@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.AttributeSet
+import android.util.Log
 import android.view.Menu
 import android.view.View
 import android.widget.Button
@@ -17,6 +18,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.databinding.ActivityMainMenuBinding
 import com.example.scrabbleprototype.objects.ThemeManager
@@ -48,7 +50,16 @@ class MainMenuActivity : AppCompatActivity() {
         binding = ActivityMainMenuBinding.inflate(layoutWithTheme)
         setContentView(binding.root)
 
+        val notificationButton = binding.appBarMainMenu.notificationButton
+        val notificationDot = binding.appBarMainMenu.newNotificationDot
+        notificationButton.setOnClickListener {
+            Log.d("Notif", "NOTOTAOWDAW")
+            if(notificationDot.visibility == View.GONE) notificationDot.visibility = View.VISIBLE
+            else notificationDot.visibility = View.GONE
+        }
+
         setSupportActionBar(binding.appBarMainMenu.toolbar)
+
 
         val drawerLayout: DrawerLayout = binding.drawerLayout
         val navView: NavigationView = binding.navView
