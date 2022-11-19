@@ -56,6 +56,7 @@
     //Main menu
     <string name="welcome">Bienvenue!</string>
     <string name="user_xp">XP : %1d</string>
+    <string name="logout">Se déconnecter</string>
 
     //Hamburger Main menu
     <string name="menu_home">Home</string>
