@@ -40,15 +40,13 @@ export class JoinChatRoomsComponent {
     }
 
     deleteChatRoom(index: number) {
-        // console.log(this.chatRoomService.chatRooms[this.chatRoomIndexService.chatRoomIndex])
+
         this.chatRoomService.chatRooms.splice(index, 1);
         this.clientSocketService.socket.emit('deleteChatRoom', index);
     }
 
     alreadyInRoom(chatRoom: ChatRoom): boolean {
-        // find the user in the current room
 
-        // check if the chatRoom is the first room in the chatRoomService.chatRooms array
         if (this.chatRoomService.chatRooms[0].chatRoomName === chatRoom.chatRoomName) {
             return true;
         }
