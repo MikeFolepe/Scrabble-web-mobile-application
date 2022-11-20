@@ -1,5 +1,5 @@
 import { User } from '@common/user';
-import { Body, Controller, Get, Post, Req } from '@nestjs/common';
+import { Body, Controller, Get, Logger, Post, Req } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { UserService } from './user.service';
 
@@ -30,7 +30,9 @@ export class UserController {
     @Get('/checkPseudonym/:pseudonym')
     async checkPseudonym(@Req() req) {
         const pseudonym = req.params.pseudonym;
+        Logger.log(pseudonym);
         const userFound = await this.userService.getSingleUser(pseudonym);
+        Logger.log(userFound);
         return Boolean(userFound);
     }
 
