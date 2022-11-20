@@ -25,4 +25,8 @@ class Player: BaseObservable() {
         isTurn = turn
         notifyPropertyChanged(BR.turn)
     }
+
+    fun updateCurrentPlayer() {
+        notifyPropertyChanged(BR.player)
+    }
 }

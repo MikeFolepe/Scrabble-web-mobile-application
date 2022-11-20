@@ -47,7 +47,8 @@ export class AuthService {
                 }
             },
             (error: HttpErrorResponse) => {
-                this.errorHandler.handleRequestError(error);
+                if (error.status === HttpStatusCode.NotModified) this.displayMessage('Cet utilisateur est déjà connecté');
+                else this.errorHandler.handleRequestError(error);
             },
         );
     }

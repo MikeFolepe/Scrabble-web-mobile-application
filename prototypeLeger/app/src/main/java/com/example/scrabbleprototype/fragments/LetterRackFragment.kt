@@ -25,6 +25,7 @@ import com.example.scrabbleprototype.databinding.FragmentGameButtonsBinding
 import com.example.scrabbleprototype.databinding.FragmentLetterRackBinding
 import com.example.scrabbleprototype.model.*
 import com.example.scrabbleprototype.objects.*
+import com.example.scrabbleprototype.services.ObserverRackCallback
 import com.example.scrabbleprototype.services.CancelSwapCallback
 import com.example.scrabbleprototype.services.PlaceService
 import com.example.scrabbleprototype.services.SkipTurnService
@@ -34,7 +35,7 @@ import com.example.scrabbleprototype.viewModel.PlayersViewModel
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 
-class LetterRackFragment : Fragment(), CancelSwapCallback {
+class LetterRackFragment : Fragment(), ObserverRackCallback, CancelSwapCallback {
 
     private val lettersToSwapIndexes = hashMapOf<Int, String>()
     private var swapLength: MutableLiveData<Int> = MutableLiveData(0)
@@ -45,10 +46,10 @@ class LetterRackFragment : Fragment(), CancelSwapCallback {
     private val placementViewModel: PlacementViewModel by activityViewModels()
     private val playersViewModel: PlayersViewModel by activityViewModels()
 
-    private lateinit var swapLetterService: SwapLetterService
-    private var swapLetterBound: Boolean = false
     private lateinit var skipTurnService: SkipTurnService
     private var skipTurnBound: Boolean = false
+    private lateinit var swapLetterService: SwapLetterService
+    private var swapLetterBound: Boolean = false
 
     private lateinit var binding: FragmentLetterRackBinding
     lateinit var activityContext: Context
@@ -58,6 +59,7 @@ class LetterRackFragment : Fragment(), CancelSwapCallback {
             if(service is SkipTurnService.LocalBinder) {
                 skipTurnService = service.getService()
                 skipTurnBound = true
+                skipTurnService.setObserverRackCallback(this@LetterRackFragment)
                 skipTurnService.setCancelSwapCallback(this@LetterRackFragment)
             } else if (service is SwapLetterService.LocalBinder) {
                 swapLetterService = service.getService()
@@ -85,6 +87,7 @@ class LetterRackFragment : Fragment(), CancelSwapCallback {
         activityContext.unbindService(connection)
         skipTurnBound = false
         swapLetterBound = false
+        skipTurnService.setObserverRackCallback(null)
         skipTurnService.setCancelSwapCallback(null)
     }
 
@@ -114,7 +117,9 @@ class LetterRackFragment : Fragment(), CancelSwapCallback {
 
     private fun setupLetterRack(view: View) {
         LetterRack.letters = Players.currentPlayer.letterTable
-        letterRackView = binding.letterRack
+        if(Users.currentUser.isObserver) LetterRack.letters = Players.getActivePlayer().letterTable
+
+        letterRackView = view.findViewById(R.id.letter_rack)
         val horizontalLayoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false)
         letterRackView.layoutManager = horizontalLayoutManager
         letterRackAdapter = LetterRackAdapter(LetterRack.letters)
@@ -137,7 +142,10 @@ class LetterRackFragment : Fragment(), CancelSwapCallback {
         letterRackView = binding.letterRack
         swapButton.isEnabled = false
         val swapObserver = Observer<Int> { swapLength ->
-            if(Players.currentPlayer.getTurn()) swapButton.isEnabled = swapLength != 0
+            if(Players.currentPlayer.getTurn()) {
+                swapButton.isEnabled = swapLength != 0
+                binding.cancelButton.isEnabled = swapLength != 0
+            }
         }
         swapLength.observe(viewLifecycleOwner, swapObserver)
 
@@ -219,7 +227,7 @@ class LetterRackFragment : Fragment(), CancelSwapCallback {
         }
     }
 
-    private fun setupDragListener(view: View) {
+        private fun setupDragListener(view: View) {
         // Drag listener for board cases
         view.setOnDragListener { v, e ->
             when(e.action) {
@@ -274,5 +282,14 @@ class LetterRackFragment : Fragment(), CancelSwapCallback {
         val boardAdapter = activity?.findViewById<RecyclerView>(R.id.board)?.adapter
         boardAdapter?.notifyItemChanged(dragStartPosition)
         placementViewModel.removeLetter(dragStartPosition)
+    }
+
+    override fun switchRack(activePlayerName: String) {
+        // Update observer rack
+        activity?.runOnUiThread {
+            val currentPlayer = Players.players.find { it.name == activePlayerName } ?: return@runOnUiThread
+            LetterRack.letters = currentPlayer.letterTable
+            letterRackAdapter.updateData(LetterRack.letters)
+        }
     }
 }

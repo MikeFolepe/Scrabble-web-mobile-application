@@ -51,6 +51,7 @@ export class ChatboxComponent implements OnInit {
             event.preventDefault();
             this.chatBoxService.sendPlayerMessage(this.message);
             this.scrollToBottom();
+            this.message = '';
         }
     }
 
@@ -63,7 +64,6 @@ export class ChatboxComponent implements OnInit {
         this.listTypes.push(this.sendMessageService.messageType);
         this.listMessages.push(this.sendMessageService.message);
         // Clear input
-        this.message = '';
         this.scrollToBottom();
     }
 

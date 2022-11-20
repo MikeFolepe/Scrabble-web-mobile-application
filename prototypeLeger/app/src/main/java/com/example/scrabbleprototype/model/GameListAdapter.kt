@@ -16,12 +16,15 @@ import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
+import com.example.scrabbleprototype.objects.Players
+import com.example.scrabbleprototype.objects.Users
 import org.w3c.dom.Text
 
 class GameListAdapter(private var gameList: ArrayList<Room>) :
     RecyclerView.Adapter<GameListAdapter.ViewHolder>() {
 
     var onJoinGame: ((position: Int) -> Unit)? = null
+    val currentUser = Users.currentUser
 
     /**
      * Provide a reference to the type of views that you are using
@@ -64,12 +67,20 @@ class GameListAdapter(private var gameList: ArrayList<Room>) :
             gameStatus.text = "En attente"
             gameStatus.setTextColor(ContextCompat.getColor(gameStatus.context, R.color.lime_green))
         }
-        if(gameList[position].state == State.Playing || gameList[position].state == State.Finish) {
+        if(gameList[position].gameSettings.password == "" && gameList[position].gameSettings.type == RoomType.public.ordinal) {
             roomType.text = "Public"
             roomType.setTextColor(ContextCompat.getColor(roomType.context, R.color.lime_green))
-        } else {
+        } else if(gameList[position].gameSettings.type == RoomType.private.ordinal) {
             roomType.text = "Privée"
             roomType.setTextColor(ContextCompat.getColor(roomType.context, R.color.red))
+        }
+        else {
+            roomType.text = "Publique avec mot de passe"
+            roomType.setTextColor(ContextCompat.getColor(roomType.context, R.color.red))
+        }
+        val joinGameButton = viewHolder.gameRoom.findViewById<Button>(R.id.join_game_room_button)
+        if(gameList[position].state == State.Playing && gameList[position].gameSettings.type == RoomType.public.ordinal){
+            joinGameButton.text ="Observer"
         }
     }
 

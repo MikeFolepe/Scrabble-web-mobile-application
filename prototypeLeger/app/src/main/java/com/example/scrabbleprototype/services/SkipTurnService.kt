@@ -8,6 +8,7 @@ import com.example.scrabbleprototype.model.Player
 import com.example.scrabbleprototype.model.SocketHandler
 import com.example.scrabbleprototype.objects.CurrentRoom
 import com.example.scrabbleprototype.objects.Players
+import com.example.scrabbleprototype.objects.Users
 import java.util.*
 import kotlin.concurrent.timerTask
 
@@ -16,6 +17,9 @@ interface TurnUICallback {
 }
 interface EndTurnCallback {
     fun handleInvalidPlacement()
+}
+interface ObserverRackCallback {
+    fun switchRack(activePlayerName: String)
 }
 interface CancelSwapCallback {
     fun resetSwap()
@@ -27,11 +31,12 @@ class SkipTurnService : Service() {
     private val socket = socketHandler.getPlayerSocket()
     private val player = Players.currentPlayer
 
-    private var activePlayerName: String = ""
+    var activePlayerName: String = ""
 
     private val binder = LocalBinder()
     private var turnUICallback: TurnUICallback? = null
     private var endTurnCallback: EndTurnCallback? = null
+    private var observerRackCallback: ObserverRackCallback? = null
     private var cancelSwapCallback: CancelSwapCallback? = null
 
     inner class LocalBinder: Binder() {
@@ -39,9 +44,8 @@ class SkipTurnService : Service() {
     }
 
     override fun onBind(intent: Intent): IBinder {
-        activePlayerName = CurrentRoom.myRoom.gameSettings.creatorName
+        activePlayerName = Players.getActivePlayer().name
         receiveNewTurn()
-        receiveTimer()
         return binder
     }
 
@@ -50,6 +54,9 @@ class SkipTurnService : Service() {
     }
     fun setEndTurnCallback(callBack: EndTurnCallback?) {
         endTurnCallback = callBack
+    }
+    fun setObserverRackCallback(callBack: ObserverRackCallback?) {
+        observerRackCallback = callBack
     }
     fun setCancelSwapCallback(callback: CancelSwapCallback?) {
         cancelSwapCallback = callback
@@ -71,20 +78,13 @@ class SkipTurnService : Service() {
             val currentPlayer = Players.players.find { it.name == playerName }!!
             currentPlayer.setTurn(true)
             activePlayerName = currentPlayer.name
+            if(Users.currentUser.isObserver) observerRackCallback?.switchRack(activePlayerName)
         }
 
         socket.on("updatePlayerTurnToFalse") { response ->
             val playerToUpdateName = response[0] as String
+            if(player.name == playerToUpdateName) player.setTurn(false)
             Players.players.find { it.name == playerToUpdateName }?.setTurn(false)
-        }
-    }
-
-    private fun receiveTimer() {
-        socket.on("updateTimer") { response ->
-            val minutes = response[0].toString()
-            val seconds = response[1].toString()
-            Log.d("timer", "on update")
-            turnUICallback?.updateTimeUI(minutes, seconds, activePlayerName)
         }
     }
 
