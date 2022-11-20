@@ -10,16 +10,12 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="dark_gray">#63666A</color>
-    <color name="light_blue">#8fb7dd</color>
-    <color name="light_cyan">#a9daea</color>
     <color name="tan">#d2b48c</color>
     <color name="red">#FF1A1A</color>
     <color name="dark_red">#7E0A0A</color>
     <color name="dark_green">#011910</color>
     <color name="gray">#8d8d8d</color>
     <color name="light_green">#c3f1e1</color>
-    <color name="navy_blue">#3C5291</color>
-    <color name="dark_navy_blue">#212E52</color>
     <color name="test">#42000000</color>
     <color name="dark_tan">#84643B</color>
     <color name="green">#009900</color>
@@ -27,17 +23,43 @@
     <color name="purple">#9400D3</color>
     <color name="yellow">#ffea00</color>
     <color name="lime_green">#73e13b</color>
-    <color name="blue">#1D7CF2</color>
     <color name="white_gray">#fafafa</color>
     <color name="light_gray">#e1e1e1</color>
-    <color name="orange">#e66a00</color>
-    <color name="light_orange">#FFE5B4</color>
     <color name="gold">#fcd21c</color>
 
     <color name="darker_gray">#191A19</color>
     <color name="container_gray">#323432</color>
 
-    <color name="gradient_start">#4DB6AC</color>
-    <color name="gradient_center">#009688</color>
-    <color name="gradient_end">#00695C</color>
+    <color name="teal_gradient_start">#4DB6AC</color>
+    <color name="teal_gradient_center">#009688</color>
+    <color name="teal_gradient_end">#00695C</color>
+
+    <color name="darkteal_gradient_start">#004E4F</color>
+    <color name="darkteal_gradient_center">#003738</color>
+    <color name="darkteal_gradient_end">#002223</color>
+
+
+    // BLUE THEME
+    <color name="lighter_blue">#d4e1f2</color>
+    <color name="cyan">#00b4d4</color>
+    <color name="blue">#1D7CF2</color>
+    <color name="navy_blue">#3C5291</color>
+    <color name="dark_navy_blue">#212E52</color>
+    <color name="light_blue">#8fb7dd</color>
+    <color name="light_cyan">#a9daea</color>
+
+    <color name="blue_gradient_start">#7ce8ff</color>
+    <color name="blue_gradient_center">#55d0ff</color>
+    <color name="blue_gradient_end">#00acdf</color>
+
+    // ORANGE THEME
+    <color name="orange">#e66a00</color>
+    <color name="lighter_orange">#fff2e2</color>
+    <color name="light_orange">#fed8b1</color>
+    <color name="neon_orange">#FE5000</color>
+    <color name="dark_orange">#4f2a00</color>
+
+    <color name="orange_gradient_start">#FDA766</color>
+    <color name="orange_gradient_center">#FD9346</color>
+    <color name="orange_gradient_end">#FD7F2C</color>
 </resources>

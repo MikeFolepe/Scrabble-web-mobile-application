@@ -8,6 +8,8 @@ class User(var avatar: String, var pseudonym: String,var password: String, var e
     @JsonIgnore
     var xpPoints: Int = 0
     @JsonIgnore
+    val friendsList = arrayListOf<Friend>()
+    @JsonIgnore
     var ipAddress: String = "10.200.37.104:3000"
 
 }

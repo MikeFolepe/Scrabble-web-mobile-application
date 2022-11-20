@@ -32,8 +32,8 @@ class JoinGameActivity : AppCompatActivity() {
     val currentUser = Users.currentUser
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         ThemeManager.setActivityTheme(this)
+        super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_join_game)
 
         receivePlayers()

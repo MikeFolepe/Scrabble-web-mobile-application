@@ -32,8 +32,8 @@ class WaitingRoomActivity : AppCompatActivity() {
     private val mapper = jacksonObjectMapper()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         ThemeManager.setActivityTheme(this)
+        super.onCreate(savedInstanceState)
         setContentView(R.layout.waiting_room)
         receiveNewOpponent()
         goToGameView()

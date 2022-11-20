@@ -70,6 +70,7 @@ class SkipTurnService : Service() {
         socket.on("updateTimer") { response ->
             val minutes = response[0].toString()
             val seconds = response[1].toString()
+            Log.d("timer", "on update")
             turnUICallback?.updateTimeUI(minutes, seconds, activePlayerName)
         }
     }
@@ -77,7 +78,7 @@ class SkipTurnService : Service() {
     fun switchTimer() {
         Timer().schedule(timerTask {
             endTurnCallback?.handleInvalidPlacement()
-            socket.emit("switchTurn", CurrentRoom.myRoom.id, player.name)
+            socket.emit("switchTurn", CurrentRoom.myRoom.id)
             player.setTurn(false)
         }, 1000)
     }
