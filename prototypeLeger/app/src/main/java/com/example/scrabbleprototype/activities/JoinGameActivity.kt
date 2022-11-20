@@ -1,9 +1,12 @@
 package com.example.scrabbleprototype.activities
 
+import android.app.Dialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
+import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,6 +25,7 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONArray
+import org.json.JSONObject
 
 class JoinGameActivity : AppCompatActivity() {
 
@@ -30,6 +34,7 @@ class JoinGameActivity : AppCompatActivity() {
     val socket = socketHandler.getPlayerSocket()
     private val mapper = jacksonObjectMapper()
     val currentUser = Users.currentUser
+    lateinit var passwordDialog: Dialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         ThemeManager.setActivityTheme(this)
@@ -43,7 +48,8 @@ class JoinGameActivity : AppCompatActivity() {
         setupGameList()
         receiveJoinDecision()
         sendObserverToGame()
-        handleDeletedGame()
+        // handleDeletedGame()
+        handleObservableRoomsAvailability()
     }
 
     private fun setupGameList() {
@@ -56,38 +62,76 @@ class JoinGameActivity : AppCompatActivity() {
         gameListAdapter.updateData(rooms)
 
         gameListAdapter.onJoinGame = { position ->
-            joinGame(position, Users.isObserver)
+            if (rooms[position].state == State.Playing && rooms[position].gameSettings.type == RoomType.public.ordinal) {
+                Users.currentUser.isObserver = true;
+            }
+            joinGame(position, Users.currentUser.isObserver)
         }
         receiveRooms(gameListAdapter)
         handleRoomUnavailability()
     }
 
+    private fun setUpPasswordJoinDialog(currentRoom: Room, isObserver: Boolean) {
+        passwordDialog = Dialog(this)
+        passwordDialog.setContentView(R.layout.public_game_pwd)
+        val validateButton = passwordDialog.findViewById<Button>(R.id.validate_button)
+
+        val backButton = passwordDialog.findViewById<Button>(R.id.back_button)
+
+        backButton.setOnClickListener {
+            passwordDialog.dismiss()
+        }
+
+        validateButton.setOnClickListener {
+            val passwordInput = passwordDialog.findViewById<EditText>(R.id.popup_window_text)
+            if (passwordInput.text.toString() == "") return@setOnClickListener;
+            if (passwordInput.text.toString() == currentRoom.gameSettings.password) {
+
+                if (isObserver) {
+                    socket.emit("newRoomObserver", JSONObject(Json.encodeToString(Users.currentUser)), currentRoom.id)
+
+                } else {
+                    socket.emit("newRoomCustomer", Users.currentUser.pseudonym, currentRoom.id)
+                }
+
+            } else {
+                Toast.makeText(this, "Mot de passe incorrect", Toast.LENGTH_LONG).show()
+            }
+            passwordDialog.dismiss()
+        }
+    }
+
+
     private fun joinGame(position: Int, isObserver: Boolean) {
         Log.d("room", rooms.toString())
         val currentRoom = rooms[position]
-        if (currentRoom.gameSettings.type == RoomType.public) {
-            if(isObserver){
-                socket.emit("newRoomObserver", Users.currentUser, rooms[position].id)
-            }
-            else {
-                socket.emit("newRoomCustomer", Users.currentUser.pseudonym, rooms[position].id)
-                socketHandler.roomId = rooms[position].id
-            }
+        if(currentRoom.gameSettings.type == RoomType.private.ordinal) {
+            socket.emit("sendRequestToCreator", Users.currentUser.pseudonym, currentRoom.id)
+            socketHandler.roomId = rooms[position].id
+            return;
         }
-        else {
+
+        if (currentRoom.gameSettings.password == "") {
             if(isObserver){
-                socket.emit("newRoomObserver", Users.currentUser, rooms[position].id)
-            }
-            else {
-                socket.emit("sendRequestToCreator", Users.currentUser.pseudonym, currentRoom.id)
+                Log.d("emitNewObser", "ddde")
+                socket.emit("newRoomObserver", JSONObject(Json.encodeToString(Users.currentUser)), rooms[position].id)
                 socketHandler.roomId = rooms[position].id
+                return;
             }
+            socket.emit("newRoomCustomer", Users.currentUser.pseudonym, rooms[position].id)
+            socketHandler.roomId = rooms[position].id
+            return;
         }
+
+        this.setUpPasswordJoinDialog(currentRoom,isObserver)
+
+        passwordDialog.show()
+
     }
 
     private fun sendObserverToGame() {
         socket.on("ObserverToGameView") { response ->
-            Users.isObserver = true;
+            Users.currentUser.isObserver = true;
             startActivity(Intent(this, GameActivity::class.java))
         }
     }
@@ -141,14 +185,16 @@ class JoinGameActivity : AppCompatActivity() {
         }
     }
 
-    private fun handleDeletedGame() {
+   /* private fun handleDeletedGame() {
         socket.on("leaveToHome") {
             runOnUiThread {
                 Toast.makeText(this, "Le createur a supprimé la partie", Toast.LENGTH_LONG).show()
-                startActivity(Intent(this, HomeMenuActivity::class.java))
+                startActivity(Intent(this, MainMenuActivity::class.java))
             }
         }
     }
+
+    */
 
     private fun handleRoomUnavailability() {
         socket.on("roomAlreadyToken") {
@@ -159,6 +205,12 @@ class JoinGameActivity : AppCompatActivity() {
     private fun routeToWaitingRoom() {
         socket.on("goToWaiting") {
             startActivity(Intent(this, WaitingRoomActivity::class.java))
+        }
+    }
+
+    private fun handleObservableRoomsAvailability() {
+        socket.on("roomFullObservers") { response ->
+            Toast.makeText(this, "Il n'y a plus de place pour observer la partie", Toast.LENGTH_LONG).show()
         }
     }
 }

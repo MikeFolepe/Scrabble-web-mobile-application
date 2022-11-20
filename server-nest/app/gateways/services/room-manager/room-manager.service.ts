@@ -82,6 +82,11 @@ export class RoomManagerService {
         room.socketIds.push(socketId);
     }
 
+    removeSocket(room: ServerRoom, socketId: string): void {
+        const index = room.socketIds.findIndex((socketIdIn) => socketIdIn === socketId);
+        room.socketIds.splice(index, 1);
+    }
+
     getGameSettings(roomId: string): GameSettings {
         const room = this.find(roomId) as ServerRoom;
         return room.gameSettings;

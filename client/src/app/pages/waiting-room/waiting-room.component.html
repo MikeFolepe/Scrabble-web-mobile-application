@@ -37,6 +37,16 @@
     Annuler
 </button>
 
+<button
+    *ngIf="!this.playerService.currentPlayer.isCreator && !shouldDisplayError"
+    mat-raised-button
+    color="warn"
+    id="submit-button-1"
+    (click)="leaveGame()"
+>
+    Quitter
+</button>
+
 <!-- <button
     *ngIf="!this.playerService.currentPlayer.isCreator && !shouldDisplayError"
     mat-raised-button
