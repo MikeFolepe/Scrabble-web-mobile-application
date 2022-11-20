@@ -83,7 +83,7 @@ class SettingsFragment : Fragment() {
                 }
                 userPrefences.appThemeSelected = Themes.appThemes[position]
 
-                ThemeManager.changeToTheme(position)
+                ThemeManager.changeToTheme(position, activity)
                 recreateFragment()
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -97,10 +97,6 @@ class SettingsFragment : Fragment() {
 
         boardItemSelected.text = userPrefences.boardItemSelected.name
         editBoardItemBtn.setOnClickListener {
-            userPrefences.boardItems.add(Themes.boardItems[0])
-            userPrefences.boardItems.add(Themes.boardItems[1])
-            userPrefences.boardItems.add(Themes.boardItems[2])
-
             boardItemsDialog.show()
         }
     }
@@ -138,8 +134,6 @@ class SettingsFragment : Fragment() {
 
         chatItemSelected.text = userPrefences.chatItemSelected.name
         editChatItemBtn.setOnClickListener {
-            userPrefences.chatItems.add(Themes.chatItems[0])
-            userPrefences.chatItems.add(Themes.chatItems[1])
             chatItemsDialog.show()
         }
 
@@ -196,5 +190,6 @@ class SettingsFragment : Fragment() {
         supportFragmentManager.beginTransaction().detach(fragment).commit()
         supportFragmentManager.executePendingTransactions()
         supportFragmentManager.beginTransaction().attach(fragment).commit()
+        activity?.recreate()
     }
 }
