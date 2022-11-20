@@ -3,6 +3,7 @@
         <app-information-panel id="information-panel"></app-information-panel>
         <div id="buttons">
             <button
+                [disabled]="authService.currentUser.isObserver"
                 mat-raised-button
                 color="primary"
                 id="play-button"

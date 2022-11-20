@@ -6,6 +6,7 @@ import { RESERVE } from '@common/constants';
 import { Letter } from '@common/letter';
 import { Vec2 } from '@common/vec2';
 import { Subject } from 'rxjs';
+import { AuthService } from './auth.service';
 import { ClientSocketService } from './client-socket.service';
 import { GridService } from './grid.service';
 import { PlaceLetterService } from './place-letter.service';
@@ -38,6 +39,7 @@ export class BoardHandlerService {
         private playerService: PlayerService,
         private placementsService: PlacementsHandlerService,
         private clientSocket: ClientSocketService,
+        public authService: AuthService,
     ) {
         this.currentCase = { x: INVALID_INDEX, y: INVALID_INDEX };
         this.firstCase = { x: INVALID_INDEX, y: INVALID_INDEX };
@@ -74,7 +76,7 @@ export class BoardHandlerService {
                 break;
             }
             default: {
-                if (!this.playerService.currentPlayer.isTurn || this.isDropped) break;
+                if (!this.playerService.currentPlayer.isTurn || this.authService.currentUser.isObserver || this.isDropped) break;
                 if (/([a-zA-Z\u00C0-\u00FF])+/g.test(event.key) && event.key.length === 1) {
                     // Removes accents from the letter to place
                     const letterNoAccents = event.key.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -90,6 +92,9 @@ export class BoardHandlerService {
     }
 
     placeDroppedLetter(event: MouseEvent, letter: Letter): void {
+        if (!this.playerService.currentPlayer.isTurn || this.authService.currentUser.isObserver) {
+            return;
+        }
         this.isDragActivated = true;
         const position: Vec2 = {
             x: Math.floor((event.offsetX - GRID_CASE_SIZE) / GRID_CASE_SIZE),
@@ -151,6 +156,9 @@ export class BoardHandlerService {
     }
 
     isDraggedFromBoard(event: MouseEvent) {
+        if (!this.playerService.currentPlayer.isTurn || this.authService.currentUser.isObserver) {
+            return;
+        }
         const position: Vec2 = {
             x: Math.floor((event.offsetX - GRID_CASE_SIZE) / GRID_CASE_SIZE),
             y: Math.floor((event.offsetY - GRID_CASE_SIZE) / GRID_CASE_SIZE),

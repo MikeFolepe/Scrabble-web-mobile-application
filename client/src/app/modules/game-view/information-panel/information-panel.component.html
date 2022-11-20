@@ -39,8 +39,6 @@
                 Joueur actif<br />
                 Temps restant au tour : {{ skipTurnService.minutes }}:{{ displaySeconds() }}
             </div>
-            <hr />
-
             <button
                 *ngIf="this.authService.currentUser.isObserver && player.isAi && !player.isTurn"
                 mat-raised-button
@@ -49,6 +47,7 @@
             >
                 Remplacer
             </button>
+            <hr />
         </div>
     </div>
     <div *ngIf="endGameService.isEndGame">
