@@ -95,6 +95,10 @@ export class BoardHandlerService {
             x: Math.floor((event.offsetX - GRID_CASE_SIZE) / GRID_CASE_SIZE),
             y: Math.floor((event.offsetY - GRID_CASE_SIZE) / GRID_CASE_SIZE),
         };
+        if (this.dragWord.length === 0) {
+            this.selectStartingCase(position);
+            this.gridService.eraseLayer(this.gridService.gridContextPlacementLayer);
+        }
         // if (this.placeLetterService.scrabbleBoard[position.y][position.x] !== '') return;
         // place letter without verification
         this.gridService.drawLetter(this.gridService.gridContextLettersLayer, letter.value, position, this.playerService.fontSize);
@@ -171,9 +175,9 @@ export class BoardHandlerService {
                 break;
             }
         }
-        if (this.playerService.currentPlayer.letterTable.length === 7) this.isDragActivated = false;
         this.isLetterDraggedFromBoard = true;
         this.playerService.currentPlayer.letterTable.push(this.currentDraggedLetterFromBoard);
+        if (this.playerService.currentPlayer.letterTable.length === 7) this.isDragActivated = false;
     }
 
     async confirmPlacement(): Promise<void> {
