@@ -84,7 +84,7 @@
             <input type="password" placeholder="Mot de passe" formControlName="password" [(ngModel)]="passwordValue">
           </p>
           <div *ngIf="invalidPassword()">
-            <div class="invalidPassword">Le mot de passe doit contenir au moins 8 caracteres, 1 majuscule, 1 minuscule et 1 caractère spécial.</div>
+            <div class="invalidPassword">Le mot de passe doit contenir au moins 8 caracteres, 1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial.</div>
           </div>
           <div *ngIf="isSubmitted && formControlsCreateAccount.password.errors && notEmpty" class="help-block">
             <div *ngIf="formControlsCreateAccount.password.errors.required">Veuillez entrer un mot de passe</div>

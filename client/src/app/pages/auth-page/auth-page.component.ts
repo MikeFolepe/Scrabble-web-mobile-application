@@ -90,10 +90,23 @@ export class AuthPageComponent implements OnInit {
         }
         this.signUpError = '';
 
+
+        //verification de la bonne ecriture de l'addresse courriel
+        const regex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+        if (!this.emailValue.match(regex)) {
+            this.signUpError = 'L\'adresse courriel entrée n\'est pas valide';
+            return;
+        }
+
+        this.signUpError = '';
+
         if (this.passwordValue !== this.confirmPasswordValue) {
             this.signUpError = 'Les mots de passe ne correspondent pas';
             return;
         }
+        
+        this.signUpError = '';
+        
 
         const user = new User(this.avatarValue, this.pseudonymValue, this.passwordValue, this.emailValue, false, '');
         this.userService.addUserToDatabase(user);
