@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { EASEL_SIZE } from '@app/classes/constants';
 import { MessageType } from '@app/classes/enum';
 import { AuthService } from '@app/services/auth.service';
@@ -17,17 +17,17 @@ import { Letter } from '@common/letter';
     templateUrl: './letter-easel.component.html',
     styleUrls: ['./letter-easel.component.scss'],
 })
-export class LetterEaselComponent implements OnInit {
+export class LetterEaselComponent {
     @ViewChild('easel') easel: ElementRef;
 
     indexOfLetterToSwap: number[];
 
     constructor(
+        public boardHandlerService: BoardHandlerService,
         public playerService: PlayerService,
         public authService: AuthService,
         private letterService: LetterService,
         private swapLetterService: SwapLetterService,
-        private boardHandlerService: BoardHandlerService,
         private sendMessageService: SendMessageService,
         private manipulateService: ManipulateService,
         private skipTurnService: SkipTurnService,
@@ -49,6 +49,7 @@ export class LetterEaselComponent implements OnInit {
 
     @HostListener('keydown', ['$event'])
     onKeyPress(event: KeyboardEvent): void {
+        if (this.boardHandlerService.isDragActivated && event.key === 'Enter') this.boardHandlerService.buttonDetect(event);
         if (this.easel.nativeElement.contains(event.target)) {
             this.manipulateService.onKeyPress(event);
         }
@@ -61,13 +62,19 @@ export class LetterEaselComponent implements OnInit {
         }
     }
 
-    ngOnInit(): void {
-        this.manipulateService.sendEasel(this.playerService.currentPlayer.letterTable);
-        this.indexOfLetterToSwap = [];
-    }
+    // ngOnInit(): void {
+    //     //     // this.playerService.bindUpdateEasel(this.update.bind(this));
+    //     //     // this.update();
+    //     //     this.manipulateService.sendEasel(this.letterEaselTab);
+    //     //     this.boardHandlerService.updateDrag.subscribe((isDragged) => {
+    //     //         if (isDragged) {
+    //     //             this.letterFromBoard.nativeElement.drag();
+    //     //         }
+    //     //     });
+    // }
 
     onDragEnd() {
-        this.boardHandlerService.isDragged = false;
+        this.boardHandlerService.isDropped = true;
     }
 
     onRightClick(event: MouseEvent, indexLetter: number): void {
@@ -86,6 +93,7 @@ export class LetterEaselComponent implements OnInit {
 
     swap(): void {
         let lettersToSwap = '';
+
         this.indexOfLetterToSwap = [];
         for (let i = 0; i < this.playerService.currentPlayer.letterTable.length; i++) {
             if (this.playerService.currentPlayer.letterTable[i].isSelectedForSwap) {
@@ -120,7 +128,6 @@ export class LetterEaselComponent implements OnInit {
         for (const letter of this.playerService.currentPlayer.letterTable) {
             if (letter.isSelectedForSwap) isButtonActive = true;
         }
-
         return isButtonActive;
     }
 
@@ -132,9 +139,10 @@ export class LetterEaselComponent implements OnInit {
         return false;
     }
 
-    isDragged(letter: Letter) {
-        this.boardHandlerService.isDragged = true;
+    isDragged(letter: Letter, index: number) {
+        this.boardHandlerService.isDropped = true;
         this.boardHandlerService.currentDraggedLetter = letter;
+        this.boardHandlerService.currentDraggedLetterIndex = index;
     }
 
     private handleSwapSelection(indexLetter: number): void {
