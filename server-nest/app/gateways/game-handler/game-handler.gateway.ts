@@ -122,7 +122,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
         setTimeout(() => {
             room.skipTurnService.findStartingPlayerIndex(room.playerService.players);
             room.skipTurnService.players = players;
-            this.startTimer(roomId);
+            this.startTimer(room);
         }, 5000);
     }
 
@@ -136,7 +136,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
         this.server.in(roomId).emit('updateTimer', room.skipTurnService.minutes, room.skipTurnService.seconds);
         setTimeout(() => {
             this.updateTurns(room);
-            this.startTimer(room.id);
+            this.startTimer(room);
             this.startAiTurn(room);
         }, THREE_SECONDS_DELAY);
         this.server.in(roomId).emit('eraseStartingCase');
@@ -163,6 +163,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
                 isSelectedForSwap: letterFromReserve.isSelectedForSwap,
                 isSelectedForManipulation: letterFromReserve.isSelectedForManipulation,
             };
+            console.log(i);
             room.playerService.players[room.skipTurnService.activePlayerIndex].letterTable.splice(i, 1, letterToAdd);
             room.letter.addLetterToReserve(letterToAdd.value);
         }
@@ -387,8 +388,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
         this.server.socketsLeave(room.id);
     }
 
-    private startTimer(roomId: string) {
-        const room = this.roomManagerService.find(roomId);
+    private startTimer(room: ServerRoom) {
         room.skipTurnService.initializeTimer();
 
         room.skipTurnService.intervalID = setInterval(() => {
@@ -397,16 +397,16 @@ export class GameHandlerGateway implements OnGatewayConnection {
                 room.skipTurnService.seconds = 59;
             } else if (room.skipTurnService.seconds === 0 && room.skipTurnService.minutes === 0) {
                 room.skipTurnService.stopTimer();
-                this.server.in(roomId).emit('updateTimer', room.skipTurnService.minutes, room.skipTurnService.seconds);
+                this.server.in(room.id).emit('updateTimer', room.skipTurnService.minutes, room.skipTurnService.seconds);
                 setTimeout(() => {
                     this.updateTurns(room);
-                    this.startTimer(room.id);
+                    this.startTimer(room);
                     this.startAiTurn(room);
                 }, THREE_SECONDS_DELAY);
             } else {
                 room.skipTurnService.seconds = room.skipTurnService.seconds - 1;
             }
-            this.server.in(roomId).emit('updateTimer', room.skipTurnService.minutes, room.skipTurnService.seconds);
+            this.server.in(room.id).emit('updateTimer', room.skipTurnService.minutes, room.skipTurnService.seconds);
         }, ONE_SECOND_DELAY);
     }
 

@@ -58,7 +58,7 @@ export class PlayerService {
             console.log(indexAiToReplace);
             this.players[indexAiToReplace] = {} as Player;
             this.players[indexAiToReplace] = player;
-            if (this.currentPlayer.name === player.name) {
+            if (this.authService.currentUser.pseudonym === player.name) {
                 this.currentPlayer = player;
             }
         });

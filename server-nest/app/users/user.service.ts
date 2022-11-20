@@ -31,7 +31,8 @@ export class UserService {
     async getUsers() {
         const users = await this.userModel.find().exec();
         return users.map((user) => ({
-            _id: user.id,
+            // eslint-disable-next-line no-underscore-dangle
+            _id: user._id,
             ipAddress: '',
             avatar: user.avatar,
             pseudonym: user.pseudonym,
@@ -41,17 +42,11 @@ export class UserService {
         }));
     }
 
-    async getSingleUser(pseudonym: string) {
-        let user;
+    async getSingleUser(pseudonym: string): Promise<User> {
+        const user = await this.userModel.findOne({ pseudonym });
 
-   
-        user = await this.userModel.findOne({ pseudonym });
-
-        if (!user) {
-            return;
-        }
-
-        return user;
+        if (!user) return;
+        const userToSend = new User(user.avatar, user.pseudonym, user.password, user.email, user.isObserver, user.socketId);
+        return userToSend;
     }
-
 }

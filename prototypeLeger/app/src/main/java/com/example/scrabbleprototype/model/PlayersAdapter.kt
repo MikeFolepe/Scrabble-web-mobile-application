@@ -59,10 +59,12 @@ class PlayersAdapter(private var players: ArrayList<Player>) :
         Log.d("enterSet",  players[position].getTurn().toString())
 
 
-        if( Users.currentUser.isObserver && players[position].isAi && !players[position].getTurn()){
+        if(Users.currentUser.isObserver && players[position].isAi && !players[position].getTurn()){
             Log.d("ai", players[position].isAi.toString())
             replaceButton.visibility = View.VISIBLE
         }
+
+        if(!Users.currentUser.isObserver) replaceButton.visibility = View.GONE
 
         replaceButton.setOnClickListener {
             Users.currentUser.isObserver = false

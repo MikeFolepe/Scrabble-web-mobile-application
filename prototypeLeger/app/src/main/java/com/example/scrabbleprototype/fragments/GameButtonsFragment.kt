@@ -20,15 +20,15 @@ import com.example.scrabbleprototype.databinding.FragmentGameButtonsBinding
 import com.example.scrabbleprototype.model.Constants
 import com.example.scrabbleprototype.model.Player
 import com.example.scrabbleprototype.model.SocketHandler
-import com.example.scrabbleprototype.objects.Board
-import com.example.scrabbleprototype.objects.LetterRack
-import com.example.scrabbleprototype.objects.Players
-import com.example.scrabbleprototype.objects.ThemeManager
+import com.example.scrabbleprototype.objects.*
 import com.example.scrabbleprototype.services.EndTurnCallback
 import com.example.scrabbleprototype.services.PlaceService
 import com.example.scrabbleprototype.services.SkipTurnService
 import com.example.scrabbleprototype.services.SwapLetterService
 import com.example.scrabbleprototype.viewModel.PlacementViewModel
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import java.util.*
+import kotlin.concurrent.timerTask
 
 class GameButtonsFragment : Fragment(), EndTurnCallback {
     private val board = Board.cases
@@ -80,6 +80,7 @@ class GameButtonsFragment : Fragment(), EndTurnCallback {
         _binding = FragmentGameButtonsBinding.inflate(inflaterWithTheme)
         receivePlacementFail()
         receivePlacementSuccess()
+        receiveNewPlayer()
         setupSkipButton()
         setupPlayButton()
         return binding.root
@@ -121,7 +122,7 @@ class GameButtonsFragment : Fragment(), EndTurnCallback {
         binding.skipTurnButton.setOnClickListener {
             skipTurnService.switchTimer()
         }
-        binding.player = Players.currentPlayer
+        binding.player = Players.getCurrent()
     }
 
     private fun setupPlayButton() {
@@ -178,6 +179,19 @@ class GameButtonsFragment : Fragment(), EndTurnCallback {
     private fun receivePlacementFail() {
         socket.on("receiveFail") {
             handleInvalidPlacement()
+        }
+    }
+
+    private fun receiveNewPlayer(){
+        SocketHandler.socket.on("newPlayer") { response ->
+            val newPlayer = jacksonObjectMapper().readValue(response[0].toString(), Player::class.java)
+            if(Users.currentUser.pseudonym == newPlayer.name){
+                Timer().schedule(timerTask {
+                    Log.d("onoupdate", "lecurrent")
+                    binding.player = Players.getCurrent()
+                }, 100)
+            }
+
         }
     }
 }

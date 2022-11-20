@@ -1,9 +1,12 @@
 package com.example.scrabbleprototype.objects
 
+import androidx.databinding.BaseObservable
+import androidx.databinding.Bindable
+import androidx.databinding.library.baseAdapters.BR
 import com.example.scrabbleprototype.model.Player
 
 
-object Players {
+object Players: BaseObservable() {
 
     var currentPlayer: Player = Player()
     var currentPlayerPosition: Int = 0
@@ -13,5 +16,16 @@ object Players {
 
     fun getActivePlayer(): Player {
         return players.find { it.getTurn() }!!
+    }
+
+    @Bindable
+    fun getCurrent(): Player {
+        return currentPlayer
+    }
+
+    @Bindable
+    fun setCurrent(player: Player) {
+        currentPlayer = player
+        notifyPropertyChanged(BR.current)
     }
 }

@@ -31,7 +31,7 @@ class SkipTurnService : Service() {
     private val socket = socketHandler.getPlayerSocket()
     private val player = Players.currentPlayer
 
-    private var activePlayerName: String = ""
+    var activePlayerName: String = ""
 
     private val binder = LocalBinder()
     private var turnUICallback: TurnUICallback? = null
@@ -46,7 +46,6 @@ class SkipTurnService : Service() {
     override fun onBind(intent: Intent): IBinder {
         activePlayerName = Players.getActivePlayer().name
         receiveNewTurn()
-        receiveTimer()
         return binder
     }
 
@@ -84,16 +83,8 @@ class SkipTurnService : Service() {
 
         socket.on("updatePlayerTurnToFalse") { response ->
             val playerToUpdateName = response[0] as String
+            if(player.name == playerToUpdateName) player.setTurn(false)
             Players.players.find { it.name == playerToUpdateName }?.setTurn(false)
-        }
-    }
-
-    private fun receiveTimer() {
-        socket.on("updateTimer") { response ->
-            val minutes = response[0].toString()
-            val seconds = response[1].toString()
-            Log.d("timer", "on update")
-            turnUICallback?.updateTimeUI(minutes, seconds, activePlayerName)
         }
     }
 

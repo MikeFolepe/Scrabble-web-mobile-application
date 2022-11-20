@@ -15,6 +15,7 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet.Constraint
 import androidx.core.content.ContextCompat
+import androidx.databinding.BaseObservable
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -33,6 +34,8 @@ import com.example.scrabbleprototype.viewModel.PlacementViewModel
 import com.example.scrabbleprototype.viewModel.PlayersViewModel
 import com.fasterxml.jackson.module.kotlin.jacksonMapperBuilder
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import java.util.*
+import kotlin.concurrent.timerTask
 
 class InformationPannelFragment : Fragment(), TurnUICallback {
 
@@ -55,10 +58,11 @@ class InformationPannelFragment : Fragment(), TurnUICallback {
 
     private val connection = object: ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            val binder = service as SkipTurnService.LocalBinder
-            skipTurnService = binder.getService()
-            skipTurnBound = true
-            skipTurnService.setTurnUICallback(this@InformationPannelFragment)
+            if(service is SkipTurnService.LocalBinder) {
+                skipTurnService = service.getService()
+                skipTurnBound = true
+                skipTurnService.setTurnUICallback(this@InformationPannelFragment)
+            }
         }
         override fun onServiceDisconnected(name: ComponentName?) {
             skipTurnBound = false
@@ -84,18 +88,23 @@ class InformationPannelFragment : Fragment(), TurnUICallback {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        Intent(activityContext, SkipTurnService::class.java).also { intent ->
+            activityContext.bindService(intent, connection, Context.BIND_AUTO_CREATE)
+        }
+
         view.findViewById<ConstraintLayout>(R.id.info_pannel_layout).setOnClickListener {
             skipTurnService.setTurnUICallback(this@InformationPannelFragment)
         }
         setupPlayers(view)
         setupReserveSize(view)
+
+        Timer().schedule(timerTask {
+            receiveTimer()
+        }, 3000)
     }
 
     override fun onStart() {
         super.onStart()
-        Intent(activityContext, SkipTurnService::class.java).also { intent ->
-            activityContext.bindService(intent, connection, Context.BIND_AUTO_CREATE)
-        }
     }
 
     override fun onStop() {
@@ -154,7 +163,9 @@ class InformationPannelFragment : Fragment(), TurnUICallback {
                 playersAdapter.updateData(Players.players)
             }
             if(Users.currentUser.pseudonym == newPlayer.name){
-                Players.currentPlayer = newPlayer
+                Players.setCurrent(newPlayer)
+                Players.currentPlayer.updateCurrentPlayer()
+
             }
 
         }
@@ -167,6 +178,21 @@ class InformationPannelFragment : Fragment(), TurnUICallback {
         } else{
             timerView?.setTextColor(ContextCompat.getColor(timerView.context, R.color.lime_green))
             timerTitleView?.setTextColor(ContextCompat.getColor(timerTitleView.context, R.color.lime_green))
+        }
+    }
+
+    private fun receiveTimer() {
+        SocketHandler.socket.on("updateTimer") { response ->
+            if(skipTurnService == null) {
+                Log.d("nullservice", "??")
+                Intent(activityContext, SkipTurnService::class.java).also { intent ->
+                    activityContext.bindService(intent, connection, Context.BIND_AUTO_CREATE)
+                }
+            }
+
+            val minutes = response[0].toString()
+            val seconds = response[1].toString()
+            updateTimeUI(minutes, seconds, skipTurnService.activePlayerName)
         }
     }
 }
