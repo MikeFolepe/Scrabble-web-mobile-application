@@ -28,7 +28,6 @@ import com.example.scrabbleprototype.objects.*
 import com.example.scrabbleprototype.services.ObserverRackCallback
 import com.example.scrabbleprototype.services.CancelSwapCallback
 import com.example.scrabbleprototype.services.PlaceService
-import com.example.scrabbleprototype.databinding.FragmentLetterRackBinding
 import com.example.scrabbleprototype.services.SkipTurnService
 import com.example.scrabbleprototype.services.SwapLetterService
 import com.example.scrabbleprototype.viewModel.PlacementViewModel
@@ -44,7 +43,6 @@ class LetterRackFragment : Fragment(), ObserverRackCallback, CancelSwapCallback 
     private lateinit var letterRackView: RecyclerView
     private val board = Board.cases
 
-    private lateinit var binding: FragmentLetterRackBinding
     private val placementViewModel: PlacementViewModel by activityViewModels()
     private val playersViewModel: PlayersViewModel by activityViewModels()
 
@@ -52,8 +50,6 @@ class LetterRackFragment : Fragment(), ObserverRackCallback, CancelSwapCallback 
     private var skipTurnBound: Boolean = false
     private lateinit var swapLetterService: SwapLetterService
     private var swapLetterBound: Boolean = false
-    private lateinit var skipTurnService: SkipTurnService
-    private var skipTurnBound: Boolean = false
 
     private lateinit var binding: FragmentLetterRackBinding
     lateinit var activityContext: Context
@@ -146,7 +142,10 @@ class LetterRackFragment : Fragment(), ObserverRackCallback, CancelSwapCallback 
         letterRackView = binding.letterRack
         swapButton.isEnabled = false
         val swapObserver = Observer<Int> { swapLength ->
-            if(Players.currentPlayer.getTurn()) swapButton.isEnabled = swapLength != 0
+            if(Players.currentPlayer.getTurn()) {
+                swapButton.isEnabled = swapLength != 0
+                binding.cancelButton.isEnabled = swapLength != 0
+            }
         }
         swapLength.observe(viewLifecycleOwner, swapObserver)
 
@@ -193,7 +192,6 @@ class LetterRackFragment : Fragment(), ObserverRackCallback, CancelSwapCallback 
             lettersToSwapIndexes.clear()
             swapLength.value = lettersToSwapIndexes.size
         }
-        binding.player = Players.currentPlayer
     }
 
     private fun receiveSwap() {

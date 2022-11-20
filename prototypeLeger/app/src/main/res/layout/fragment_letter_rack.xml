@@ -8,11 +8,11 @@
             type="com.example.scrabbleprototype.model.Player" />
     </data>
 
-    <FrameLayout 
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".fragments.LetterRackFragment">
-    
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -24,7 +24,7 @@
                 android:padding="10dp"
                 android:layout_gravity="center_vertical"
                 android:background="@drawable/board_border"/>
-    
+
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -47,7 +47,7 @@
                     android:textSize="12sp"
                     android:textColor="?android:textColorSecondary"
                     android:text="@string/cancel_button"
-                    android:background="@drawable/red_shadow_button"/>
+                    android:background="@drawable/red_btn_selector"/>
             </LinearLayout>
         </LinearLayout>
     </FrameLayout>
