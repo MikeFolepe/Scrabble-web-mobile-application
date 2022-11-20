@@ -52,7 +52,7 @@ export class BoardHandlerService {
         this.currentDraggedLetterIndex = 0;
     }
 
-    buttonDetect(event: KeyboardEvent): void {
+    async buttonDetect(event: KeyboardEvent): Promise<void> {
         switch (event.key) {
             case 'Backspace': {
                 this.removePlacedLetter();
@@ -62,6 +62,7 @@ export class BoardHandlerService {
                 if (this.word.length || this.isDragActivated) {
                     if (this.playerService.currentPlayer.isTurn) {
                         this.confirmPlacement();
+                        this.isDropped = false;
                         break;
                     }
                     this.cancelPlacement();
@@ -84,6 +85,10 @@ export class BoardHandlerService {
         }
     }
 
+    cleanLetterDragged() {
+        this.playerService.letterForDrag.splice(0, 1);
+    }
+
     placeDroppedLetter(event: MouseEvent, letter: Letter): void {
         this.isDragActivated = true;
         const position: Vec2 = {
@@ -103,9 +108,15 @@ export class BoardHandlerService {
             this.playerService.removeLetter(this.currentDraggedLetterIndex);
         }
         // this.placeLetterService.placeLetter(position, letter.value, Orientation.Horizontal, this.word.length);
-        position.word = letter.value;
+        position.word = letter.value.toLowerCase();
         this.dragWord.push(position);
         // eslint-disable-next-line @typescript-eslint/prefer-for-of
+        this.sortDragWord();
+        this.currentCase = position;
+        this.isDropped = false;
+    }
+
+    sortDragWord() {
         this.dragWord.sort((a, b) => {
             if (a.x - b.x === 0) {
                 return a.y - b.y;
@@ -113,7 +124,6 @@ export class BoardHandlerService {
                 return a.x - b.x;
             }
         });
-        this.currentCase = position;
     }
 
     mouseHitDetect(event: MouseEvent): void {
@@ -149,17 +159,19 @@ export class BoardHandlerService {
                 isLetterHere = true;
                 letter = this.dragWord[i].word as string;
                 this.gridService.eraseLetter(this.gridService.gridContextLettersLayer, position);
-                delete this.dragWord[i];
+                this.dragWord.splice(i, 1);
+                this.sortDragWord();
                 break;
             }
         }
         if (!isLetterHere || this.playerService.currentPlayer.letterTable.length === 7) return;
         for (const i of RESERVE) {
-            if (i.value === letter) {
+            if (i.value === letter.toUpperCase()) {
                 this.currentDraggedLetterFromBoard = i;
                 break;
             }
         }
+        if (this.playerService.currentPlayer.letterTable.length === 7) this.isDragActivated = false;
         this.isLetterDraggedFromBoard = true;
         this.playerService.currentPlayer.letterTable.push(this.currentDraggedLetterFromBoard);
     }
@@ -168,7 +180,9 @@ export class BoardHandlerService {
         // Validation of the placement
         if (this.isDragActivated) {
             // verify if each letter is correctly placed
-            if (this.dragWord[0].x === this.dragWord[1].x) {
+            if (this.dragWord.length === 0) return;
+            else if (this.dragWord.length === 1) this.orientation = Orientation.Vertical;
+            else if (this.dragWord[0].x === this.dragWord[1].x) {
                 this.orientation = Orientation.Vertical;
             } else {
                 this.orientation = Orientation.Horizontal;
@@ -180,12 +194,13 @@ export class BoardHandlerService {
             const pos = this.dragWord[0];
             await this.placeLetterService.placeCommand(pos, this.orientation, myWord, this.dragWord);
         } else await this.placeLetterService.validateKeyboardPlacement(this.firstCase, this.orientation, this.word);
-        alert(this.dragWord);
         this.word = '';
         this.placedLetters = [];
+        this.isDropped = false;
         this.dragWord = [];
         this.isFirstCasePicked = false;
         this.isFirstCaseLocked = false;
+        this.isDragActivated = false;
         this.gridService.eraseLayer(this.gridService.gridContextPlacementLayer);
     }
 

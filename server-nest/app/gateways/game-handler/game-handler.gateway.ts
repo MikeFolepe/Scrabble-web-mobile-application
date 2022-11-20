@@ -192,7 +192,6 @@ export class GameHandlerGateway implements OnGatewayConnection {
         @MessageBody() roomId: string,
         @MessageBody() player: string,
     ) {
-        console.log(roomId[2]);
         const room = this.roomManagerService.find(roomId[6]);
         const validationResult = await room.wordValidation.validateAllWordsOnBoard(JSON.parse(board[5]), isEaselSize[4], isRow[3]);
         const playerReceived = JSON.parse(player[7]);
@@ -212,27 +211,6 @@ export class GameHandlerGateway implements OnGatewayConnection {
             socket.emit('receiveFail', JSON.parse(position[0]), JSON.parse(orientation[2]), word[1]);
         }
     }
-    // socket.on(
-    //     'validateDragPlacement',
-    //     async (word: string, isRow: boolean, isEaselSize: boolean, board: string, roomId: string, player: string, dragWord: string) => {
-    //         const room = this.roomManagerService.find(roomId);
-    //         const validationResult = await room.wordValidation.validateAllWordsOnBoard(JSON.parse(board), isEaselSize, isRow);
-    //         const playerReceived = JSON.parse(player);
-    //         if (validationResult.validation) {
-    //             const index = room.playerService.players.findIndex((curPlayer) => playerReceived.name === curPlayer.name);
-    //             room.playerService.players[index].letterTable = playerReceived.letterTable;
-    //             room.placeLetter.handleValidPlacement(validationResult, index);
-    //             room.placeLetter.scrabbleBoard = JSON.parse(board);
-    //             socket.emit('receiveSuccess');
-    //             socket.to(roomId).emit('receiveDragPlacement', word, board, dragWord);
-    //             this.server.to(roomId).emit('updatePlayer', room.playerService.players[index]);
-    //             this.server.to(roomId).emit('receiveReserve', room.letter.reserve, room.letter.reserveSize);
-    //         }
-    //         // else {
-    //         //     socket.emit('receiveFail', JSON.parse(position), JSON.parse(orientation), word, dragWord);
-    //         // }
-    //     },
-    // );
 
     @SubscribeMessage('sendStartingCase')
     sendStartingCase(@ConnectedSocket() socket, @MessageBody() startPosition: Vec2, @MessageBody() roomId: string) {

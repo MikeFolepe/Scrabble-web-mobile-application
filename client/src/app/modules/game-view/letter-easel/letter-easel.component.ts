@@ -49,6 +49,7 @@ export class LetterEaselComponent {
 
     @HostListener('keydown', ['$event'])
     onKeyPress(event: KeyboardEvent): void {
+        if (this.boardHandlerService.isDragActivated && event.key === 'Enter') this.boardHandlerService.buttonDetect(event);
         if (this.easel.nativeElement.contains(event.target)) {
             this.manipulateService.onKeyPress(event);
         }
@@ -140,7 +141,7 @@ export class LetterEaselComponent {
 
     isDragged(letter: Letter, index: number) {
         console.log('start');
-        this.boardHandlerService.isDropped = false;
+        this.boardHandlerService.isDropped = true;
         this.boardHandlerService.currentDraggedLetter = letter;
         this.boardHandlerService.currentDraggedLetterIndex = index;
     }
