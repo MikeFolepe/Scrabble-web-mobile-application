@@ -18,6 +18,7 @@ export class Player {
         this.isCreator = isCreator;
         this.isAi = isAi;
     }
+
     getLetterQuantityInEasel(character: string): number {
         let quantity = 0;
 

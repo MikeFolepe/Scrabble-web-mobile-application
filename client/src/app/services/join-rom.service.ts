@@ -9,11 +9,11 @@ import { JoinChatRoomsComponent } from '@app/modules/game-view/join-chat-rooms/j
 import { NameSelectorComponent } from '@app/modules/initialize-game/name-selector/name-selector.component';
 import { ERROR_MESSAGE_DELAY, MAX_LENGTH_OBSERVERS } from '@common/constants';
 import { RoomType } from '@common/game-settings';
+import { Room, State } from '@common/room';
 import { AuthService } from './auth.service';
 import { ChannelHandlerService } from './channel-handler.service';
 import { ClientSocketService } from './client-socket.service';
 import { PlayerService } from './player.service';
-import { Room, State } from '@common/room';
 
 @Injectable({
     providedIn: 'root',
@@ -127,14 +127,13 @@ export class JoinRomService {
                 if (password === room.gameSettings.password) {
                     if (isObserver) {
                         this.clientSocketService.socket.emit('newRoomObserver', this.authService.currentUser, room.id);
-
-                        return;
+                    } else {
+                        this.clientSocketService.socket.emit('newRoomCustomer', this.authService.currentUser.pseudonym, room.id);
                     }
-                    this.clientSocketService.socket.emit('newRoomCustomer', this.authService.currentUser.pseudonym, room.id);
+                } else {
+                    this.displayErrorMessage(ErrorMessage.BadGamePassword);
                     return;
                 }
-                this.displayErrorMessage(ErrorMessage.BadGamePassword);
-                return;
             });
     }
 

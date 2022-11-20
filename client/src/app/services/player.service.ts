@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Room } from '@common/room';
-
 import { Player } from '@app/models/player.model';
 import { INVALID_INDEX, RESERVE, WHITE_LETTER_INDEX } from '@common/constants';
 import { Letter } from '@common/letter';
-
+import { AuthService } from './auth.service';
 import { ClientSocketService } from './client-socket.service';
 
 @Injectable({
@@ -16,9 +15,11 @@ export class PlayerService {
     players: Player[];
     currentPlayer: Player;
     currentRoom: Room;
+    letterForDrag: Letter[];
 
-    constructor(private clientSocketService: ClientSocketService) {
+    constructor(private clientSocketService: ClientSocketService, private authService: AuthService) {
         this.currentPlayer = new Player('', []);
+        this.letterForDrag = [];
         this.fontSize = 14;
         this.players = [];
         this.getMyPlayer();
@@ -27,6 +28,7 @@ export class PlayerService {
         this.getPlayers();
         this.receiveSwap();
         this.clientSocketService.initialize();
+        this.onReplaceAi();
     }
 
     clearPlayers(): void {
@@ -45,6 +47,30 @@ export class PlayerService {
             }
         }
         return INVALID_INDEX;
+    }
+
+    replaceAi(player: Player) {
+        const index = this.players.findIndex((curPlayer) => curPlayer.name === player.name);
+        this.authService.currentUser.isObserver = false;
+        this.clientSocketService.socket.emit('replaceAi', this.authService.currentUser.pseudonym, index, this.clientSocketService.currentRoom.id);
+    }
+
+    onReplaceAi() {
+        this.clientSocketService.socket.on('newPlayer', (player: Player, indexAiToReplace: number) => {
+            console.log(indexAiToReplace);
+            this.players[indexAiToReplace] = {} as Player;
+            this.players[indexAiToReplace] = player;
+            if (this.authService.currentUser.pseudonym === player.name) {
+                this.currentPlayer = player;
+            }
+        });
+    }
+
+    onReplaceHuman() {
+        this.clientSocketService.socket.on('newPlayerAi', (player: Player, indexToReplace: number) => {
+            this.players[indexToReplace] = {} as Player;
+            this.players[indexToReplace] = player;
+        });
     }
 
     addLetterToEasel(letterToAdd: string): void {
@@ -80,13 +106,21 @@ export class PlayerService {
     removeLetter(indexToRemove: number): void {
         this.currentPlayer.letterTable.splice(indexToRemove, 1);
     }
+    addLetterForDrag(indexToAdd: number) {
+        this.letterForDrag.push(this.currentPlayer.letterTable[indexToAdd]);
+    }
     receiveSwap() {
         this.clientSocketService.socket.on('swapped', (easel: string) => {
             this.currentPlayer.letterTable = JSON.parse(easel);
         });
     }
     swap(indexToSwap: number[]): void {
-        this.clientSocketService.socket.emit('swap', this.clientSocketService.currentRoom.id, JSON.stringify(this.getEasel()), indexToSwap);
+        this.clientSocketService.socket.emit(
+            'swap',
+            this.clientSocketService.currentRoom.id,
+            JSON.stringify(this.getEasel()),
+            JSON.stringify(indexToSwap),
+        );
     }
 
     private getMyPlayer(): void {

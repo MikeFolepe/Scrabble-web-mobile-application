@@ -1,4 +1,4 @@
-package com.example.scrabbleprototype.activities
+KSpackage com.example.scrabbleprototype.activities
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -20,6 +20,8 @@ import com.example.scrabbleprototype.model.SocketHandler
 import com.example.scrabbleprototype.model.User
 import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.objects.Users
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import environments.Environment
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
@@ -52,8 +54,8 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         ThemeManager.setActivityTheme(this)
+        super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_connection)
 
         val connectionButton = findViewById<Button>(R.id.connection_button)
@@ -143,7 +145,11 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
         return response
     }
 
+<<<<<<< HEAD
     fun joinChat(user: User) {
+=======
+    fun join(serverIp: String) {
+>>>>>>> develop
         val intent = Intent(this, MainMenuActivity::class.java)
 
         SocketHandler.setPlayerSocket(user.ipAddress)

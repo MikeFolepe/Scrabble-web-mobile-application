@@ -164,8 +164,6 @@ class BoardAdapter(private var board: ArrayList<Letter>) :
     }
 
     fun setupBonus(bonusLayer: TextView, position: Int, viewHolder: ViewHolder) {
-        if(bonusInit)
-        Log.d("bonus", "settingBonuses at " + position.toString())
         if(position == Constants.BOARD_CENTER) bonusLayer.background = ContextCompat.getDrawable(viewHolder.case.context, R.drawable.ic_baseline_star_24)
 
         when(Constants.BONUS_POSITIONS[position]) {

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BOARD_COLUMNS, BOARD_ROWS, CENTRAL_CASE_POSITION, INVALID_INDEX, MIN_FIRST_WORD_SIZE } from '@app/classes/constants';
+import { BOARD_COLUMNS, BOARD_ROWS, CENTRAL_CASE_POSITION, INVALID_INDEX } from '@app/classes/constants';
 import { Direction } from '@app/classes/enum';
 import { Orientation } from '@app/classes/scrabble-board-pattern';
 import { Vec2 } from '@common/vec2';
@@ -45,8 +45,14 @@ export class PlacementsHandlerService {
             position = orientation === Orientation.Horizontal ? { x: position.x--, y: position.y } : { x: position.x, y: position.y-- };
     }
 
-    isFirstWordValid(position: Vec2, orientation: Orientation, word: string): boolean {
-        if (word.length < MIN_FIRST_WORD_SIZE) return false;
+    isFirstWordValid(position: Vec2, orientation: Orientation, word: string, dragWord?: Vec2[]): boolean {
+        if (dragWord) {
+            // eslint-disable-next-line @typescript-eslint/prefer-for-of
+            for (let i = 0; i < word.length; i++) {
+                if (dragWord[i].x === CENTRAL_CASE_POSITION.x && dragWord[i].y === CENTRAL_CASE_POSITION.y) return true;
+            }
+            return false;
+        }
         const currentPosition = { x: position.x, y: position.y };
         // JUSTIFICATION : Neither the variable 'word' nor 'i' are used inside the loop
         // eslint-disable-next-line @typescript-eslint/prefer-for-of
@@ -60,7 +66,7 @@ export class PlacementsHandlerService {
     reverseString(string: string): string {
         return string.split('').reverse().join('');
     }
-    isLetterInEasel(letter: string, indexPlayer: number, indexLetters: number[]): boolean {
+    isLetterInEasel(letter: string, indexLetters: number[]): boolean {
         let isLetterExisting = false;
         let currentLetterIndex = this.playerService.indexLetterInEasel(letter, 0);
 

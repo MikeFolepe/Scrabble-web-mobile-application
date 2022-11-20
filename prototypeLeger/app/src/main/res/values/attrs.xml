@@ -3,12 +3,16 @@
 
     <attr name="borderColor" format="reference"/>
     <attr name="borderColorSecondary" format="reference"/>
+    <attr name="lightBorderColor" format="reference"/>
 
+    <attr name="textPrimary" format="reference"/>
     <attr name="backgroundTextColor" format="reference"/>
+    <attr name="roomItemBackgroundColor" format="reference"/>
 
     <attr name="sideNavBarStart" format="reference"/>
     <attr name="sideNavBarEnd" format="reference"/>
     <attr name="sideNavBarCenter" format="reference"/>
+    <attr name="appBarTitleColor" format="reference"/>
 
     <attr name="profileField" format="reference"/>
     <attr name="profileFieldOutline" format="reference"/>
