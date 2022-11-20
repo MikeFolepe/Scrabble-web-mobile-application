@@ -9,6 +9,7 @@ import android.widget.EditText
 import android.widget.Toast
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.model.User
+import com.example.scrabbleprototype.objects.Users
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
@@ -22,7 +23,8 @@ import java.util.regex.Pattern
 import kotlin.coroutines.CoroutineContext
 
 class RegisterActivity : AppCompatActivity(), CoroutineScope {
-
+    val users = Users
+    val avatarSrcImages= arrayListOf("@drawable/orange_guy", "drawable/blonde_girl", "@drawable/blonde_guy", "@drawable/brunette_girl", "@drawable/doggo", "@drawable/earrings_girl", "@drawable/ginger_girl", "@drawable/hat_girl", "@drawable/music_guy", "@drawable/mustache_guy", "@drawable/orange_guy")
     lateinit var client: HttpClient
     private var job: Job = Job()
     override val coroutineContext: CoroutineContext
@@ -78,17 +80,23 @@ class RegisterActivity : AppCompatActivity(), CoroutineScope {
         val response = async {checkPseudonym(user)}
         val pseudoChecked = response.await()
         if (pseudoChecked != null) {
-            if(pseudoChecked.body()){
+            val checked: String = pseudoChecked.body()
+            if(checked == "true"){
                 Toast.makeText(this, "Ce pseudonyme existe déjà", Toast.LENGTH_LONG).show()
                 return;
             }
         }
-
+        Log.d("avant", "registration")
         val registerResponse = postRegistration(user)
         if(registerResponse != null) {
-            if(registerResponse.status == HttpStatusCode.OK)
-            Toast.makeText(this, "Votre compte a bien été créé, veuillez vous connecter.", Toast.LENGTH_LONG).show()
-            startActivity(Intent(this, ConnectionActivity::class.java))
+            if(registerResponse.status == HttpStatusCode.OK) {
+                Toast.makeText(
+                    this,
+                    "Votre compte a bien été créé, veuillez vous connecter.",
+                    Toast.LENGTH_LONG
+                ).show()
+                startActivity(Intent(this, ConnectionActivity::class.java))
+            }
         }
 
     }

@@ -1,6 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".activities.RegisterActivity">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/blonde_girl"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
+        android:src="@drawable/blonde_girl"/>
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/blonde_guy"
+        android:layout_width="250dp"
+        android:layout_marginTop="20dp"
+        android:layout_height="250dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/blonde_girl"
+        app:layout_constraintEnd_toStartOf="@+id/brunette_girl"
+        android:src="@drawable/blonde_guy"/>
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/brunette_girl"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="20dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:src="@drawable/brunette_girl"/>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/doggo"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginLeft="20dp"
+        app:layout_constraintTop_toBottomOf="@+id/blonde_girl"
+        app:layout_constraintStart_toStartOf="parent"
+        android:src="@drawable/doggo"/>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/earrings_girl"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_marginTop="50dp"
+        app:layout_constraintTop_toBottomOf="@+id/blonde_guy"
+        app:layout_constraintStart_toEndOf="@+id/doggo"
+        android:src="@drawable/earrings_girl"/>
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/ginger_girl"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_marginTop="50dp"
+        app:layout_constraintTop_toBottomOf="@+id/brunette_girl"
+        app:layout_constraintStart_toEndOf="@+id/earrings_girl"
+        android:src="@drawable/ginger_girl"/>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/hat_girl"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginLeft="20dp"
+        app:layout_constraintTop_toBottomOf="@+id/doggo"
+        app:layout_constraintStart_toStartOf="parent"
+        android:src="@drawable/hat_girl"/>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/music_guy"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_marginTop="50dp"
+        app:layout_constraintTop_toBottomOf="@+id/earrings_girl"
+        app:layout_constraintStart_toEndOf="@+id/hat_girl"
+        android:src="@drawable/music_guy"/>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/mustache_guy"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_marginTop="50dp"
+        app:layout_constraintTop_toBottomOf="@+id/ginger_girl"
+        app:layout_constraintStart_toEndOf="@+id/music_guy"
+        android:src="@drawable/mustache_guy"/>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/orange_guy"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginLeft="20dp"
+        app:layout_constraintTop_toBottomOf="@+id/hat_girl"
+        app:layout_constraintStart_toStartOf="parent"
+        android:src="@drawable/orange_guy"/>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/add_avatar"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_marginTop="50dp"
+        app:layout_constraintTop_toBottomOf="@+id/music_guy"
+        app:layout_constraintStart_toEndOf="@+id/orange_guy"
+        android:src="@drawable/t_l_chargement"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

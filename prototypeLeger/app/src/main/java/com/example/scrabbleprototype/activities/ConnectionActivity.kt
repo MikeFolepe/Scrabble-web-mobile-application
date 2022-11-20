@@ -13,6 +13,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.model.SocketHandler
@@ -59,8 +60,6 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
         connectionButton.setOnClickListener {
             onConnection()
         }
-        val serverIpText = findViewById<EditText>(R.id.server_ip)
-        serverIpText.setText(resources.getString(R.string.mobile_server_ip))
 
         client = HttpClient() {
             install(ContentNegotiation) {
@@ -87,43 +86,54 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
     fun onConnection() {
         val usernameInput = findViewById<EditText>(R.id.username);
         val username = usernameInput.text.toString()
-        val serverIpInput = findViewById<EditText>(R.id.server_ip)
-        val serverIp = resources.getString(R.string.http) + serverIpInput.text.toString()
-        Log.d("ipserver", serverIp)
+        val passwordInput = findViewById<EditText>(R.id.password)
+        val password = resources.getString(R.string.http) + passwordInput.text.toString()
         val serverError = "Ce serveur est déconnecté"
 
         if(username.isEmpty())  {
             usernameInput.error = "Le pseudonyme ne peut pas être vide"
             return
         }
-        if(serverIpInput.text.isEmpty()) {
-            serverIpInput.error = "Le IP du serveur ne peut pas être vide"
+        if(passwordInput.text.isEmpty()) {
+            passwordInput.error = "Le mot de passe ne peut pas être vide"
             return
         }
 
         //validate username and ip
-       /* launch {
-            val user = User(serverIp, username, null, false)
-
-            val response = postAuthentication(user)
+        launch {
+            val user = User("", username, password, "", false, null)
+            val response = findUserInDb(user, username, password)
             if(response != null) {
-                if (response.status == HttpStatusCode.OK) {
-                    if (response.body()) {
+                if (response.body()) {
+                    val response = async {postAuthentication(user)}
+                    val newUser = response.await()
+                    Log.d("newUser" , newUser.toString())
+
+
                         users.currentUser = user
-                        joinChat(serverIp, user)
+                        joinChat(user)
                     } else {
-                        usernameInput.error = "Cet utilisateur est déjà connecté"
-                    }
-                } else if (response.status == HttpStatusCode.NotFound) serverIpInput.error = serverError
-                else serverIpInput.error = serverError
-            } else serverIpInput.error = serverError
-        }*/
+                }
+                }
+        }
+    }
+/// penser a retirer user ici car il sert que pour l'adresse ip qui est hardcoder bad practice
+    suspend fun findUserInDb(user: User ,pseudonym: String, password: String): HttpResponse? {
+        var response: HttpResponse?
+        try{
+            response = client.get(resources.getString(R.string.http) + user.ipAddress+ "/api/user/findUserInDb/"+pseudonym+"/"+password) {
+                contentType(ContentType.Application.Json)
+            }
+        } catch(e: Exception) {
+            response = null
+        }
+        return response
     }
 
     suspend fun postAuthentication(user: User): HttpResponse? {
         var response: HttpResponse?
         try{
-            response = client.post(user.ipAddress + "/api/auth/connect") {
+            response = client.post(resources.getString(R.string.http) + user.ipAddress + "/api/auth/connect") {
                 contentType(ContentType.Application.Json)
                 setBody(user)
             }
@@ -133,10 +143,10 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
         return response
     }
 
-    fun joinChat(serverIp: String, user: User) {
+    fun joinChat(user: User) {
         val intent = Intent(this, MainMenuActivity::class.java)
 
-        SocketHandler.setPlayerSocket(serverIp)
+        SocketHandler.setPlayerSocket(user.ipAddress)
         SocketHandler.establishConnection()
         chatSocket = SocketHandler.getPlayerSocket()
 
