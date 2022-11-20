@@ -107,8 +107,6 @@ export class PlaceLetterService implements OnDestroy {
         for (let i = 0; i < word.length; i++) this.validLetters[i] = true;
         // Reset the number of letters used from the easel for next placement
         this.numLettersUsedFromEasel = 0;
-        console.log('easel1');
-        console.log(this.playerService.currentPlayer.letterTable);
         if (!this.isPossible(position, orientation, wordNoAccents, JSON.parse(JSON.stringify(dragWord)))) {
             // eslint-disable-next-line @typescript-eslint/prefer-for-of
             let index = 0;
@@ -120,8 +118,6 @@ export class PlaceLetterService implements OnDestroy {
             // this.sendMessageService.displayMessageByType('ERREUR : Le placement est invalide', MessageType.Error);
             return;
         }
-        console.log('easel2');
-        console.log(this.playerService.currentPlayer.letterTable);
         // Placing all letters of the word
         for (let i = 0; i < wordNoAccents.length; i++) {
             if (!this.placeLetter(currentPosition, wordNoAccents[i], orientation, i, true)) {
@@ -167,7 +163,6 @@ export class PlaceLetterService implements OnDestroy {
         }
         // Placing the following words
         if (this.isWordTouchingOthers(position, orientation, word)) {
-            console.log('touching');
             this.clientSocketService.socket.emit(
                 'validatePlacement',
                 JSON.stringify(position),
@@ -321,7 +316,6 @@ export class PlaceLetterService implements OnDestroy {
 
     private receiveSuccess() {
         this.clientSocketService.socket.on('receiveSuccess', () => {
-            console.log('success');
             this.endGameService.addActionsLog('placerSucces');
             this.clientSocketService.socket.emit('sendActions', this.endGameService.actionsLog, this.clientSocketService.currentRoom.id);
             this.handleValidPlacement();

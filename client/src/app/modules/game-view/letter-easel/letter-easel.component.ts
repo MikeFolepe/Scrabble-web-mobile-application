@@ -140,7 +140,6 @@ export class LetterEaselComponent {
     }
 
     isDragged(letter: Letter, index: number) {
-        console.log('start');
         this.boardHandlerService.isDropped = true;
         this.boardHandlerService.currentDraggedLetter = letter;
         this.boardHandlerService.currentDraggedLetterIndex = index;
