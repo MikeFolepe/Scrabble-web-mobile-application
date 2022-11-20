@@ -46,6 +46,7 @@ class WaitingRoomActivity : AppCompatActivity() {
         setupPlayersWaiting()
         receiveNewRequest()
         leaveToHome()
+        onReplaceHuman()
 
         // Players.currentPlayerPosition = Players.opponents.size
     }
@@ -164,10 +165,21 @@ class WaitingRoomActivity : AppCompatActivity() {
         }
     }
 
-
     private fun goToGameView() {
         socket.on("goToGameView") {
             startActivity(Intent(this, GameActivity::class.java))
+        }
+    }
+
+    private fun onReplaceHuman() {
+        socket.on("newPlayerAi") { response ->
+            val playerReceived = mapper.readValue(response[0].toString(), Player::class.java)
+            val index = mapper.readValue(response[1].toString(), Int::class.java)
+
+            runOnUiThread {
+                Players.players[index] = playerReceived
+                playersWaitingAdapter.notifyItemChanged(index)
+            }
         }
     }
 }

@@ -49,6 +49,7 @@ class JoinGameActivity : AppCompatActivity() {
         receiveJoinDecision()
         sendObserverToGame()
         // handleDeletedGame()
+        handleObservableRoomsAvailability()
     }
 
     private fun setupGameList() {
@@ -204,6 +205,12 @@ class JoinGameActivity : AppCompatActivity() {
     private fun routeToWaitingRoom() {
         socket.on("goToWaiting") {
             startActivity(Intent(this, WaitingRoomActivity::class.java))
+        }
+    }
+
+    private fun handleObservableRoomsAvailability() {
+        socket.on("roomFullObservers") { response ->
+            Toast.makeText(this, "Il n'y a plus de place pour observer la partie", Toast.LENGTH_LONG).show()
         }
     }
 }
