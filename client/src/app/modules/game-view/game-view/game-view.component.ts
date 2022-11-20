@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { DEFAULT_FONT_SIZE } from '@app/classes/constants';
 import { GiveUpGameDialogComponent } from '@app/modules/game-view/give-up-game-dialog/give-up-game-dialog.component';
+import { AuthService } from '@app/services/auth.service';
 import { BoardHandlerService } from '@app/services/board-handler.service';
 import { ChatRoomService } from '@app/services/chat-room.service';
 import { ChatboxService } from '@app/services/chatbox.service';
@@ -48,6 +49,7 @@ export class GameViewComponent {
         public giveUpHandlerService: GiveUpHandlerService,
         private placeLetterService: PlaceLetterService,
         public chatRoomService: ChatRoomService,
+        public authService: AuthService,
     ) {
         this.fontSize = DEFAULT_FONT_SIZE;
         // this.giveUpHandlerService.receiveEndGameByGiveUp();
