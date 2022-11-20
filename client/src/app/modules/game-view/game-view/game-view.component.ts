@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { DEFAULT_FONT_SIZE } from '@app/classes/constants';
 import { GiveUpGameDialogComponent } from '@app/modules/game-view/give-up-game-dialog/give-up-game-dialog.component';
+import { AuthService } from '@app/services/auth.service';
 import { BoardHandlerService } from '@app/services/board-handler.service';
 import { ChatRoomService } from '@app/services/chat-room.service';
 import { ChatboxService } from '@app/services/chatbox.service';
@@ -48,6 +49,7 @@ export class GameViewComponent {
         public giveUpHandlerService: GiveUpHandlerService,
         private placeLetterService: PlaceLetterService,
         public chatRoomService: ChatRoomService,
+        public authService: AuthService,
     ) {
         this.fontSize = DEFAULT_FONT_SIZE;
         // this.giveUpHandlerService.receiveEndGameByGiveUp();
@@ -55,6 +57,8 @@ export class GameViewComponent {
         this.selectedChatRooms = [];
         this.chatRoomForm = false;
         this.isOpen = false;
+
+        console.log(playerService);
     }
 
     handleFontSizeEvent(fontSizeEvent: number): void {
@@ -69,8 +73,19 @@ export class GameViewComponent {
             // if user closes the dialog box without input nothing
             if (!decision) return;
             // if decision is true the EndGame occurred
-            this.sendMessageService.sendConversionMessage();
-            this.clientSocketService.socket.emit('sendEndGameByGiveUp', decision, this.clientSocketService.currentRoom.id);
+            console.log('here', this.authService.currentUser.pseudonym);
+            this.clientSocketService.socket.emit('sendGiveUp', this.authService.currentUser.pseudonym, this.clientSocketService.currentRoom.id);
+        });
+    }
+
+    confirmLeaveByObserver(): void {
+        const ref = this.dialog.open(GiveUpGameDialogComponent, { disableClose: true });
+
+        ref.afterClosed().subscribe((decision: boolean) => {
+            // if user closes the dialog box without input nothing
+            if (!decision) return;
+            // if decision is true the EndGame occurred
+            this.clientSocketService.socket.emit('sendObserverLeave', this.clientSocketService.currentRoom.id);
         });
     }
 

@@ -87,6 +87,11 @@ export class RoomManagerService {
         room.socketIds.splice(index, 1);
     }
 
+    removeObserver(room: ServerRoom, socketId: string): void {
+        const index = room.observers.findIndex((observer) => observer.socketId === socketId);
+        room.observers.splice(index, 1);
+    }
+
     getGameSettings(roomId: string): GameSettings {
         const room = this.find(roomId) as ServerRoom;
         return room.gameSettings;
@@ -102,6 +107,11 @@ export class RoomManagerService {
         for (const room of this.rooms) {
             for (const socketId of room.socketIds) {
                 if (socketId === socketIdToCompare) return room.id;
+            }
+        }
+        for (const room of this.rooms) {
+            for (const observer of room.observers) {
+                if (observer.socketId === socketIdToCompare) return room.id;
             }
         }
         return '';

@@ -89,7 +89,6 @@ export class WaitingRoomComponent implements OnInit {
             }, ERROR_MESSAGE_DELAY);
         });
     }
-
     startGame(): void {
         console.log('start exec', this.clientSocket.currentRoom);
         if (this.clientSocket.currentRoom.humanPlayersNumber < 2) {

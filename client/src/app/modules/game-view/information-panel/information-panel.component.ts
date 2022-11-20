@@ -32,6 +32,6 @@ export class InformationPanelComponent implements OnDestroy {
 
     ngOnDestroy(): void {
         this.playerService.clearPlayers();
-        this.clientSocket.socket.emit('stopTimer', this.clientSocket.currentRoom.id);
+        // this.clientSocket.socket.emit('stopTimer', this.clientSocket.currentRoom.id);
     }
 }
