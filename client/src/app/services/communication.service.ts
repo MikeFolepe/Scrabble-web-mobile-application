@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AiPlayer, AiPlayerDB, AiType } from '@common/ai-name';
 import { Dictionary } from '@common/dictionary';
@@ -90,8 +90,8 @@ export class CommunicationService {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    connectUser(userData: User): Observable<User> {
+    connectUser(userData: User): Observable<HttpResponse<User>> {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return this.http.post<User>(`${this.baseUrl}/auth/connect`, userData);
+        return this.http.post<User>(`${this.baseUrl}/auth/connect`, userData, { observe: 'response' });
     }
 }
