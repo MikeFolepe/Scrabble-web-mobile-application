@@ -92,7 +92,6 @@ class WaitingRoomActivity : AppCompatActivity() {
             }
         }
         socket.on("roomPlayers") { response ->
-            Log.d("roomPlayers", "waiting")
             Players.players = mapper.readValue(response[0].toString(), object: TypeReference<ArrayList<Player>>() {})
             runOnUiThread {
                 playersWaitingAdapter.updateData(Players.players)

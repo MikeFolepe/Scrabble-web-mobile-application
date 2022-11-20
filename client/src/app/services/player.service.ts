@@ -86,7 +86,12 @@ export class PlayerService {
         });
     }
     swap(indexToSwap: number[]): void {
-        this.clientSocketService.socket.emit('swap', this.clientSocketService.currentRoom.id, JSON.stringify(this.getEasel()), indexToSwap);
+        this.clientSocketService.socket.emit(
+            'swap',
+            this.clientSocketService.currentRoom.id,
+            JSON.stringify(this.getEasel()),
+            JSON.stringify(indexToSwap),
+        );
     }
 
     private getMyPlayer(): void {

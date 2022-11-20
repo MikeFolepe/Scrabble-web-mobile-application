@@ -114,7 +114,6 @@ class JoinGameActivity : AppCompatActivity() {
     private fun receiveMyPlayer() {
         socket.on("MyPlayer") { response ->
             Players.currentPlayer = mapper.readValue(response[0].toString(), Player::class.java)
-
         }
     }
 
