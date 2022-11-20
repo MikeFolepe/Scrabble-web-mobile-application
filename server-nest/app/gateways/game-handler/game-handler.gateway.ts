@@ -143,9 +143,10 @@ export class GameHandlerGateway implements OnGatewayConnection {
     @SubscribeMessage('swap')
     swap(@ConnectedSocket() socket, @MessageBody() data: { roomId: string; easel: Letter[]; indexToSwap: number[] }) {
         const room = this.roomManagerService.find(data[0]);
+        const indexes: number[] = JSON.parse(data[2]);
         room.playerService.players[room.skipTurnService.activePlayerIndex].letterTable = JSON.parse(data[1]);
-        // eslint-disable-next-line guard-for-in
-        for (const i in data[2]) {
+
+        for (const i of indexes) {
             const letterFromReserve = room.letter.getRandomLetter();
             // Add a copy of the random letter from the reserve
             const letterToAdd = {
@@ -155,9 +156,11 @@ export class GameHandlerGateway implements OnGatewayConnection {
                 isSelectedForSwap: letterFromReserve.isSelectedForSwap,
                 isSelectedForManipulation: letterFromReserve.isSelectedForManipulation,
             };
-            room.playerService.players[room.skipTurnService.activePlayerIndex].letterTable.splice(data[2][i], 1, letterToAdd);
+            room.playerService.players[room.skipTurnService.activePlayerIndex].letterTable.splice(i, 1, letterToAdd);
+            room.letter.addLetterToReserve(letterToAdd.value);
         }
         socket.emit('swapped', JSON.stringify(room.playerService.players[room.skipTurnService.activePlayerIndex].letterTable));
+        this.server.to(room.id).emit('receiveReserve', room.letter.reserve, room.letter.reserveSize);
     }
 
     @SubscribeMessage('deleteGame')
