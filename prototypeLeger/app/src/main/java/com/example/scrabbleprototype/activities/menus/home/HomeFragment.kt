@@ -44,8 +44,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupUserInfo() {
-        binding.userPseudonym.text = user.pseudonym
-        binding.userXp.text = getString(R.string.user_xp, user.xpPoints)
+        binding.userInfoName.text = user.pseudonym
     }
 
     private fun setupButtons() {

@@ -1,13 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Room } from '@common/room';
-
 import { Player } from '@app/models/player.model';
 import { INVALID_INDEX, RESERVE, WHITE_LETTER_INDEX } from '@common/constants';
 import { Letter } from '@common/letter';
 import { AuthService } from './auth.service';
-
 import { ClientSocketService } from './client-socket.service';
-import { LetterService } from './letter.service';
 
 @Injectable({
     providedIn: 'root',
@@ -19,7 +16,7 @@ export class PlayerService {
     currentPlayer: Player;
     currentRoom: Room;
 
-    constructor(private clientSocketService: ClientSocketService, private letterService: LetterService, private authService: AuthService) {
+    constructor(private clientSocketService: ClientSocketService, private authService: AuthService) {
         this.currentPlayer = new Player('', []);
         this.fontSize = 14;
         this.players = [];
@@ -27,6 +24,7 @@ export class PlayerService {
         // this.getAIs();
         this.updatePlayer();
         this.getPlayers();
+        this.receiveSwap();
         this.clientSocketService.initialize();
         this.onReplaceAi();
     }
@@ -65,7 +63,6 @@ export class PlayerService {
             }
         });
     }
-
 
     onReplaceHuman() {
         this.clientSocketService.socket.on('newPlayerAi', (player: Player, indexToReplace: number) => {
@@ -107,17 +104,18 @@ export class PlayerService {
     removeLetter(indexToRemove: number): void {
         this.currentPlayer.letterTable.splice(indexToRemove, 1);
     }
-    swap(indexToSwap: number, indexPlayer: number): void {
-        const letterFromReserve = this.letterService.getRandomLetter();
-        // Add a copy of the random letter from the reserve
-        const letterToAdd = {
-            value: letterFromReserve.value,
-            quantity: letterFromReserve.quantity,
-            points: letterFromReserve.points,
-            isSelectedForSwap: letterFromReserve.isSelectedForSwap,
-            isSelectedForManipulation: letterFromReserve.isSelectedForManipulation,
-        };
-        this.opponents[indexPlayer].letterTable.splice(indexToSwap, 1, letterToAdd);
+    receiveSwap() {
+        this.clientSocketService.socket.on('swapped', (easel: string) => {
+            this.currentPlayer.letterTable = JSON.parse(easel);
+        });
+    }
+    swap(indexToSwap: number[]): void {
+        this.clientSocketService.socket.emit(
+            'swap',
+            this.clientSocketService.currentRoom.id,
+            JSON.stringify(this.getEasel()),
+            JSON.stringify(indexToSwap),
+        );
     }
 
     private getMyPlayer(): void {

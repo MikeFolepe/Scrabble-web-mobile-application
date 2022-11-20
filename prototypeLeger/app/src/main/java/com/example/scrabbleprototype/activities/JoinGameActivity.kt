@@ -37,8 +37,8 @@ class JoinGameActivity : AppCompatActivity() {
     lateinit var passwordDialog: Dialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         ThemeManager.setActivityTheme(this)
+        super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_join_game)
 
         receivePlayers()
@@ -157,7 +157,6 @@ class JoinGameActivity : AppCompatActivity() {
     private fun receiveMyPlayer() {
         socket.on("MyPlayer") { response ->
             Players.currentPlayer = mapper.readValue(response[0].toString(), Player::class.java)
-
         }
     }
 

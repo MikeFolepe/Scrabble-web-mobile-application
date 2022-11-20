@@ -5,6 +5,7 @@ import { AddChatRoomComponent } from '@app/modules/game-view/add-chat-room/add-c
 import { ChangeChatRoomComponent } from '@app/modules/game-view/change-chat-room/change-chat-room.component';
 import { JoinChatRoomsComponent } from '@app/modules/game-view/join-chat-rooms/join-chat-rooms.component';
 import { BestScoresComponent } from '@app/pages/best-scores/best-scores.component';
+import { AuthService } from '@app/services/auth.service';
 import { ChatRoomService } from '@app/services/chat-room.service';
 import { EndGameService } from '@app/services/end-game.service';
 import { GameSettingsService } from '@app/services/game-settings.service';
@@ -30,6 +31,7 @@ export class MainPageComponent {
     readonly gameModes: string[];
 
     constructor(
+        public authService: AuthService,
         public gameSettingsService: GameSettingsService,
         private router: Router,
         public bestScoresDialog: MatDialog,

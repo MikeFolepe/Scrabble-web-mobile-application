@@ -4,11 +4,13 @@ import { AI_NAMES } from '@app/classes/aiNames';
 import { ServerRoom, State } from '@app/classes/server-room';
 import { PlayerAI } from '@app/game/models/player-ai.model';
 import { Player } from '@app/game/models/player.model';
-import { UsersService } from '@app/users/service/users.service';
+import { UserService } from '@app/users/user.service';
 import { ChatRoomMessage } from '@common/chatRoomMessage';
 import { DELAY_BEFORE_PLAYING, ONE_SECOND_DELAY, THREE_SECONDS_DELAY } from '@common/constants';
 import { GameSettings } from '@common/game-settings';
+import { Letter } from '@common/letter';
 import { User } from '@common/user';
+import { Friend } from '@common/friend';
 import { Vec2 } from '@common/vec2';
 import { Logger } from '@nestjs/common';
 import { ConnectedSocket, MessageBody, OnGatewayConnection, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
@@ -20,7 +22,7 @@ import { ChatEvents } from './../../../../common/chat.gateway.events';
 export class GameHandlerGateway implements OnGatewayConnection {
     @WebSocketServer() private server: Server;
 
-    constructor(private readonly logger: Logger, private userService: UsersService, private roomManagerService: RoomManagerService) {}
+    constructor(private readonly logger: Logger, private userService: UserService, private roomManagerService: RoomManagerService) {}
 
     // TODO: set a socket id in player class to easily find the player
 
@@ -145,6 +147,28 @@ export class GameHandlerGateway implements OnGatewayConnection {
         const room = this.roomManagerService.find(roomId);
         room.skipTurnService.stopTimer();
     }
+    @SubscribeMessage('swap')
+    swap(@ConnectedSocket() socket, @MessageBody() data: { roomId: string; easel: Letter[]; indexToSwap: number[] }) {
+        const room = this.roomManagerService.find(data[0]);
+        const indexes: number[] = JSON.parse(data[2]);
+        room.playerService.players[room.skipTurnService.activePlayerIndex].letterTable = JSON.parse(data[1]);
+
+        for (const i of indexes) {
+            const letterFromReserve = room.letter.getRandomLetter();
+            // Add a copy of the random letter from the reserve
+            const letterToAdd = {
+                value: letterFromReserve.value,
+                quantity: letterFromReserve.quantity,
+                points: letterFromReserve.points,
+                isSelectedForSwap: letterFromReserve.isSelectedForSwap,
+                isSelectedForManipulation: letterFromReserve.isSelectedForManipulation,
+            };
+            room.playerService.players[room.skipTurnService.activePlayerIndex].letterTable.splice(i, 1, letterToAdd);
+            room.letter.addLetterToReserve(letterToAdd.value);
+        }
+        socket.emit('swapped', JSON.stringify(room.playerService.players[room.skipTurnService.activePlayerIndex].letterTable));
+        this.server.to(room.id).emit('receiveReserve', room.letter.reserve, room.letter.reserveSize);
+    }
 
     @SubscribeMessage('deleteGame')
     deleteGame(@ConnectedSocket() socket, @MessageBody() playerName: string, @MessageBody() roomId: string) {
@@ -246,6 +270,15 @@ export class GameHandlerGateway implements OnGatewayConnection {
         console.log('players after replace', room.playerService.players);
         this.server.to(roomId[2]).emit('newPlayer', room.playerService.players[indexAiToReplace[1]], indexAiToReplace[1]);
         socket.emit('giveBoardToObserver', room.placeLetter.scrabbleBoard);
+    }
+
+    @SubscribeMessage('sendActiveUsers')
+    sendActiveUsers(@ConnectedSocket() socket, @MessageBody() senderName) {
+        const simplifiedUsers: Friend[] = [];
+        for (const user of this.userService.activeUsers) {
+            if (senderName !== user.pseudonym) simplifiedUsers.push(new Friend(user.pseudonym, '', 0));
+        }
+        socket.emit('activeUsers', simplifiedUsers);
     }
 
     // onEndGameByGiveUp(socket: Socket): void {
@@ -368,6 +401,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
                 setTimeout(() => {
                     this.updateTurns(room);
                     this.startTimer(room.id);
+                    this.startAiTurn(room);
                 }, THREE_SECONDS_DELAY);
             } else {
                 room.skipTurnService.seconds = room.skipTurnService.seconds - 1;

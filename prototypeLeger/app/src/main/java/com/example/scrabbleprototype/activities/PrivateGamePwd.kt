@@ -14,6 +14,7 @@ import androidx.core.graphics.ColorUtils
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.model.SocketHandler
 import com.example.scrabbleprototype.model.User
+import com.example.scrabbleprototype.objects.ThemeManager
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 
 class PrivateGamePwd : AppCompatActivity() {
@@ -23,7 +24,7 @@ class PrivateGamePwd : AppCompatActivity() {
     private val mapper = jacksonObjectMapper()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
+        ThemeManager.setActivityTheme(this)
         super.onCreate(savedInstanceState)
         overridePendingTransition(0, 0)
         setContentView(R.layout.player_request_game)

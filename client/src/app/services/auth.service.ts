@@ -1,4 +1,4 @@
-import { HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse, HttpResponse, HttpStatusCode } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
@@ -16,37 +16,39 @@ import { ErrorHandlerService } from './error-handler.service';
 export class AuthService {
     currentUser: User;
     serverUrl: string;
+    chosenAvatar: string;
     constructor(
         private clientSocketService: ClientSocketService,
         private router: Router,
         private communicationService: CommunicationService,
         public errorHandler: ErrorHandlerService,
         public snackBar: MatSnackBar,
-    ) {}
-
-    signIn(userData: User) {
+    ) {
+        this.chosenAvatar = '';
         this.serverUrl = environment.serverUrl;
         this.communicationService.baseUrl = this.serverUrl + '/api';
+    }
 
+    signIn(userData: User) {
         this.communicationService.connectUser(userData).subscribe(
-            (valid: boolean) => {
-                if (valid) {
-                    this.currentUser = new User(userData.pseudonym, userData.ipAddress);
+            (response: HttpResponse<User>) => {
+                if (response.status === HttpStatusCode.Ok) {
+                    this.currentUser = response.body as User;
                     this.clientSocketService.socket = io(this.serverUrl);
                     this.clientSocketService.socket.connect();
-
                     this.clientSocketService.socket.emit(ChatEvents.JoinRoom);
                     this.clientSocketService.socket.emit(ChatEvents.GetMessages);
                     this.receiveUserSocket();
                     this.clientSocketService.socket.emit('joinMainRoom', this.currentUser);
                     localStorage.setItem('ACCESS_TOKEN', 'access_token');
                     this.router.navigate(['/home']);
-                } else {
+                } else if (response.status === HttpStatusCode.NotModified) {
                     this.displayMessage('Cet utilisateur est déjà connecté');
                 }
             },
             (error: HttpErrorResponse) => {
-                this.errorHandler.handleRequestError(error);
+                if (error.status === HttpStatusCode.NotModified) this.displayMessage('Cet utilisateur est déjà connecté');
+                else this.errorHandler.handleRequestError(error);
             },
         );
     }

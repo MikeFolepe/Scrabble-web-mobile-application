@@ -1,5 +1,6 @@
 package com.example.scrabbleprototype.objects
 
+import com.example.scrabbleprototype.model.Notification
 import com.example.scrabbleprototype.model.User
 import com.example.scrabbleprototype.model.UserPreferences
 import com.example.scrabbleprototype.model.UserStats
@@ -10,4 +11,7 @@ object Users {
     lateinit var currentUser: User
     var userPreferences = UserPreferences()
     var userStats = UserStats()
+    var notifications = arrayListOf<Notification>()
+
+    var isObserver: Boolean = false
 }

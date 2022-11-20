@@ -18,22 +18,17 @@ export class SwapLetterService {
     ) {}
 
     // Swap all the letters selected from the easel with new ones from the reserve
-    swapCommand(lettersToSwap: string, indexPlayer: number): boolean {
+    swapCommand(lettersToSwap: string): boolean {
         if (!this.isPossible(lettersToSwap)) {
             this.sendMessageService.displayMessageByType('ERREUR : La commande est impossible à réaliser', MessageType.Error);
             return false;
-        }
-
-        const lettersToSwapIndexes: number[] = this.lettersToSwapIntoIndexes(lettersToSwap);
-        for (const indexLetter of lettersToSwapIndexes) {
-            this.swap(indexLetter, indexPlayer);
         }
         this.endGameService.addActionsLog('echanger');
         return true;
     }
 
-    swap(indexLetter: number, indexPlayer: number): void {
-        this.playerService.swap(indexLetter, indexPlayer);
+    swap(indexLetter: number[]): void {
+        this.playerService.swap(indexLetter);
     }
 
     private lettersToSwapIntoIndexes(lettersToSwap: string): number[] {
