@@ -66,6 +66,14 @@ export class PlayerService {
         });
     }
 
+
+    onReplaceHuman() {
+        this.clientSocketService.socket.on('newPlayerAi', (player: Player, indexToReplace: number) => {
+            this.players[indexToReplace] = {} as Player;
+            this.players[indexToReplace] = player;
+        });
+    }
+
     addLetterToEasel(letterToAdd: string): void {
         // If it is a white letter
         if (letterToAdd === letterToAdd.toUpperCase()) {

@@ -18,12 +18,4 @@ export class Player {
         this.isCreator = isCreator;
         this.isAi = isAi;
     }
-    // getEasel(): string {
-    //     let hand = '[';
-    //     for (const letter of this.letterTable) {
-    //         hand += letter.value;
-    //     }
-
-    //     return hand + ']';
-    // }
 }

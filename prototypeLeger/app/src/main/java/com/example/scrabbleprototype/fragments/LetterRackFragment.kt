@@ -22,6 +22,7 @@ import com.example.scrabbleprototype.model.*
 import com.example.scrabbleprototype.objects.*
 import com.example.scrabbleprototype.services.ObserverRackCallback
 import com.example.scrabbleprototype.services.PlaceService
+import com.example.scrabbleprototype.databinding.FragmentLetterRackBinding
 import com.example.scrabbleprototype.services.SkipTurnService
 import com.example.scrabbleprototype.services.SwapLetterService
 import com.example.scrabbleprototype.viewModel.PlacementViewModel
@@ -37,6 +38,7 @@ class LetterRackFragment : Fragment(), ObserverRackCallback {
     private lateinit var letterRackView: RecyclerView
     private val board = Board.cases
 
+    private lateinit var binding: FragmentLetterRackBinding
     private val placementViewModel: PlacementViewModel by activityViewModels()
     private val playersViewModel: PlayersViewModel by activityViewModels()
 
@@ -93,7 +95,8 @@ class LetterRackFragment : Fragment(), ObserverRackCallback {
     ): View? {
         // Inflate the layout for this fragment
         val inflaterWithTheme = ThemeManager.setFragmentTheme(layoutInflater, requireContext())
-        return inflaterWithTheme.inflate(R.layout.fragment_letter_rack, container, false)
+        binding = FragmentLetterRackBinding.inflate(inflaterWithTheme)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -131,6 +134,7 @@ class LetterRackFragment : Fragment(), ObserverRackCallback {
         swapButton.setOnClickListener {
             if(swapLetterBound) swapLetterService.swapLetters(letterPos, letterRackView)
         }
+        binding.player = Players.currentPlayer
     }
 
     private fun updatePlayer(view: View) {
@@ -159,7 +163,7 @@ class LetterRackFragment : Fragment(), ObserverRackCallback {
         }
     }
 
-    private fun setupDragListener(view: View) {
+        private fun setupDragListener(view: View) {
         // Drag listener for board cases
         view.setOnDragListener { v, e ->
             when(e.action) {

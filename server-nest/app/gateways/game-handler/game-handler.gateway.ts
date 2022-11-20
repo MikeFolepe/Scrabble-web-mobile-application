@@ -1,5 +1,6 @@
 /* eslint-disable no-restricted-imports */
 /* eslint-disable max-lines */
+import { AI_NAMES } from '@app/classes/aiNames';
 import { ServerRoom, State } from '@app/classes/server-room';
 import { PlayerAI } from '@app/game/models/player-ai.model';
 import { Player } from '@app/game/models/player.model';
@@ -146,11 +147,10 @@ export class GameHandlerGateway implements OnGatewayConnection {
     }
 
     @SubscribeMessage('deleteGame')
-    deleteGame(@ConnectedSocket() socket, @MessageBody() roomId: string) {
-        this.server.to(roomId).emit('leaveToHome');
-        this.roomManagerService.deleteRoom(roomId);
-        this.server.emit('roomConfiguration', this.roomManagerService.getRoomsToSend());
-        this.server.socketsLeave(roomId);
+    deleteGame(@ConnectedSocket() socket, @MessageBody() playerName: string, @MessageBody() roomId: string) {
+        const room = this.roomManagerService.find(roomId[1]);
+        const index = room.playerService.players.findIndex((curPlayer) => curPlayer.name === playerName[0]);
+        this.leaveGame(socket, index, room);
     }
 
     @SubscribeMessage('sendRoomMessage')
@@ -216,6 +216,13 @@ export class GameHandlerGateway implements OnGatewayConnection {
         }
     }
 
+    @SubscribeMessage('sendLeaveGame')
+    sendLeaveGame(@ConnectedSocket() socket, @MessageBody() playerName: string, @MessageBody() roomId: string) {
+        const room = this.roomManagerService.find(roomId[1]);
+        const index = room.playerService.players.findIndex((curPlayer) => curPlayer.name === playerName[0]);
+        this.leaveGame(socket, index, room);
+    }
+
     @SubscribeMessage('replaceAi')
     replaceAi(@ConnectedSocket() socket, @MessageBody() playerName: string, @MessageBody() indexAiToReplace: number, @MessageBody() roomId: string) {
         const room = this.roomManagerService.find(roomId[2]);
@@ -268,28 +275,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
     //         socket.leave(roomId);
     //     }, DELAY_OF_DISCONNECT);
     // }
-    // replaceAi(socket: Socket): void {
-    //     socket.on('replaceAi', (playerName, indexAiToReplace, roomId) => {
-    //         const room = this.roomManagerService.find(roomId);
-    //         const indexToRemove = room.ais.findIndex((curPlayer) => curPlayer.name === room.playerService.players[indexAiToReplace].name);
-    //         const indexToRemoveObserver = room.observers.findIndex((curPlayer) => curPlayer.pseudonym === playerName);
-    //         room.ais[indexToRemove] = {} as PlayerAI;
-    //         room.ais.splice(indexToRemove, 1);
-    //         room.observers.splice(indexToRemoveObserver, 1);
 
-    //         room.playerService.players[indexAiToReplace] = new Player(
-    //             playerName,
-    //             room.playerService.players[indexAiToReplace].letterTable,
-    //             0,
-    //             room.playerService.players[indexAiToReplace].isTurn,
-    //         );
-
-    //         this.logger.log('ai after replace', room.ais);
-    //         this.logger.log('players after replace', room.playerService.players);
-    //         socket.emit('MyPlayer', room.playerService.players[indexAiToReplace]);
-    //         this.server.to(roomId).emit('roomPlayers', room.playerService.players);
-    //     });
-    // }
     handleConnection(socket: Socket) {
         socket.emit(ChatEvents.SocketId, socket.id);
         this.logger.log(`Connexion par l'utilisateur avec id : ${socket.id}`);
@@ -301,30 +287,71 @@ export class GameHandlerGateway implements OnGatewayConnection {
     }
 
     handleDisconnect(socket: Socket) {
-        const index = this.userService.activeUsers.findIndex((user) => user.socketId === socket.id);
+        const room = this.roomManagerService.find(this.roomManagerService.findRoomIdOf(socket.id));
+        const index = this.userService.activeUsers.findIndex((curUser) => curUser.socketId === socket.id);
+        const user = this.userService.activeUsers.find((cuUser) => cuUser.socketId === socket.id);
         this.userService.activeUsers.splice(index, 1);
         this.logger.log(`Déconnexion par l'utilisateur avec id : ${socket.id}`);
+        if (room === undefined) {
+            return;
+        }
+        const indexPlayer = room.playerService.players.findIndex((player) => player.name === user.pseudonym);
+        this.leaveGame(socket, indexPlayer, room);
 
-        const room = this.roomManagerService.find(this.roomManagerService.findRoomIdOf(socket.id));
-        const roomId = this.roomManagerService.findRoomIdOf(socket.id);
+        // if (room === undefined) return;
+        // room.skipTurnService.stopTimer();
+        // if (room.state === State.Waiting) {
+        //     this.roomManagerService.deleteRoom(roomId);
+        //     this.server.emit('roomConfiguration', this.roomManagerService.getRoomsToSend());
+        //     return;
+        // }
+        // if (room.state === State.Playing) {
+        //     room.state = State.Finish;
+        //     // Emit the event
+        //     // this.sendWinnerName(socket, roomId);
+        //     return;
+        // }
+        // // so after all if the state is finish, delete the room
+        // this.roomManagerService.deleteRoom(roomId);
+        // this.server.emit('roomConfiguration', this.roomManagerService.getRoomsToSend());
+        // this.server.socketsLeave(roomId);
+    }
 
-        if (room === undefined) return;
-        room.skipTurnService.stopTimer();
+    private leaveGame(socket: Socket, indexPlayer: number, room: ServerRoom) {
         if (room.state === State.Waiting) {
-            this.roomManagerService.deleteRoom(roomId);
+            if (room.playerService.players[indexPlayer].isCreator) {
+                this.server.to(room.id).emit('leaveToHome');
+                this.roomManagerService.deleteRoom(room.id);
+                this.server.emit('roomConfiguration', this.roomManagerService.getRoomsToSend());
+                this.server.socketsLeave(room.id);
+                return;
+            }
+            room.playerService.players[indexPlayer] = new Player(
+                AI_NAMES[room.playerService.players.length],
+                room.playerService.players[indexPlayer].letterTable,
+                0,
+                false,
+                false,
+                true,
+            );
+            room.aiPlayersNumber++;
+            room.humanPlayersNumber--;
+            socket.leave(room.id);
             this.server.emit('roomConfiguration', this.roomManagerService.getRoomsToSend());
+            this.server.to(room.id).emit('newPlayerAi', room.playerService.players[indexPlayer], indexPlayer);
             return;
         }
         if (room.state === State.Playing) {
+            room.skipTurnService.stopTimer();
             room.state = State.Finish;
             // Emit the event
             // this.sendWinnerName(socket, roomId);
             return;
         }
         // so after all if the state is finish, delete the room
-        this.roomManagerService.deleteRoom(roomId);
+        this.roomManagerService.deleteRoom(room.id);
         this.server.emit('roomConfiguration', this.roomManagerService.getRoomsToSend());
-        this.server.socketsLeave(roomId);
+        this.server.socketsLeave(room.id);
     }
 
     private startTimer(roomId: string) {
@@ -352,7 +379,6 @@ export class GameHandlerGateway implements OnGatewayConnection {
     private updateTurns(room: ServerRoom) {
         room.playerService.players[room.skipTurnService.activePlayerIndex].isTurn = false;
         this.server.in(room.id).emit('updatePlayerTurnToFalse', room.playerService.players[room.skipTurnService.activePlayerIndex].name);
-
         room.skipTurnService.activePlayerIndex++;
         if (room.skipTurnService.activePlayerIndex >= room.playerService.players.length) room.skipTurnService.activePlayerIndex = 0;
         room.playerService.players[room.skipTurnService.activePlayerIndex].isTurn = true;

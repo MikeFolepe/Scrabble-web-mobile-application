@@ -75,13 +75,14 @@ class WaitingRoomActivity : AppCompatActivity() {
         if(currentPlayer.isCreator){
             cancelGameButton.text="Annuler"
             cancelGameButton.setOnClickListener {
-                socket.emit("deleteGame", CurrentRoom.myRoom.id)
+                socket.emit("deleteGame", currentPlayer.name, CurrentRoom.myRoom.id)
             }
 
         }else{
             cancelGameButton.text = "Quitter la partie"
             cancelGameButton.setOnClickListener {
                 socket.emit("leaveGame", currentPlayer.name, currentRoom.id)
+                Players.currentPlayer = Player()
             }
         }
     }
