@@ -472,7 +472,6 @@ export class GameHandlerGateway implements OnGatewayConnection {
         const activePlayerIndex = room.skipTurnService.activePlayerIndex;
         if (!room.playerService.players[activePlayerIndex].isAi) return;
 
-        console.log('i am AI');
         setTimeout(async () => {
             const turn = room.aiIturn();
             await room.ais[turn].play(activePlayerIndex);
