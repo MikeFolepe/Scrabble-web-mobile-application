@@ -32,8 +32,8 @@ class WaitingRoomActivity : AppCompatActivity() {
     private val mapper = jacksonObjectMapper()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         ThemeManager.setActivityTheme(this)
+        super.onCreate(savedInstanceState)
         setContentView(R.layout.waiting_room)
         receiveNewOpponent()
         goToGameView()
@@ -92,7 +92,6 @@ class WaitingRoomActivity : AppCompatActivity() {
             }
         }
         socket.on("roomPlayers") { response ->
-            Log.d("roomPlayers", "waiting")
             Players.players = mapper.readValue(response[0].toString(), object: TypeReference<ArrayList<Player>>() {})
             runOnUiThread {
                 playersWaitingAdapter.updateData(Players.players)

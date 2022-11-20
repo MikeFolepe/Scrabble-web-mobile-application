@@ -53,8 +53,8 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
     val mapper = jacksonObjectMapper()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         ThemeManager.setActivityTheme(this)
+        super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_game_2)
 
         client = HttpClient() {

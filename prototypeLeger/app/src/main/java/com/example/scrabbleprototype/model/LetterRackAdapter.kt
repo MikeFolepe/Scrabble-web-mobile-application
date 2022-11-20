@@ -10,6 +10,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
@@ -20,13 +21,14 @@ class LetterRackAdapter(private var letterRack: ArrayList<Letter>) :
     RecyclerView.Adapter<LetterRackAdapter.ViewHolder>() {
 
     var onLetterClick: ((position: Int) -> Unit)? = null
+    var onLetterDrag: (() -> Unit)? = null
 
     /**
      * Provide a reference to the type of views that you are using
      * (custom ViewHolder).
      */
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val letterLayout: LinearLayout
+        val letterLayout: CardView
         val letter: TextView
         val letterScore: TextView
 
@@ -35,7 +37,7 @@ class LetterRackAdapter(private var letterRack: ArrayList<Letter>) :
             letterLayout = view.findViewById(R.id.letter_layout)
             letter = view.findViewById(R.id.letter)
             letterScore = view.findViewById(R.id.letter_score)
-            view.setOnClickListener {
+            itemView.setOnClickListener {
                 onLetterClick?.invoke(layoutPosition)
             }
         }
@@ -57,6 +59,9 @@ class LetterRackAdapter(private var letterRack: ArrayList<Letter>) :
         viewHolder.letterScore.text = letterRack[position].points.toString()
         viewHolder.letter.text = letterRack[position].value.uppercase()
         setupTouchListener(viewHolder)
+        viewHolder.itemView.setOnClickListener {
+            onLetterClick?.invoke(position)
+        }
     }
 
     // Return the size of your dataset (invoked by the layout manager)
@@ -65,6 +70,9 @@ class LetterRackAdapter(private var letterRack: ArrayList<Letter>) :
     private fun setupTouchListener(viewHolder: ViewHolder) {
         viewHolder.itemView.setOnLongClickListener { v ->
             if(!Players.currentPlayer.getTurn()) return@setOnLongClickListener false
+
+            // Cancel current swap
+            onLetterDrag?.invoke()
 
             val letterTouched = ClipData.Item(letterRack[viewHolder.layoutPosition].value)
             val letterQuantity = ClipData.Item(letterRack[viewHolder.layoutPosition].quantity.toString())
@@ -81,7 +89,7 @@ class LetterRackAdapter(private var letterRack: ArrayList<Letter>) :
             dragData.addItem(positionTouched)
             dragData.addItem(isDraggedFromRack)
 
-            val shadowBuilder: View.DragShadowBuilder = View.DragShadowBuilder(v)
+            val shadowBuilder: View.DragShadowBuilder = View.DragShadowBuilder(v.findViewById(R.id.letter_to_drag))
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 v?.startDragAndDrop(dragData, shadowBuilder, null, 0)

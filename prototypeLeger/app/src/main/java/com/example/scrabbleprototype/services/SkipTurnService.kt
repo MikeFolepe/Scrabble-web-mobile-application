@@ -17,6 +17,9 @@ interface TurnUICallback {
 interface EndTurnCallback {
     fun handleInvalidPlacement()
 }
+interface CancelSwapCallback {
+    fun resetSwap()
+}
 
 class SkipTurnService : Service() {
 
@@ -29,6 +32,7 @@ class SkipTurnService : Service() {
     private val binder = LocalBinder()
     private var turnUICallback: TurnUICallback? = null
     private var endTurnCallback: EndTurnCallback? = null
+    private var cancelSwapCallback: CancelSwapCallback? = null
 
     inner class LocalBinder: Binder() {
         fun getService(): SkipTurnService = this@SkipTurnService
@@ -47,10 +51,19 @@ class SkipTurnService : Service() {
     fun setEndTurnCallback(callBack: EndTurnCallback?) {
         endTurnCallback = callBack
     }
+    fun setCancelSwapCallback(callback: CancelSwapCallback?) {
+        cancelSwapCallback = callback
+    }
 
     private fun receiveNewTurn() {
         socket.on("turnSwitched") { response ->
             val playerName = response[0] as String
+
+            if(activePlayerName == player.name) {
+                cancelSwapCallback?.resetSwap()
+                endTurnCallback?.handleInvalidPlacement()
+            }
+
             if(player.name == playerName) {
                 activePlayerName = playerName
                 player.setTurn(true)
@@ -70,14 +83,16 @@ class SkipTurnService : Service() {
         socket.on("updateTimer") { response ->
             val minutes = response[0].toString()
             val seconds = response[1].toString()
+            Log.d("timer", "on update")
             turnUICallback?.updateTimeUI(minutes, seconds, activePlayerName)
         }
     }
 
     fun switchTimer() {
         Timer().schedule(timerTask {
+            cancelSwapCallback?.resetSwap()
             endTurnCallback?.handleInvalidPlacement()
-            socket.emit("switchTurn", CurrentRoom.myRoom.id, player.name)
+            socket.emit("switchTurn", CurrentRoom.myRoom.id)
             player.setTurn(false)
         }, 1000)
     }

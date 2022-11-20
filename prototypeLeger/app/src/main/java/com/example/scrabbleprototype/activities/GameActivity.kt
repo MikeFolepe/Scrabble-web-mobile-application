@@ -26,8 +26,8 @@ class GameActivity : AppCompatActivity() {
     private val mapper = jacksonObjectMapper()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         ThemeManager.setActivityTheme(this)
+        super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
 
         findViewById<ConstraintLayout>(R.id.game_layout).setOnTouchListener { v, event ->

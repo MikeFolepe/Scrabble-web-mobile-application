@@ -7,6 +7,7 @@ import { DELAY_BEFORE_PLAYING, ONE_SECOND_DELAY, THREE_SECONDS_DELAY } from '@co
 import { GameSettings } from '@common/game-settings';
 import { Letter } from '@common/letter';
 import { User } from '@common/user';
+import { Friend } from '@common/friend';
 import { Vec2 } from '@common/vec2';
 import { Logger } from '@nestjs/common';
 import { ConnectedSocket, MessageBody, OnGatewayConnection, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
@@ -142,9 +143,10 @@ export class GameHandlerGateway implements OnGatewayConnection {
     @SubscribeMessage('swap')
     swap(@ConnectedSocket() socket, @MessageBody() data: { roomId: string; easel: Letter[]; indexToSwap: number[] }) {
         const room = this.roomManagerService.find(data[0]);
+        const indexes: number[] = JSON.parse(data[2]);
         room.playerService.players[room.skipTurnService.activePlayerIndex].letterTable = JSON.parse(data[1]);
-        // eslint-disable-next-line guard-for-in
-        for (const i in data[2]) {
+
+        for (const i of indexes) {
             const letterFromReserve = room.letter.getRandomLetter();
             // Add a copy of the random letter from the reserve
             const letterToAdd = {
@@ -154,9 +156,11 @@ export class GameHandlerGateway implements OnGatewayConnection {
                 isSelectedForSwap: letterFromReserve.isSelectedForSwap,
                 isSelectedForManipulation: letterFromReserve.isSelectedForManipulation,
             };
-            room.playerService.players[room.skipTurnService.activePlayerIndex].letterTable.splice(data[2][i], 1, letterToAdd);
+            room.playerService.players[room.skipTurnService.activePlayerIndex].letterTable.splice(i, 1, letterToAdd);
+            room.letter.addLetterToReserve(letterToAdd.value);
         }
         socket.emit('swapped', JSON.stringify(room.playerService.players[room.skipTurnService.activePlayerIndex].letterTable));
+        this.server.to(room.id).emit('receiveReserve', room.letter.reserve, room.letter.reserveSize);
     }
 
     @SubscribeMessage('deleteGame')
@@ -228,6 +232,15 @@ export class GameHandlerGateway implements OnGatewayConnection {
         if (currentUser) {
             currentUser.socketId = user.socketId;
         }
+    }
+
+    @SubscribeMessage('sendActiveUsers')
+    sendActiveUsers(@ConnectedSocket() socket, @MessageBody() senderName) {
+        const simplifiedUsers: Friend[] = [];
+        for (const user of this.userService.activeUsers) {
+            if (senderName !== user.pseudonym) simplifiedUsers.push(new Friend(user.pseudonym, '', 0));
+        }
+        socket.emit('activeUsers', simplifiedUsers);
     }
 
     // onEndGameByGiveUp(socket: Socket): void {

@@ -18,8 +18,9 @@ export class AuthController {
     async login(@Body() user: User, @Res() response: Response) {
         await this.authService
             .login(user)
-            .then((newUser : User) => {
-                response.status(HttpStatus.OK).send(newUser);
+            .then((newUser: User) => {
+                if (newUser === undefined) response.sendStatus(HttpStatus.NOT_MODIFIED);
+                else response.status(HttpStatus.OK).send(newUser);
             })
             .catch((error: Error) => {
                 console.log("yepppp");

@@ -18,6 +18,10 @@
 
             <menu>
                 <item
+                    android:id="@+id/nav_profile"
+                    android:icon="@drawable/ic_baseline_person_24"
+                    android:title="@string/profile"/>
+                <item
                     android:id="@+id/nav_settings"
                     android:icon="@drawable/ic_baseline_settings_24"
                     android:title="@string/settings" />
@@ -35,15 +39,10 @@
         android:title="@string/friend_store_title">
 
         <menu>
-
-            <item
-                android:id="@+id/nav_friends"
-                android:icon="@drawable/ic_baseline_groups_24"
-                android:title="@string/friend_list"/>
             <item
                 android:id="@+id/nav_store"
                 android:icon="@drawable/ic_baseline_local_grocery_store_24"
-                android:title="@string/store"/>
+                android:title="@string/store" />
         </menu>
 
     </item>
