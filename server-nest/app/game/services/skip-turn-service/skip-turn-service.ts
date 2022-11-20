@@ -13,11 +13,10 @@ export class SkipTurnService {
     activePlayerIndex: number;
     gameSettings: GameSettings;
 
-    constructor(gameSettings: GameSettings, players: Player[]) {
+    constructor(gameSettings: GameSettings) {
         this.startMinutes = parseInt(gameSettings.timeMinute, 10);
         this.startSeconds = parseInt(gameSettings.timeSecond, 10);
 
-        this.players = players;
         this.gameSettings = gameSettings;
     }
 
@@ -33,7 +32,6 @@ export class SkipTurnService {
     }
 
     findStartingPlayerIndex(players: Player[]) {
-        this.players = players;
-        this.activePlayerIndex = this.players.findIndex((curPlayer) => this.gameSettings.creatorName === curPlayer.name);
+        this.activePlayerIndex = players.findIndex((curPlayer) => this.gameSettings.creatorName === curPlayer.name);
     }
 }

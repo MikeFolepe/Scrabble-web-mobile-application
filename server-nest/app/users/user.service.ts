@@ -14,7 +14,7 @@ export class UserService {
     }
 
     // fonction 1 de Mike
-    async addUser(userData: User): Promise<void> {
+    addUser(userData: User): void {
         this.activeUsers.push(userData);
     }
 

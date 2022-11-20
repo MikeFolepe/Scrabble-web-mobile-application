@@ -46,7 +46,7 @@ export class ServerRoom {
         this.letter = new LetterService();
         this.playerService = new PlayerService(this.letter);
         this.placeLetter = new PlaceLetterService(this.wordValidation, this.playerService);
-        this.skipTurnService = new SkipTurnService(gameSettings, this.playerService.players);
+        this.skipTurnService = new SkipTurnService(gameSettings);
         this.playerService.players[0] = new Player(this.gameSettings.creatorName, this.letter.getRandomLetters(), 0, true, true);
         this.ais = [];
         this.aiTurn = 0;

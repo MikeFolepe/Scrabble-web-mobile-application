@@ -1,4 +1,4 @@
-import { HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse, HttpResponse, HttpStatusCode } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
@@ -31,9 +31,9 @@ export class AuthService {
 
     signIn(userData: User) {
         this.communicationService.connectUser(userData).subscribe(
-            (newUser: User) => {
-                if (newUser) {
-                    this.currentUser = newUser;
+            (response: HttpResponse<User>) => {
+                if (response.status === HttpStatusCode.Ok) {
+                    this.currentUser = response.body as User;
                     this.clientSocketService.socket = io(this.serverUrl);
                     this.clientSocketService.socket.connect();
                     this.clientSocketService.socket.emit(ChatEvents.JoinRoom);
@@ -42,7 +42,7 @@ export class AuthService {
                     this.clientSocketService.socket.emit('joinMainRoom', this.currentUser);
                     localStorage.setItem('ACCESS_TOKEN', 'access_token');
                     this.router.navigate(['/home']);
-                } else {
+                } else if (response.status === HttpStatusCode.NotModified) {
                     this.displayMessage('Cet utilisateur est déjà connecté');
                 }
             },
