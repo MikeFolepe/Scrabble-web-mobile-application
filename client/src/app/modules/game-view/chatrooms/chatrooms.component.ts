@@ -69,7 +69,8 @@ export class ChatroomsComponent implements OnInit {
     }
 
     handleKeyEvent(event: KeyboardEvent) {
-        if (event.key === 'Enter') {
+        
+        if (this.currentMessage && event.key === 'Enter') {
             event.preventDefault();
             this.sendMessage();
         }
