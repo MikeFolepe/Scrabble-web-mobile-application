@@ -6,7 +6,7 @@ import { ChatRoomService } from '@app/services/chat-room.service';
 import { ClientSocketService } from '@app/services/client-socket.service';
 
 @Component({
-    selector: 'app-chatrooms',
+    selector: 'app-chatrooms', 
     templateUrl: './chatrooms.component.html',
     styleUrls: ['./chatrooms.component.scss'],
 })
