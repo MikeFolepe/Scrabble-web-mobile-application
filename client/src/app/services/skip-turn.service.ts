@@ -65,6 +65,7 @@ export class SkipTurnService {
         if (this.endGameService.isEndGame) return;
         if (this.playerService.currentPlayer.isTurn) this.shouldNotBeDisplayed = true;
         if (this.playerService.currentPlayer.isTurn) {
+            console.log('turrrrrrrnnnnnn');
             this.shouldNotBeDisplayed = false;
             this.clientSocket.socket.emit('switchTurn', this.clientSocket.currentRoom.id);
             this.playerService.currentPlayer.isTurn = false;

@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AiPlayer, AiPlayerDB, AiType } from '@common/ai-name';
 import { Dictionary } from '@common/dictionary';
@@ -28,9 +28,24 @@ export class CommunicationService {
         return this.http.get<string[]>(`${this.baseUrl}/game/dictionary/${fileName}`);
     }
 
-
     getAiPlayers(aiType: AiType): Observable<AiPlayerDB[]> {
         return this.http.get<AiPlayerDB[]>(`${this.baseUrl}/admin/` + (aiType === AiType.expert ? 'aiExperts' : 'aiBeginners'));
+    }
+
+    getUsers(): Observable<User[]> {
+        return this.http.get<User[]>(`${this.baseUrl}/user/users`);
+    }
+
+    async findUserInDb(pseudonym: string, password: string): Promise<boolean> {
+        return this.http.get<boolean>(`${this.baseUrl}/user/findUserInDb/${pseudonym}/${password}`).toPromise();
+    }
+
+    async checkPseudonym(pseudonym: string): Promise<boolean> {
+        return this.http.get<boolean>(`${this.baseUrl}/user/checkPseudonym/${pseudonym}`).toPromise();
+    }
+
+    addNewUserToDB(userData: User): Observable<User> {
+        return this.http.post<User>(`${this.baseUrl}/user/users`, userData);
     }
 
     addAiPlayer(aiPlayer: AiPlayer, aiType: AiType): Observable<AiPlayerDB> {
@@ -75,8 +90,8 @@ export class CommunicationService {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    connectUser(userData: User): Observable<boolean> {
+    connectUser(userData: User): Observable<HttpResponse<User>> {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return this.http.post<boolean>(`${this.baseUrl}/auth/connect`, userData);
+        return this.http.post<User>(`${this.baseUrl}/auth/connect`, userData, { observe: 'response' });
     }
 }

@@ -7,13 +7,13 @@ import { GiveUpGameDialogComponent } from '@app/modules/game-view/give-up-game-d
 import { AppMaterialModule } from '@app/modules/material.module';
 import { SharedModule } from '@app/modules/shared/shared.module';
 import { FormComponent } from './form/form.component';
+import { JoiningConfirmationDialogComponent } from './joining-confirmation-dialog/joining-confirmation-dialog.component';
 import { LevelFieldComponent } from './level-field/level-field.component';
 import { NameSelectorComponent } from './name-selector/name-selector.component';
+import { PasswordGameDialogComponent } from './password-game-dialog/password-game-dialog.component';
 import { PlayerNameFieldComponent } from './player-name-field/player-name-field.component';
 import { TimerFieldComponent } from './timer-field/timer-field.component';
 import { VisibilityFieldComponent } from './visibility-field/visibility-field.component';
-import { PasswordGameDialogComponent } from './password-game-dialog/password-game-dialog.component';
-import { JoiningConfirmationDialogComponent } from './joining-confirmation-dialog/joining-confirmation-dialog.component';
 
 @NgModule({
     declarations: [
@@ -27,7 +27,7 @@ import { JoiningConfirmationDialogComponent } from './joining-confirmation-dialo
         PasswordGameDialogComponent,
         JoiningConfirmationDialogComponent,
     ],
-    imports: [CommonModule, AppRoutingModule, SharedModule, MatDialogModule, FormsModule, AppMaterialModule, ReactiveFormsModule],
+    imports: [CommonModule, ReactiveFormsModule, AppRoutingModule, SharedModule, MatDialogModule, FormsModule, AppMaterialModule],
     exports: [FormComponent],
     entryComponents: [NameSelectorComponent],
 })

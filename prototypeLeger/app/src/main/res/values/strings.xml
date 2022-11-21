@@ -41,6 +41,7 @@
     <string name="active_player">Joueur actif</string>
     <string name="timer_init">00:00</string>
     <string name="timer_format">%1$s:%2$s</string>
+    <string name="replaceAi">Remplacer</string>
 
     //Waiting room
     <string name="startGame">Démarrer</string>
@@ -52,23 +53,31 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
+    <string name="join_game_item">Joindre</string>
 
     //Main menu
     <string name="welcome">Bienvenue!</string>
     <string name="user_xp">XP : %1d</string>
+    <string name="logout">Se déconnecter</string>
 
     //Hamburger Main menu
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
     <string name="main_menu">Menu principal</string>
-    <string name="profile">Profil Utilisateur</string>
+    <string name="user_profile">Profil Utilisateur</string>
+    <string name="profile">Profil</string>
     <string name="settings">Paramètres et personnalisation</string>
     <string name="stats">Statistiques et historique</string>
     <string name="friend_list">Liste d\'amis</string>
     <string name="store">Boutique</string>
     <string name="friend_store_title">Autres</string>
     <string name="title_activity_main_menu">MainMenuActivity</string>
+
+    //Profile fragment
+    <string name="send_friend_invitation">Envoyer une invitation d\'ami</string>
+    <string name="add_friend">Ajouter un ami</string>
+    <string name="active_users_title">Liste des joueurs actifs</string>
 
     //Settings fragment
     <string name="parameters">Paramètres</string>
@@ -83,9 +92,9 @@
     <string name="save_edits">Sauvegarder les changements</string>
 
     <string name="personalization">Personnalisation de l\'application</string>
-    <string name="app_theme">Thème de l\'application</string>
-    <string name="board_theme">Thème du plateau de jeu</string>
-    <string name="chat_theme">Thème de la boîte de discussion</string>
+    <string name="app_theme">Thèmes de l\'application</string>
+    <string name="board_theme">Thèmes du plateau de jeu</string>
+    <string name="chat_theme">Thèmes de la boîte de discussion</string>
     <string name="language">Langue</string>
 
     //Stats and history fragment
@@ -102,6 +111,11 @@
     <string name="game_history_item">Partie jouée le </string>
     <string name="game_victory">Victoire</string>
     <string name="game_defeat">Défaite</string>
+
+    //Items store fragment
+    <string name="store_title">Boutique de thèmes</string>
+    <string name="purchase_btn">Acheter pour %1d XP</string>
+
 
     //Items Dialog
     <string name="themes_dialog_title">Veuillez choisir un thème de %1s</string>

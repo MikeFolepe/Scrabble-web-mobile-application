@@ -1,5 +1,8 @@
 <app-background></app-background>
 <div></div>
+<div class="userProfile">
+    <img src="{{this.authService.currentUser.avatar}}" class="avatar" alt="Avatar"/>
+</div>
 <div class="justified">
     <img id="logo-scrabble" src="https://bit.ly/3m206ss" class="not-selectionnable" alt="Logo Scrabble" />
     <mat-tab-group class="tab-group" animationDuration="1000ms" [(selectedIndex)]="selectedGameTypeIndex">

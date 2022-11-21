@@ -23,6 +23,6 @@ enum class RoomType {
 
 @Serializable
 class GameSettings(var creatorName: String, var startingPlayer: StartingPlayer, var timeMinute: String,
-                   var timeSecond: String, var level: AiType, var dictionary: String, var type: RoomType) {
+                   var timeSecond: String, var level: AiType, var dictionary: String, var type: Int) {
     var password: String = ""
 }

@@ -59,6 +59,8 @@ export class AdminController {
             response.status(HttpStatus.NOT_FOUND).send(error.message);
         }
     }
+
+
     @Get('/dictionaries')
     getDictionnary(@Res() response) {
         response.status(HttpStatus.OK).send(this.adminService.getDictionaries());

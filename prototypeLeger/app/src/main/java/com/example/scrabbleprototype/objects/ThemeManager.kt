@@ -1,13 +1,20 @@
 package com.example.scrabbleprototype.objects
 
 import android.app.Activity
+import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.util.Log
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
+import androidx.appcompat.app.AppCompatViewInflater
+import androidx.appcompat.widget.ThemeUtils
+import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat.ThemeCompat
 import androidx.fragment.app.FragmentManager
 import com.example.scrabbleprototype.R
+import com.example.scrabbleprototype.model.ThemeAdapter
+import com.google.android.material.appbar.AppBarLayout
 
 object ThemeManager {
     private var currentTheme: Int = 0
@@ -16,9 +23,9 @@ object ThemeManager {
     val THEME_BLUE = 2
     val THEME_ORANGE = 3
 
-    fun changeToTheme(theme: Int) {
+    fun changeToTheme(theme: Int, activity: Activity?) {
         currentTheme = theme
-        //RELOAD FRAGMENT?
+        activity?.window?.statusBarColor = ContextCompat.getColor(activity!!.baseContext, R.color.orange)
     }
 
     fun setActivityTheme(activity: Activity) {

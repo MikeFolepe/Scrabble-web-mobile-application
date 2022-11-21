@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
@@ -15,6 +16,7 @@ import com.example.scrabbleprototype.model.*
 import com.example.scrabbleprototype.objects.CurrentRoom
 import com.example.scrabbleprototype.objects.Players
 import com.example.scrabbleprototype.objects.ThemeManager
+import com.example.scrabbleprototype.objects.Users
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import kotlinx.serialization.encodeToString
@@ -28,21 +30,29 @@ class WaitingRoomActivity : AppCompatActivity() {
     val currentRoom = CurrentRoom.myRoom
     private val socket = SocketHandler.getPlayerSocket()
     private val mapper = jacksonObjectMapper()
+    val currentPlayer = Players.currentPlayer
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         ThemeManager.setActivityTheme(this)
+        super.onCreate(savedInstanceState)
         setContentView(R.layout.waiting_room)
         receiveNewOpponent()
         goToGameView()
         setupStartGameButton()
+        setUpCancelButton()
         setupRoomId()
         setupPlayersWaiting()
         receiveNewRequest()
+        leaveToHome()
+        onReplaceHuman()
+        // Players.currentPlayerPosition = Players.opponents.size
     }
 
     private fun setupStartGameButton() {
         val startGameButton = findViewById<Button>(R.id.start_game_button)
+        if(!currentPlayer.isCreator){
+            startGameButton.setVisibility(View.INVISIBLE)
+        }
         startGameButton.setOnClickListener {
             if((CurrentRoom.myRoom.humanPlayersNumber + CurrentRoom.myRoom.aiPlayersNumber) < Constants.MAX_PLAYERS || !Players.currentPlayer.isCreator) {
                 Toast.makeText(this, "La partie ne peut pas être commencée", Toast.LENGTH_LONG).show()
@@ -57,9 +67,38 @@ class WaitingRoomActivity : AppCompatActivity() {
         roomIdText.text = "Salle de jeu : " + CurrentRoom.myRoom.id
     }
 
+    private fun setUpCancelButton(){
+        val cancelGameButton = findViewById<Button>(R.id.back_button)
+
+        if(currentPlayer.isCreator){
+            cancelGameButton.text="Annuler"
+            cancelGameButton.setOnClickListener {
+                socket.emit("deleteGame", currentPlayer.name, CurrentRoom.myRoom.id)
+            }
+
+        }else{
+            cancelGameButton.text = "Quitter la partie"
+            cancelGameButton.setOnClickListener {
+                socket.emit("leaveGame", currentPlayer.name, currentRoom.id)
+                Players.currentPlayer = Player()
+            }
+        }
+    }
+
+    /*fun setUpGameTypeLabel() {
+        val typeText = findViewById<TextView>(R.id.room_type)
+        if(currentRoom.gameSettings.password == "") {
+            typeText.text = "PUBLIC"
+            typeText.background = "reen"
+
+        }
+        else {
+            typeText.text = "PRIVÉE"
+        }
+    */
+
     private fun setupPlayersWaiting() {
         val playersWaitingView = findViewById<RecyclerView>(R.id.players_waiting)
-
         val verticalLayoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         playersWaitingView.layoutManager = verticalLayoutManager
         playersWaitingAdapter = PlayersWaitingAdapter(Players.players)
@@ -78,7 +117,6 @@ class WaitingRoomActivity : AppCompatActivity() {
             }
         }
         socket.on("roomPlayers") { response ->
-            Log.d("roomPlayers", "waiting")
             Players.players = mapper.readValue(response[0].toString(), object: TypeReference<ArrayList<Player>>() {})
             runOnUiThread {
                 playersWaitingAdapter.updateData(Players.players)
@@ -114,9 +152,31 @@ class WaitingRoomActivity : AppCompatActivity() {
         }
     }
 
+    private fun leaveToHome() {
+        socket.on("leaveToHome") {
+            runOnUiThread{
+                Toast.makeText(this, "La partie a été supprimée par le créateur", Toast.LENGTH_LONG).show()
+                startActivity(Intent(this, MainMenuActivity::class.java))
+            }
+
+        }
+    }
+
     private fun goToGameView() {
         socket.on("goToGameView") {
             startActivity(Intent(this, GameActivity::class.java))
+        }
+    }
+
+    private fun onReplaceHuman() {
+        socket.on("newPlayerAi") { response ->
+            val playerReceived = mapper.readValue(response[0].toString(), Player::class.java)
+            val index = mapper.readValue(response[1].toString(), Int::class.java)
+
+            runOnUiThread {
+                Players.players[index] = playerReceived
+                playersWaitingAdapter.notifyItemChanged(index)
+            }
         }
     }
 }

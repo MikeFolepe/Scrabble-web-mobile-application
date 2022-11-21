@@ -33,6 +33,7 @@ export class ChatroomsComponent implements OnInit {
 
     sendMessage(): void {
         this.scrollToBottom();
+        console.log(this.authService.currentUser);
         this.clientSocketService.socket.emit(
             'newMessage',
             this.chatRoomIndexService.chatRoomIndex,

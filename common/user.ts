@@ -1,12 +1,23 @@
 export class User {
     pseudonym: string;
     ipAddress: string;
-    socketId: string;
+    socketId?: string;
     isObserver: boolean;
-    constructor(pseudo: string, ipAddress: string, socketId: string = '', isObserver: boolean = false) {
-        this.pseudonym = pseudo;
-        this.ipAddress = ipAddress;
+    avatar: string;
+    password?: string;
+    email?: string;
+    _id?: string
+
+    //ce qui est oblige : avatar, pseudonym, password, email
+
+    constructor(avatar: string, pseudonym: string, password: string, email: string, isObserver: boolean = false, socketId?: string) {
+        this.avatar = avatar;
+        this.pseudonym = pseudonym;
+        this.password = password;
+        this.email = email;
         this.socketId = socketId;
         this.isObserver = isObserver;
     }
+
+
 }

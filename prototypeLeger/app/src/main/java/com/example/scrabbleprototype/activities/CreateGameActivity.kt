@@ -11,6 +11,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.model.*
+import com.example.scrabbleprototype.model.Dictionary
 import com.example.scrabbleprototype.objects.CurrentRoom
 import com.example.scrabbleprototype.objects.Players
 import com.example.scrabbleprototype.objects.ThemeManager
@@ -28,6 +29,9 @@ import kotlinx.coroutines.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONObject
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.concurrent.timerTask
 import kotlin.coroutines.CoroutineContext
 
 
@@ -42,7 +46,7 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
     }
     var dicoFileName= ""
     var currentRoom = CurrentRoom;
-    var gameSetting: GameSettings = GameSettings(Users.currentUser.pseudonym, StartingPlayer.Player1, "00", "00", AiType.beginner, "", RoomType.public)
+    var gameSetting: GameSettings = GameSettings(Users.currentUser.pseudonym, StartingPlayer.Player1, "00", "00", AiType.beginner, "", RoomType.public.ordinal)
     val minutes = arrayListOf("00", "01", "02", "03")
     val seconds = arrayListOf("00", "30")
     var dictionaries = listOf<Dictionary>()
@@ -53,8 +57,8 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
     val mapper = jacksonObjectMapper()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         ThemeManager.setActivityTheme(this)
+        super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_game_2)
 
         client = HttpClient() {
@@ -63,11 +67,7 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
             }
         }
         receiveMyPlayer()
-        launch {
-            setupSpinners()
-        }
         setUpButtons()
-        receiveMyPlayer()
         currRoom()
         receiveAis()
         launch { setupSpinners() }
@@ -179,11 +179,11 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
         findViewById<RadioGroup>(R.id.radio_group).setOnCheckedChangeListener { group, checkedId ->
             val radio: RadioButton = findViewById(checkedId)
             if (radio.text == "Public") {
-                gameSetting.type = RoomType.public;
+                gameSetting.type = RoomType.public.ordinal
                 val builder = AlertDialog.Builder(this)
                 builder.setMessage("Voulez vous protégez la partie en ajoutant un mot de passe");
                 // Set Alert Title
-                builder.setTitle("Mot de passe partie public");
+                builder.setTitle("Mot de passe partie publique");
 
                 // Set Cancelable false for when the user clicks on the outside the Dialog Box then it will remain show
                 builder.setCancelable(false);
@@ -219,7 +219,7 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
                 // Show the Alert Dialog box
                 alertDialog.show()
             } else {
-                gameSetting.type = RoomType.private;
+                gameSetting.type = RoomType.private.ordinal
             }
             Log.d("type:", gameSetting.type.toString())
         }
@@ -232,7 +232,7 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
         }
         //gameSetting.dictionary = dictionaries.find { it.title == dicoFileName }!!.fileName
         gameSetting.dictionary = dictionaries[0].fileName
-        Log.d("game" , gameSetting.toString())
+        Log.d("game" , gameSetting.password)
         socket.emit("createRoom", JSONObject(Json.encodeToString(gameSetting)))
     }
 
@@ -250,7 +250,7 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
         socket.on("MyPlayer") { response ->
             Players.currentPlayer = mapper.readValue(response[0].toString(), Player::class.java)
             Log.d("waiting11", Players.currentPlayer.name)
-            startActivity(Intent(this, WaitingRoomActivity::class.java))
+            startActivity(Intent(this@CreateGameActivity, WaitingRoomActivity::class.java))
         }
     }
 

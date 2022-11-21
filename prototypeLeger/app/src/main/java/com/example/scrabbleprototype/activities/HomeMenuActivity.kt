@@ -10,8 +10,8 @@ import com.example.scrabbleprototype.objects.ThemeManager
 class HomeMenuActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         ThemeManager.setActivityTheme(this)
+        super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home_menu)
 
         setupButtons()

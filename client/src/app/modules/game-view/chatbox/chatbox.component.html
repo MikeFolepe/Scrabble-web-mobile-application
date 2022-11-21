@@ -22,11 +22,5 @@
         </p>
     </div>
 
-    <input
-        type="text"
-        placeholder="Veuillez entrer un message ou une commande"
-        maxlength="512"
-        [(ngModel)]="message"
-        (keypress)="handleKeyEvent($event)"
-    />
+    <input type="text" placeholder="Veuillez entrer un message" maxlength="512" [(ngModel)]="message" (keypress)="handleKeyEvent($event)" />
 </div>

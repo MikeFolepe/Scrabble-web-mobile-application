@@ -1,4 +1,5 @@
 import { Component, OnDestroy } from '@angular/core';
+import { AuthService } from '@app/services/auth.service';
 import { ClientSocketService } from '@app/services/client-socket.service';
 import { EndGameService } from '@app/services/end-game.service';
 import { LetterService } from '@app/services/letter.service';
@@ -17,6 +18,7 @@ export class InformationPanelComponent implements OnDestroy {
         public skipTurnService: SkipTurnService,
         public endGameService: EndGameService,
         public clientSocket: ClientSocketService,
+        public authService: AuthService,
     ) {}
 
     displaySeconds(): string {

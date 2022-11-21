@@ -3,6 +3,74 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/backgroundColor"
     tools:context=".activities.menus.store.StoreFragment">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/store_title"
+            android:textColor="?android:textColor"
+            android:textSize="22sp" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="?attr/mainDividerColor" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:text="@string/board_theme"
+            android:textColor="?android:textColor"
+            android:textSize="20sp"
+            android:layout_gravity="center"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/board_themes_store"
+            android:layout_width="wrap_content"
+            android:layout_height="350dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/board_border"
+            android:padding="15dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:text="@string/chat_theme"
+            android:textColor="?android:textColor"
+            android:textSize="20sp"
+            android:layout_gravity="center"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/chat_themes_store"
+            android:layout_width="wrap_content"
+            android:layout_height="350dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/board_border"
+            android:padding="15dp" />
+
+        <TextView
+            android:id="@+id/user_xp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="30dp"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="?android:textColor"
+            android:padding="10dp"
+            android:background="@drawable/white_background"/>
+    </LinearLayout>
 </FrameLayout>

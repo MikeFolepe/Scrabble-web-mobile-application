@@ -4,11 +4,14 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.style.UnderlineSpan
 import android.util.Log
 import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.scrabbleprototype.R
@@ -16,6 +19,8 @@ import com.example.scrabbleprototype.model.SocketHandler
 import com.example.scrabbleprototype.model.User
 import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.objects.Users
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import environments.Environment
 import environments.Environment.serverUrl
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -35,7 +40,7 @@ import kotlin.coroutines.CoroutineContext
 class ConnectionActivity : AppCompatActivity(), CoroutineScope {
     val users = Users
     lateinit var client: HttpClient
-    lateinit var chatSocket: Socket
+    lateinit var socket: Socket
 
     private var job: Job = Job()
     override val coroutineContext: CoroutineContext
@@ -48,8 +53,8 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         ThemeManager.setActivityTheme(this)
+        super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_connection)
 
         val connectionButton = findViewById<Button>(R.id.connection_button)
@@ -71,6 +76,7 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
             }
             v?.onTouchEvent(event) ?: true
         }
+        createAccount()
     }
 
     private fun hideKeyboard() {
@@ -80,6 +86,7 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
 
     fun onConnection() {
         val usernameInput = findViewById<EditText>(R.id.username);
+        val serverIpInput = findViewById<EditText>(R.id.server_ip)
         val username = usernameInput.text.toString()
         //val serverUrl = "http://ec2-15-222-249-18.ca-central-1.compute.amazonaws.com:3000"
         Log.d("urlServer", serverUrl)
@@ -91,19 +98,20 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
         }
 
         //validate username and ip
-        launch {
-            val user = User(serverUrl, username, null, false)
+       launch {
+            val user = User("", username, "", "", false, serverUrl)
 
             val response = postAuthentication(user)
             if(response != null) {
                 if (response.status == HttpStatusCode.OK) {
                     val userReceived: User = response.body()
                     users.currentUser = userReceived
-                    joinChat(serverUrl)
+                    join(serverUrl)
+
                 } else if (response.status == HttpStatusCode.NotModified) usernameInput.error = "Cet utilisateur est déjà connecté"
-                else if (response.status == HttpStatusCode.NotFound) usernameInput.error = serverError
-                else usernameInput.error = serverError
-            } else usernameInput.error = serverError
+                else if (response.status == HttpStatusCode.NotFound) serverIpInput.error = serverError
+                else serverIpInput.error = serverError
+            } else serverIpInput.error = serverError
         }
     }
 
@@ -120,18 +128,29 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
         return response
     }
 
-    fun joinChat(serverUrl: String) {
+    fun join(serverIp: String) {
         val intent = Intent(this, MainMenuActivity::class.java)
 
         SocketHandler.setPlayerSocket(serverUrl)
         SocketHandler.establishConnection()
-        chatSocket = SocketHandler.getPlayerSocket()
+        socket = SocketHandler.getPlayerSocket()
 
-        chatSocket.emit("joinRoom")
-        chatSocket.on("socketId") { response ->
+        socket.emit("joinRoom")
+        socket.on("socketId") { response ->
             users.currentUser.socketId = response[0].toString()
-            chatSocket.emit("updateUserSocket", JSONObject(Json.encodeToString(users.currentUser)))
+            socket.emit("updateUserSocket", JSONObject(Json.encodeToString(users.currentUser)))
         }
         startActivity(intent)
+    }
+
+    fun createAccount(){
+        val textAccount = findViewById<TextView>(R.id.create_account)
+        val mString = "Pas de compte? Créez-en un."
+        val mSpannableString = SpannableString(mString)
+        mSpannableString.setSpan(UnderlineSpan(), 0, mSpannableString.length, 0)
+        textAccount.text = mSpannableString
+        textAccount.setOnClickListener {
+            startActivity(Intent(this, RegisterActivity::class.java))
+        }
     }
 }

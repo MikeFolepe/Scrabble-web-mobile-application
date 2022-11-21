@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { Injectable, OnDestroy } from '@angular/core';
 import { BOARD_COLUMNS, BOARD_ROWS, EASEL_SIZE, INVALID_INDEX, THREE_SECONDS_DELAY } from '@app/classes/constants';
 import { MessageType } from '@app/classes/enum';
@@ -17,6 +18,7 @@ export class PlaceLetterService implements OnDestroy {
     isFirstRound: boolean;
     lastPlacedWord: string;
     scrabbleBoard: string[][];
+    dragWord: Vec2[];
 
     private startPosition: Vec2;
     private orientation: Orientation;
@@ -42,6 +44,7 @@ export class PlaceLetterService implements OnDestroy {
         this.scrabbleBoard = [];
         this.validLetters = [];
         this.isEaselSize = false;
+        this.dragWord = [];
         this.numLettersUsedFromEasel = 0;
         this.isRow = false;
         for (let i = 0; i < BOARD_ROWS; i++) {
@@ -56,6 +59,7 @@ export class PlaceLetterService implements OnDestroy {
         this.receivePlacement();
         this.initBoard();
         this.receiveBoard();
+        this.receiveDragPlacement();
     }
 
     async placeWithKeyboard(position: Vec2, letter: string, orientation: Orientation, indexLetterInWord: number): Promise<boolean> {
@@ -68,7 +72,7 @@ export class PlaceLetterService implements OnDestroy {
         return this.placeLetter(position, letter, orientation, indexLetterInWord);
     }
 
-    placeLetter(position: Vec2, letter: string, orientation: Orientation, indexLetterInWord: number): boolean {
+    placeLetter(position: Vec2, letter: string, orientation: Orientation, indexLetterInWord: number, isDragActivated = false): boolean {
         // If there's already a letter at this position, we verify that it's the same as the one we want to place
         if (this.scrabbleBoard[position.y][position.x] !== '') return this.scrabbleBoard[position.y][position.x].toLowerCase() === letter;
 
@@ -80,7 +84,7 @@ export class PlaceLetterService implements OnDestroy {
         if (letter === letter.toUpperCase()) {
             // If we put an upper-case letter (white letter), we remove a '*' from the easel
             this.playerService.removeLetter(this.playerService.indexLetterInEasel('*', 0));
-        } else {
+        } else if (!isDragActivated) {
             // Otherwise we remove the respective letter from the easel
             this.playerService.removeLetter(this.playerService.indexLetterInEasel(letter, 0));
         }
@@ -89,13 +93,61 @@ export class PlaceLetterService implements OnDestroy {
         return true;
     }
 
-    async validateKeyboardPlacement(position: Vec2, orientation: Orientation, word: string): Promise<void> {
+    placeCommand(position: Vec2, orientation: Orientation, word: string, dragWord: Vec2[]): void {
+        const currentPosition: Vec2 = { x: position.x, y: position.y };
+        this.startPosition = position;
+        this.orientation = orientation;
+        this.word = word;
+        this.isRow = orientation === Orientation.Horizontal;
+        this.validLetters = [];
+        this.dragWord = dragWord;
+
+        // Remove accents from the word to place
+        const wordNoAccents = word.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        // Reset the array containing the valid letters by making them all valid
+        for (let i = 0; i < word.length; i++) this.validLetters[i] = true;
+        // Reset the number of letters used from the easel for next placement
+        this.numLettersUsedFromEasel = 0;
+        if (!this.isPossible(position, orientation, wordNoAccents, JSON.parse(JSON.stringify(dragWord)))) {
+            console.log('placement refusée');
+            // eslint-disable-next-line @typescript-eslint/prefer-for-of
+            let index = 0;
+            for (const i of dragWord) {
+                this.gridService.eraseLetter(this.gridService.gridContextLettersLayer, i);
+                this.playerService.addLetterToEasel(this.playerService.letterForDrag[index].value.toLowerCase());
+                index++;
+            }
+            this.skipTurnService.switchTurn();
+            return;
+        }
+        // Placing all letters of the word
+        for (let i = 0; i < wordNoAccents.length; i++) {
+            while (this.scrabbleBoard[currentPosition.y][currentPosition.x] !== '') {
+                this.placementsService.goToNextPosition(currentPosition, orientation);
+            }
+            if (!this.placeLetter(currentPosition, wordNoAccents[i], orientation, i, true)) {
+                // If the placement of one letter is invalid, we erase all letters placed
+                console.log('invalide placement en placant');
+                this.handleInvalidPlacement(position, orientation, wordNoAccents);
+                // this.sendMessageService.displayMessageByType('ERREUR : Le placement est invalide', MessageType.Error);
+                return;
+            }
+            this.placementsService.goToNextPosition(currentPosition, orientation);
+        }
+        if (this.numLettersUsedFromEasel === EASEL_SIZE) this.isEaselSize = true;
+        // Validation of the placement
+        console.log('placmeent envoyé');
+        this.validateKeyboardPlacement(position, orientation, word, true);
+    }
+
+    validateKeyboardPlacement(position: Vec2, orientation: Orientation, word: string, isDragActivated = false): void {
         this.startPosition = position;
         this.orientation = orientation;
         this.word = word;
         if (this.numLettersUsedFromEasel === EASEL_SIZE) this.isEaselSize = true;
         // Placing the first word
-        if (this.isFirstRound) {
+        if (this.playerService.isFirstPlacement) {
+            console.log('firssssst');
             if (this.placementsService.isFirstWordValid(position, orientation, word)) {
                 this.clientSocketService.socket.emit(
                     'validatePlacement',
@@ -107,6 +159,7 @@ export class PlaceLetterService implements OnDestroy {
                     JSON.stringify(this.scrabbleBoard),
                     this.clientSocketService.currentRoom.id,
                     JSON.stringify(this.playerService.currentPlayer),
+                    isDragActivated,
                 );
                 return;
             }
@@ -119,6 +172,7 @@ export class PlaceLetterService implements OnDestroy {
         }
         // Placing the following words
         if (this.isWordTouchingOthers(position, orientation, word)) {
+            console.log('envoyééééé');
             this.clientSocketService.socket.emit(
                 'validatePlacement',
                 JSON.stringify(position),
@@ -129,6 +183,7 @@ export class PlaceLetterService implements OnDestroy {
                 JSON.stringify(this.scrabbleBoard),
                 this.clientSocketService.currentRoom.id,
                 JSON.stringify(this.playerService.currentPlayer),
+                isDragActivated,
             );
             return;
         }
@@ -137,17 +192,25 @@ export class PlaceLetterService implements OnDestroy {
         this.sendMessageService.displayMessageByType('ERREUR : Le placement est invalide', MessageType.Error);
     }
 
-    handleInvalidPlacement(position: Vec2, orientation: Orientation, word: string): void {
-        setTimeout(() => {
-            const currentPosition = { x: position.x, y: position.y };
-            for (let i = 0; i < this.validLetters.length; i++) {
-                if (this.validLetters[i] === undefined) this.validLetters[i] = true;
-                // If the word is invalid, we remove only the letters that we just placed on the grid and add them back to the easel.
-                if (!this.validLetters[i]) this.removePlacedLetter(currentPosition, word[i]);
-
-                this.placementsService.goToNextPosition(currentPosition, orientation);
+    handleInvalidPlacement(position: Vec2, orientation: Orientation, word: string, isDragActivated = false): void {
+        const currentPosition = { x: position.x, y: position.y };
+        console.log('acccccc');
+        console.log(isDragActivated);
+        if (isDragActivated) {
+            for (const i of this.dragWord) {
+                while (currentPosition.x !== i.x && currentPosition.y !== i.y) {
+                    this.placementsService.goToNextPosition(currentPosition, orientation);
+                }
+                this.removePlacedLetter(i, (i.word as string).toLowerCase());
             }
-        }, THREE_SECONDS_DELAY); // Waiting 3 seconds to erase the letters on the grid
+            return;
+        }
+        for (let i = 0; i < this.validLetters.length; i++) {
+            if (this.validLetters[i] === undefined) this.validLetters[i] = true;
+            // If the word is invalid, we remove only the letters that we just placed on the grid and add them back to the easel.
+            if (!this.validLetters[i]) this.removePlacedLetter(currentPosition, word[i].toLowerCase());
+            this.placementsService.goToNextPosition(currentPosition, orientation);
+        }
     }
 
     handleValidPlacement(): void {
@@ -156,6 +219,10 @@ export class PlaceLetterService implements OnDestroy {
         // this.playerService.updateScrabbleBoard(this.scrabbleBoard);
         // this.playerService.refillEasel(indexPlayer);
         this.isFirstRound = false;
+        this.playerService.letterForDrag = [];
+        this.dragWord = [];
+        // this.sendMessageService.displayMessageByType('ERREUR : Le placement est invalide', MessageType.Error);
+        return;
     }
 
     removePlacedLetter(position: Vec2, letter: string) {
@@ -164,22 +231,50 @@ export class PlaceLetterService implements OnDestroy {
         this.playerService.addLetterToEasel(letter);
     }
 
-    isPossible(position: Vec2, orientation: Orientation, word: string, indexPlayer: number): boolean {
+    isPossible(position: Vec2, orientation: Orientation, word: string, dragWord: Vec2[]): boolean {
         let isPossible = false;
-        if (this.isFirstRound) {
+        const pos = dragWord;
+        if (this.playerService.isFirstPlacement) {
             if (this.isWordFitting(position, orientation, word)) {
-                isPossible =
-                    this.placementsService.isFirstWordValid(position, orientation, word) && // If the 1st word is placed onto the central position
-                    this.isWordValid(position, orientation, word, indexPlayer); // If the letters of the word are in the easel or the scrabble board
+                console.log('first');
+                // eslint-disable-next-line max-len
+                isPossible = this.placementsService.isFirstWordValid(position, orientation, word) && this.isPositionMatching(pos, orientation); // If the 1st word is placed onto the central position
             }
         } else {
             if (this.isWordFitting(position, orientation, word)) {
-                isPossible =
-                    this.isWordValid(position, orientation, word, indexPlayer) && // If the letters of the word are in the easel or the scrabble board
-                    this.isWordTouchingOthers(position, orientation, word); // If the word is in contact with other letters on the board
+                // eslint-disable-next-line max-len
+                isPossible = this.isWordTouchingOthers(position, orientation, word) && this.isPositionMatching(dragWord, orientation); // If the word is in contact with other letters on the board
             }
         }
         return isPossible;
+    }
+
+    isPositionMatching(positions: Vec2[], orientation: Orientation): boolean {
+        console.log('orii');
+        console.log(orientation);
+        const currentPosition = { x: positions[0].x, y: positions[0].y };
+        for (const i of positions) {
+            while (this.scrabbleBoard[currentPosition.y][currentPosition.x] !== '') {
+                this.placementsService.goToNextPosition(currentPosition, orientation);
+            }
+            // console.log('autre');
+            // console.log(this.scrabbleBoard[currentPosition.x][currentPosition.y]);
+            // console.log(currentPosition.x);
+            // console.log(currentPosition.y);
+
+            if (currentPosition.x !== i.x || currentPosition.y !== i.y) {
+                console.log('erreur');
+                console.log(i.x);
+                console.log(currentPosition.x);
+                console.log(i.y);
+                console.log(currentPosition.y);
+                console.log('oups');
+                return false;
+            }
+            this.placementsService.goToNextPosition(currentPosition, orientation);
+        }
+        console.log('yesss');
+        return true;
     }
 
     isWordFitting(position: Vec2, orientation: Orientation, word: string): boolean {
@@ -191,7 +286,7 @@ export class PlaceLetterService implements OnDestroy {
         return true;
     }
 
-    isWordValid(position: Vec2, orientation: Orientation, word: string, indexPlayer: number): boolean {
+    isWordValid(position: Vec2, orientation: Orientation, word: string): boolean {
         let isLetterExisting = false;
         // Array containing indexes of the easel that are used by the word we want to place.
         const indexLetters: number[] = [];
@@ -203,7 +298,7 @@ export class PlaceLetterService implements OnDestroy {
 
             // If the letter isn't on the board, we look into the easel, else we cannot place the word
             if (!isLetterExisting) {
-                isLetterExisting = this.placementsService.isLetterInEasel(letter, indexPlayer, indexLetters);
+                isLetterExisting = this.placementsService.isLetterInEasel(letter, indexLetters);
                 if (!isLetterExisting) return false;
             }
         }
@@ -264,7 +359,6 @@ export class PlaceLetterService implements OnDestroy {
 
     private receiveSuccess() {
         this.clientSocketService.socket.on('receiveSuccess', () => {
-            console.log('success');
             this.endGameService.addActionsLog('placerSucces');
             this.clientSocketService.socket.emit('sendActions', this.endGameService.actionsLog, this.clientSocketService.currentRoom.id);
             this.handleValidPlacement();
@@ -273,15 +367,13 @@ export class PlaceLetterService implements OnDestroy {
     }
 
     private receiveFailure() {
-        this.clientSocketService.socket.on('receiveFail', (position: Vec2, orientation: Orientation, word: string) => {
-            console.log('invalid');
+        this.clientSocketService.socket.on('receiveFail', (position: Vec2, orientation: Orientation, word: string, isDragActivated = false) => {
             this.endGameService.addActionsLog('placerEchec');
             this.clientSocketService.socket.emit('sendActions', this.endGameService.actionsLog, this.clientSocketService.currentRoom.id);
-            this.handleInvalidPlacement(position, orientation, word);
+            this.handleInvalidPlacement(position, orientation, word, isDragActivated);
             this.sendMessageService.displayMessageByType('ERREUR : Un ou des mots formés sont invalides', MessageType.Error);
-            setTimeout(() => {
-                this.skipTurnService.switchTurn();
-            }, THREE_SECONDS_DELAY);
+            console.log('faillllllllllll');
+            this.skipTurnService.switchTurn();
         });
     }
 
@@ -291,13 +383,30 @@ export class PlaceLetterService implements OnDestroy {
         });
     }
 
-    private receivePlacement(): void {
-        this.clientSocketService.socket.on('receivePlacement', (scrabbleBoard: string, startPosition: string, orientation: string, word: string) => {
-            console.log(word);
-            this.placeByOpponent(JSON.parse(scrabbleBoard), JSON.parse(startPosition), JSON.parse(orientation), word);
+    private receiveDragPlacement(): void {
+        this.clientSocketService.socket.on('receiveDragPlacement', (word: string, scrabbleBoard: string, dragWord: string) => {
+            this.placeDragByOpponent(JSON.parse(scrabbleBoard), word, JSON.parse(dragWord));
         });
     }
 
+    private receivePlacement(): void {
+        this.clientSocketService.socket.on('receivePlacement', (scrabbleBoard: string, startPosition: string, orientation: string, word: string) => {
+            console.log(scrabbleBoard);
+            this.placeByOpponent(JSON.parse(scrabbleBoard), JSON.parse(startPosition), JSON.parse(orientation), word);
+        });
+    }
+    private placeDragByOpponent(scrabbleBoard: string[][], word: string, dragWord: Vec2[]): void {
+        let index = 0;
+        this.scrabbleBoard = scrabbleBoard;
+        for (const letter of word) {
+            const currentPosition = { x: dragWord[index].x, y: dragWord[index].y } as Vec2;
+            if (currentPosition.x !== undefined && currentPosition.y !== undefined) {
+                this.gridService.drawLetter(this.gridService.gridContextLettersLayer, letter, currentPosition, this.playerService.fontSize);
+                index++;
+            }
+        }
+        this.isFirstRound = false;
+    }
     private placeByOpponent(scrabbleBoard: string[][], startPosition: Vec2, orientation: Orientation, word: string): void {
         const currentPosition = { x: startPosition.x, y: startPosition.y };
 

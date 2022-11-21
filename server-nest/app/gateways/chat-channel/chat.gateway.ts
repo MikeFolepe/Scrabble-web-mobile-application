@@ -28,7 +28,8 @@ export class ChatGateway {
 
     @SubscribeMessage('newMessage')
     addNewMessage(@ConnectedSocket() socket, @MessageBody() chatRoomIndex: number, @MessageBody() user: User, @MessageBody() message: string) {
-        const newMessage = new ChatRoomMessage(message[2], '', user[1].pseudonym);
+        Logger.log(user[1].avatar);
+        const newMessage = new ChatRoomMessage(message[2], user[1].avatar, user[1].pseudonym);
         this.chatRoomService.chatRooms[chatRoomIndex[0]].messages.push(newMessage);
         this.server.emit('updateChatRooms', this.chatRoomService.chatRooms);
     }
@@ -59,7 +60,7 @@ export class ChatGateway {
                 if (chatRoom.chatRoomName === roomName) {
                     const userInRoom = chatRoom.users.find((currentUser) => currentUser.pseudonym === user[0].pseudonym);
                     if (!userInRoom) {
-                        const newMessage = new ChatRoomMessage('a rejoint le canal de communication', '', user[0].pseudonym);
+                        const newMessage = new ChatRoomMessage('a rejoint le canal de communication', user[0].avatar, user[0].pseudonym);
                         chatRoom.messages.push(newMessage);
 
                         this.chatRoomService.addCustomer(user[0], chatRoom.chatRoomId);
