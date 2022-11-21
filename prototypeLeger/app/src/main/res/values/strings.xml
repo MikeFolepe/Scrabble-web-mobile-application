@@ -110,5 +110,6 @@
     <string name="join_chatroom">Rejoindre</string>
     <string name="delete_chatroom">Supprimer</string>
     <string name="available_chatrooms">Liste des canaux disponibles</string>
+    <string name="Quitter">quitter</string>
 
 </resources>

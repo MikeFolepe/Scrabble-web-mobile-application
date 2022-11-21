@@ -30,4 +30,15 @@
         android:visibility="gone"
         android:padding="10dp"
         android:background="@drawable/white_background"/>
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/leave"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Quitter"
+        android:textSize="15sp"
+        android:textColor="@color/red"
+        android:textStyle="bold"
+        android:visibility="gone"
+        android:padding="10dp"
+        android:background="@drawable/white_background"/>
 </LinearLayout>

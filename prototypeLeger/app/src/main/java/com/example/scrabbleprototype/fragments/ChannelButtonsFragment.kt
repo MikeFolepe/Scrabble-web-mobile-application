@@ -12,17 +12,15 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.databinding.FragmentChannelButtonsBinding
+import com.example.scrabbleprototype.model.AllChatRoomsAdapter
 import com.example.scrabbleprototype.model.ChatRoom
-import com.example.scrabbleprototype.model.ChatRoomsAdapter
-import com.example.scrabbleprototype.model.Room
+import com.example.scrabbleprototype.model.MyChatRoomsAdapter
 import com.example.scrabbleprototype.model.SocketHandler
-import com.example.scrabbleprototype.objects.ChatRooms
 import com.example.scrabbleprototype.objects.ChatRooms.chatRooms
 import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.objects.Users
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import environments.Environment.serverUrl
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONObject
@@ -31,9 +29,11 @@ class ChannelButtonsFragment : Fragment() {
 
     private var selectedChatRooms = arrayListOf<String>()
 
-    private var adapter: ChatRoomsAdapter? = null
+    private var adapter: AllChatRoomsAdapter? = null
+    private var myChatRoomsAdapter: MyChatRoomsAdapter? = null
     lateinit var chatsView: RecyclerView
-    lateinit var  chatRoomsDialog: Dialog
+    lateinit var  allChatRoomsDialog: Dialog
+    lateinit var  myChatRoomsDialog: Dialog
     private val socket = SocketHandler.socket
 
     private lateinit var binding: FragmentChannelButtonsBinding
@@ -60,9 +60,13 @@ class ChannelButtonsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupJoinDialog()
+        setupAllChatRoomsDialog()
         binding.allChannelsButton.setOnClickListener {
-            chatRoomsDialog.show()
+            allChatRoomsDialog.show()
+        }
+        setupMyChatRoomsDialog()
+        binding.myChannelsButton.setOnClickListener {
+            myChatRoomsDialog.show()
         }
     }
 
@@ -95,13 +99,13 @@ class ChannelButtonsFragment : Fragment() {
         }
     }
 
-    private fun setupJoinDialog() {
-        chatRoomsDialog = Dialog(requireContext())
-        chatRoomsDialog.setContentView(R.layout.channels_list_dialog)
+    private fun setupAllChatRoomsDialog() {
+        allChatRoomsDialog = Dialog(requireContext())
+        allChatRoomsDialog.setContentView(R.layout.channels_list_dialog)
 
-        chatsView = chatRoomsDialog.findViewById(R.id.all_chatrooms)
+        chatsView = allChatRoomsDialog.findViewById(R.id.all_chatrooms)
         chatsView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        adapter = ChatRoomsAdapter(chatRooms)
+        adapter = AllChatRoomsAdapter(chatRooms)
         chatsView.adapter = adapter
 
         adapter?.onChatRoomClick = { position, isChecked ->
@@ -110,14 +114,35 @@ class ChannelButtonsFragment : Fragment() {
             else selectedChatRooms.remove(chatName)
         }
 
-        chatRoomsDialog.findViewById<Button>(R.id.join_button).setOnClickListener {
+        allChatRoomsDialog.findViewById<Button>(R.id.join_button).setOnClickListener {
             // TODO send selected to server doest work
             socket.emit("joinChatRoom", JSONObject(Json.encodeToString(Users.currentUser)), selectedChatRooms.toTypedArray())
             this.selectedChatRooms.clear()
         }
-        chatRoomsDialog.findViewById<Button>(R.id.cancel_button).setOnClickListener {
+        allChatRoomsDialog.findViewById<Button>(R.id.cancel_button).setOnClickListener {
             this.selectedChatRooms.clear()
-            chatRoomsDialog.dismiss()
+            allChatRoomsDialog.dismiss()
+        }
+    }
+
+    private fun setupMyChatRoomsDialog() {
+        myChatRoomsDialog = Dialog(requireContext())
+        myChatRoomsDialog.setContentView(R.layout.channels_list_dialog)
+
+        chatsView = myChatRoomsDialog.findViewById(R.id.my_chatrooms)
+        chatsView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        myChatRoomsAdapter = MyChatRoomsAdapter(chatRooms)
+        chatsView.adapter = myChatRoomsAdapter
+
+        adapter?.onChatRoomClick = { position, isChecked ->
+            val chatName = chatRooms[position].chatRoomName
+            if (isChecked) selectedChatRooms.add(chatName)
+            else selectedChatRooms.remove(chatName)
+        }
+
+        myChatRoomsDialog.findViewById<Button>(R.id.cancel_button).setOnClickListener {
+            this.selectedChatRooms.clear()
+            allChatRoomsDialog.dismiss()
         }
     }
 }

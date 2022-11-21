@@ -97,13 +97,11 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
             val response = postAuthentication(user)
             if(response != null) {
                 if (response.status == HttpStatusCode.OK) {
-                    if (response.body()) {
-                        users.currentUser = user
-                        joinChat(serverUrl, user)
-                    } else {
-                        usernameInput.error = "Cet utilisateur est déjà connecté"
-                    }
-                } else if (response.status == HttpStatusCode.NotFound) usernameInput.error = serverError
+                    val userReceived: User = response.body()
+                    users.currentUser = userReceived
+                    joinChat(serverUrl)
+                } else if (response.status == HttpStatusCode.NotModified) usernameInput.error = "Cet utilisateur est déjà connecté"
+                else if (response.status == HttpStatusCode.NotFound) usernameInput.error = serverError
                 else usernameInput.error = serverError
             } else usernameInput.error = serverError
         }
@@ -122,7 +120,7 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
         return response
     }
 
-    fun joinChat(serverUrl: String, user: User) {
+    fun joinChat(serverUrl: String) {
         val intent = Intent(this, MainMenuActivity::class.java)
 
         SocketHandler.setPlayerSocket(serverUrl)

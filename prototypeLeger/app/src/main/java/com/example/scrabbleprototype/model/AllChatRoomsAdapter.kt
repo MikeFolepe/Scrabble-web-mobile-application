@@ -1,6 +1,5 @@
 package com.example.scrabbleprototype.model
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,8 +11,8 @@ import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.objects.ChatRooms
 import com.example.scrabbleprototype.objects.Users
 
-class ChatRoomsAdapter (private var chatRooms: ArrayList<ChatRoom>) :
-    RecyclerView.Adapter<ChatRoomsAdapter.ViewHolder>() {
+class AllChatRoomsAdapter (private var chatRooms: ArrayList<ChatRoom>) :
+    RecyclerView.Adapter<AllChatRoomsAdapter.ViewHolder>() {
 
     var onChatRoomClick: ((position: Int, isChecked: Boolean) -> Unit)? = null
     var onDelete: ((position: Int) -> Unit)? = null
