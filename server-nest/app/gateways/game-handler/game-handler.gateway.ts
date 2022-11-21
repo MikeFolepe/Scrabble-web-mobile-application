@@ -7,10 +7,10 @@ import { Player } from '@app/game/models/player.model';
 import { UserService } from '@app/users/user.service';
 import { ChatRoomMessage } from '@common/chatRoomMessage';
 import { DELAY_BEFORE_PLAYING, ONE_SECOND_DELAY, THREE_SECONDS_DELAY } from '@common/constants';
+import { Friend } from '@common/friend';
 import { GameSettings } from '@common/game-settings';
 import { Letter } from '@common/letter';
 import { User } from '@common/user';
-import { Friend } from '@common/friend';
 import { Vec2 } from '@common/vec2';
 import { Logger } from '@nestjs/common';
 import { ConnectedSocket, MessageBody, OnGatewayConnection, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
@@ -193,6 +193,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
         @MessageBody() board: string,
         @MessageBody() roomId: string,
         @MessageBody() player: string,
+        @MessageBody() isDragActivated = false,
     ) {
         const room = this.roomManagerService.find(roomId[6]);
         const validationResult = await room.wordValidation.validateAllWordsOnBoard(JSON.parse(board[5]), isEaselSize[4], isRow[3]);
@@ -210,7 +211,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
             this.server.to(roomId[6]).emit('updatePlayer', room.playerService.players[index]);
             this.server.to(roomId[6]).emit('receiveReserve', room.letter.reserve, room.letter.reserveSize);
         } else {
-            socket.emit('receiveFail', JSON.parse(position[0]), JSON.parse(orientation[2]), word[1]);
+            socket.emit('receiveFail', JSON.parse(position[0]), JSON.parse(orientation[2]), word[1], isDragActivated[9]);
         }
     }
 

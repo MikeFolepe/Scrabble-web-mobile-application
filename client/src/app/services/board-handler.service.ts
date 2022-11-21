@@ -101,6 +101,7 @@ export class BoardHandlerService {
             x: Math.floor((event.offsetX - GRID_CASE_SIZE) / GRID_CASE_SIZE),
             y: Math.floor((event.offsetY - GRID_CASE_SIZE) / GRID_CASE_SIZE),
         };
+        if (this.placeLetterService.scrabbleBoard[position.y][position.x] !== '') return;
         if (this.dragWord.length === 0) {
             this.selectStartingCase(position);
             this.gridService.eraseLayer(this.gridService.gridContextPlacementLayer);
