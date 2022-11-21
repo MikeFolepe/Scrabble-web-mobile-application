@@ -6,6 +6,7 @@ export class User {
     avatar: string;
     password?: string;
     email?: string;
+    _id?: string
 
     //ce qui est oblige : avatar, pseudonym, password, email
 
@@ -17,4 +18,6 @@ export class User {
         this.socketId = socketId;
         this.isObserver = isObserver;
     }
+
+
 }

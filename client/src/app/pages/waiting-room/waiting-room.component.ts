@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { ONE_SECOND_DELAY, TWO_SECOND_DELAY } from '@app/classes/constants';
 import { ErrorMessage } from '@app/classes/error-message-constants';
+import { Player } from '@app/models/player.model';
 import { JoiningConfirmationDialogComponent } from '@app/modules/initialize-game/joining-confirmation-dialog/joining-confirmation-dialog.component';
 import { ClientSocketService } from '@app/services/client-socket.service';
 import { GameSettingsService } from '@app/services/game-settings.service';
@@ -74,7 +75,7 @@ export class WaitingRoomComponent implements OnInit {
     }
 
     deleteGame(): void {
-        this.clientSocket.socket.emit('deleteGame', this.clientSocket.currentRoom.id);
+        this.clientSocket.socket.emit('deleteGame', this.playerService.currentPlayer.name, this.clientSocket.currentRoom.id);
         console.log(this.clientSocket.currentRoom.id);
     }
 
@@ -105,6 +106,10 @@ export class WaitingRoomComponent implements OnInit {
         this.router.navigate(['solo-game-ai']);
     }
 
+    leaveGame(): void {
+        this.clientSocket.socket.emit('sendLeaveGame', this.playerService.currentPlayer.name, this.clientSocket.currentRoom.id);
+        this.playerService.currentPlayer = {} as Player;
+    }
     private acceptNewPlayer(): void {
         this.clientSocket.socket.on('newRequest', (joiningUser: string, roomId: string) => {
             const joiningConfirmation = this.dialog.open(JoiningConfirmationDialogComponent, { disableClose: true });
@@ -114,10 +119,6 @@ export class WaitingRoomComponent implements OnInit {
             });
         });
     }
-
-    // leaveGame(): void {
-    //     this.clientSocket.socket.emit('leaveGame', this.pla)
-    // }
 
     private displayErrorMessage(message: string): void {
         this.errorMessage = message;

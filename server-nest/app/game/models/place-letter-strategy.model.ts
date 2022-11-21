@@ -85,7 +85,7 @@ export class PlaceLetterStrategy {
         this.initializeArray(scrabbleBoard);
 
         // Step1: Scan the board and retrieve all patterns
-        const patterns = this.generateAllPatterns(this.getEasel(), isFirstRound);
+        const patterns = this.generateAllPatterns(this.getEasel(this.player.letterTable), isFirstRound);
         // Step2: Generate all words in the dictionary satisfying the patterns
         allPossibleWords = this.generateAllWords(this.dictionary, patterns);
         allPossibleWords = this.removeIfNotEnoughLetter(allPossibleWords, this.player);
@@ -98,7 +98,7 @@ export class PlaceLetterStrategy {
         }
 
         // Step3: Clip words containing more letter than playable
-        // allPossibleWords = this.removeIfNotEnoughLetter(allPossibleWords, playerAi);
+        allPossibleWords = this.removeIfNotEnoughLetter(allPossibleWords, this.player);
         // Step4: Clip words that can not be on the board
         // Step5: Add the earning points to all words and update the
         allPossibleWords = await this.calculatePoints(allPossibleWords);
@@ -112,9 +112,9 @@ export class PlaceLetterStrategy {
         // Step8: Alert the debug about the alternatives
         // playerAiService.debugService.receiveAIDebugPossibilities(allPossibleWords);
     }
-    getEasel(): string {
+    getEasel(letters: Letter[]): string {
         let hand = '[';
-        for (const letter of this.letterTable) {
+        for (const letter of letters) {
             hand += letter.value;
         }
 

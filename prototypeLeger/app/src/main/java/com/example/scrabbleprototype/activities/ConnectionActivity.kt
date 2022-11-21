@@ -19,6 +19,8 @@ import com.example.scrabbleprototype.model.SocketHandler
 import com.example.scrabbleprototype.model.User
 import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.objects.Users
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import environments.Environment
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
@@ -38,7 +40,7 @@ import kotlin.coroutines.CoroutineContext
 class ConnectionActivity : AppCompatActivity(), CoroutineScope {
     val users = Users
     lateinit var client: HttpClient
-    lateinit var chatSocket: Socket
+    lateinit var socket: Socket
 
     private var job: Job = Job()
     override val coroutineContext: CoroutineContext
@@ -102,22 +104,21 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
         }
 
         //validate username and ip
-       /* launch {
-            val user = User(serverIp, username, null, false)
+       launch {
+            val user = User("", username, "", "", false, serverIp)
 
             val response = postAuthentication(user)
             if(response != null) {
                 if (response.status == HttpStatusCode.OK) {
-                    if (response.body()) {
-                        users.currentUser = user
-                        joinChat(serverIp, user)
-                    } else {
-                        usernameInput.error = "Cet utilisateur est déjà connecté"
-                    }
-                } else if (response.status == HttpStatusCode.NotFound) serverIpInput.error = serverError
+                    val userReceived: User = response.body()
+                    users.currentUser = userReceived
+                    join(serverIp)
+
+                } else if (response.status == HttpStatusCode.NotModified) usernameInput.error = "Cet utilisateur est déjà connecté"
+                else if (response.status == HttpStatusCode.NotFound) serverIpInput.error = serverError
                 else serverIpInput.error = serverError
             } else serverIpInput.error = serverError
-        }*/
+        }
     }
 
     suspend fun postAuthentication(user: User): HttpResponse? {
@@ -133,17 +134,17 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
         return response
     }
 
-    fun joinChat(serverIp: String, user: User) {
+    fun join(serverIp: String) {
         val intent = Intent(this, MainMenuActivity::class.java)
 
         SocketHandler.setPlayerSocket(serverIp)
         SocketHandler.establishConnection()
-        chatSocket = SocketHandler.getPlayerSocket()
+        socket = SocketHandler.getPlayerSocket()
 
-        chatSocket.emit("joinRoom")
-        chatSocket.on("socketId") { response ->
+        socket.emit("joinRoom")
+        socket.on("socketId") { response ->
             users.currentUser.socketId = response[0].toString()
-            chatSocket.emit("updateUserSocket", JSONObject(Json.encodeToString(users.currentUser)))
+            socket.emit("updateUserSocket", JSONObject(Json.encodeToString(users.currentUser)))
         }
         startActivity(intent)
     }

@@ -14,10 +14,7 @@ import com.example.scrabbleprototype.fragments.*
 import com.example.scrabbleprototype.model.Letter
 import com.example.scrabbleprototype.model.Player
 import com.example.scrabbleprototype.model.SocketHandler
-import com.example.scrabbleprototype.objects.LetterRack
-import com.example.scrabbleprototype.objects.Players
-import com.example.scrabbleprototype.objects.Reserve
-import com.example.scrabbleprototype.objects.ThemeManager
+import com.example.scrabbleprototype.objects.*
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 
@@ -39,6 +36,7 @@ class GameActivity : AppCompatActivity() {
             v?.onTouchEvent(event) ?: true
         }
 
+        switchAiTurn()
         receiveReserve()
         if(savedInstanceState == null) {
             setUpFragments()
@@ -60,6 +58,12 @@ class GameActivity : AppCompatActivity() {
         socket.on("receiveReserve") { response ->
             Reserve.RESERVE = mapper.readValue(response[0].toString(), object : TypeReference<Array<Letter>>() {})
             Reserve.setReserveSize(Reserve.RESERVE.sumOf { it.quantity })
+        }
+    }
+
+    private fun switchAiTurn() {
+        socket.on("switchAiTurn") {
+            socket.emit("switchTurn", CurrentRoom.myRoom.id)
         }
     }
 

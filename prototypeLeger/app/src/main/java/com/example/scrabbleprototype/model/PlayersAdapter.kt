@@ -1,13 +1,17 @@
 package com.example.scrabbleprototype.model
 
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
+import com.example.scrabbleprototype.objects.CurrentRoom
+import com.example.scrabbleprototype.objects.Users
 
 
 class PlayersAdapter(private var players: ArrayList<Player>) :
@@ -43,7 +47,28 @@ class PlayersAdapter(private var players: ArrayList<Player>) :
         playerName.text = players[position].name
         val playerScore = viewHolder.player.findViewById<TextView>(R.id.player_score)
         playerScore.text = players[position].score.toString()
+
+        setUpReplace(viewHolder, position)
     }
+
+    private fun setUpReplace(viewHolder:ViewHolder,  position: Int){
+        val replaceButton = viewHolder.player.findViewById<Button>(R.id.button_replace)
+
+        if(Users.currentUser.isObserver && players[position].isAi){
+            if(players[position].getTurn()) replaceButton.visibility = View.GONE
+            else replaceButton.visibility = View.VISIBLE
+        }
+
+        if(!Users.currentUser.isObserver) replaceButton.visibility = View.GONE
+
+        replaceButton.setOnClickListener {
+            Users.currentUser.isObserver = false
+            SocketHandler.socket.emit("replaceAi", Users.currentUser.pseudonym, position, CurrentRoom.myRoom.id)
+        }
+
+    }
+
+
 
     // Return the size of your dataset (invoked by the layout manager)
     override fun getItemCount() = players.size
