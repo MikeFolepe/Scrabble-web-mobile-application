@@ -13,7 +13,7 @@ import java.util.*
 import kotlin.concurrent.timerTask
 
 interface TurnUICallback {
-    fun updateTimeUI(minutes: String, seconds: String, activePlayerName: String)
+    fun updatePlayers()
 }
 interface EndTurnCallback {
     fun handleInvalidPlacement()
@@ -27,9 +27,7 @@ interface CancelSwapCallback {
 
 class SkipTurnService : Service() {
 
-    private val socketHandler = SocketHandler
-    private val socket = socketHandler.getPlayerSocket()
-    private val player = Players.currentPlayer
+    private val socket = SocketHandler.getPlayerSocket()
 
     var activePlayerName: String = ""
 
@@ -66,34 +64,35 @@ class SkipTurnService : Service() {
         socket.on("turnSwitched") { response ->
             val playerName = response[0] as String
 
-            if(activePlayerName == player.name) {
+            if(activePlayerName == Players.currentPlayer.name) {
                 cancelSwapCallback?.resetSwap()
                 endTurnCallback?.handleInvalidPlacement()
             }
 
-            if(player.name == playerName) {
+            if(Players.currentPlayer.name == playerName) {
                 activePlayerName = playerName
-                player.setTurn(true)
+                Players.currentPlayer.setTurn(true)
             }
             val currentPlayer = Players.players.find { it.name == playerName }!!
             currentPlayer.setTurn(true)
             activePlayerName = currentPlayer.name
+            turnUICallback?.updatePlayers()
             if(Users.currentUser.isObserver) observerRackCallback?.switchRack(activePlayerName)
         }
 
         socket.on("updatePlayerTurnToFalse") { response ->
             val playerToUpdateName = response[0] as String
-            if(player.name == playerToUpdateName) player.setTurn(false)
+            if(Players.currentPlayer.name == playerToUpdateName) Players.currentPlayer.setTurn(false)
             Players.players.find { it.name == playerToUpdateName }?.setTurn(false)
         }
     }
 
     fun switchTimer() {
+        Players.currentPlayer.setTurn(false)
         Timer().schedule(timerTask {
             cancelSwapCallback?.resetSwap()
             endTurnCallback?.handleInvalidPlacement()
             socket.emit("switchTurn", CurrentRoom.myRoom.id)
-            player.setTurn(false)
         }, 1000)
     }
 }

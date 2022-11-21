@@ -110,6 +110,7 @@ class LetterRackFragment : Fragment(), ObserverRackCallback, CancelSwapCallback 
         super.onViewCreated(view, savedInstanceState)
         updatePlayer()
         receiveSwap()
+        receiveObserverRack()
         setupLetterRack(view)
         setupSwapButtons()
         setupDragListener(view)
@@ -167,9 +168,7 @@ class LetterRackFragment : Fragment(), ObserverRackCallback, CancelSwapCallback 
 
     private fun handleSwap(position: Int) {
         val letterView = letterRackView.findViewHolderForAdapterPosition(position)?.itemView?.findViewById<View>(R.id.swap_border)
-        if (letterView == null) {
-            return
-        }
+            ?: return
         if(LetterRack.letters[position].isSelectedForSwap) {
             letterView.setBackgroundResource(0)
             LetterRack.letters[position].isSelectedForSwap = false
@@ -202,7 +201,7 @@ class LetterRackFragment : Fragment(), ObserverRackCallback, CancelSwapCallback 
     }
 
     private fun updatePlayer() {
-        SocketHandler.getPlayerSocket().on("updatePlayer") { response ->
+        SocketHandler.socket.on("updatePlayer") { response ->
             activity?.runOnUiThread {
                 val mapper = jacksonObjectMapper()
                 val playerReceived = mapper.readValue(response[0].toString(), Player::class.java)
@@ -290,6 +289,15 @@ class LetterRackFragment : Fragment(), ObserverRackCallback, CancelSwapCallback 
             val currentPlayer = Players.players.find { it.name == activePlayerName } ?: return@runOnUiThread
             LetterRack.letters = currentPlayer.letterTable
             letterRackAdapter.updateData(LetterRack.letters)
+        }
+    }
+
+    private fun receiveObserverRack() {
+        SocketHandler.socket.on("giveRackToObserver") { response ->
+            activity?.runOnUiThread {
+                LetterRack.letters = Players.currentPlayer.letterTable
+                letterRackAdapter.updateData(LetterRack.letters)
+            }
         }
     }
 }
