@@ -47,7 +47,6 @@ class WaitingRoomActivity : AppCompatActivity() {
         receiveNewRequest()
         leaveToHome()
         onReplaceHuman()
-
         // Players.currentPlayerPosition = Players.opponents.size
     }
 
@@ -157,7 +156,7 @@ class WaitingRoomActivity : AppCompatActivity() {
 
     private fun leaveToHome() {
         socket.on("leaveToHome") {
-            runOnUiThread(){
+            runOnUiThread{
                 Toast.makeText(this, "La partie a été supprimée par le créateur", Toast.LENGTH_LONG).show()
                 startActivity(Intent(this, MainMenuActivity::class.java))
             }

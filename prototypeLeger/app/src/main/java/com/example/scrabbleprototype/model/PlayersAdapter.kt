@@ -53,22 +53,16 @@ class PlayersAdapter(private var players: ArrayList<Player>) :
 
     private fun setUpReplace(viewHolder:ViewHolder,  position: Int){
         val replaceButton = viewHolder.player.findViewById<Button>(R.id.button_replace)
-        Log.d("enterSet", "here")
-        Log.d("enterSet",  Users.currentUser.isObserver.toString())
-        Log.d("enterSet",  players[position].isAi.toString())
-        Log.d("enterSet",  players[position].getTurn().toString())
 
-
-        if(Users.currentUser.isObserver && players[position].isAi && !players[position].getTurn()){
-            Log.d("ai", players[position].isAi.toString())
-            replaceButton.visibility = View.VISIBLE
+        if(Users.currentUser.isObserver && players[position].isAi){
+            if(players[position].getTurn()) replaceButton.visibility = View.GONE
+            else replaceButton.visibility = View.VISIBLE
         }
 
         if(!Users.currentUser.isObserver) replaceButton.visibility = View.GONE
 
         replaceButton.setOnClickListener {
             Users.currentUser.isObserver = false
-            Log.d("aipos",position.toString())
             SocketHandler.socket.emit("replaceAi", Users.currentUser.pseudonym, position, CurrentRoom.myRoom.id)
         }
 

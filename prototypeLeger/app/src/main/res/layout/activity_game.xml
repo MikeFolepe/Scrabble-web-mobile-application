@@ -14,14 +14,14 @@
         android:orientation="horizontal">
 
         <LinearLayout
-            android:layout_width="350dp"
+            android:layout_width="325dp"
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:layout_margin="10dp">
             <FrameLayout
                 android:id="@+id/info_pannel_frame"
                 android:layout_width="match_parent"
-                android:layout_height="700dp"
+                android:layout_height="500dp"
                 android:layout_marginBottom="15dp"/>
             <FrameLayout
                 android:id="@+id/game_buttons_frame"
@@ -48,8 +48,8 @@
 
         </LinearLayout>
         <LinearLayout
-            android:layout_width="350dp"
-            android:layout_height="match_parent"
+            android:layout_width="325dp"
+            android:layout_height="500dp"
             android:orientation="vertical"
             android:layout_margin="10dp">
             <FrameLayout

@@ -42,6 +42,8 @@ class InformationPannelFragment : Fragment(), TurnUICallback {
     val player = Players.currentPlayer
     private lateinit var playersAdapter: PlayersAdapter
     private lateinit var playersView: RecyclerView
+    private val gameSettings = CurrentRoom.myRoom.gameSettings
+    private val turnTime = gameSettings.timeMinute.toInt() * 60 + gameSettings.timeSecond.toInt() - 1
 
     private val playersViewModel: PlayersViewModel by activityViewModels()
     private var _binding: FragmentInformationPannelBinding? = null
@@ -103,10 +105,6 @@ class InformationPannelFragment : Fragment(), TurnUICallback {
         }, 3000)
     }
 
-    override fun onStart() {
-        super.onStart()
-    }
-
     override fun onStop() {
         super.onStop()
         skipTurnService.setTurnUICallback(null)
@@ -138,7 +136,7 @@ class InformationPannelFragment : Fragment(), TurnUICallback {
         binding.reserve = Reserve
     }
 
-    override fun updateTimeUI(minutes: String, seconds: String, activePlayerName: String) {
+    private fun updateTimeUI(minutes: String, seconds: String, activePlayerName: String) {
         activity?.runOnUiThread {
             val minutesDisplay = if(minutes.toInt() < 10) "0$minutes"
                             else minutes
@@ -161,13 +159,8 @@ class InformationPannelFragment : Fragment(), TurnUICallback {
             Players.players[position] = newPlayer
             activity?.runOnUiThread {
                 playersAdapter.updateData(Players.players)
+                if(Users.currentUser.pseudonym == newPlayer.name) Players.setCurrent(newPlayer)
             }
-            if(Users.currentUser.pseudonym == newPlayer.name){
-                Players.setCurrent(newPlayer)
-                Players.currentPlayer.updateCurrentPlayer()
-
-            }
-
         }
     }
 
@@ -182,17 +175,21 @@ class InformationPannelFragment : Fragment(), TurnUICallback {
     }
 
     private fun receiveTimer() {
+        var previousTime = 0
         SocketHandler.socket.on("updateTimer") { response ->
-            if(skipTurnService == null) {
-                Log.d("nullservice", "??")
-                Intent(activityContext, SkipTurnService::class.java).also { intent ->
-                    activityContext.bindService(intent, connection, Context.BIND_AUTO_CREATE)
-                }
-            }
-
             val minutes = response[0].toString()
             val seconds = response[1].toString()
+
+            val serverTime = minutes.toInt() * 60 + seconds.toInt()
+            if(!Users.currentUser.isObserver) {
+                if(previousTime == 0 && serverTime != turnTime) return@on
+            }
+            previousTime = serverTime
             updateTimeUI(minutes, seconds, skipTurnService.activePlayerName)
         }
+    }
+
+    override fun updatePlayers() {
+        activity?.runOnUiThread { playersAdapter.updateData(Players.players) }
     }
 }

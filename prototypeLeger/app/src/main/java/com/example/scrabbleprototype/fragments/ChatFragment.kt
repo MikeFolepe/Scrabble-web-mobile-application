@@ -24,7 +24,7 @@ class ChatFragment : Fragment() {
 
     val messages = mutableListOf<ChatRoomMessage>()
     val currentUser = Users.currentUser
-    var chatSocket = SocketHandler.getPlayerSocket()
+    var socket = SocketHandler.getPlayerSocket()
     lateinit var activityContext: Context
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,12 +43,12 @@ class ChatFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        chatSocket.on("receiveRoomMessage"){ response ->
+        socket.on("receiveRoomMessage"){ response ->
             val mapper = jacksonObjectMapper()
             val message = mapper.readValue(response[0].toString(), ChatRoomMessage::class.java)
             addMessage(message, view)
         }
-        chatSocket.on("getMessages") { response ->
+        socket.on("getMessages") { response ->
             val messageArray: JSONArray = response[0] as JSONArray
             for(i in 0 until messageArray.length()) {
                 addMessage(Json.decodeFromString(ChatRoomMessage.serializer(), messageArray.get(i).toString()), view)
@@ -88,7 +88,7 @@ class ChatFragment : Fragment() {
         val message = ChatRoomMessage(messageInput.text.toString(), "", currentUser.pseudonym)
 
         if(validateMessage(messageInput.text.toString())) {
-            chatSocket.emit("sendRoomMessage", JSONObject(Json.encodeToString(message)), CurrentRoom.myRoom.id)
+            socket.emit("sendRoomMessage", JSONObject(Json.encodeToString(message)), CurrentRoom.myRoom.id)
             messageInput.setText("")
         } else messageInput.error = "Le message ne peut pas être vide"
     }
@@ -110,6 +110,6 @@ class ChatFragment : Fragment() {
     }
 
     fun getOldMessages() {
-        chatSocket.emit("getMessages")
+        socket.emit("getMessages")
     }
 }

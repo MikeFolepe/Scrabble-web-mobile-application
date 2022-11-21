@@ -30,8 +30,7 @@ import org.json.JSONObject
 class JoinGameActivity : AppCompatActivity() {
 
     var rooms = arrayListOf<Room>()
-    val socketHandler = SocketHandler
-    val socket = socketHandler.getPlayerSocket()
+    val socket = SocketHandler.getPlayerSocket()
     private val mapper = jacksonObjectMapper()
     val currentUser = Users.currentUser
     lateinit var passwordDialog: Dialog
@@ -107,20 +106,20 @@ class JoinGameActivity : AppCompatActivity() {
         val currentRoom = rooms[position]
         if(currentRoom.gameSettings.type == RoomType.private.ordinal) {
             socket.emit("sendRequestToCreator", Users.currentUser.pseudonym, currentRoom.id)
-            socketHandler.roomId = rooms[position].id
-            return;
+            SocketHandler.roomId = rooms[position].id
+            return
         }
 
         if (currentRoom.gameSettings.password == "") {
             if(isObserver){
                 Log.d("emitNewObser", "ddde")
                 socket.emit("newRoomObserver", JSONObject(Json.encodeToString(Users.currentUser)), rooms[position].id)
-                socketHandler.roomId = rooms[position].id
-                return;
+                SocketHandler.roomId = rooms[position].id
+                return
             }
             socket.emit("newRoomCustomer", Users.currentUser.pseudonym, rooms[position].id)
-            socketHandler.roomId = rooms[position].id
-            return;
+            SocketHandler.roomId = rooms[position].id
+            return
         }
 
         this.setUpPasswordJoinDialog(currentRoom,isObserver)
@@ -198,7 +197,7 @@ class JoinGameActivity : AppCompatActivity() {
 
     private fun handleRoomUnavailability() {
         socket.on("roomAlreadyToken") {
-            Toast.makeText(this, "Il est impossible de joindre cette partie", Toast.LENGTH_LONG).show()
+            runOnUiThread { Toast.makeText(this, "Il est impossible de joindre cette partie", Toast.LENGTH_LONG).show() }
         }
     }
 
@@ -210,7 +209,7 @@ class JoinGameActivity : AppCompatActivity() {
 
     private fun handleObservableRoomsAvailability() {
         socket.on("roomFullObservers") { response ->
-            Toast.makeText(this, "Il n'y a plus de place pour observer la partie", Toast.LENGTH_LONG).show()
+            runOnUiThread { Toast.makeText(this, "Il n'y a plus de place pour observer la partie", Toast.LENGTH_LONG).show() }
         }
     }
 }

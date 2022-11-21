@@ -1,5 +1,6 @@
 package com.example.scrabbleprototype.model
 
+import android.util.Log
 import environments.Environment
 import io.socket.client.IO
 import io.socket.client.Socket
