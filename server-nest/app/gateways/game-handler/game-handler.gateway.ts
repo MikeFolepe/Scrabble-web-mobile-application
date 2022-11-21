@@ -214,7 +214,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
             socket.emit('receiveFail', JSON.parse(position[0]), JSON.parse(orientation[2]), word[1], isDragActivated[9]);
         }
     }
-
+    /*
     @SubscribeMessage('sendStartingCase')
     sendStartingCase(@ConnectedSocket() socket, @MessageBody() startPosition: Vec2, @MessageBody() roomId: string) {
         socket.to(roomId[1]).emit('receiveStartingCase', startPosition[0]);
@@ -224,7 +224,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
     sendEraseStartingCase(@ConnectedSocket() socket, @MessageBody() roomId: string) {
         this.server.in(roomId).emit('eraseStartingCase');
     }
-
+*/
     @SubscribeMessage(ChatEvents.UpdateUserSocket)
     updateUserSocket(@ConnectedSocket() socket, @MessageBody() user: User) {
         const currentUser = this.userService.activeUsers.find((curUser) => curUser.pseudonym === user.pseudonym);
