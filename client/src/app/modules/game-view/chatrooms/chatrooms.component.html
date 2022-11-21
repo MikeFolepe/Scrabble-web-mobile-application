@@ -10,7 +10,7 @@
 
             <div class="conversation" #scrollMe>
                 <div class="text" *ngFor="let message of this.chatRoomService.chatRooms[this.chatRoomIndexService.chatRoomIndex].messages">
-                    <div *ngIf="message.text === 'a rejoint le canal de communication' || message.text ===  'a quitté le canal de communication'; else elseBlock">
+                    <div *ngIf="message.text === 'a rejoint le canal de communication' || 'a quitté le canal de communication'; else elseBlock">
                         <p class="systemText">{{message.pseudonym}} {{message.text}}</p>
                     </div>
                     <ng-template #elseBlock><img src="{{message.avatar}}" class="avatar" alt="Avatar"/><p> {{ message.pseudonym }}: {{ message.text }}</p></ng-template>
