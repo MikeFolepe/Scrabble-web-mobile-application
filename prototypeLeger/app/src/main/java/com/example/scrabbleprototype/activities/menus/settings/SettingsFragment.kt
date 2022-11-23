@@ -116,6 +116,7 @@ class SettingsFragment : Fragment() {
         boardItemsAdapter.onThemeClick = { position ->
             userPrefences.boardItemSelected = userPrefences.boardItems[position]
             binding.boardTheme.text = userPrefences.boardItemSelected.name
+            ThemeManager.currentBoardTheme = userPrefences.boardItemSelected.name
             Timer().schedule(timerTask {
                 boardItemsDialog.dismiss()
             }, 200)
@@ -154,6 +155,7 @@ class SettingsFragment : Fragment() {
         chatItemsAdapter.onThemeClick = { position ->
             userPrefences.chatItemSelected = userPrefences.chatItems[position]
             binding.chatTheme.text = userPrefences.chatItemSelected.name
+            ThemeManager.currentChatTheme = userPrefences.chatItemSelected.name
             Timer().schedule(timerTask {
                 chatItemsDialog.dismiss()
             }, 200)

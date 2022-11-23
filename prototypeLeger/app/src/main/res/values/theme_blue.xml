@@ -47,7 +47,7 @@
 
         <item name="spinnerArrowColor">@color/black</item>
 
-        <item name="messageInfoColor">@color/gray</item>
+        <item name="messageInfoColor">@color/light_gray</item>
         <item name="sendMessageBtnColor">@color/light_blue</item>
 
         <item name="windowActionBar">false</item>

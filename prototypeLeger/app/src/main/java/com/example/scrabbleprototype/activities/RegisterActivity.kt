@@ -86,9 +86,10 @@ class RegisterActivity : AppCompatActivity(), CoroutineScope {
 
         val registerResponse = postRegistration(user)
         if(registerResponse != null) {
-            if(registerResponse.status == HttpStatusCode.OK)
-            Toast.makeText(this, "Votre compte a bien été créé, veuillez vous connecter.", Toast.LENGTH_LONG).show()
-            startActivity(Intent(this, ConnectionActivity::class.java))
+            if(registerResponse.status == HttpStatusCode.OK) {
+                Toast.makeText(this, "Votre compte a bien été créé, veuillez vous connecter.", Toast.LENGTH_LONG).show()
+                startActivity(Intent(this, ConnectionActivity::class.java))
+            }
         }
 
     }

@@ -15,10 +15,10 @@ enum class Language {
 class UserPreferences {
     var appThemeSelected: String = "default"
 
-    val boardItems = arrayListOf(Item("Default Board Theme", 0, R.color.light_green, "Description du thème par défaut : vert clair et turquoise"))
+    val boardItems = arrayListOf(Item("Par défaut", 0, R.color.light_green, "Description du thème par défaut : vert clair et turquoise"))
     var boardItemSelected: Item = boardItems.first()
 
-    val chatItems = arrayListOf(Item("Default Chat Theme", 0, R.color.light_green))
+    val chatItems = arrayListOf(Item("Par défaut", 0, R.color.light_green))
     var chatItemSelected: Item = chatItems.first()
 
     var language: Language = Language.French

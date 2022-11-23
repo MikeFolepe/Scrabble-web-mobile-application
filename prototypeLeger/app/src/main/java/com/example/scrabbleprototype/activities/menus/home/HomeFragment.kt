@@ -1,6 +1,8 @@
 package com.example.scrabbleprototype.activities.menus.home
 
 import android.content.Intent
+import android.graphics.drawable.AnimationDrawable
+import android.graphics.drawable.TransitionDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View

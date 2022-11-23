@@ -14,11 +14,11 @@ object Themes {
         appThemes.add("Blue")
         appThemes.add("Orange")
 
-        boardItems.add(Item("1st Board Theme", 100, R.color.light_cyan))
-        boardItems.add(Item("2nd Board Theme", 100, R.color.light_red))
-        boardItems.add(Item("3rd Board Theme", 100, R.color.gold))
+        boardItems.add(Item("Gradients animés", 300, R.drawable.gradient_animation))
+        boardItems.add(Item("Tartan", 100, R.drawable.tartan))
+        boardItems.add(Item("Galaxie", 500, R.drawable.galaxy))
 
-        chatItems.add(Item("1st Chat Theme", 100, R.color.light_cyan))
-        chatItems.add(Item("2nd Chat Theme", 100, R.color.light_red))
+        chatItems.add(Item("Gradients animés", 100, R.drawable.gradient_animation))
+        chatItems.add(Item("Galaxie", 100, R.drawable.galaxy))
     }
 }
