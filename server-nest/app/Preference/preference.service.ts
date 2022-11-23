@@ -46,4 +46,50 @@ export class PreferenceService {
         const preference: Preference = await this.preferenceModel.findOne({ user: userPseudonym }).exec();
         return preference.boughtChats;
     }
+
+    async setAppTheme(userPseudonym: string, newAppTheme: string): Promise<string> {
+        const preference: Preference = await this.preferenceModel.findOneAndUpdate({ user: userPseudonym }, { appTheme: newAppTheme }).exec();
+        return preference.appTheme;
+    }
+
+    async setBoardTheme(userPseudonym: string, newBoardTheme: string): Promise<string> {
+        const preference: Preference = await this.preferenceModel
+            .findOneAndUpdate({ user: userPseudonym }, { currentBoardTheme: newBoardTheme })
+            .exec();
+        return preference.currentBoardTheme;
+    }
+
+    async setChatTheme(userPseudonym: string, newChatTheme: string): Promise<string> {
+        const preference: Preference = await this.preferenceModel
+            .findOneAndUpdate({ user: userPseudonym }, { currentChatTheme: newChatTheme })
+            .exec();
+        return preference.currentChatTheme;
+    }
+
+    async addBoard(userPseudonym: string, newBoard: string): Promise<boolean> {
+        try {
+            const preference: Preference = await this.preferenceModel.findOne({ user: userPseudonym }).exec();
+            preference.boughtBoards.push(newBoard);
+            await preference.save();
+        } catch {
+            return false;
+        }
+        return true;
+    }
+
+    async addChat(userPseudonym: string, newChat: string): Promise<boolean> {
+        try {
+            const preference: Preference = await this.preferenceModel.findOne({ user: userPseudonym }).exec();
+            preference.boughtChats.push(newChat);
+            await preference.save();
+        } catch {
+            return false;
+        }
+        return true;
+    }
+
+    async setLangage(userPseudonym: string, newLangage: number): Promise<number> {
+        const preference: Preference = await this.preferenceModel.findOneAndUpdate({ user: userPseudonym }, { langage: newLangage }).exec();
+        return preference.langage;
+    }
 }

@@ -83,4 +83,84 @@ export class PreferenceController {
                 response.status(HttpStatus.NOT_FOUND).send('An error occurred while trying to connect to the server' + error.message);
             });
     }
+
+    @Post('/appTheme/:pseudonym')
+    async setAppTheme(@Req() req, @Body() newAppTheme: string, @Res() response: Response) {
+        const pseudonym = req.params.pseudonym;
+        await this.preferenceService
+            .setAppTheme(pseudonym, newAppTheme)
+            .then((appTheme: string) => {
+                response.status(HttpStatus.OK).send(appTheme);
+            })
+            .catch((error: Error) => {
+                response.status(HttpStatus.NOT_FOUND).send('An error occurred while trying to connect to the server' + error.message);
+            });
+    }
+
+    @Post('/boardTheme/:pseudonym')
+    async setBoardTheme(@Req() req, @Body() newBoard: string, @Res() response: Response) {
+        const pseudonym = req.params.pseudonym;
+        await this.preferenceService
+            .setAppTheme(pseudonym, newBoard)
+            .then((boardTheme: string) => {
+                response.status(HttpStatus.OK).send(boardTheme);
+            })
+            .catch((error: Error) => {
+                response.status(HttpStatus.NOT_FOUND).send('An error occurred while trying to connect to the server' + error.message);
+            });
+    }
+
+    @Post('/chatTheme/:pseudonym')
+    async setChatTheme(@Req() req, @Body() newChat: string, @Res() response: Response) {
+        const pseudonym = req.params.pseudonym;
+        await this.preferenceService
+            .setChatTheme(pseudonym, newChat)
+            .then((chatTheme: string) => {
+                response.status(HttpStatus.OK).send(chatTheme);
+            })
+            .catch((error: Error) => {
+                response.status(HttpStatus.NOT_FOUND).send('An error occurred while trying to connect to the server' + error.message);
+            });
+    }
+
+    @Post('/addBoard/:pseudonym')
+    async addBoard(@Req() req, @Body() newBoard: string, @Res() response: Response) {
+        const pseudonym = req.params.pseudonym;
+        await this.preferenceService
+            .addBoard(pseudonym, newBoard)
+            .then((success: boolean) => {
+                if (success) response.status(HttpStatus.OK).send(success);
+                else response.status(HttpStatus.NOT_FOUND).send('An error occured while adding the board');
+            })
+            .catch((error: Error) => {
+                response.status(HttpStatus.NOT_FOUND).send('An error occurred while trying to connect to the server' + error.message);
+            });
+    }
+
+    @Post('/addChat/:pseudonym')
+    async addChat(@Req() req, @Body() newChat: string, @Res() response: Response) {
+        const pseudonym = req.params.pseudonym;
+        await this.preferenceService
+            .addChat(pseudonym, newChat)
+            .then((success: boolean) => {
+                if (success) response.status(HttpStatus.OK).send(success);
+                else response.status(HttpStatus.NOT_FOUND).send('An error occured while adding the board');
+            })
+            .catch((error: Error) => {
+                response.status(HttpStatus.NOT_FOUND).send('An error occurred while trying to connect to the server' + error.message);
+            });
+    }
+
+    @Post('/setLangage/:pseudonym')
+    async setLangage(@Req() req, @Body() newLangage: number, @Res() response: Response) {
+        const pseudonym = req.params.pseudonym;
+        await this.preferenceService
+            .setLangage(pseudonym, newLangage)
+            .then((langage: number) => {
+                response.status(HttpStatus.OK).send(langage);
+            })
+            .catch((error: Error) => {
+                response.status(HttpStatus.NOT_FOUND).send('An error occurred while trying to connect to the server' + error.message);
+            });
+    }
 }

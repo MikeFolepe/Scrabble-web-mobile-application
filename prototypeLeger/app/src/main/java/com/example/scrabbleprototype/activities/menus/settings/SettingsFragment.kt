@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,6 +21,8 @@ import com.example.scrabbleprototype.model.*
 import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.objects.Themes
 import com.example.scrabbleprototype.objects.Users
+import com.example.scrabbleprototype.viewModel.PlacementViewModel
+import com.example.scrabbleprototype.viewModel.ProfilViewModel
 import java.util.*
 import kotlin.concurrent.timerTask
 
@@ -32,6 +35,7 @@ class SettingsFragment : Fragment() {
     private lateinit var chatItemsDialog: Dialog
     private var isAppThemeSpinnerInit = false
 
+    private val profilViewModel: ProfilViewModel by activityViewModels()
     private lateinit var binding: FragmentSettingsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -117,6 +121,7 @@ class SettingsFragment : Fragment() {
             userPrefences.boardItemSelected = userPrefences.boardItems[position]
             binding.boardTheme.text = userPrefences.boardItemSelected.name
             ThemeManager.currentBoardTheme = userPrefences.boardItemSelected.name
+            saveCurrentBoard()
             Timer().schedule(timerTask {
                 boardItemsDialog.dismiss()
             }, 200)
@@ -193,5 +198,9 @@ class SettingsFragment : Fragment() {
         supportFragmentManager.executePendingTransactions()
         supportFragmentManager.beginTransaction().attach(fragment).commit()
         activity?.recreate()
+    }
+
+    private fun saveCurrentBoard() {
+        profilViewModel.saveCurrentBoard(Users.userPreferences.boardItemSelected.name)
     }
 }
