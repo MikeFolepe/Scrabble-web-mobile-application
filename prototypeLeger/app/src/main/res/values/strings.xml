@@ -42,6 +42,9 @@
     <string name="timer_init">00:00</string>
     <string name="timer_format">%1$s:%2$s</string>
     <string name="replaceAi">Remplacer</string>
+    <string name="placements_list">Liste des meilleurs placements</string>
+    <string name="dictionary_verification">Vérifier la présence d\'un mot dans le dictionnaire</string>
+    <string name="dictionary_verif_hint">Entrez un mot</string>
 
     //Waiting room
     <string name="startGame">Démarrer</string>
@@ -119,5 +122,7 @@
 
     //Items Dialog
     <string name="themes_dialog_title">Veuillez choisir un thème de %1s</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>
