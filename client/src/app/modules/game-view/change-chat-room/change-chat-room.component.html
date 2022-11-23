@@ -17,7 +17,7 @@
                 mat-button
                 color="warn"
                 (click)="leaveChatRoom(chatRoom)"
-                *ngIf="chatRoom.chatRoomName != this.chatRoomService.chatRooms[0].chatRoomName"
+                *ngIf="chatRoom.chatRoomName !== this.chatRoomService.chatRooms[0].chatRoomName"
             >
                 Quitter
             </button>

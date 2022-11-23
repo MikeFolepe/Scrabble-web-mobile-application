@@ -6,7 +6,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.style.UnderlineSpan
-import android.util.Log
 import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
@@ -19,8 +18,6 @@ import com.example.scrabbleprototype.model.SocketHandler
 import com.example.scrabbleprototype.model.User
 import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.objects.Users
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import environments.Environment
 import environments.Environment.serverUrl
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -86,10 +83,8 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
 
     fun onConnection() {
         val usernameInput = findViewById<EditText>(R.id.username);
-        val serverIpInput = findViewById<EditText>(R.id.server_ip)
+        val signInPasswordInput = findViewById<EditText>(R.id.signIn_password)
         val username = usernameInput.text.toString()
-        //val serverUrl = "http://ec2-15-222-249-18.ca-central-1.compute.amazonaws.com:3000"
-        Log.d("urlServer", serverUrl)
         val serverError = "Le serveur est déconnecté"
 
         if(username.isEmpty())  {
@@ -109,9 +104,9 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
                     join(serverUrl)
 
                 } else if (response.status == HttpStatusCode.NotModified) usernameInput.error = "Cet utilisateur est déjà connecté"
-                else if (response.status == HttpStatusCode.NotFound) serverIpInput.error = serverError
-                else serverIpInput.error = serverError
-            } else serverIpInput.error = serverError
+                else if (response.status == HttpStatusCode.NotFound) signInPasswordInput.error = serverError
+                else signInPasswordInput.error = serverError
+            } else signInPasswordInput.error = "réponse nulle du serveur"
         }
     }
 
@@ -128,7 +123,7 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
         return response
     }
 
-    fun join(serverIp: String) {
+    fun join(serverUrl: String) {
         val intent = Intent(this, MainMenuActivity::class.java)
 
         SocketHandler.setPlayerSocket(serverUrl)

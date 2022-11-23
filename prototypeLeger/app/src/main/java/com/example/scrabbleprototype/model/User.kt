@@ -1,7 +1,7 @@
 package com.example.scrabbleprototype.model
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import environments.Environment
+import environments.Environment.serverUrl
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -11,7 +11,7 @@ class User(var avatar: String, var pseudonym: String,var password: String, var e
     @JsonIgnore
     val friendsList = arrayListOf<Friend>()
     @JsonIgnore
-    var ipAddress: String = Environment.serverUrl
+    var ipAddress: String = serverUrl
     //var ipAddress: String = "10.200.37.104:3000"
     var _id: String = ""
 }
