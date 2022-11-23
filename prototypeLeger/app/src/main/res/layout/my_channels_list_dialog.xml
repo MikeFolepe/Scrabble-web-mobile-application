@@ -16,7 +16,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/available_chatrooms"
+            android:text="@string/my_chatRooms"
             android:textSize="20sp"
             android:layout_marginTop="5dp"
             android:layout_gravity="center"/>
@@ -27,12 +27,13 @@
             android:layout_height="wrap_content"/>
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/all_chatrooms"
+            android:id="@+id/my_chatrooms"
             android:layout_width="400dp"
             android:layout_height="300dp"
             android:padding="5dp"
             android:layout_margin="10dp"
             android:background="@drawable/white_background"/>
+
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -42,10 +43,10 @@
             android:layout_marginBottom="25dp">
 
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/join_button"
+                android:id="@+id/leave_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/join_chatroom"
+                android:text="@string/change_chatRoom"
                 android:textSize="18sp"
                 android:textColor="?android:textColorSecondary"
                 android:background="@drawable/teal_shadow_button" />

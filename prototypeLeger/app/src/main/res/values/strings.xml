@@ -124,6 +124,8 @@
     <string name="join_chatroom">Rejoindre</string>
     <string name="delete_chatroom">Supprimer</string>
     <string name="available_chatrooms">Liste des canaux disponibles</string>
-    <string name="Quitter">quitter</string>
+    <string name="Leave">Quitter</string>
+    <string name="change_chatRoom">Changer</string>
+    <string name="my_chatRooms">Liste des canaux dont vous faites partie</string>
 
 </resources>

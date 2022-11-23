@@ -23,8 +23,7 @@ class MyChatRoomsAdapter (private var myChatRooms: ArrayList<ChatRoom>) :
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val name = view.findViewById<TextView>(R.id.name)
         val leaveButton = view.findViewById<Button>(R.id.leave)
-        val checkbox = view.findViewById<CheckBox>(R.id.checkbox)
-        val deleteButton = view.findViewById<Button>(R.id.delete)
+        val checkbox = view.findViewById<CheckBox>(R.id.radio_button)
 
         init {
             checkbox.setOnCheckedChangeListener { buttonView, isChecked ->
@@ -41,7 +40,7 @@ class MyChatRoomsAdapter (private var myChatRooms: ArrayList<ChatRoom>) :
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         // Create a new view, which defines the UI of the list item
         val view = LayoutInflater.from(viewGroup.context)
-            .inflate(R.layout.chat_room_item, viewGroup, false)
+            .inflate(R.layout.my_chat_room_item, viewGroup, false)
 
         return ViewHolder(view)
     }
@@ -53,7 +52,7 @@ class MyChatRoomsAdapter (private var myChatRooms: ArrayList<ChatRoom>) :
         // contents of the view with that element
         viewHolder.name.text = myChatRooms[position].chatRoomName
         viewHolder.leaveButton.visibility = View.VISIBLE
-        viewHolder.deleteButton.visibility = View.INVISIBLE
+        // viewHolder.deleteButton.visibility = View.INVISIBLE
     }
 
     // Return the size of your dataset (invoked by the layout manager)
