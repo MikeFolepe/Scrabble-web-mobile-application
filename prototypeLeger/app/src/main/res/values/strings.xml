@@ -45,6 +45,9 @@
     <string name="placements_list">Liste des meilleurs placements</string>
     <string name="dictionary_verification">Vérifier la présence d\'un mot dans le dictionnaire</string>
     <string name="dictionary_verif_hint">Entrez un mot</string>
+    <string name="dictionary_cost">20 XP</string>
+    <string name="placements_list_cost">Acheter pour 75 XP</string>
+    <string name="dictionary_verif_left">Il vous reste %1d utilisation(s)</string>
 
     //Waiting room
     <string name="startGame">Démarrer</string>
