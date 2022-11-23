@@ -13,7 +13,7 @@ enum class Language {
 }
 
 class UserPreferences {
-    var appThemeSelected: String = "default"
+    var appThemeSelected: String = "Default"
 
     val boardItems = arrayListOf(Item("Par défaut", 0, R.color.light_green, "Description du thème par défaut : vert clair et turquoise"))
     var boardItemSelected: Item = boardItems.first()
