@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { AvatarChoiceComponent } from '@app/modules/game-view/avatar-choice/avatar-choice.component';
+import { PasswordForgottenComponent } from '@app/modules/game-view/password-forgotten/password-forgotten.component';
 import { AuthService } from '@app/services/auth.service';
 import { UserService } from '@app/services/user.service';
 import { User } from '@common/user';
@@ -32,6 +33,7 @@ export class AuthPageComponent implements OnInit {
         public userService: UserService,
         public authService: AuthService,
         private formBuilder: FormBuilder,
+        public passwordForgottenDialog : MatDialog,
         public avatarChoiceDialog: MatDialog,
     ) {}
 
@@ -118,6 +120,10 @@ export class AuthPageComponent implements OnInit {
         this.hasAccount = true;
     }
 
+    openPasswordForgottenDialog() {
+        this.passwordForgottenDialog.open(PasswordForgottenComponent, {disableClose : true});
+    }
+
     invalidPassword() {
         if (this.passwordValue === '') {
             return false;
@@ -131,7 +137,7 @@ export class AuthPageComponent implements OnInit {
         return true;
     }
 
-    openDialog() {
+    openAvatarDialog() {
         this.avatarChoiceDialog.open(AvatarChoiceComponent, { disableClose: true });
     }
 }

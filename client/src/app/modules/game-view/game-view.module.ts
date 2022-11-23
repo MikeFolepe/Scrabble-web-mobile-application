@@ -11,6 +11,7 @@ import { ScrabbleBoardComponent } from '@app/modules/game-view/scrabble-board/sc
 import { AppMaterialModule } from '@app/modules/material.module';
 import { SharedModule } from '@app/modules/shared/shared.module';
 import { AvatarChoiceComponent } from './avatar-choice/avatar-choice.component';
+import { PasswordForgottenComponent } from './password-forgotten/password-forgotten.component';
 
 @NgModule({
     declarations: [
@@ -21,6 +22,7 @@ import { AvatarChoiceComponent } from './avatar-choice/avatar-choice.component';
         FontSizeComponent,
         ChatboxComponent,
         AvatarChoiceComponent,
+        PasswordForgottenComponent,
     ],
     imports: [CommonModule, AppRoutingModule, FormsModule, SharedModule, AppMaterialModule],
     exports: [GameViewComponent],
