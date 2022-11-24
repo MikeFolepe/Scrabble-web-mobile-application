@@ -11,6 +11,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
@@ -121,7 +123,7 @@ class LetterRackFragment : Fragment(), ObserverRackCallback, CancelSwapCallback 
         if(Users.currentUser.isObserver) LetterRack.letters = Players.getActivePlayer().letterTable
 
         letterRackView = view.findViewById(R.id.letter_rack)
-        val horizontalLayoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false)
+        val horizontalLayoutManager = object: LinearLayoutManager(activity, HORIZONTAL, false) { override fun canScrollHorizontally() = false }
         letterRackView.layoutManager = horizontalLayoutManager
         letterRackAdapter = LetterRackAdapter(LetterRack.letters)
         letterRackView.adapter = letterRackAdapter
@@ -278,7 +280,13 @@ class LetterRackFragment : Fragment(), ObserverRackCallback, CancelSwapCallback 
 
     private fun onPlacementFromBoard(dragStartPosition: Int) {
         board[dragStartPosition] = Constants.EMPTY_LETTER
-        val boardAdapter = activity?.findViewById<RecyclerView>(R.id.board)?.adapter
+        val boardView = activity?.findViewById<RecyclerView>(R.id.board)
+        val boardAdapter = boardView?.adapter
+        val caseDragged = boardView?.findViewHolderForAdapterPosition(dragStartPosition)?.itemView
+        caseDragged?.findViewById<LinearLayout>(R.id.letter_layer)?.setBackgroundResource(0)
+        caseDragged?.findViewById<TextView>(R.id.letter)?.text = ""
+        caseDragged?.findViewById<TextView>(R.id.letter_score)?.text = ""
+
         boardAdapter?.notifyItemChanged(dragStartPosition)
         placementViewModel.removeLetter(dragStartPosition)
     }
