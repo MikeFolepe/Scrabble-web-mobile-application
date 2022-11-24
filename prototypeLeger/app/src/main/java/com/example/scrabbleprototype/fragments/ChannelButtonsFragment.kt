@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.appcompat.app.AlertDialog
+import android.widget.CheckBox
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -26,6 +27,7 @@ import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import org.json.JSONArray
 import org.json.JSONObject
 
 class ChannelButtonsFragment : Fragment() {
@@ -92,7 +94,6 @@ class ChannelButtonsFragment : Fragment() {
         socket.on("updateChatRooms") { response ->
             chatRooms = jacksonObjectMapper().readValue(response[0].toString(), object: TypeReference<ArrayList<ChatRoom>>() {})
             activity?.runOnUiThread {
-                Log.d("chats", chatRooms.last().chatRoomName)
                 adapter?.updateData(chatRooms)
             }
         }
@@ -106,19 +107,18 @@ class ChannelButtonsFragment : Fragment() {
             if (chatRoom.chatRoomName === chatRooms[0].chatRoomName) {
                 continue;
             }
-            if (currentUser in chatRoom.users) {
+            if (chatRoom.containsUser(currentUser)) {
                 myChatRooms.add(chatRoom);
             }
         }
-        socket.emit("getChatRooms")
+        myChatRoomsAdapter?.updateData(myChatRooms);
     }
 
     private fun receiveNewChatRoom() {
         socket.on("newChatRoom") { response ->
             chatRooms.add(jacksonObjectMapper().readValue(response[0].toString(), ChatRoom::class.java))
             activity?.runOnUiThread {
-                Log.d("chats", chatRooms.last().chatRoomName)
-                adapter?.updateData(chatRooms)
+                adapter?.notifyItemChanged(chatRooms.size - 1)
             }
         }
     }
@@ -139,12 +139,14 @@ class ChannelButtonsFragment : Fragment() {
         }
 
         allChatRoomsDialog.findViewById<Button>(R.id.join_button).setOnClickListener {
-            // TODO send selected to server doest work
-            socket.emit("joinChatRoom", JSONObject(Json.encodeToString(currentUser)), selectedChatRooms.toTypedArray().contentToString())
+            socket.emit("joinChatRoom", JSONObject(Json.encodeToString(currentUser)), JSONArray(Json.encodeToString(selectedChatRooms.toTypedArray())))
             this.selectedChatRooms.clear()
+            uncheckAll(chatsView)
+            allChatRoomsDialog.dismiss()
         }
         allChatRoomsDialog.findViewById<Button>(R.id.cancel_button).setOnClickListener {
             this.selectedChatRooms.clear()
+            uncheckAll(chatsView)
             allChatRoomsDialog.dismiss()
         }
     }
@@ -170,6 +172,7 @@ class ChannelButtonsFragment : Fragment() {
         }
     }
 
+<<<<<<< HEAD
     private fun setupChatRoomCreationDialog() {
         // val inputEditTextField = EditText(requireActivity())
         val inflater =  requireActivity().layoutInflater;
@@ -184,5 +187,12 @@ class ChannelButtonsFragment : Fragment() {
         /*chatRoomCreationDialog.findViewById<Button>(R.id.cancel_button).setOnClickListener {
             chatRoomCreationDialog.dismiss()
         }*/
+=======
+    private fun uncheckAll(chatsView: RecyclerView) {
+        for(i in 0 until chatRooms.size) {
+            val chatItem = chatsView.findViewHolderForAdapterPosition(i)?.itemView
+            chatItem?.findViewById<CheckBox>(R.id.checkbox)?.isChecked = false
+        }
+>>>>>>> 70905dfa3de91c8c932029d41c169c881ba116d5
     }
 }
