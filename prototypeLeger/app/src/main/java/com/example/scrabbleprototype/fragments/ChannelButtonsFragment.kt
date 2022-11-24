@@ -3,13 +3,12 @@ package com.example.scrabbleprototype.fragments
 import android.app.Dialog
 import android.content.DialogInterface
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import androidx.appcompat.app.AlertDialog
 import android.widget.CheckBox
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -40,7 +39,7 @@ class ChannelButtonsFragment : Fragment() {
     lateinit var myChatsView: RecyclerView
     lateinit var  allChatRoomsDialog: Dialog
     lateinit var  myChatRoomsDialog: Dialog
-    lateinit var chatRoomCreationDialog: Dialog
+    lateinit var CreateChatRoomDialog: Dialog
     private val socket = SocketHandler.socket
 
     private lateinit var binding: FragmentChannelButtonsBinding
@@ -76,9 +75,9 @@ class ChannelButtonsFragment : Fragment() {
             updateMyChatRooms()
             myChatRoomsDialog.show()
         }
-        //setupChatRoomCreationDialog()
+        setupCreateChatRoomDialog()
         binding.createChatRoomButton.setOnClickListener {
-            chatRoomCreationDialog.show()
+            CreateChatRoomDialog.show()
         }
     }
 
@@ -101,17 +100,17 @@ class ChannelButtonsFragment : Fragment() {
     }
 
     private fun updateMyChatRooms() {
-        myChatRooms = arrayListOf(chatRooms[0]);
+        myChatRooms = arrayListOf(chatRooms[0])
         for (chatRoom in chatRooms) {
             // if the chatRoom is the main room, skip it
             if (chatRoom.chatRoomName === chatRooms[0].chatRoomName) {
                 continue;
             }
             if (chatRoom.containsUser(currentUser)) {
-                myChatRooms.add(chatRoom);
+                myChatRooms.add(chatRoom)
             }
         }
-        myChatRoomsAdapter?.updateData(myChatRooms);
+        myChatRoomsAdapter?.updateData(myChatRooms)
     }
 
     private fun receiveNewChatRoom() {
@@ -172,14 +171,13 @@ class ChannelButtonsFragment : Fragment() {
         }
     }
 
-<<<<<<< HEAD
-    private fun setupChatRoomCreationDialog() {
+    private fun setupCreateChatRoomDialog() {
         // val inputEditTextField = EditText(requireActivity())
-        val inflater =  requireActivity().layoutInflater;
-        chatRoomCreationDialog = AlertDialog.Builder(requireContext())
+        val inflater = requireActivity().layoutInflater;
+        CreateChatRoomDialog = AlertDialog.Builder(requireContext())
             .setTitle("Création de canal de discussion")
             .setView(inflater.inflate(R.layout.create_chat_room_dialog, null))
-            .setPositiveButton("Create", DialogInterface.OnClickListener{ dialog, id ->
+            .setPositiveButton("Create", DialogInterface.OnClickListener { dialog, id ->
                 //socket.emit("createChatRoom", User("", "Joelle", "", "", false, ""), "newChatRoom")
             })
             .setNegativeButton("Cancel", null)
@@ -187,12 +185,11 @@ class ChannelButtonsFragment : Fragment() {
         /*chatRoomCreationDialog.findViewById<Button>(R.id.cancel_button).setOnClickListener {
             chatRoomCreationDialog.dismiss()
         }*/
-=======
+    }
     private fun uncheckAll(chatsView: RecyclerView) {
         for(i in 0 until chatRooms.size) {
             val chatItem = chatsView.findViewHolderForAdapterPosition(i)?.itemView
             chatItem?.findViewById<CheckBox>(R.id.checkbox)?.isChecked = false
         }
->>>>>>> 70905dfa3de91c8c932029d41c169c881ba116d5
     }
 }
