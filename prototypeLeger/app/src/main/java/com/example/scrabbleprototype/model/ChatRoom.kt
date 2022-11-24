@@ -7,4 +7,8 @@ class ChatRoom (var chatRoomId: String, var creator: User, var chatRoomName: Str
     var users: ArrayList<User> = arrayListOf(creator)
     var currentMessage: ChatRoomMessage = ChatRoomMessage("", "", "")
     var messages: ArrayList<ChatRoomMessage> = arrayListOf()
+
+    fun containsUser(user: User): Boolean {
+        return users.any { it.pseudonym == user.pseudonym }
+    }
 }

@@ -54,7 +54,6 @@ export class ChatGateway {
 
     @SubscribeMessage('joinChatRoom')
     joinChatRoom(@ConnectedSocket() socket, @MessageBody() user: User, @MessageBody() roomNames: string[]) {
-        console.log(roomNames);
         for (const chatRoom of this.chatRoomService.chatRooms) {
             for (const roomName of roomNames[1]) {
                 if (chatRoom.chatRoomName === roomName) {
