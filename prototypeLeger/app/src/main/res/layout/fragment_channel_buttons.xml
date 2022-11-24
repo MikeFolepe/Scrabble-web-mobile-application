@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
             <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/createChannelButton"
+                android:id="@+id/createChatRoomButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@android:drawable/ic_input_add"
@@ -25,14 +25,14 @@
                 android:layout_margin="5dp"/>
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/allChannelsButton"
+                android:id="@+id/allChatRoomsButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@android:drawable/ic_menu_search"
                 android:layout_margin="5dp"/>
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/myChannelsButton"
+                android:id="@+id/myChatRoomsButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_baseline_menu_24"

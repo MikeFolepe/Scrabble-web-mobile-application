@@ -1,12 +1,14 @@
 package com.example.scrabbleprototype.fragments
 
 import android.app.Dialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -36,6 +38,7 @@ class ChannelButtonsFragment : Fragment() {
     lateinit var myChatsView: RecyclerView
     lateinit var  allChatRoomsDialog: Dialog
     lateinit var  myChatRoomsDialog: Dialog
+    lateinit var chatRoomCreationDialog: Dialog
     private val socket = SocketHandler.socket
 
     private lateinit var binding: FragmentChannelButtonsBinding
@@ -47,12 +50,6 @@ class ChannelButtonsFragment : Fragment() {
         }
         receiveChatRooms()
         receiveNewChatRoom()
-        /*myChatRooms.add(ChatRoom("chat", Users.currentUser, "param3"))
-        myChatRooms.add(ChatRoom("chat", Users.currentUser, "chat number 1"))
-        myChatRooms.add(ChatRoom("chat", Users.currentUser, "chat number 2"))
-        myChatRooms.add(ChatRoom("chat", Users.currentUser, "chat number 3"))
-        myChatRooms.add(ChatRoom("chat", Users.currentUser, "chat number 4"))*/
-
     }
 
     override fun onCreateView(
@@ -69,13 +66,17 @@ class ChannelButtonsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupAllChatRoomsDialog()
-        binding.allChannelsButton.setOnClickListener {
+        binding.allChatRoomsButton.setOnClickListener {
             allChatRoomsDialog.show()
         }
         setupMyChatRoomsDialog()
-        binding.myChannelsButton.setOnClickListener {
+        binding.myChatRoomsButton.setOnClickListener {
             updateMyChatRooms()
             myChatRoomsDialog.show()
+        }
+        //setupChatRoomCreationDialog()
+        binding.createChatRoomButton.setOnClickListener {
+            chatRoomCreationDialog.show()
         }
     }
 
@@ -163,15 +164,25 @@ class ChannelButtonsFragment : Fragment() {
             else selectedChatRooms.remove(chatName)
         }
 
-        /*allChatRoomsDialog.findViewById<Button>(R.id.join_button).setOnClickListener {
-            // TODO send selected to server doest work
-            socket.emit("updateChat", JSONObject(Json.encodeToString(Users.currentUser)), selectedChatRooms.toTypedArray())
-            this.selectedChatRooms.clear()
-        }*/
-
         myChatRoomsDialog.findViewById<Button>(R.id.cancel_button).setOnClickListener {
             this.selectedChatRooms.clear()
             myChatRoomsDialog.dismiss()
         }
+    }
+
+    private fun setupChatRoomCreationDialog() {
+        // val inputEditTextField = EditText(requireActivity())
+        val inflater =  requireActivity().layoutInflater;
+        chatRoomCreationDialog = AlertDialog.Builder(requireContext())
+            .setTitle("Création de canal de discussion")
+            .setView(inflater.inflate(R.layout.create_chat_room_dialog, null))
+            .setPositiveButton("Create", DialogInterface.OnClickListener{ dialog, id ->
+                //socket.emit("createChatRoom", User("", "Joelle", "", "", false, ""), "newChatRoom")
+            })
+            .setNegativeButton("Cancel", null)
+            .create()
+        /*chatRoomCreationDialog.findViewById<Button>(R.id.cancel_button).setOnClickListener {
+            chatRoomCreationDialog.dismiss()
+        }*/
     }
 }
