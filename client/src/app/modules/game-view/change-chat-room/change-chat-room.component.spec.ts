@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ChangeChatRoomComponent } from './t-room.component';
+import { ChangeChatRoomComponent } from './change-chat-room.component';
 
 describe('ChangeChatRoomComponent', () => {
     let component: ChangeChatRoomComponent;

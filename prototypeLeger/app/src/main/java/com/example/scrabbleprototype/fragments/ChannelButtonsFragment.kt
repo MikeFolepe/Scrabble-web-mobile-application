@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.CheckBox
+import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -173,18 +174,17 @@ class ChannelButtonsFragment : Fragment() {
 
     private fun setupCreateChatRoomDialog() {
         // val inputEditTextField = EditText(requireActivity())
-        val inflater = requireActivity().layoutInflater;
+        val inflater = requireActivity().layoutInflater
+        val createView = inflater.inflate(R.layout.create_chat_room_dialog, null)
+        val newChatRoomName = createView.findViewById<EditText>(R.id.new_chatroom_name)
+
         CreateChatRoomDialog = AlertDialog.Builder(requireContext())
-            .setTitle("Création de canal de discussion")
-            .setView(inflater.inflate(R.layout.create_chat_room_dialog, null))
+            .setView(createView)
             .setPositiveButton("Create", DialogInterface.OnClickListener { dialog, id ->
-                //socket.emit("createChatRoom", User("", "Joelle", "", "", false, ""), "newChatRoom")
+                socket.emit("createChatRoom", JSONObject(Json.encodeToString(currentUser)), newChatRoomName.text.toString())
             })
             .setNegativeButton("Cancel", null)
             .create()
-        /*chatRoomCreationDialog.findViewById<Button>(R.id.cancel_button).setOnClickListener {
-            chatRoomCreationDialog.dismiss()
-        }*/
     }
     private fun uncheckAll(chatsView: RecyclerView) {
         for(i in 0 until chatRooms.size) {
