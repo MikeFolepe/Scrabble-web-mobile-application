@@ -183,7 +183,7 @@ class GameButtonsFragment : Fragment(), EndTurnCallback {
     }
 
     private fun receiveNewPlayer(){
-        SocketHandler.socket.on("newPlayer") { response ->
+        socket.on("newPlayer") { response ->
             val newPlayer = jacksonObjectMapper().readValue(response[0].toString(), Player::class.java)
             if(Users.currentUser.pseudonym == newPlayer.name){
                 Timer().schedule(timerTask {
@@ -191,7 +191,6 @@ class GameButtonsFragment : Fragment(), EndTurnCallback {
                     binding.player = Players.getCurrent()
                 }, 100)
             }
-
         }
     }
 }

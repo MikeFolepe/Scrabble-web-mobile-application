@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { Injectable } from '@angular/core';
 import { BOARD_COLUMNS, BOARD_ROWS, GRID_CASE_SIZE, INVALID_INDEX, LAST_INDEX } from '@app/classes/constants';
 import { MouseButton } from '@app/classes/enum';
@@ -54,7 +55,7 @@ export class BoardHandlerService {
         this.currentDraggedLetterIndex = 0;
     }
 
-    async buttonDetect(event: KeyboardEvent): Promise<void> {
+    buttonDetect(event: KeyboardEvent): void {
         switch (event.key) {
             case 'Backspace': {
                 this.removePlacedLetter();
@@ -100,6 +101,7 @@ export class BoardHandlerService {
             x: Math.floor((event.offsetX - GRID_CASE_SIZE) / GRID_CASE_SIZE),
             y: Math.floor((event.offsetY - GRID_CASE_SIZE) / GRID_CASE_SIZE),
         };
+        if (this.placeLetterService.scrabbleBoard[position.y][position.x] !== '') return;
         if (this.dragWord.length === 0) {
             this.selectStartingCase(position);
             this.gridService.eraseLayer(this.gridService.gridContextPlacementLayer);
@@ -141,6 +143,7 @@ export class BoardHandlerService {
             return;
         }
         if (event.button === MouseButton.Left) {
+            if (!this.playerService.currentPlayer.isTurn) return;
             if (this.isFirstCaseLocked) return;
             const caseClicked: Vec2 = this.calculateFirstCasePosition(event);
             if (!this.isCasePositionValid(caseClicked)) return;
@@ -188,7 +191,7 @@ export class BoardHandlerService {
         if (this.playerService.currentPlayer.letterTable.length === 7) this.isDragActivated = false;
     }
 
-    async confirmPlacement(): Promise<void> {
+    confirmPlacement(): void {
         // Validation of the placement
         if (this.isDragActivated) {
             // verify if each letter is correctly placed
@@ -204,8 +207,8 @@ export class BoardHandlerService {
                 myWord += i.word;
             }
             const pos = this.dragWord[0];
-            await this.placeLetterService.placeCommand(pos, this.orientation, myWord, this.dragWord);
-        } else await this.placeLetterService.validateKeyboardPlacement(this.firstCase, this.orientation, this.word);
+            this.placeLetterService.placeCommand(pos, this.orientation, myWord, this.dragWord);
+        } else this.placeLetterService.validateKeyboardPlacement(this.firstCase, this.orientation, this.word);
         this.word = '';
         this.placedLetters = [];
         this.isDropped = false;

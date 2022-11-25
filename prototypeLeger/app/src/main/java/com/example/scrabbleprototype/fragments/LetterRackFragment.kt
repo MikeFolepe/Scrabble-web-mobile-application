@@ -11,6 +11,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
@@ -110,6 +112,7 @@ class LetterRackFragment : Fragment(), ObserverRackCallback, CancelSwapCallback 
         super.onViewCreated(view, savedInstanceState)
         updatePlayer()
         receiveSwap()
+        receiveObserverRack()
         setupLetterRack(view)
         setupSwapButtons()
         setupDragListener(view)
@@ -120,7 +123,7 @@ class LetterRackFragment : Fragment(), ObserverRackCallback, CancelSwapCallback 
         if(Users.currentUser.isObserver) LetterRack.letters = Players.getActivePlayer().letterTable
 
         letterRackView = view.findViewById(R.id.letter_rack)
-        val horizontalLayoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false)
+        val horizontalLayoutManager = object: LinearLayoutManager(activity, HORIZONTAL, false) { override fun canScrollHorizontally() = false }
         letterRackView.layoutManager = horizontalLayoutManager
         letterRackAdapter = LetterRackAdapter(LetterRack.letters)
         letterRackView.adapter = letterRackAdapter
@@ -167,9 +170,7 @@ class LetterRackFragment : Fragment(), ObserverRackCallback, CancelSwapCallback 
 
     private fun handleSwap(position: Int) {
         val letterView = letterRackView.findViewHolderForAdapterPosition(position)?.itemView?.findViewById<View>(R.id.swap_border)
-        if (letterView == null) {
-            return
-        }
+            ?: return
         if(LetterRack.letters[position].isSelectedForSwap) {
             letterView.setBackgroundResource(0)
             LetterRack.letters[position].isSelectedForSwap = false
@@ -202,7 +203,7 @@ class LetterRackFragment : Fragment(), ObserverRackCallback, CancelSwapCallback 
     }
 
     private fun updatePlayer() {
-        SocketHandler.getPlayerSocket().on("updatePlayer") { response ->
+        SocketHandler.socket.on("updatePlayer") { response ->
             activity?.runOnUiThread {
                 val mapper = jacksonObjectMapper()
                 val playerReceived = mapper.readValue(response[0].toString(), Player::class.java)
@@ -279,7 +280,13 @@ class LetterRackFragment : Fragment(), ObserverRackCallback, CancelSwapCallback 
 
     private fun onPlacementFromBoard(dragStartPosition: Int) {
         board[dragStartPosition] = Constants.EMPTY_LETTER
-        val boardAdapter = activity?.findViewById<RecyclerView>(R.id.board)?.adapter
+        val boardView = activity?.findViewById<RecyclerView>(R.id.board)
+        val boardAdapter = boardView?.adapter
+        val caseDragged = boardView?.findViewHolderForAdapterPosition(dragStartPosition)?.itemView
+        caseDragged?.findViewById<LinearLayout>(R.id.letter_layer)?.setBackgroundResource(0)
+        caseDragged?.findViewById<TextView>(R.id.letter)?.text = ""
+        caseDragged?.findViewById<TextView>(R.id.letter_score)?.text = ""
+
         boardAdapter?.notifyItemChanged(dragStartPosition)
         placementViewModel.removeLetter(dragStartPosition)
     }
@@ -290,6 +297,15 @@ class LetterRackFragment : Fragment(), ObserverRackCallback, CancelSwapCallback 
             val currentPlayer = Players.players.find { it.name == activePlayerName } ?: return@runOnUiThread
             LetterRack.letters = currentPlayer.letterTable
             letterRackAdapter.updateData(LetterRack.letters)
+        }
+    }
+
+    private fun receiveObserverRack() {
+        SocketHandler.socket.on("giveRackToObserver") { response ->
+            activity?.runOnUiThread {
+                LetterRack.letters = Players.currentPlayer.letterTable
+                letterRackAdapter.updateData(LetterRack.letters)
+            }
         }
     }
 }

@@ -7,10 +7,10 @@ import { Player } from '@app/game/models/player.model';
 import { UserService } from '@app/users/user.service';
 import { ChatRoomMessage } from '@common/chatRoomMessage';
 import { DELAY_BEFORE_PLAYING, ONE_SECOND_DELAY, THREE_SECONDS_DELAY } from '@common/constants';
+import { Friend } from '@common/friend';
 import { GameSettings } from '@common/game-settings';
 import { Letter } from '@common/letter';
 import { User } from '@common/user';
-import { Friend } from '@common/friend';
 import { Vec2 } from '@common/vec2';
 import { Logger } from '@nestjs/common';
 import { ConnectedSocket, MessageBody, OnGatewayConnection, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
@@ -132,14 +132,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
         if (room === undefined) {
             return;
         }
-        room.skipTurnService.stopTimer();
-        this.server.in(roomId).emit('updateTimer', room.skipTurnService.minutes, room.skipTurnService.seconds);
-        setTimeout(() => {
-            this.updateTurns(room);
-            this.startTimer(room);
-            this.startAiTurn(room);
-        }, THREE_SECONDS_DELAY);
-        this.server.in(roomId).emit('eraseStartingCase');
+        this.switchTimer(room);
     }
 
     @SubscribeMessage('stopTimer')
@@ -148,10 +141,9 @@ export class GameHandlerGateway implements OnGatewayConnection {
         room.skipTurnService.stopTimer();
     }
     @SubscribeMessage('swap')
-    swap(@ConnectedSocket() socket, @MessageBody() data: { roomId: string; easel: Letter[]; indexToSwap: number[] }) {
+    swap(@ConnectedSocket() socket, @MessageBody() data: { roomId: string; indexToSwap: number[] }) {
         const room = this.roomManagerService.find(data[0]);
-        const indexes: number[] = JSON.parse(data[2]);
-        room.playerService.players[room.skipTurnService.activePlayerIndex].letterTable = JSON.parse(data[1]);
+        const indexes: number[] = JSON.parse(data[1]);
 
         for (const i of indexes) {
             const letterFromReserve = room.letter.getRandomLetter();
@@ -163,7 +155,6 @@ export class GameHandlerGateway implements OnGatewayConnection {
                 isSelectedForSwap: letterFromReserve.isSelectedForSwap,
                 isSelectedForManipulation: letterFromReserve.isSelectedForManipulation,
             };
-            console.log(i);
             room.playerService.players[room.skipTurnService.activePlayerIndex].letterTable.splice(i, 1, letterToAdd);
             room.letter.addLetterToReserve(letterToAdd.value);
         }
@@ -202,6 +193,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
         @MessageBody() board: string,
         @MessageBody() roomId: string,
         @MessageBody() player: string,
+        @MessageBody() isDragActivated = false,
     ) {
         const room = this.roomManagerService.find(roomId[6]);
         const validationResult = await room.wordValidation.validateAllWordsOnBoard(JSON.parse(board[5]), isEaselSize[4], isRow[3]);
@@ -219,10 +211,10 @@ export class GameHandlerGateway implements OnGatewayConnection {
             this.server.to(roomId[6]).emit('updatePlayer', room.playerService.players[index]);
             this.server.to(roomId[6]).emit('receiveReserve', room.letter.reserve, room.letter.reserveSize);
         } else {
-            socket.emit('receiveFail', JSON.parse(position[0]), JSON.parse(orientation[2]), word[1]);
+            socket.emit('receiveFail', JSON.parse(position[0]), JSON.parse(orientation[2]), word[1], isDragActivated[9]);
         }
     }
-
+    /*
     @SubscribeMessage('sendStartingCase')
     sendStartingCase(@ConnectedSocket() socket, @MessageBody() startPosition: Vec2, @MessageBody() roomId: string) {
         socket.to(roomId[1]).emit('receiveStartingCase', startPosition[0]);
@@ -232,7 +224,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
     sendEraseStartingCase(@ConnectedSocket() socket, @MessageBody() roomId: string) {
         this.server.in(roomId).emit('eraseStartingCase');
     }
-
+*/
     @SubscribeMessage(ChatEvents.UpdateUserSocket)
     updateUserSocket(@ConnectedSocket() socket, @MessageBody() user: User) {
         const currentUser = this.userService.activeUsers.find((curUser) => curUser.pseudonym === user.pseudonym);
@@ -258,6 +250,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
         room.ais[indexToRemove] = {} as PlayerAI;
         room.ais.splice(indexToRemove, 1);
         room.observers.splice(indexToRemoveObserver, 1);
+        room.aiTurn = room.ais.length;
         this.roomManagerService.setSocket(room, socket.id);
 
         room.playerService.players[indexAiToReplace[1]] = new Player(
@@ -271,6 +264,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
         console.log('players after replace', room.playerService.players);
         this.server.to(roomId[2]).emit('newPlayer', room.playerService.players[indexAiToReplace[1]], indexAiToReplace[1]);
         socket.emit('giveBoardToObserver', room.placeLetter.scrabbleBoard);
+        socket.emit('giveRackToObserver', room.playerService.players[indexAiToReplace[1]].letterTable);
     }
 
     @SubscribeMessage('sendActiveUsers')
@@ -437,7 +431,21 @@ export class GameHandlerGateway implements OnGatewayConnection {
                 );
             this.server.to(room.id).emit('updatePlayer', room.playerService.players[activePlayerIndex]);
             this.server.to(room.id).emit('receiveReserve', room.letter.reserve, room.letter.reserveSize);
-            this.server.to(room.socketIds[0]).emit('switchAiTurn');
+            this.switchTimer(room);
         }, DELAY_BEFORE_PLAYING);
+    }
+
+    private switchTimer(room: ServerRoom) {
+        // Waiting 1 second before reseting timer to zero for the current second to finish
+        setTimeout(() => {
+            room.skipTurnService.stopTimer();
+            this.server.in(room.id).emit('updateTimer', room.skipTurnService.minutes, room.skipTurnService.seconds);
+            this.server.in(room.id).emit('eraseStartingCase');
+            setTimeout(() => {
+                this.updateTurns(room);
+                this.startTimer(room);
+                this.startAiTurn(room);
+            }, THREE_SECONDS_DELAY);
+        }, ONE_SECOND_DELAY);
     }
 }

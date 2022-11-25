@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Room } from '@common/room';
 import { Player } from '@app/models/player.model';
 import { INVALID_INDEX, RESERVE, WHITE_LETTER_INDEX } from '@common/constants';
 import { Letter } from '@common/letter';
+import { Room } from '@common/room';
 import { AuthService } from './auth.service';
 import { ClientSocketService } from './client-socket.service';
 
@@ -16,6 +16,7 @@ export class PlayerService {
     currentPlayer: Player;
     currentRoom: Room;
     letterForDrag: Letter[];
+    isFirstPlacement: boolean;
 
     constructor(private clientSocketService: ClientSocketService, private authService: AuthService) {
         this.currentPlayer = new Player('', []);
@@ -29,6 +30,7 @@ export class PlayerService {
         this.receiveSwap();
         this.clientSocketService.initialize();
         this.onReplaceAi();
+        this.isFirstPlacement = true;
     }
 
     clearPlayers(): void {
@@ -115,12 +117,7 @@ export class PlayerService {
         });
     }
     swap(indexToSwap: number[]): void {
-        this.clientSocketService.socket.emit(
-            'swap',
-            this.clientSocketService.currentRoom.id,
-            JSON.stringify(this.getEasel()),
-            JSON.stringify(indexToSwap),
-        );
+        this.clientSocketService.socket.emit('swap', this.clientSocketService.currentRoom.id, JSON.stringify(indexToSwap));
     }
 
     private getMyPlayer(): void {
@@ -131,6 +128,7 @@ export class PlayerService {
 
     private updatePlayer(): void {
         this.clientSocketService.socket.on('updatePlayer', (player: Player) => {
+            this.isFirstPlacement = false;
             if (player.name === this.currentPlayer.name) {
                 this.currentPlayer.score = player.score;
                 this.currentPlayer.letterTable = player.letterTable;

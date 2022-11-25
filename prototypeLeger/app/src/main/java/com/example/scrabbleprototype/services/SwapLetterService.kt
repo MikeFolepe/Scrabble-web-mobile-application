@@ -17,10 +17,6 @@ import kotlinx.serialization.json.Json
 import org.json.JSONObject
 
 class SwapLetterService : Service() {
-
-    private val letterRack = LetterRack.letters
-    private val reserve = Constants.RESERVE
-
     private val binder = LocalBinder()
 
     inner class LocalBinder: Binder() {
@@ -35,6 +31,6 @@ class SwapLetterService : Service() {
         for(key in lettersToSwapIndexes.keys) {
             Log.d("swapkey", key.toString())
         }
-        SocketHandler.socket.emit("swap", CurrentRoom.myRoom.id, Json.encodeToString(letterRack), Json.encodeToString(lettersToSwapIndexes.keys.toTypedArray()))
+        SocketHandler.socket.emit("swap", CurrentRoom.myRoom.id, Json.encodeToString(lettersToSwapIndexes.keys.toTypedArray()))
     }
 }
