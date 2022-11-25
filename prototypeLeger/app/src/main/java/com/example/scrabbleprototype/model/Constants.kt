@@ -76,6 +76,7 @@ object Constants {
         (102 to "doubleLetter"),
         (105 to "tripleWord"),
         (108 to "doubleLetter"),
+        (112 to "center"),
         (116 to "doubleLetter"),
         (119 to "tripleWord"),
         (122 to "doubleLetter"),
