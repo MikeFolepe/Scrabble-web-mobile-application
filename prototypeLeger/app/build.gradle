@@ -9,7 +9,7 @@ apply plugin: "org.jetbrains.kotlin.kapt"
 
 android {
     namespace 'com.example.scrabbleprototype'
-    compileSdk 33
+    compileSdk 32
 
     defaultConfig {
         applicationId "com.example.scrabbleprototype"

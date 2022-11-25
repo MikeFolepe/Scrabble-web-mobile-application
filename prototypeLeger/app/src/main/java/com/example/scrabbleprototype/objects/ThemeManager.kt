@@ -25,7 +25,7 @@ object ThemeManager {
 
     fun changeToTheme(theme: Int, activity: Activity?) {
         currentTheme = theme
-        activity?.window?.statusBarColor = ContextCompat.getColor(activity!!.baseContext, R.color.orange)
+        //activity?.window?.statusBarColor = ContextCompat.getColor(activity!!.baseContext, R.color.orange)
     }
 
     fun setActivityTheme(activity: Activity) {
