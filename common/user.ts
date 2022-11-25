@@ -5,7 +5,7 @@ export class User {
     isObserver: boolean;
     avatar: string;
     password?: string;
-    email?: string;
+    email: string;
     _id?: string
 
     //ce qui est oblige : avatar, pseudonym, password, email

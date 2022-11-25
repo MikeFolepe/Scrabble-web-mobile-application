@@ -34,6 +34,14 @@ export class UserController {
         return Boolean(userFound);
     }
 
+    @Get('checkPseudonymForPassword/:pseudonym')
+    async checkPseudonymForPassword(@Req() req) {
+        const pseudonym = req.params.pseudonym;
+        const userFound = await this.userService.getSingleUser(pseudonym);
+        if (!userFound) return;
+        return userFound.email;
+    }
+
     @Get('/users')
     async getAllUsers() {
         const accounts = await this.userService.getUsers();
