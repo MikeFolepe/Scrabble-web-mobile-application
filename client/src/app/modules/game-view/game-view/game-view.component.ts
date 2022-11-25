@@ -76,6 +76,10 @@ export class GameViewComponent {
         });
     }
 
+    bestActions() {
+        this.clientSocketService.socket.emit('sendBest', JSON.stringify(this.playerService.currentPlayer.letterTable));
+    }
+
     leaveGame(): void {
         this.clientSocketService.socket.emit('stopTimer', this.clientSocketService.currentRoom.id);
         this.placeLetterService.ngOnDestroy();

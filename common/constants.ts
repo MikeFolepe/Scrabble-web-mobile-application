@@ -1,3 +1,4 @@
+import { Orientation } from '@app/classes/scrabble-board-pattern';
 import { AiType } from './ai-name';
 import { StartingPlayer } from './game-settings';
 import { Letter } from './letter';
@@ -127,6 +128,13 @@ export const DEFAULT_GAME_SETTINGS = {
     dictionary: '',
     objectiveIds: [],
 };
+export interface PossibleWords {
+    word: string;
+    orientation: Orientation;
+    line: number;
+    startIndex: number;
+    point: number;
+}
 
 export const RESERVE: Letter[] = [
     {

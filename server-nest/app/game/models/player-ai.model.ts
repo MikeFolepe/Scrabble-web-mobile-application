@@ -1,3 +1,4 @@
+import { CENTRAL_CASE_POSITION } from '@common/constants';
 import { GameSettings } from '@common/game-settings';
 import { Letter } from '@common/letter';
 import { LetterService } from '../services/letter/letter.service';
@@ -27,6 +28,24 @@ export class PlayerAI extends Player {
 
     async play(index: number): Promise<void> {
         await this.strategy.execute(index);
+    }
+    async getPossibilities(easel: string) {
+        const patterns = this.strategy.generateAllPatterns(easel, this.placeLetter.isFirstRound);
+        let allPossibleWords = this.strategy.generateAllWords(this.strategy.dictionary, patterns);
+
+        if (this.placeLetter.isFirstRound) {
+            allPossibleWords.forEach((word) => (word.startIndex = CENTRAL_CASE_POSITION.x));
+        } else {
+            // Step4: Clip words that can not be on the board
+            allPossibleWords = this.strategy.removeIfNotDisposable(allPossibleWords);
+        }
+
+        // Step3: Clip words containing more letter than playable
+        // Step4: Clip words that can not be on the board
+        // Step5: Add the earning points to all words and update the
+        allPossibleWords = await this.strategy.calculatePoints(allPossibleWords);
+        this.strategy.sortDecreasingPoints(allPossibleWords);
+        return allPossibleWords;
     }
     getLetterQuantityInEasel(character: string): number {
         let quantity = 0;

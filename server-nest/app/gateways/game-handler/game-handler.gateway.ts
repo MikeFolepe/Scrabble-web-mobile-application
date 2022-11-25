@@ -273,7 +273,12 @@ export class GameHandlerGateway implements OnGatewayConnection {
         }
         socket.emit('activeUsers', simplifiedUsers);
     }
-
+    @SubscribeMessage('sendBest')
+    bestActions(@ConnectedSocket() socket, @MessageBody() roomId: string, @MessageBody() easel: string) {
+        const room = this.roomManagerService.find(roomId[0]);
+        const allPossibilities = room.ais[0].getPossibilities(easel[1]);
+        socket.emit('receiveBest', JSON.stringify(allPossibilities));
+    }
     // onEndGameByGiveUp(socket: Socket): void {
     //     socket.on('sendEndGameByGiveUp', (isGiveUp: boolean, roomId: string) => {
     //         socket
