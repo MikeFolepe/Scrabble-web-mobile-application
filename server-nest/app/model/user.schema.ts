@@ -1,8 +1,20 @@
-import * as mongoose from 'mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import mongoose from 'mongoose';
 
-export const UserSchema = new mongoose.Schema({
-    avatar: { type: String, required: true },
-    pseudonym: { type: String, required: true },
-    email: { type: String, required: true },
-    password: { type: String, required: true },
-});
+@Schema()
+export class User extends mongoose.Document {
+    @Prop({ required: true })
+    avatar: string;
+
+    @Prop({ required: true })
+    pseudonym: string;
+
+    @Prop({ required: true })
+    email: string;
+
+    @Prop({ required: true })
+    password: string;
+}
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export const UserSchema = SchemaFactory.createForClass(User);

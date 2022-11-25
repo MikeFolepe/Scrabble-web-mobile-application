@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.databinding.FragmentStoreBinding
@@ -15,12 +16,14 @@ import com.example.scrabbleprototype.model.StoreItemsAdapter
 import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.objects.Themes
 import com.example.scrabbleprototype.objects.Users
+import com.example.scrabbleprototype.viewModel.PreferenceViewModel
 
 class StoreFragment : Fragment() {
 
     private val usersPreferences = Users.userPreferences
     private val user = Users.currentUser
 
+    private val preferenceViewModel: PreferenceViewModel by activityViewModels()
     private lateinit var builder: AlertDialog.Builder
     private lateinit var binding: FragmentStoreBinding
 
@@ -59,7 +62,7 @@ class StoreFragment : Fragment() {
         boardItemsView.adapter = boardItemsAdapter
 
         boardItemsAdapter.onItemClick = { position ->
-            showConfirmPurchaseDialog(Themes.boardItems[position], usersPreferences.boardItems)
+            showConfirmPurchaseDialog(Themes.boardItems[position], usersPreferences.boardItems, true)
         }
     }
 
@@ -70,11 +73,11 @@ class StoreFragment : Fragment() {
         chatItemsView.adapter = chatItemsAdapter
 
         chatItemsAdapter.onItemClick = { position ->
-            showConfirmPurchaseDialog(Themes.chatItems[position], usersPreferences.chatItems)
+            showConfirmPurchaseDialog(Themes.chatItems[position], usersPreferences.chatItems, false)
         }
     }
 
-    private fun buyItem(itemToBuy: Item, userItems: ArrayList<Item>) {
+    private fun buyItem(itemToBuy: Item, userItems: ArrayList<Item>, isBoard: Boolean) {
         if(userItems.any { it.name == itemToBuy.name }) {
             Toast.makeText(requireContext(), "Achat Impossible : Vous possédez déjà ce thème", Toast.LENGTH_LONG).show()
             return
@@ -87,14 +90,16 @@ class StoreFragment : Fragment() {
         user.xpPoints -= itemToBuy.price
         setupXp()
         userItems.add(itemToBuy)
+        if(isBoard) preferenceViewModel.saveBoughtBoard(itemToBuy)
+        else preferenceViewModel.saveBoughtChat(itemToBuy)
         Toast.makeText(requireContext(), "Achat complété : Le thème a été ajouté à votre profil", Toast.LENGTH_LONG).show()
     }
 
-    private fun showConfirmPurchaseDialog(item: Item, userItems: ArrayList<Item>) {
+    private fun showConfirmPurchaseDialog(item: Item, userItems: ArrayList<Item>, isBoard: Boolean) {
         builder.setMessage("Veuillez confirmer l'achat du thème  : " + item.name)
             .setCancelable(false)
             .setPositiveButton("Confirmer") { dialog, id ->
-                buyItem(item, userItems)
+                buyItem(item, userItems, isBoard)
                 dialog.dismiss()
             }
             .setNegativeButton("Annuler") { dialog, id -> //  Action for 'NO' Button
