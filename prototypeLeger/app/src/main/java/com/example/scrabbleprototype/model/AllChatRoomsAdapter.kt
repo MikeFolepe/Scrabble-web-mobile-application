@@ -3,16 +3,14 @@ package com.example.scrabbleprototype.model
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.CheckBox
-import android.widget.TextView
+import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.objects.ChatRooms
 import com.example.scrabbleprototype.objects.Users
 
 class AllChatRoomsAdapter (private var chatRooms: ArrayList<ChatRoom>) :
-    RecyclerView.Adapter<AllChatRoomsAdapter.ViewHolder>() {
+    RecyclerView.Adapter<AllChatRoomsAdapter.ViewHolder>(), Filterable {
 
     var onChatRoomClick: ((position: Int, isChecked: Boolean) -> Unit)? = null
     var onDelete: ((position: Int) -> Unit)? = null
@@ -63,5 +61,9 @@ class AllChatRoomsAdapter (private var chatRooms: ArrayList<ChatRoom>) :
     fun updateData(newChatRooms: ArrayList<ChatRoom>) {
         chatRooms = newChatRooms
         this.notifyDataSetChanged()
+    }
+
+    override fun getFilter(): Filter {
+        TODO("Not yet implemented")
     }
 }

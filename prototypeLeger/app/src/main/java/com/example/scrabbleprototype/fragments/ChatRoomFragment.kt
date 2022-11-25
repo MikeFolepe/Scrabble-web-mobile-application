@@ -10,20 +10,21 @@ import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.model.ChatAdapter
 import com.example.scrabbleprototype.model.ChatRoomMessage
 import com.example.scrabbleprototype.model.SocketHandler
-import com.example.scrabbleprototype.objects.CurrentRoom
-import com.example.scrabbleprototype.objects.ThemeManager
-import com.example.scrabbleprototype.objects.Users
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.example.scrabbleprototype.objects.*
+import com.example.scrabbleprototype.objects.ChatRooms.chatRooms
+import com.example.scrabbleprototype.objects.ChatRooms.currentChatRoom
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import org.json.JSONArray
 import org.json.JSONObject
+import java.util.*
+import kotlin.concurrent.timerTask
 
 
-class ChatFragment: Fragment() {
+class ChatRoomFragment: Fragment() {
 
-    val messages = mutableListOf<ChatRoomMessage>()
     val currentUser = Users.currentUser
+    private var chatAdapter: ChatAdapter? = null
+
     var socket = SocketHandler.getPlayerSocket()
     lateinit var activityContext: Context
 
@@ -37,24 +38,13 @@ class ChatFragment: Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val inflaterWithTheme = ThemeManager.setFragmentTheme(layoutInflater, requireContext())
-        return inflaterWithTheme.inflate(R.layout.fragment_chat, container, false)
+        return inflaterWithTheme.inflate(R.layout.fragment_chat_room, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        socket.on("receiveRoomMessage"){ response ->
-            val mapper = jacksonObjectMapper()
-            val message = mapper.readValue(response[0].toString(), ChatRoomMessage::class.java)
-            addMessage(message, view)
-        }
-        socket.on("getMessages") { response ->
-            val messageArray: JSONArray = response[0] as JSONArray
-            for(i in 0 until messageArray.length()) {
-                addMessage(Json.decodeFromString(ChatRoomMessage.serializer(), messageArray.get(i).toString()), view)
-            }
-        }
-        setupChatBox(view)
+        if(currentChatRoom != null) setupChatBox(view)
+        receiveMessages()
     }
 
     override fun onAttach(context: Context) {
@@ -63,8 +53,11 @@ class ChatFragment: Fragment() {
     }
 
     private fun setupChatBox(view: View) {
-        val messagesList = view.findViewById<ListView>(R.id.chat_box)
-        val chatAdapter = ChatAdapter(activityContext, R.layout.chat_message_style, messages)
+        Log.d("creating frag", currentChatRoom?.chatRoomName.toString())
+        view.findViewById<TextView>(R.id.chat_name).text = currentChatRoom?.chatRoomName
+
+        val messagesList = view.findViewById<ListView>(R.id.chatroom_chatbox)
+        chatAdapter = ChatAdapter(activityContext, R.layout.chat_message_style, currentChatRoom!!.messages)
         messagesList.adapter = chatAdapter
         messagesList.transcriptMode = AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL
 
@@ -80,15 +73,15 @@ class ChatFragment: Fragment() {
             }
             false
         })
-        getOldMessages()
     }
 
     private fun sendMessage(view: View) {
         val messageInput = view.findViewById<EditText>(R.id.message_input)
-        val message = ChatRoomMessage(messageInput.text.toString(), "", currentUser.pseudonym)
+        val currentIndex = ChatRooms.getCurrentChatRoomIndex()
+        if(currentIndex == -1) return
 
         if(validateMessage(messageInput.text.toString())) {
-            socket.emit("sendRoomMessage", JSONObject(Json.encodeToString(message)), CurrentRoom.myRoom.id)
+            socket.emit("newMessage", currentIndex, JSONObject(Json.encodeToString(Users.currentUser)), messageInput.text.toString())
             messageInput.setText("")
         } else messageInput.error = "Le message ne peut pas être vide"
     }
@@ -97,19 +90,15 @@ class ChatFragment: Fragment() {
         return message.isNotBlank()
     }
 
-    private fun addMessage(message: ChatRoomMessage, view: View) {
-        val messagesList = view.findViewById<ListView>(R.id.chat_box)
-        messages.add(message)
-
-        activity?.runOnUiThread {
-            val adapter = messagesList.adapter as ChatAdapter
-            adapter.notifyDataSetChanged()
-            // If the user see the last message -> scroll down
-            if(messagesList.lastVisiblePosition + 2 >= messagesList.adapter.count) messagesList.setSelection(messagesList.adapter.count - 1)
+    private fun receiveMessages() {
+        socket.on("updateChatRooms") { response ->
+            Timer().schedule(timerTask {
+                currentChatRoom = chatRooms.find { it.chatRoomName == currentChatRoom?.chatRoomName }
+                activity?.runOnUiThread {
+                    if(currentChatRoom == null || chatAdapter == null) return@runOnUiThread
+                    chatAdapter?.updateData(currentChatRoom!!.messages)
+                }
+            }, 200)
         }
-    }
-
-    fun getOldMessages() {
-        socket.emit("getMessages")
     }
 }
