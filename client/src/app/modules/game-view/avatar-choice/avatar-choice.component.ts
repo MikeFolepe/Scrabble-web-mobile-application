@@ -13,20 +13,13 @@ export class AvatarChoiceComponent implements OnInit {
     ngOnInit(): void {}
 
     onFileSelected(event: any) {
-        this.selectedFile = <File> event.target.files[0];
-        console.log(this.selectedFile.name);
-        //fs file system
+        if(event.target.files) {
+            var reader = new FileReader();
+            reader.readAsDataURL(event.target.files[0]);
+            reader.onload = (event: any) => {
+
+                this.authService.chosenAvatar = event.target.result;
+            }
+        }
     }
-
-    // onUpload(){
-    //     const fd = new FormData();
-    //     fd.append('image', this.selectedFile, this.selectedFile.name);
-    //     console.log(fd);
-    //     this.http.post('http://localhost:3000/assets/uploadedAvatars', fd)
-    //       .subscribe(res => {
-    //         console.log(res);
-    //       });
-
-    //   }
-    
 }

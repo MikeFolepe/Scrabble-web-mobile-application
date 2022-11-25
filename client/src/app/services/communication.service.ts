@@ -44,6 +44,10 @@ export class CommunicationService {
         return this.http.get<boolean>(`${this.baseUrl}/user/checkPseudonym/${pseudonym}`).toPromise();
     }
 
+    async checkPseudonymForPassword(pseudonym : string): Promise<string> {
+        return this.http.get(`${this.baseUrl}/user/checkPseudonymForPassword/${pseudonym}`, {responseType : 'text'}).toPromise();
+    }
+
     addNewUserToDB(userData: User): Observable<User> {
         return this.http.post<User>(`${this.baseUrl}/user/users`, userData);
     }

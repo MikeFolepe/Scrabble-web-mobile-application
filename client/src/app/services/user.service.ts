@@ -23,6 +23,11 @@ export class UserService {
       return this.communicationService.checkPseudonym(pseudonym);
   }
 
+  async checkPseudonymForPassword(pseudonym : string) : Promise<string> {
+    return this.communicationService.checkPseudonymForPassword(pseudonym);
+
+  }
+
   private addUser(user: User) : void {
     this.communicationService.addNewUserToDB(user).subscribe(() => {
         this.administratorService.displayMessage('Utilisateur ajouté');
