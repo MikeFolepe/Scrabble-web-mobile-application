@@ -43,13 +43,14 @@
             android:layout_marginBottom="25dp">
 
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/leave_button"
+                android:id="@+id/change_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/change_chatRoom"
                 android:textSize="18sp"
                 android:textColor="?android:textColorSecondary"
-                android:background="@drawable/teal_shadow_button" />
+                android:enabled="false"
+                android:background="@drawable/button_selector" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/cancel_button"

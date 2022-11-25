@@ -4,27 +4,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.ChannelChatFragment">
+    tools:context=".fragments.ChatRoomFragment">
 
     <LinearLayout
         android:id="@+id/channel_chat"
-        android:layout_width="200dp"
-        android:layout_height="400dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:background="@drawable/chatbox_border"
         android:orientation="vertical"
         tools:ignore="MissingConstraints">
 
         <TextView
+            android:id="@+id/chat_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="canal ouvert"
-            android:textSize="24dp"
+            android:textSize="24sp"
             android:textColor="?android:textColorSecondary"
             android:layout_gravity="center" />
 
         <ListView
-            android:id="@+id/channel_chatbox"
+            android:id="@+id/chatroom_chatbox"
             android:layout_margin="15dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
