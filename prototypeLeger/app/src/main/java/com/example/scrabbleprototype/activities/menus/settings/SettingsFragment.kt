@@ -1,10 +1,7 @@
 package com.example.scrabbleprototype.activities.menus.settings
 
 import android.app.Dialog
-import android.content.res.Resources.Theme
 import android.os.Bundle
-import android.text.Editable
-import android.util.Log
 import android.view.ContextThemeWrapper
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -12,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
@@ -21,8 +17,7 @@ import com.example.scrabbleprototype.model.*
 import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.objects.Themes
 import com.example.scrabbleprototype.objects.Users
-import com.example.scrabbleprototype.viewModel.PlacementViewModel
-import com.example.scrabbleprototype.viewModel.ProfilViewModel
+import com.example.scrabbleprototype.viewModel.PreferenceViewModel
 import java.util.*
 import kotlin.concurrent.timerTask
 
@@ -35,7 +30,7 @@ class SettingsFragment : Fragment() {
     private lateinit var chatItemsDialog: Dialog
     private var isAppThemeSpinnerInit = false
 
-    private val profilViewModel: ProfilViewModel by activityViewModels()
+    private val preferenceViewModel: PreferenceViewModel by activityViewModels()
     private lateinit var binding: FragmentSettingsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -79,6 +74,7 @@ class SettingsFragment : Fragment() {
         val appThemeSpinner = binding.appThemeSpinner
         appThemeSpinner.adapter = AppThemeAdapter(this.requireContext(), R.layout.app_theme_spinner_item, Themes.appThemes)
 
+        appThemeSpinner.setSelection(Themes.appThemes.indexOf(userPrefences.appThemeSelected))
         appThemeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 if(userPrefences.appThemeSelected == Themes.appThemes[position] || !isAppThemeSpinnerInit) {
@@ -86,9 +82,9 @@ class SettingsFragment : Fragment() {
                     return
                 }
                 userPrefences.appThemeSelected = Themes.appThemes[position]
-                profilViewModel.saveAppTheme()
+                preferenceViewModel.saveAppTheme()
 
-                ThemeManager.changeToTheme(position, activity)
+                ThemeManager.changeToTheme(position)
                 recreateFragment()
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -122,7 +118,7 @@ class SettingsFragment : Fragment() {
             userPrefences.boardItemSelected = userPrefences.boardItems[position]
             binding.boardTheme.text = userPrefences.boardItemSelected.name
             ThemeManager.currentBoardTheme = userPrefences.boardItemSelected.name
-            profilViewModel.saveCurrentBoard()
+            preferenceViewModel.saveCurrentBoard()
             Timer().schedule(timerTask {
                 boardItemsDialog.dismiss()
             }, 200)
@@ -162,7 +158,7 @@ class SettingsFragment : Fragment() {
             userPrefences.chatItemSelected = userPrefences.chatItems[position]
             binding.chatTheme.text = userPrefences.chatItemSelected.name
             ThemeManager.currentChatTheme = userPrefences.chatItemSelected.name
-            profilViewModel.saveCurrentChat()
+            preferenceViewModel.saveCurrentChat()
             Timer().schedule(timerTask {
                 chatItemsDialog.dismiss()
             }, 200)
@@ -178,9 +174,13 @@ class SettingsFragment : Fragment() {
         val languageSpinner = binding.languageSpinner
         languageSpinner.adapter = ArrayAdapter(this.requireContext(), R.layout.app_theme_spinner_item, Language.values())
 
+        languageSpinner.setSelection(userPrefences.language.ordinal)
         languageSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long
-            ) { userPrefences.language = Language.values()[position] }
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                if(userPrefences.language.name == Language.values()[position].name) return
+                userPrefences.language = Language.values()[position]
+                preferenceViewModel.saveLanguage()
+            }
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
     }

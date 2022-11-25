@@ -31,9 +31,8 @@ object ThemeManager {
     val TARTAN = "Tartan"
     val GALAXY = "Galaxie"
 
-    fun changeToTheme(theme: Int, activity: Activity?) {
+    fun changeToTheme(theme: Int) {
         currentTheme = theme
-        activity?.window?.statusBarColor = ContextCompat.getColor(activity!!.baseContext, R.color.orange)
     }
 
     fun setActivityTheme(activity: Activity) {

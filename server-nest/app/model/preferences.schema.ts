@@ -16,14 +16,14 @@ export class Preference extends mongoose.Document {
     @Prop({ type: String, required: true, default: 'Par défaut' })
     currentChatTheme: string;
 
-    @Prop({ type: Array<string>, required: true, default: [] })
-    boughtBoards: string[];
+    @Prop({ type: [String], required: true, default: [] })
+    boughtBoards: [string];
 
-    @Prop({ type: Array<string>, required: true, default: [] })
-    boughtChats: string[];
+    @Prop({ type: [String], required: true, default: [] })
+    boughtChats: [string];
 
     @Prop({ type: Number, required: true, default: 0 })
-    langage: number;
+    language: number;
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention

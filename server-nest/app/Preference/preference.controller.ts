@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpStatus, Post, RawBodyRequest, Req, Res } from '@nestjs/common';
+import { Controller, Get, HttpStatus, Post, Req, Res } from '@nestjs/common';
 import { PreferenceService } from './preference.service';
 import { Response } from 'express';
 
@@ -45,13 +45,13 @@ export class PreferenceController {
             });
     }
 
-    @Get('/langage/:pseudonym')
-    async getLangage(@Req() req, @Res() response: Response) {
+    @Get('/language/:pseudonym')
+    async getLanguage(@Req() req, @Res() response: Response) {
         const pseudonym = req.params.pseudonym;
         await this.preferenceService
-            .getLangage(pseudonym)
-            .then((langage: number) => {
-                response.status(HttpStatus.OK).send(langage);
+            .getLanguage(pseudonym)
+            .then((language: string) => {
+                response.status(HttpStatus.OK).send(language);
             })
             .catch((error: Error) => {
                 response.status(HttpStatus.NOT_FOUND).send('An error occurred while trying to connect to the server' + error.message);
@@ -124,10 +124,10 @@ export class PreferenceController {
     }
 
     @Post('/addBoard/:pseudonym')
-    async addBoard(@Req() req, @Body() newBoard: string, @Res() response: Response) {
+    async addBoard(@Req() req, @Res() response: Response) {
         const pseudonym = req.params.pseudonym;
         await this.preferenceService
-            .addBoard(pseudonym, newBoard)
+            .addBoard(pseudonym, req.body.name)
             .then((success: boolean) => {
                 if (success) response.status(HttpStatus.OK).send(success);
                 else response.status(HttpStatus.NOT_FOUND).send('An error occured while adding the board');
@@ -138,10 +138,10 @@ export class PreferenceController {
     }
 
     @Post('/addChat/:pseudonym')
-    async addChat(@Req() req, @Body() newChat: string, @Res() response: Response) {
+    async addChat(@Req() req, @Res() response: Response) {
         const pseudonym = req.params.pseudonym;
         await this.preferenceService
-            .addChat(pseudonym, newChat)
+            .addChat(pseudonym, req.body.name)
             .then((success: boolean) => {
                 if (success) response.status(HttpStatus.OK).send(success);
                 else response.status(HttpStatus.NOT_FOUND).send('An error occured while adding the board');
@@ -151,13 +151,13 @@ export class PreferenceController {
             });
     }
 
-    @Post('/setLangage/:pseudonym')
-    async setLangage(@Req() req, @Body() newLangage: number, @Res() response: Response) {
+    @Post('/setLanguage/:pseudonym')
+    async setLanguage(@Req() req, @Res() response: Response) {
         const pseudonym = req.params.pseudonym;
         await this.preferenceService
-            .setLangage(pseudonym, newLangage)
-            .then((langage: number) => {
-                response.status(HttpStatus.OK).send(langage);
+            .setLanguage(pseudonym, req.body.language)
+            .then((language: number) => {
+                response.status(HttpStatus.OK).send(language);
             })
             .catch((error: Error) => {
                 response.status(HttpStatus.NOT_FOUND).send('An error occurred while trying to connect to the server' + error.message);

@@ -8,6 +8,8 @@ object Themes {
     val boardItems = arrayListOf<Item>()
     val chatItems = arrayListOf<Item>()
 
+    val defaultItem = Item("Par défaut", 0, R.color.light_green, "Composé de vert clair et de turquoise")
+
     init {
         appThemes.add("Default")
         appThemes.add("Dark")
@@ -20,5 +22,12 @@ object Themes {
 
         chatItems.add(Item("Gradients animés", 100, R.drawable.gradient_animation))
         chatItems.add(Item("Galaxie", 100, R.drawable.galaxy))
+    }
+
+    fun getBoard(name: String): Item? {
+        return boardItems.find { it.name == name }
+    }
+    fun getChat(name: String): Item? {
+        return chatItems.find { it.name == name }
     }
 }

@@ -13,12 +13,16 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import androidx.activity.viewModels
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.activityViewModels
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.model.SocketHandler
 import com.example.scrabbleprototype.model.User
+import com.example.scrabbleprototype.objects.Players
 import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.objects.Users
+import com.example.scrabbleprototype.viewModel.PreferenceViewModel
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import environments.Environment
 import io.ktor.client.*
@@ -34,6 +38,8 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONObject
 import java.lang.Exception
+import java.util.*
+import kotlin.concurrent.timerTask
 import kotlin.coroutines.CoroutineContext
 
 
@@ -42,6 +48,7 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
     lateinit var client: HttpClient
     lateinit var socket: Socket
 
+    private val preferenceViewModel: PreferenceViewModel by viewModels()
     private var job: Job = Job()
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main + job
@@ -146,7 +153,11 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
             users.currentUser.socketId = response[0].toString()
             socket.emit("updateUserSocket", JSONObject(Json.encodeToString(users.currentUser)))
         }
-        startActivity(intent)
+        preferenceViewModel.getPreferences()
+        //LOAD while we do requests
+        Timer().schedule(timerTask {
+            startActivity(intent)
+        }, 250)
     }
 
     fun createAccount(){

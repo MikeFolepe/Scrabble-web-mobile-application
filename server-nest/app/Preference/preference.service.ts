@@ -32,9 +32,9 @@ export class PreferenceService {
         return preference.currentChatTheme;
     }
 
-    async getLangage(userPseudonym: string): Promise<number> {
+    async getLanguage(userPseudonym: string): Promise<string> {
         const preference: Preference = await this.preferenceModel.findOne({ user: userPseudonym }).exec();
-        return preference.langage;
+        return preference.language.toString();
     }
 
     async getBoards(userPseudonym: string): Promise<string[]> {
@@ -72,7 +72,7 @@ export class PreferenceService {
         try {
             const preference: Preference = await this.preferenceModel.findOne({ user: userPseudonym }).exec();
             preference.boughtBoards.push(newBoard);
-            await preference.save();
+            preference.save();
         } catch {
             return false;
         }
@@ -83,17 +83,17 @@ export class PreferenceService {
         try {
             const preference: Preference = await this.preferenceModel.findOne({ user: userPseudonym }).exec();
             preference.boughtChats.push(newChat);
-            await preference.save();
+            preference.save();
         } catch {
             return false;
         }
         return true;
     }
 
-    async setLangage(userPseudonym: string, newLangage: number): Promise<number> {
+    async setLanguage(userPseudonym: string, newLanguage: number): Promise<number> {
         const preference: Preference = await this.preferenceModel.findOne({ user: userPseudonym }).exec();
-        preference.langage = newLangage;
+        preference.language = newLanguage;
         preference.save();
-        return preference.langage;
+        return preference.language;
     }
 }
