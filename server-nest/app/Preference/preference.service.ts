@@ -48,21 +48,23 @@ export class PreferenceService {
     }
 
     async setAppTheme(userPseudonym: string, newAppTheme: string): Promise<string> {
-        const preference: Preference = await this.preferenceModel.findOneAndUpdate({ user: userPseudonym }, { appTheme: newAppTheme }).exec();
+        const preference: Preference = await this.preferenceModel.findOne({ user: userPseudonym }).exec();
+        preference.appTheme = newAppTheme;
+        preference.save();
         return preference.appTheme;
     }
 
     async setBoardTheme(userPseudonym: string, newBoardTheme: string): Promise<string> {
-        const preference: Preference = await this.preferenceModel
-            .findOneAndUpdate({ user: userPseudonym }, { currentBoardTheme: newBoardTheme })
-            .exec();
+        const preference: Preference = await this.preferenceModel.findOne({ user: userPseudonym }).exec();
+        preference.currentBoardTheme = newBoardTheme;
+        preference.save();
         return preference.currentBoardTheme;
     }
 
     async setChatTheme(userPseudonym: string, newChatTheme: string): Promise<string> {
-        const preference: Preference = await this.preferenceModel
-            .findOneAndUpdate({ user: userPseudonym }, { currentChatTheme: newChatTheme })
-            .exec();
+        const preference: Preference = await this.preferenceModel.findOne({ user: userPseudonym }).exec();
+        preference.currentChatTheme = newChatTheme;
+        preference.save();
         return preference.currentChatTheme;
     }
 
@@ -89,7 +91,9 @@ export class PreferenceService {
     }
 
     async setLangage(userPseudonym: string, newLangage: number): Promise<number> {
-        const preference: Preference = await this.preferenceModel.findOneAndUpdate({ user: userPseudonym }, { langage: newLangage }).exec();
+        const preference: Preference = await this.preferenceModel.findOne({ user: userPseudonym }).exec();
+        preference.langage = newLangage;
+        preference.save();
         return preference.langage;
     }
 }

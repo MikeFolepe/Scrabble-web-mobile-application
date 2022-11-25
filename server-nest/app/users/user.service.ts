@@ -48,7 +48,7 @@ export class UserService {
         const user = await this.userModel.findOne({ pseudonym });
 
         if (!user) return;
-        const userToSend = new User(user.avatar, user.pseudonym, user.password, user.email, user.isObserver, user.socketId);
+        const userToSend = new User(user.avatar, user.pseudonym, user.password, user.email, user.isObserver, '');
         return userToSend;
     }
 }

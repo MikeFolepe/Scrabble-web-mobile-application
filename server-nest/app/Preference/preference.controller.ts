@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpStatus, Post, Req, Res } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Post, RawBodyRequest, Req, Res } from '@nestjs/common';
 import { PreferenceService } from './preference.service';
 import { Response } from 'express';
 
@@ -85,10 +85,10 @@ export class PreferenceController {
     }
 
     @Post('/appTheme/:pseudonym')
-    async setAppTheme(@Req() req, @Body() newAppTheme: string, @Res() response: Response) {
+    async setAppTheme(@Req() req, @Res() response: Response) {
         const pseudonym = req.params.pseudonym;
         await this.preferenceService
-            .setAppTheme(pseudonym, newAppTheme)
+            .setAppTheme(pseudonym, req.body.name)
             .then((appTheme: string) => {
                 response.status(HttpStatus.OK).send(appTheme);
             })
@@ -98,10 +98,11 @@ export class PreferenceController {
     }
 
     @Post('/boardTheme/:pseudonym')
-    async setBoardTheme(@Req() req, @Body() newBoard: string, @Res() response: Response) {
+    async setBoardTheme(@Req() req, @Res() response: Response) {
         const pseudonym = req.params.pseudonym;
+        const newBoard = req.body.name;
         await this.preferenceService
-            .setAppTheme(pseudonym, newBoard)
+            .setBoardTheme(pseudonym, newBoard)
             .then((boardTheme: string) => {
                 response.status(HttpStatus.OK).send(boardTheme);
             })
@@ -111,10 +112,9 @@ export class PreferenceController {
     }
 
     @Post('/chatTheme/:pseudonym')
-    async setChatTheme(@Req() req, @Body() newChat: string, @Res() response: Response) {
-        const pseudonym = req.params.pseudonym;
+    async setChatTheme(@Req() req, @Res() response: Response) {
         await this.preferenceService
-            .setChatTheme(pseudonym, newChat)
+            .setChatTheme(req.params.pseudonym, req.body.name)
             .then((chatTheme: string) => {
                 response.status(HttpStatus.OK).send(chatTheme);
             })

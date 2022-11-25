@@ -86,6 +86,7 @@ class SettingsFragment : Fragment() {
                     return
                 }
                 userPrefences.appThemeSelected = Themes.appThemes[position]
+                profilViewModel.saveAppTheme()
 
                 ThemeManager.changeToTheme(position, activity)
                 recreateFragment()
@@ -121,7 +122,7 @@ class SettingsFragment : Fragment() {
             userPrefences.boardItemSelected = userPrefences.boardItems[position]
             binding.boardTheme.text = userPrefences.boardItemSelected.name
             ThemeManager.currentBoardTheme = userPrefences.boardItemSelected.name
-            saveCurrentBoard()
+            profilViewModel.saveCurrentBoard()
             Timer().schedule(timerTask {
                 boardItemsDialog.dismiss()
             }, 200)
@@ -161,6 +162,7 @@ class SettingsFragment : Fragment() {
             userPrefences.chatItemSelected = userPrefences.chatItems[position]
             binding.chatTheme.text = userPrefences.chatItemSelected.name
             ThemeManager.currentChatTheme = userPrefences.chatItemSelected.name
+            profilViewModel.saveCurrentChat()
             Timer().schedule(timerTask {
                 chatItemsDialog.dismiss()
             }, 200)
@@ -198,9 +200,5 @@ class SettingsFragment : Fragment() {
         supportFragmentManager.executePendingTransactions()
         supportFragmentManager.beginTransaction().attach(fragment).commit()
         activity?.recreate()
-    }
-
-    private fun saveCurrentBoard() {
-        profilViewModel.saveCurrentBoard(Users.userPreferences.boardItemSelected.name)
     }
 }
