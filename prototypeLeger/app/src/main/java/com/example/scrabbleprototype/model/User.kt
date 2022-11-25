@@ -13,5 +13,7 @@ class User(var avatar: String, var pseudonym: String,var password: String, var e
     @JsonIgnore
     var ipAddress: String = Environment.serverUrl
     //var ipAddress: String = "10.200.37.104:3000"
+    @JsonIgnore
+    var invitations = arrayListOf<Friend>()
     var _id: String = ""
 }

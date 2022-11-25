@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     android:layout_margin="10dp">
 
@@ -18,7 +19,7 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:src="@color/light_blue"
-        android:layout_marginStart="5dp"/>
+        android:layout_marginStart="15dp"/>
 
     <TextView
         android:id="@+id/friend_pseudonym"
@@ -27,7 +28,6 @@
         android:layout_marginStart="10dp"
         android:textSize="16sp"
         android:textColor="?android:textColor"
-        android:textAlignment="center"
         android:layout_gravity="center"/>
 
     <TextView
@@ -35,6 +35,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
+        android:layout_weight="1"
         android:textSize="18sp"
         android:textColor="?android:textColor"
         android:layout_gravity="center"/>
@@ -42,11 +43,22 @@
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/invitation_accept"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:src="@drawable/ic_baseline_check_24"
+        app:fabCustomSize="40dp"
+        app:tint="@color/lime_green"
+        app:backgroundTint="@color/green"
+        android:backgroundTint="?attr/floatAcceptDecline"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/invitation_decline"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="5dp"
+        android:src="@drawable/ic_baseline_highlight_off_24"
+        app:fabCustomSize="40dp"
+        app:tint="@color/red"
+        app:backgroundTint="@color/red"
+        android:backgroundTint="?attr/floatAcceptDecline"/>
 </LinearLayout>

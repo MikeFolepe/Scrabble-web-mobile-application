@@ -30,14 +30,18 @@ class ProfileFragment : Fragment() {
 
     private val user = Users.currentUser
     private lateinit var addFriendDialog: Dialog
-    private var activeUsers = arrayListOf<Friend>()
+    private var users = arrayListOf<Friend>()
+    private lateinit var userAdapter: UserAdapter
 
     private lateinit var binding: FragmentProfileBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        for(i in 0 until 12) user.friendsList.add(Friend("ami #" + i, (R.color.blue).toString(), 250 + i))
+        for(i in 0 until 12) {
+            user.friendsList.add(Friend("ami #" + i, (R.color.blue).toString(), 250 + i))
+            user.invitations.add(Friend("jacques", "", 23 + i))
+        }
     }
 
     override fun onCreateView(
@@ -54,6 +58,7 @@ class ProfileFragment : Fragment() {
         receiveActiveUsers()
         setupUserInfo()
         setupFriendsList()
+        setupInvitations()
         setupAddFriendButton()
 
         super.onViewCreated(view, savedInstanceState)
@@ -61,7 +66,7 @@ class ProfileFragment : Fragment() {
 
     private fun receiveActiveUsers() {
         SocketHandler.socket.on("activeUsers") { response ->
-            activeUsers = jacksonObjectMapper().readValue(response[0].toString(), object: TypeReference<ArrayList<Friend>>() {})
+            users = jacksonObjectMapper().readValue(response[0].toString(), object: TypeReference<ArrayList<Friend>>() {})
             Log.d("activeusers", "received")
         }
         SocketHandler.socket.emit("sendActiveUsers", user.pseudonym)
@@ -79,21 +84,26 @@ class ProfileFragment : Fragment() {
         friendsListView.adapter = friendsListAdapter
     }
 
+    private fun setupInvitations() {
+        val invitationsView = binding.invitationsList
+        invitationsView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        val invitationAdapter = FriendInvitationAdapter(user.invitations)
+        invitationsView.adapter = invitationAdapter
+    }
+
     private fun setupAddFriendDialog() {
         addFriendDialog = Dialog(ContextThemeWrapper(requireContext(), ThemeManager.getTheme()))
         addFriendDialog.setContentView(R.layout.add_friend_dialog)
 
-        val activeUsersView = addFriendDialog.findViewById<RecyclerView>(R.id.active_users)
-        activeUsersView.layoutManager = LinearLayoutManager(this.requireContext(), LinearLayoutManager.VERTICAL, false)
-        val activeUsersAdapter = ActiveUsersAdapter(activeUsers)
-        activeUsersView.adapter = activeUsersAdapter
+        val usersView = addFriendDialog.findViewById<RecyclerView>(R.id.users)
+        usersView.layoutManager = LinearLayoutManager(this.requireContext(), LinearLayoutManager.VERTICAL, false)
+        userAdapter = UserAdapter(users)
+        usersView.adapter = userAdapter
 
-        Log.d("activeusers", "setuped")
-
-        activeUsersAdapter.onUserClick = { position ->
-            user.friendsList.add(activeUsers[position])
+        userAdapter.onUserClick = { position ->
+            user.friendsList.add(users[position])
             // TODO send invitation
-            Toast.makeText(addFriendDialog.context, "Une invitation d'ami a été envoyée à " + activeUsers[position].pseudonym, Toast.LENGTH_LONG).show()
+            Toast.makeText(addFriendDialog.context, "Une invitation d'ami a été envoyée à " + users[position].pseudonym, Toast.LENGTH_LONG).show()
             Timer().schedule(timerTask {
                 addFriendDialog.dismiss()
             }, 200)
@@ -106,8 +116,9 @@ class ProfileFragment : Fragment() {
     }
 
     private fun setupAddFriendButton() {
+        setupAddFriendDialog()
         binding.addFriendButton.setOnClickListener {
-            setupAddFriendDialog()
+            // update adapter and users
             addFriendDialog.show()
         }
     }

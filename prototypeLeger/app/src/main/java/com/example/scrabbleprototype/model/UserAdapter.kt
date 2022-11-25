@@ -11,8 +11,8 @@ import com.example.scrabbleprototype.R
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 
-class ActiveUsersAdapter(private var activeUsers: ArrayList<Friend>) :
-    RecyclerView.Adapter<ActiveUsersAdapter.ViewHolder>() {
+class UserAdapter(private var users: ArrayList<Friend>) :
+    RecyclerView.Adapter<UserAdapter.ViewHolder>() {
 
     var onUserClick: ((position: Int) -> Unit)? = null
 
@@ -27,10 +27,10 @@ class ActiveUsersAdapter(private var activeUsers: ArrayList<Friend>) :
         val addButton: FloatingActionButton
 
         init {
-            avatar = view.findViewById(R.id.active_user_avatar)
-            pseudonym = view.findViewById(R.id.active_user_pseudonym)
-            xp = view.findViewById(R.id.active_user_xp)
-            addButton = view.findViewById(R.id.add_active_user_button)
+            avatar = view.findViewById(R.id.user_avatar)
+            pseudonym = view.findViewById(R.id.user_pseudonym)
+            xp = view.findViewById(R.id.user_xp)
+            addButton = view.findViewById(R.id.add_user_button)
             addButton.setOnClickListener {
                 onUserClick?.invoke(layoutPosition)
             }
@@ -41,7 +41,7 @@ class ActiveUsersAdapter(private var activeUsers: ArrayList<Friend>) :
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         // Create a new view, which defines the UI of the list item
         val view = LayoutInflater.from(viewGroup.context)
-            .inflate(R.layout.active_user_item, viewGroup, false)
+            .inflate(R.layout.user_item, viewGroup, false)
 
         return ViewHolder(view)
     }
@@ -51,17 +51,17 @@ class ActiveUsersAdapter(private var activeUsers: ArrayList<Friend>) :
 
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
-        if(activeUsers[position].avatar == "") viewHolder.avatar.setImageResource(R.color.blue)
-        else viewHolder.avatar.setImageResource(activeUsers[position].avatar.toInt())
-        viewHolder.pseudonym.text = activeUsers[position].pseudonym
-        viewHolder.xp.text = viewHolder.xp.context.getString(R.string.user_xp, activeUsers[position].xpPoints)
+        if(users[position].avatar == "") viewHolder.avatar.setImageResource(R.color.blue)
+        else viewHolder.avatar.setImageResource(users[position].avatar.toInt())
+        viewHolder.pseudonym.text = users[position].pseudonym
+        viewHolder.xp.text = viewHolder.xp.context.getString(R.string.user_xp, users[position].xpPoints)
     }
 
     // Return the size of your dataset (invoked by the layout manager)
-    override fun getItemCount() = activeUsers.size
+    override fun getItemCount() = users.size
 
     fun updateData(newActiveUsers: ArrayList<Friend>) {
-        activeUsers = newActiveUsers
+        users = newActiveUsers
         this.notifyDataSetChanged()
     }
 
