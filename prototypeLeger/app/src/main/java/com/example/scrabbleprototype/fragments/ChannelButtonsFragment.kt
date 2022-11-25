@@ -10,6 +10,7 @@ import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -123,6 +124,22 @@ class ChannelButtonsFragment : Fragment() {
         }
     }
 
+    private fun setupSearchView() {
+
+        val chatRoomSearch = allChatRoomsDialog.findViewById<SearchView>(R.id.search_chatrooms)
+        chatRoomSearch.setOnQueryTextListener(object: SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                adapter?.filter?.filter(query)
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                adapter?.filter?.filter(newText)
+                return false
+            }
+        })
+    }
+
     private fun setupAllChatRoomsDialog() {
         allChatRoomsDialog = Dialog(requireContext())
         allChatRoomsDialog.setContentView(R.layout.channels_list_dialog)
@@ -131,6 +148,8 @@ class ChannelButtonsFragment : Fragment() {
         chatsView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         adapter = AllChatRoomsAdapter(chatRooms)
         chatsView.adapter = adapter
+
+        setupSearchView()
 
         adapter?.onChatRoomClick = { position, isChecked ->
             val chatName = chatRooms[position].chatRoomName

@@ -82,7 +82,7 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
     }
 
     fun onConnection() {
-        val usernameInput = findViewById<EditText>(R.id.username);
+        val usernameInput = findViewById<EditText>(R.id.username)
         val signInPasswordInput = findViewById<EditText>(R.id.signIn_password)
         val username = usernameInput.text.toString()
         val serverError = "Le serveur est déconnecté"
