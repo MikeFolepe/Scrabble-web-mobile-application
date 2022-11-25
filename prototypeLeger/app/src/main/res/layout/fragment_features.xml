@@ -69,7 +69,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_margin="5dp"
+                    android:layout_margin="7dp"
                     android:textSize="16sp"
                     android:textColor="?android:textColor"
                     android:hint="@string/dictionary_verif_hint"
@@ -97,12 +97,12 @@
 
             <TextView
                 android:id="@+id/dictionary_utilisation"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
                 android:text="@string/dictionary_verif_left"
                 android:textColor="@color/white"
-                android:textSize="14sp"/>
+                android:textSize="14sp"
+                android:layout_gravity="center"/>
 
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>

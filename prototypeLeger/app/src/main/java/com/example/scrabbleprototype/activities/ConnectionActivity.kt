@@ -44,7 +44,7 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
 
     private var job: Job = Job()
     override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Main + job
+        get() = Dispatchers.Default + job
 
     override fun onDestroy() {
         super.onDestroy()

@@ -13,6 +13,10 @@ object Constants {
     val MAX_OPPONENTS = 3
     val MAX_PLAYERS = 4
 
+    val DICTIONARY_VERIF_NUMBER = 2
+    val DICTIONARY_VERIF_PRICE = 20
+    val BEST_PLACEMENTS_PRICE = 75
+
     val EMPTY_LETTER = Letter("", 0, 0, false, false)
 
     val RESERVE = arrayOf(
