@@ -329,6 +329,8 @@ export class PlaceLetterService implements OnDestroy {
             }
             this.placementsService.goToNextPosition(currentPosition, orientation);
         }
+        console.log('Reutrn ');
+        console.log(isWordTouching);
         return isWordTouching;
     }
 

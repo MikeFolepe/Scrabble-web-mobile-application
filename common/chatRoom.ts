@@ -5,7 +5,7 @@ export class ChatRoom {
     users: User[] = [];
     currentMessage: ChatRoomMessage;
     messages: ChatRoomMessage[];
-    creatorName: string;
+    creator: User;
     chatRoomId: string;
 
     constructor(roomId: string, creator: User, chatRoomName: string) {
@@ -13,7 +13,7 @@ export class ChatRoom {
         this.users.push(creator);
         this.currentMessage = new ChatRoomMessage('', '', '');
         this.messages = [];
-        this.creatorName = creator.pseudonym;
+        this.creator = creator;
         this.chatRoomName = chatRoomName;
     }
 }
