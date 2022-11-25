@@ -78,6 +78,8 @@
     <string name="send_friend_invitation">Envoyer une invitation d\'ami</string>
     <string name="add_friend">Ajouter un ami</string>
     <string name="active_users_title">Liste des joueurs actifs</string>
+    <string name="invitations_list">Invitations d\'ami</string>
+    <string name="invitation_from">De : </string>
 
     //Settings fragment
     <string name="parameters">Paramètres</string>
