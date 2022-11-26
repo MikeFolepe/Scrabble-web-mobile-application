@@ -277,9 +277,9 @@ export class GameHandlerGateway implements OnGatewayConnection {
     @SubscribeMessage('sendBest')
     bestActions(@ConnectedSocket() socket, @MessageBody() roomId: string, @MessageBody() playerName: string) {
         const room = this.roomManagerService.find(roomId[0]);
-        const playerReceived = room.playerService.players.find((player) => player.name === playerName);
-        
-        const allPossibilities = room.ais[0].getPossibilities();
+        const letterTable = room.playerService.players.find((player) => player.name === playerName).letterTable;
+
+        const allPossibilities = room.aiForBestActions.getPossibilities(room.aiForBestActions.strategy.getEasel(letterTable));
         socket.emit('receiveBest', JSON.stringify(allPossibilities));
     }
     // onEndGameByGiveUp(socket: Socket): void {
@@ -378,13 +378,13 @@ export class GameHandlerGateway implements OnGatewayConnection {
         if (room.state === State.Playing) {
             if (room.humanPlayersNumber === 1) {
                 room.skipTurnService.stopTimer();
-                this.server.to(roomId).emit('youAreWinner');
+                // this.server.to(roomId).emit('youAreWinner');
                 // envoyer le nouveau tableau de joueur
             }
             room.skipTurnService.stopTimer();
             room.state = State.Finish;
             // Emit the event
-            this.sendWinnerName(socket, roomId);
+            // this.sendWinnerName(socket, roomId);
             return;
         }
         // so after all if the state is finish, delete the room
