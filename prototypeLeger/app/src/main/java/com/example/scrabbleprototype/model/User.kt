@@ -22,8 +22,4 @@ class User(var avatar: String, var pseudonym: String,var password: String, var e
     var notifications = arrayListOf<Notification>()
 
     var _id: String = ""
-
-    fun toJsonObject(): JSONObject {
-        return JSONObject(Json.encodeToString(this))
-    }
 }

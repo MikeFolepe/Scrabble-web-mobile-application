@@ -51,7 +51,9 @@ class FriendInvitationAdapter(private var invitations: ArrayList<User>) :
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
         if(invitations[position].avatar == "") viewHolder.avatar.setImageResource(R.color.blue)
-        else viewHolder.avatar.setImageResource(invitations[position].avatar.toInt())
+        else viewHolder.avatar.setImageResource(R.color.orange_gradient_start)
+        // TODO AVATAR NOT HARDCODED
+        //viewHolder.avatar.setImageResource(invitations[position].avatar.toInt())
         viewHolder.pseudonym.text = invitations[position].pseudonym
         viewHolder.xp.text = viewHolder.xp.context.getString(R.string.user_xp, invitations[position].xpPoints)
     }

@@ -51,7 +51,7 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
     private val preferenceViewModel: PreferenceViewModel by viewModels()
     private var job: Job = Job()
     override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Default + job
+        get() = Dispatchers.Main + job
 
     override fun onDestroy() {
         super.onDestroy()

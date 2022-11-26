@@ -15,7 +15,7 @@ enum class NotifType {
 class Notification(var type: NotifType, var sender: String, var description: String) {
     var title: String
     var date: String = getDateStamp()
-    var time: String = getTimestamp()
+    var time: String = getTimeStamp()
 
     init {
         when(type) {
@@ -35,7 +35,7 @@ class Notification(var type: NotifType, var sender: String, var description: Str
         return dateFormat.format(Date())
     }
 
-    fun getTimestamp(): String {
+    fun getTimeStamp(): String {
         val time = Date().time
         val timestampFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
         return timestampFormat.format(time)

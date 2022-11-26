@@ -28,12 +28,17 @@ export class GameHandlerGateway implements OnGatewayConnection {
 
     @SubscribeMessage('sendFriendRequest')
     sendFriendRequest(@ConnectedSocket() socket, @MessageBody() sender: User, @MessageBody() receiver: User) {
-        const receiverSockerId = receiver.socketId;
-        console.log('sent');
-        console.log(receiver.socketId);
+        let activeReceiver: User;
+        console.log(receiver[1].pseudonym);
+        for (const user of this.userService.activeUsers) {
+            if (user.pseudonym === receiver[1].pseudonym) activeReceiver = user;
+        }
+
+        if (activeReceiver !== undefined) {
+            socket.to(activeReceiver.socketId).emit('receiveFriendRequest', sender[0]);
+        }
         // IF NOT IN ACTIVE USERS JUST ADD TO DB AND DOENZO
         // GET SOCKET ID IN ACTIVE USERS
-        socket.to(receiverSockerId).emit('receiveFriendRequest', sender);
     }
 
     @SubscribeMessage('getRoomsConfiguration')

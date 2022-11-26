@@ -35,6 +35,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import org.json.JSONObject
 import java.lang.Exception
 import java.util.*
@@ -116,7 +118,7 @@ class ProfileFragment : Fragment(), CoroutineScope {
         usersView.adapter = userAdapter
 
         userAdapter.onUserClick = { position ->
-            SocketHandler.socket.emit("sendFriendRequest", Users.currentUser.toJsonObject(), users[position].toJsonObject())
+            SocketHandler.socket.emit("sendFriendRequest", JSONObject(Json.encodeToString(user)), JSONObject(Json.encodeToString(users[position])))
             Toast.makeText(addFriendDialog.context, "Une invitation d'ami a été envoyée à " + users[position].pseudonym, Toast.LENGTH_LONG).show()
             Timer().schedule(timerTask {
                 addFriendDialog.dismiss()

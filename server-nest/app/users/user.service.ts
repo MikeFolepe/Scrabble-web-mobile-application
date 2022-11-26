@@ -16,6 +16,7 @@ export class UserService {
 
     // fonction 1 de Mike
     addUser(userData: User): void {
+        console.log('add active');
         this.activeUsers.push(userData);
     }
 

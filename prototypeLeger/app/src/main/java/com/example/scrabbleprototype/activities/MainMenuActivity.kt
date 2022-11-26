@@ -29,6 +29,7 @@ import com.example.scrabbleprototype.databinding.ActivityMainMenuBinding
 import com.example.scrabbleprototype.model.NotifType
 import com.example.scrabbleprototype.model.Notification
 import com.example.scrabbleprototype.model.NotificationAdapter
+import com.example.scrabbleprototype.model.SocketHandler
 import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.objects.Users
 
@@ -46,6 +47,7 @@ class MainMenuActivity : AppCompatActivity() {
         Users.currentUser.notifications.add(Notification(NotifType.Message, "hey", "notification d'un nouveau message dans un canal de discussion de test"))
 
         setupDrawer()
+        receiveNotification()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -109,5 +111,11 @@ class MainMenuActivity : AppCompatActivity() {
         popup.isFocusable= true
         popup.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         popup.showAsDropDown(binding.appBarMainMenu.notificationButton, 0, 20)
+    }
+
+    private fun receiveNotification() {
+        SocketHandler.socket.on("receiveNotification") { response ->
+
+        }
     }
 }
