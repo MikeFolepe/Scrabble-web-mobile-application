@@ -12,7 +12,7 @@ import com.example.scrabbleprototype.R
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 
-class FriendInvitationAdapter(private var invitations: ArrayList<Friend>) :
+class FriendInvitationAdapter(private var invitations: ArrayList<User>) :
     RecyclerView.Adapter<FriendInvitationAdapter.ViewHolder>() {
 
     /**
@@ -59,7 +59,7 @@ class FriendInvitationAdapter(private var invitations: ArrayList<Friend>) :
     // Return the size of your dataset (invoked by the layout manager)
     override fun getItemCount() = invitations.size
 
-    fun updateData(newInvitations: ArrayList<Friend>) {
+    fun updateData(newInvitations: ArrayList<User>) {
         invitations = newInvitations
         this.notifyDataSetChanged()
     }

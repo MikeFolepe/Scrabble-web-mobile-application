@@ -30,7 +30,7 @@ export class UserService {
         this.preferenceService.addPreference(pseudonym);
     }
 
-    async getUsers() {
+    async getUsers(): Promise<User[]> {
         const users = await this.userModel.find().exec();
         return users.map((user) => ({
             // eslint-disable-next-line no-underscore-dangle
@@ -41,6 +41,7 @@ export class UserService {
             password: user.password,
             email: user.email,
             socketId: '',
+            isObserver: false,
         }));
     }
 

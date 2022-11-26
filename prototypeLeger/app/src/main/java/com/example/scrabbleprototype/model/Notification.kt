@@ -1,14 +1,17 @@
 package com.example.scrabbleprototype.model
 
+import kotlinx.serialization.Serializable
 import java.text.SimpleDateFormat
 import java.util.*
 
+@Serializable
 enum class NotifType {
     Friend,
     Game,
     Message,
 }
 
+@Serializable
 class Notification(var type: NotifType, var sender: String, var description: String) {
     var title: String
     var date: String = getDateStamp()

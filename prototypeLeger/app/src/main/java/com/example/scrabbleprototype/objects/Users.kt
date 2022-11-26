@@ -8,7 +8,6 @@ object Users {
     lateinit var currentUser: User
     var userPreferences = UserPreferences()
     var userStats = UserStats()
-    var notifications = arrayListOf<Notification>()
 
     var isObserver: Boolean = false
 }

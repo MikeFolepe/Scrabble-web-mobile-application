@@ -26,6 +26,12 @@ export class GameHandlerGateway implements OnGatewayConnection {
 
     // TODO: set a socket id in player class to easily find the player
 
+    @SubscribeMessage('sendFriendRequest')
+    sendFriendRequest(@ConnectedSocket() socket, @MessageBody() sender: User, @MessageBody() receiver: User) {
+        const receiverSockerId = receiver.socketId;
+        socket.to(receiverSockerId).emit('receiveFriendRequest', sender);
+    }
+
     @SubscribeMessage('getRoomsConfiguration')
     getRoomsConfiguration(socket: Socket) {
         socket.emit('roomConfiguration', this.roomManagerService.getRoomsToSend());

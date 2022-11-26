@@ -41,9 +41,9 @@ class MainMenuActivity : AppCompatActivity() {
         ThemeManager.setActivityTheme(this)
         super.onCreate(savedInstanceState)
 
-        Users.notifications.add(Notification(NotifType.Friend, "hey", "notification d'invitation d'ami de test"))
-        Users.notifications.add(Notification(NotifType.Game, "hey", "notification d'invitation à une partie de test"))
-        Users.notifications.add(Notification(NotifType.Message, "hey", "notification d'un nouveau message dans un canal de discussion de test"))
+        Users.currentUser.notifications.add(Notification(NotifType.Friend, "hey", "notification d'invitation d'ami de test"))
+        Users.currentUser.notifications.add(Notification(NotifType.Game, "hey", "notification d'invitation à une partie de test"))
+        Users.currentUser.notifications.add(Notification(NotifType.Message, "hey", "notification d'un nouveau message dans un canal de discussion de test"))
 
         setupDrawer()
     }
@@ -95,7 +95,7 @@ class MainMenuActivity : AppCompatActivity() {
 
         val notificationsView = view.findViewById<RecyclerView>(R.id.notifications)
         notificationsView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        val adapter = NotificationAdapter(Users.notifications)
+        val adapter = NotificationAdapter(Users.currentUser.notifications)
         notificationsView.adapter = adapter
 
         adapter.onNotifClick = { position ->

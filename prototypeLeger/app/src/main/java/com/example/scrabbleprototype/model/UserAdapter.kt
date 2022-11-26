@@ -11,7 +11,7 @@ import com.example.scrabbleprototype.R
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 
-class UserAdapter(private var users: ArrayList<Friend>) :
+class UserAdapter(private var users: ArrayList<User>) :
     RecyclerView.Adapter<UserAdapter.ViewHolder>() {
 
     var onUserClick: ((position: Int) -> Unit)? = null
@@ -52,7 +52,9 @@ class UserAdapter(private var users: ArrayList<Friend>) :
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
         if(users[position].avatar == "") viewHolder.avatar.setImageResource(R.color.blue)
-        else viewHolder.avatar.setImageResource(users[position].avatar.toInt())
+        // TODO HARCODED AVATAR FOR NOW
+        viewHolder.avatar.setImageResource(R.color.blue)
+        //else viewHolder.avatar.setImageResource(users[position].avatar.toInt())
         viewHolder.pseudonym.text = users[position].pseudonym
         viewHolder.xp.text = viewHolder.xp.context.getString(R.string.user_xp, users[position].xpPoints)
     }
@@ -60,8 +62,8 @@ class UserAdapter(private var users: ArrayList<Friend>) :
     // Return the size of your dataset (invoked by the layout manager)
     override fun getItemCount() = users.size
 
-    fun updateData(newActiveUsers: ArrayList<Friend>) {
-        users = newActiveUsers
+    fun updateData(newUsers: ArrayList<User>) {
+        users = newUsers
         this.notifyDataSetChanged()
     }
 

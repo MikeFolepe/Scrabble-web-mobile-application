@@ -14,33 +14,56 @@ import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
+import com.example.scrabbleprototype.databinding.FragmentFeaturesBinding
 import com.example.scrabbleprototype.databinding.FragmentHomeBinding
 import com.example.scrabbleprototype.databinding.FragmentProfileBinding
 import com.example.scrabbleprototype.databinding.FragmentSettingsBinding
 import com.example.scrabbleprototype.model.*
+import com.example.scrabbleprototype.objects.CurrentRoom
 import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.objects.Themes
 import com.example.scrabbleprototype.objects.Users
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import io.ktor.client.*
+import io.ktor.client.call.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import org.json.JSONObject
+import java.lang.Exception
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.concurrent.timerTask
+import kotlin.coroutines.CoroutineContext
 
-class ProfileFragment : Fragment() {
+class ProfileFragment : Fragment(), CoroutineScope {
 
     private val user = Users.currentUser
     private lateinit var addFriendDialog: Dialog
-    private var users = arrayListOf<Friend>()
+    private var users = arrayListOf<User>()
     private lateinit var userAdapter: UserAdapter
+    private lateinit var invitationAdapter: FriendInvitationAdapter
 
     private lateinit var binding: FragmentProfileBinding
+    private var client = HttpClient() {
+        install(ContentNegotiation) {}
+    }
+    private var job: Job = Job()
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Default + job
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         for(i in 0 until 12) {
             user.friendsList.add(Friend("ami #" + i, (R.color.blue).toString(), 250 + i))
-            user.invitations.add(Friend("jacques", "", 23 + i))
+            user.invitations.add(User("", "", "", "", false, ""))
         }
     }
 
@@ -55,21 +78,13 @@ class ProfileFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        receiveActiveUsers()
         setupUserInfo()
         setupFriendsList()
         setupInvitations()
         setupAddFriendButton()
+        receiveFriendRequest()
 
         super.onViewCreated(view, savedInstanceState)
-    }
-
-    private fun receiveActiveUsers() {
-        SocketHandler.socket.on("activeUsers") { response ->
-            users = jacksonObjectMapper().readValue(response[0].toString(), object: TypeReference<ArrayList<Friend>>() {})
-            Log.d("activeusers", "received")
-        }
-        SocketHandler.socket.emit("sendActiveUsers", user.pseudonym)
     }
 
     private fun setupUserInfo() {
@@ -87,7 +102,7 @@ class ProfileFragment : Fragment() {
     private fun setupInvitations() {
         val invitationsView = binding.invitationsList
         invitationsView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        val invitationAdapter = FriendInvitationAdapter(user.invitations)
+        invitationAdapter = FriendInvitationAdapter(user.invitations)
         invitationsView.adapter = invitationAdapter
     }
 
@@ -101,8 +116,7 @@ class ProfileFragment : Fragment() {
         usersView.adapter = userAdapter
 
         userAdapter.onUserClick = { position ->
-            user.friendsList.add(users[position])
-            // TODO send invitation
+            SocketHandler.socket.emit("sendFriendRequest", Users.currentUser.toJsonObject(), users[position].toJsonObject())
             Toast.makeText(addFriendDialog.context, "Une invitation d'ami a été envoyée à " + users[position].pseudonym, Toast.LENGTH_LONG).show()
             Timer().schedule(timerTask {
                 addFriendDialog.dismiss()
@@ -115,11 +129,37 @@ class ProfileFragment : Fragment() {
         }
     }
 
+    private fun receiveFriendRequest() {
+        SocketHandler.socket.on("receiveFriendRequest") { response ->
+            Log.d("receive request", "RECEIVED")
+            val sender = jacksonObjectMapper().readValue(response[0].toString(), User::class.java)
+            user.invitations.add(sender)
+            activity?.runOnUiThread { invitationAdapter.updateData(user.invitations) }
+        }
+    }
+
     private fun setupAddFriendButton() {
         setupAddFriendDialog()
         binding.addFriendButton.setOnClickListener {
             // update adapter and users
+            launch { getAllUsers() }
             addFriendDialog.show()
+        }
+    }
+
+    private suspend fun getAllUsers() {
+        var response: HttpResponse?
+        try{
+            response = client.get(environments.Environment.serverUrl + "/api/user/users") {}
+        } catch(e: Exception) {
+            response = null
+        }
+        if(response != null) {
+            users = jacksonObjectMapper().readValue(response.body() as String, object : TypeReference<ArrayList<User>>() {})
+            users.removeAll { it.pseudonym == Users.currentUser.pseudonym }
+            activity?.runOnUiThread {
+                userAdapter.updateData(users)
+            }
         }
     }
 }
