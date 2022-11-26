@@ -1,7 +1,7 @@
 <h2 class = "title">Choisissez votre Avatar</h2>
 <div>
-    <!-- select an image from the user's computer and upload it in the assets/avatar folder -->
-    <input type="file" (change)="onFileSelected($event)">
+    <label for="files" class="btn">Selectionner une image depuis votre ordinteur</label>
+    <input id="files" style="visibility:hidden;" type="file" accept = "image/png, image/jpeg" (change)="onFileSelected($event)">
 
 </div>
 <div>

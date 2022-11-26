@@ -1,6 +1,6 @@
 import { User } from '@common/user';
 import * as email from '@nativescript/email';
-import { Body, Controller, Get, Logger, Post, Req } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req } from '@nestjs/common';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -23,10 +23,7 @@ export class UserController {
         const password = req.params.password;
         const userFound = await this.userService.getSingleUser(pseudonym);
         if (!userFound) return false;
-        const hashedPassword = userFound.password;
         const decryptedPassword = await this.userService.decryptPassword(pseudonym);
-        Logger.log(hashedPassword);
-        Logger.log(decryptedPassword);
         if(password === decryptedPassword) {
             return true;
         }
@@ -66,7 +63,6 @@ export class UserController {
           
         };
         sgMail.send(msg);
-
         return true;
     }
 
