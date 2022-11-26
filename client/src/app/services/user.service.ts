@@ -23,9 +23,16 @@ export class UserService {
       return this.communicationService.checkPseudonym(pseudonym);
   }
 
-  async checkPseudonymForPassword(pseudonym : string) : Promise<string> {
-    return this.communicationService.checkPseudonymForPassword(pseudonym);
+  async getEmail(pseudonym : string) : Promise<string> {
+    return this.communicationService.getEmail(pseudonym);
+  }
 
+  async sendEmailToUser(pseudonym : string) : Promise<boolean> {
+    return this.communicationService.sendEmailToUser(pseudonym);
+  }
+
+  async getDecryptedPassword(pseudonym : string) : Promise<string> {
+    return this.communicationService.getDecryptedPassword(pseudonym);
   }
 
   private addUser(user: User) : void {

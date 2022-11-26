@@ -17,7 +17,7 @@ export class AvatarChoiceComponent implements OnInit {
             var reader = new FileReader();
             reader.readAsDataURL(event.target.files[0]);
             reader.onload = (event: any) => {
-
+                console.log(event.target.result);
                 this.authService.chosenAvatar = event.target.result;
             }
         }

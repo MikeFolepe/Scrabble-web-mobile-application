@@ -3,10 +3,12 @@
     "@angular/cli": "^14.2.3"
   },
   "dependencies": {
+    "@nativescript/email": "^2.0.5",
     "@nestjs/cli": "^9.1.5",
     "@nestjs/mongoose": "^9.2.1",
     "@nestjs/platform-socket.io": "^9.1.6",
     "@nestjs/websockets": "^9.1.6",
+    "@sendgrid/mail": "^7.7.0",
     "@types/nodemailer": "^6.4.6",
     "bcrypt": "^5.1.0",
     "mongoose": "^6.7.2",
