@@ -29,6 +29,10 @@ export class GameHandlerGateway implements OnGatewayConnection {
     @SubscribeMessage('sendFriendRequest')
     sendFriendRequest(@ConnectedSocket() socket, @MessageBody() sender: User, @MessageBody() receiver: User) {
         const receiverSockerId = receiver.socketId;
+        console.log('sent');
+        console.log(receiver.socketId);
+        // IF NOT IN ACTIVE USERS JUST ADD TO DB AND DOENZO
+        // GET SOCKET ID IN ACTIVE USERS
         socket.to(receiverSockerId).emit('receiveFriendRequest', sender);
     }
 
