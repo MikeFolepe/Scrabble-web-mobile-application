@@ -32,8 +32,11 @@ import com.example.scrabbleprototype.model.NotificationAdapter
 import com.example.scrabbleprototype.model.SocketHandler
 import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.objects.Users
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 
 class MainMenuActivity : AppCompatActivity() {
+
+    private lateinit var notifAdapter: NotificationAdapter
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainMenuBinding
@@ -47,6 +50,7 @@ class MainMenuActivity : AppCompatActivity() {
         Users.currentUser.notifications.add(Notification(NotifType.Message, "hey", "notification d'un nouveau message dans un canal de discussion de test"))
 
         setupDrawer()
+        setupNotifications()
         receiveNotification()
     }
 
@@ -97,10 +101,10 @@ class MainMenuActivity : AppCompatActivity() {
 
         val notificationsView = view.findViewById<RecyclerView>(R.id.notifications)
         notificationsView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        val adapter = NotificationAdapter(Users.currentUser.notifications)
-        notificationsView.adapter = adapter
+        notifAdapter = NotificationAdapter(Users.currentUser.notifications)
+        notificationsView.adapter = notifAdapter
 
-        adapter.onNotifClick = { position ->
+        notifAdapter.onNotifClick = { position ->
             Toast.makeText(this, "Click on notif # " + position.toString(), Toast.LENGTH_LONG).show()
         }
         return PopupWindow(view, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
@@ -115,7 +119,9 @@ class MainMenuActivity : AppCompatActivity() {
 
     private fun receiveNotification() {
         SocketHandler.socket.on("receiveNotification") { response ->
-
+            val newNotif = jacksonObjectMapper().readValue(response[0].toString(), Notification::class.java)
+            Users.currentUser.notifications.add(newNotif)
+            runOnUiThread { notifAdapter.updateData(Users.currentUser.notifications) }
         }
     }
 }

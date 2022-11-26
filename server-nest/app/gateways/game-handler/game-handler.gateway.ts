@@ -6,6 +6,7 @@ import { PlayerAI } from '@app/game/models/player-ai.model';
 import { Player } from '@app/game/models/player.model';
 import { UserService } from '@app/users/user.service';
 import { ChatRoomMessage } from '@common/chatRoomMessage';
+import { Notification, NotifType } from '@common/notification';
 import { DELAY_BEFORE_PLAYING, ONE_SECOND_DELAY, THREE_SECONDS_DELAY } from '@common/constants';
 import { Friend } from '@common/friend';
 import { GameSettings } from '@common/game-settings';
@@ -35,6 +36,8 @@ export class GameHandlerGateway implements OnGatewayConnection {
         }
 
         if (activeReceiver !== undefined) {
+            const notifToSend = new Notification(NotifType.Friend, sender[0].pseudonym, "Cliquez pour être redirigé vers la page d'invitations");
+            socket.to(activeReceiver.socketId).emit('receiveNotification', notifToSend);
             socket.to(activeReceiver.socketId).emit('receiveFriendRequest', sender[0]);
         }
         // IF NOT IN ACTIVE USERS JUST ADD TO DB AND DOENZO

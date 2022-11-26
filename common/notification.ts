@@ -1,5 +1,5 @@
 
-enum NotifType {
+export enum NotifType {
     Friend,
     Game,
     Message,
