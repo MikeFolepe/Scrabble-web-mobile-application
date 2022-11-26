@@ -9,9 +9,7 @@ import { ChatRoomMessage } from '@common/chatRoomMessage';
 import { DELAY_BEFORE_PLAYING, ONE_SECOND_DELAY, THREE_SECONDS_DELAY } from '@common/constants';
 import { Friend } from '@common/friend';
 import { GameSettings } from '@common/game-settings';
-import { Letter } from '@common/letter';
 import { User } from '@common/user';
-import { Vec2 } from '@common/vec2';
 import { Logger } from '@nestjs/common';
 import { ConnectedSocket, MessageBody, OnGatewayConnection, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
@@ -275,7 +273,12 @@ export class GameHandlerGateway implements OnGatewayConnection {
         }
         socket.emit('activeUsers', simplifiedUsers);
     }
-
+    @SubscribeMessage('sendBest')
+    bestActions(@ConnectedSocket() socket, @MessageBody() roomId: string, @MessageBody() easel: string) {
+        const room = this.roomManagerService.find(roomId[0]);
+        const allPossibilities = room.ais[0].getPossibilities(easel[1]);
+        socket.emit('receiveBest', JSON.stringify(allPossibilities));
+    }
     // onEndGameByGiveUp(socket: Socket): void {
     //     socket.on('sendEndGameByGiveUp', (isGiveUp: boolean, roomId: string) => {
     //         socket
@@ -370,10 +373,15 @@ export class GameHandlerGateway implements OnGatewayConnection {
             return;
         }
         if (room.state === State.Playing) {
+            if (room.humanPlayersNumber === 1) {
+                room.skipTurnService.stopTimer();
+                this.server.to(roomId).emit('youAreWinner');
+                // envoyer le nouveau tableau de joueur
+            }
             room.skipTurnService.stopTimer();
             room.state = State.Finish;
             // Emit the event
-            // this.sendWinnerName(socket, roomId);
+            this.sendWinnerName(socket, roomId);
             return;
         }
         // so after all if the state is finish, delete the room
