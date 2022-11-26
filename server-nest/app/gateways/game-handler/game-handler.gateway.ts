@@ -4,6 +4,7 @@ import { AI_NAMES } from '@app/classes/aiNames';
 import { ServerRoom, State } from '@app/classes/server-room';
 import { PlayerAI } from '@app/game/models/player-ai.model';
 import { Player } from '@app/game/models/player.model';
+import { PlaceLetterService } from '@app/game/services/place-letter/place-letter.service';
 import { UserService } from '@app/users/user.service';
 import { ChatRoomMessage } from '@common/chatRoomMessage';
 import { DELAY_BEFORE_PLAYING, ONE_SECOND_DELAY, THREE_SECONDS_DELAY } from '@common/constants';
@@ -274,9 +275,11 @@ export class GameHandlerGateway implements OnGatewayConnection {
         socket.emit('activeUsers', simplifiedUsers);
     }
     @SubscribeMessage('sendBest')
-    bestActions(@ConnectedSocket() socket, @MessageBody() roomId: string, @MessageBody() easel: string) {
+    bestActions(@ConnectedSocket() socket, @MessageBody() roomId: string, @MessageBody() playerName: string) {
         const room = this.roomManagerService.find(roomId[0]);
-        const allPossibilities = room.ais[0].getPossibilities(easel[1]);
+        const playerReceived = room.playerService.players.find((player) => player.name === playerName);
+        
+        const allPossibilities = room.ais[0].getPossibilities();
         socket.emit('receiveBest', JSON.stringify(allPossibilities));
     }
     // onEndGameByGiveUp(socket: Socket): void {

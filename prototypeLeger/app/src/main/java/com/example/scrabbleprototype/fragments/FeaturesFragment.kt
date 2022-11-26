@@ -14,9 +14,8 @@ import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.databinding.FragmentFeaturesBinding
 import com.example.scrabbleprototype.databinding.FragmentLetterRackBinding
 import com.example.scrabbleprototype.model.Constants
-import com.example.scrabbleprototype.objects.CurrentRoom
-import com.example.scrabbleprototype.objects.ThemeManager
-import com.example.scrabbleprototype.objects.Users
+import com.example.scrabbleprototype.model.SocketHandler
+import com.example.scrabbleprototype.objects.*
 import io.ktor.client.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
@@ -60,6 +59,7 @@ class FeaturesFragment : Fragment(), CoroutineScope {
         super.onViewCreated(view, savedInstanceState)
 
         setupDictionaryVerif()
+        setupBestPlacements()
     }
 
     private fun setupDictionaryVerif() {
@@ -91,6 +91,13 @@ class FeaturesFragment : Fragment(), CoroutineScope {
                     else binding.dictionaryVerifResult.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_highlight_off_24))
                 }
             }
+        }
+    }
+
+    private fun setupBestPlacements() {
+        binding.player = Players.getCurrent()
+        binding.bestPlacementsButton.setOnClickListener {
+            SocketHandler.socket.emit("sendBest", CurrentRoom.myRoom.id, Players.currentPlayer.name)
         }
     }
 
