@@ -9,9 +9,7 @@ import { ChatRoomMessage } from '@common/chatRoomMessage';
 import { DELAY_BEFORE_PLAYING, ONE_SECOND_DELAY, THREE_SECONDS_DELAY } from '@common/constants';
 import { Friend } from '@common/friend';
 import { GameSettings } from '@common/game-settings';
-import { Letter } from '@common/letter';
 import { User } from '@common/user';
-import { Vec2 } from '@common/vec2';
 import { Logger } from '@nestjs/common';
 import { ConnectedSocket, MessageBody, OnGatewayConnection, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
@@ -21,10 +19,27 @@ import { ChatEvents } from './../../../../common/chat.gateway.events';
 @WebSocketGateway({ cors: true })
 export class GameHandlerGateway implements OnGatewayConnection {
     @WebSocketServer() private server: Server;
+    
 
     constructor(private readonly logger: Logger, private userService: UserService, private roomManagerService: RoomManagerService) {}
 
     // TODO: set a socket id in player class to easily find the player
+
+
+    @SubscribeMessage('sendEmail')
+    sendEmail(@ConnectedSocket() socket, @MessageBody() email : string, @MessageBody() decryptedPassword : string){
+
+        const sgMail = require('@sendgrid/mail')
+        sgMail.setApiKey('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')
+        const msg = {
+          to: 'cherkaoui_08@hotmail.fr', // Change to your recipient
+          from: 'log3900.110.22@gmail.com', // Change to your verified sender
+          subject: 'Mot de passe oublié - Scrabble', 
+          text: `Bonjour, voici votre mot de passe : ${decryptedPassword[1]}`,
+          
+        };
+        sgMail.send(msg);
+    }
 
     @SubscribeMessage('getRoomsConfiguration')
     getRoomsConfiguration(socket: Socket) {
