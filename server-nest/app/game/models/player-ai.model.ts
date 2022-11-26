@@ -30,8 +30,10 @@ export class PlayerAI extends Player {
         await this.strategy.execute(index);
     }
     async getPossibilities(easel: string) {
+        this.strategy.initializeArray(this.placeLetter.scrabbleBoard);
         const patterns = this.strategy.generateAllPatterns(easel, this.placeLetter.isFirstRound);
         let allPossibleWords = this.strategy.generateAllWords(this.strategy.dictionary, patterns);
+        allPossibleWords = this.strategy.removeIfNotEnoughLetter(allPossibleWords, this.strategy.player);
 
         if (this.placeLetter.isFirstRound) {
             allPossibleWords.forEach((word) => (word.startIndex = CENTRAL_CASE_POSITION.x));
@@ -39,7 +41,7 @@ export class PlayerAI extends Player {
             // Step4: Clip words that can not be on the board
             allPossibleWords = this.strategy.removeIfNotDisposable(allPossibleWords);
         }
-
+        allPossibleWords = this.strategy.removeIfNotEnoughLetter(allPossibleWords, this.strategy.player);
         // Step3: Clip words containing more letter than playable
         // Step4: Clip words that can not be on the board
         // Step5: Add the earning points to all words and update the
