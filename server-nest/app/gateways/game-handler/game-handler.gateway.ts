@@ -276,9 +276,11 @@ export class GameHandlerGateway implements OnGatewayConnection {
     @SubscribeMessage('sendBest')
     async bestActions(@ConnectedSocket() socket, @MessageBody() roomId: string, @MessageBody() playerName: string) {
         const room = this.roomManagerService.find(roomId[0]);
-        const letterTable = room.playerService.players.find((player) => player.name === playerName).letterTable;
+        const playerReceived = room.playerService.players.find((player) => player.name === playerName[1]);
 
-        const allPossibilities = await room.aiForBestActions.getPossibilities(room.aiForBestActions.strategy.getEasel(letterTable));
+        room.aiForBestActions.strategy.initializeArray(room.placeLetter.scrabbleBoard);
+        room.aiForBestActions.strategy.player = playerReceived;
+        const allPossibilities = await room.aiForBestActions.getPossibilities(room.aiForBestActions.strategy.getEasel(playerReceived.letterTable));
         console.log(allPossibilities);
         socket.emit('receiveBest', JSON.stringify(allPossibilities));
     }

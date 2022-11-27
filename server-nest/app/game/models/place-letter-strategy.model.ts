@@ -253,6 +253,50 @@ export class PlaceLetterStrategy {
         return allWords;
     }
 
+    initializeArray(scrabbleBoard: string[][]): void {
+        const array: string[][][] = new Array(Object.keys(Orientation).length / 2);
+        array[Orientation.Horizontal] = new Array(BOARD_COLUMNS);
+        array[Orientation.Vertical] = new Array(BOARD_ROWS);
+        // Initialize the tridimensional array representing the scrabble board
+        // array[horizontal or Vertical][row number][letter] <=> array[2 dimensions][15 rows/dimensions][15 tile/row]
+        for (let i = 0; i < BOARD_ROWS; i++) {
+            array[Orientation.Horizontal][i] = scrabbleBoard[i];
+            const column: string[] = [];
+            for (let j = 0; j < BOARD_COLUMNS; j++) column.push(scrabbleBoard[j][i]);
+
+            array[Orientation.Vertical][i] = column;
+        }
+
+        this.board = array;
+    }
+
+    removeIfNotEnoughLetter(allPossibleWords: PossibleWords[], player: Player): PossibleWords[] {
+        const filteredWords: PossibleWords[] = [];
+
+        for (const wordObject of allPossibleWords) {
+            let isWordValid = true;
+            for (const letter of wordObject.word) {
+                const regex1 = new RegExp(letter, 'g');
+                const regex2 = new RegExp('[,]{1,}', 'g');
+                const amountOfLetterNeeded: number = (wordObject.word.match(regex1) as string[]).length;
+                const amountOfLetterPresent: number = (
+                    this.board[wordObject.orientation][wordObject.line].toString().replace(regex2, '').match(regex1) || []
+                ).length;
+                const playerAmount: number = player.getLetterQuantityInEasel(letter);
+
+                if (amountOfLetterNeeded > playerAmount + amountOfLetterPresent) {
+                    // Not add the words that need more letter than available
+                    isWordValid = false;
+                    break;
+                }
+            }
+
+            if (isWordValid) filteredWords.push(wordObject);
+        }
+
+        return filteredWords;
+    }
+
     private async computeResults(possibilities: PossibleWords[], isExpertLevel = true, index: number): Promise<void> {
         if (possibilities.length === 0) {
             this.swap(isExpertLevel);
@@ -272,23 +316,6 @@ export class PlaceLetterStrategy {
         wordIndex = this.generateRandomNumber(possibilities.length);
         await this.place(possibilities[wordIndex], index);
         possibilities.splice(wordIndex, 1);
-    }
-
-    private initializeArray(scrabbleBoard: string[][]): void {
-        const array: string[][][] = new Array(Object.keys(Orientation).length / 2);
-        array[Orientation.Horizontal] = new Array(BOARD_COLUMNS);
-        array[Orientation.Vertical] = new Array(BOARD_ROWS);
-        // Initialize the tridimensional array representing the scrabble board
-        // array[horizontal or Vertical][row number][letter] <=> array[2 dimensions][15 rows/dimensions][15 tile/row]
-        for (let i = 0; i < BOARD_ROWS; i++) {
-            array[Orientation.Horizontal][i] = scrabbleBoard[i];
-            const column: string[] = [];
-            for (let j = 0; j < BOARD_COLUMNS; j++) column.push(scrabbleBoard[j][i]);
-
-            array[Orientation.Vertical][i] = column;
-        }
-
-        this.board = array;
     }
 
     private isWordMovableOnBoard(line: string, wordToPlace: PossibleWords, radixes: string[]): boolean {
@@ -335,33 +362,6 @@ export class PlaceLetterStrategy {
         return false;
     }
 
-    private removeIfNotEnoughLetter(allPossibleWords: PossibleWords[], player: Player): PossibleWords[] {
-        const filteredWords: PossibleWords[] = [];
-
-        for (const wordObject of allPossibleWords) {
-            let isWordValid = true;
-            for (const letter of wordObject.word) {
-                const regex1 = new RegExp(letter, 'g');
-                const regex2 = new RegExp('[,]{1,}', 'g');
-                const amountOfLetterNeeded: number = (wordObject.word.match(regex1) as string[]).length;
-                const amountOfLetterPresent: number = (
-                    this.board[wordObject.orientation][wordObject.line].toString().replace(regex2, '').match(regex1) || []
-                ).length;
-                const playerAmount: number = player.getLetterQuantityInEasel(letter);
-
-                if (amountOfLetterNeeded > playerAmount + amountOfLetterPresent) {
-                    // Not add the words that need more letter than available
-                    isWordValid = false;
-                    break;
-                }
-            }
-
-            if (isWordValid) filteredWords.push(wordObject);
-        }
-
-        return filteredWords;
-    }
-
     private checkIfWordIsPresent(pattern: string, word: string): boolean {
         const regex = new RegExp('(?<=[*])(([a-z]*)?)', 'g');
         const wordPresent = pattern.match(regex);
@@ -380,6 +380,8 @@ export class PlaceLetterStrategy {
         const regex2 = new RegExp('[,]{1,}', 'g');
 
         for (let line = 0; line < BOARD_COLUMNS; line++) {
+            console.log('ORIENTATION BUG');
+            console.log(orientation);
             let pattern = this.board[orientation][line]
                 .toString()
                 .replace(regex1, '')

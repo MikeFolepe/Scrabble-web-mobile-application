@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 class User(var avatar: String, var pseudonym: String,var password: String, var email: String, var isObserver: Boolean = false, var socketId: String?) {
     @JsonIgnore
-    var xpPoints: Int = 0
+    var xpPoints: Int = 99999
     @JsonIgnore
     val friendsList = arrayListOf<Friend>()
     @JsonIgnore
