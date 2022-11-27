@@ -8,13 +8,12 @@
 <div mat-dialog-actions
 *ngFor="let i of possibilities">
     <span>
-        Mot : {{i.word}}, Orientation : {{i.orientation}}, Ligne : {{i.line}}, Colonne : {{i.startIndex}}, Points : {{i.point}}
+        Mot : {{i.word}}, Orientation : {{i.orientation}}, Points : {{i.point}} - 
     </span>
     <button
         mat-raised-button
         mat-dialog-close
-        (click)="play(i.line, i.startIndex, i.orientation, i.word); this.giveUpDialogRef.close(true)"
-        routerLink="/home"
+        (click)="play(i.line, i.startIndex, i.orientation, i.word)"
         color="warn"
     >
         jouer 

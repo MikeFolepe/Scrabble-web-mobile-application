@@ -14,7 +14,7 @@ import { PossibleWords } from '@common/constants';
 export class BestActionsDialogComponent implements OnInit {
     possibilities: PossibleWords[];
     constructor(
-        public giveUpDialogRef: MatDialogRef<BestActionsDialogComponent>,
+        public bastActionsDialog: MatDialogRef<BestActionsDialogComponent>,
         private clientService: ClientSocketService,
         private placeLetter: PlaceLetterService,
         private placementService: PlacementsHandlerService,
@@ -37,8 +37,10 @@ export class BestActionsDialogComponent implements OnInit {
         const position = { x: line, y: startIndex };
         let index = 0;
         for (const i of word) {
-            this.placeLetter.placeWithKeyboard(position, i, orientation, index++);
+            this.placeLetter.placeLetter(position, i, orientation, index);
             this.placementService.goToNextPosition(position, orientation);
+            index++;
         }
+        this.placeLetter.validateKeyboardPlacement({ x: line, y: startIndex }, orientation, word);
     }
 }
