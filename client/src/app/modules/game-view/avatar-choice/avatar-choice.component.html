@@ -1,5 +1,10 @@
 <h2 class = "title">Choisissez votre Avatar</h2>
 <div>
+    <label for="files" class="btn">Selectionner une image depuis votre ordinteur</label>
+    <input id="files" style="visibility:hidden;" type="file" accept = "image/png, image/jpeg" (change)="onFileSelected($event)">
+
+</div>
+<div>
     <img class = "avatar" src="assets/avatars/blonde-girl.png" alt="blonde-girl" (click)="this.avatarChoice.close(true); this.authService.chosenAvatar = 'assets/avatars/blonde-girl.png' ">
     <img class = "avatar" src="assets/avatars/blonde-guy.png" alt="blonde-guy" (click)="this.avatarChoice.close(true); this.authService.chosenAvatar = 'assets/avatars/blonde-guy.png' "> 
     <img class = "avatar" src="assets/avatars/brunette-girl.png" alt="brunette-girl" (click)="this.avatarChoice.close(true); this.authService.chosenAvatar = 'assets/avatars/brunette-girl.png' "> 

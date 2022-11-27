@@ -61,6 +61,7 @@ const modules = [
     imports: [...modules],
     exports: [...modules],
     providers: [MatPaginatorIntl],
-    declarations: [],
+    declarations: [
+  ],
 })
 export class AppMaterialModule {}
