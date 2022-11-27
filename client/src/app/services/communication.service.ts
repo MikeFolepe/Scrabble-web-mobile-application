@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { AiPlayer, AiPlayerDB, AiType } from '@common/ai-name';
 import { Dictionary } from '@common/dictionary';
 import { User } from '@common/user';
-import { UserStatsDB } from '@common/user-stats';
+import { GameDB, UserStatsDB } from '@common/user-stats';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -37,10 +37,29 @@ export class CommunicationService {
         return this.http.get<User[]>(`${this.baseUrl}/user/users`);
     }
 
+    updateGamesWon(userId: string, gamesWon: number): Observable<void> {
+        return this.http.put<void>(`${this.baseUrl}/user/userStats/gamesWon/${userId}`, gamesWon);
+    }
+
+    updateGamesPlayed(userId: string, gamesPlayed: number): Observable<void> {
+        return this.http.put<void>(`${this.baseUrl}/user/userStats/gamesPlayed/${userId}`, gamesPlayed);
+    }
+
+    updateTotalPoints(userId: string, totalPoints: number): Observable<void> {
+        return this.http.post<void>(`${this.baseUrl}/user/userStats/totalPoints/${userId}`, totalPoints);
+    }
+
     getUserStats(userId: string): Observable<UserStatsDB> {
         return this.http.get<UserStatsDB>(`${this.baseUrl}/user/userStats/${userId}`);
     }
 
+    addLogin(userId: string): Observable<void> {
+        return this.http.post<void>(`${this.baseUrl}/user/userStats/login/${userId}`, {});
+    }
+
+    addNewGameToStats(game: GameDB, userId: string): Observable<void> {
+        return this.http.post<void>(`${this.baseUrl}/user/userStats/game/${userId}`, game);
+    }
     async findUserInDb(pseudonym: string, password: string): Promise<boolean> {
         return this.http.get<boolean>(`${this.baseUrl}/user/findUserInDb/${pseudonym}/${password}`).toPromise();
     }

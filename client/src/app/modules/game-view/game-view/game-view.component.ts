@@ -77,13 +77,11 @@ export class GameViewComponent {
     }
 
     leaveGame(): void {
-        this.clientSocketService.socket.emit('stopTimer', this.clientSocketService.currentRoom.id);
         this.placeLetterService.ngOnDestroy();
         this.gridService.ngOnDestroy();
         this.endGameService.clearAllData();
         this.playerService.clearPlayers();
         this.gameSettingsService.ngOnDestroy();
-        if (this.giveUpHandlerService.isGivenUp) this.clientSocketService.socket.emit('deleteGame', this.clientSocketService.currentRoom.id);
     }
 
     openChangeChatRoomDialog(): void {

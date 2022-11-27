@@ -1,10 +1,8 @@
 import { Injectable } from '@angular/core';
-import { PLAYER_ONE_INDEX, PLAYER_TWO_INDEX } from '@app/classes/constants';
 import { ClientSocketService } from '@app/services/client-socket.service';
 import { GameSettingsService } from '@app/services/game-settings.service';
 import { EndGameService } from './end-game.service';
 import { PlayerService } from './player.service';
-import { SendMessageService } from './send-message.service';
 
 @Injectable({
     providedIn: 'root',
@@ -21,7 +19,6 @@ export class SkipTurnService {
         private endGameService: EndGameService,
         private clientSocket: ClientSocketService,
         private playerService: PlayerService,
-        private sendMessageService: SendMessageService,
     ) {
         this.receiveNewTurn();
         this.receiveTimer();
@@ -61,7 +58,6 @@ export class SkipTurnService {
     }
 
     switchTurn(): void {
-        this.checkEndGame();
         if (this.endGameService.isEndGame) return;
         if (this.playerService.currentPlayer.isTurn) this.shouldNotBeDisplayed = true;
         if (this.playerService.currentPlayer.isTurn) {
@@ -72,17 +68,13 @@ export class SkipTurnService {
         }
     }
 
-    checkEndGame(): void {
-        if (this.endGameService.isEndGame) return;
-        this.endGameService.checkEndGame();
-        if (this.endGameService.isEndGame) {
-            this.endGameService.getFinalScore(PLAYER_ONE_INDEX);
-            this.endGameService.getFinalScore(PLAYER_TWO_INDEX);
-            this.clientSocket.socket.emit('stopTimer', this.clientSocket.currentRoom.id);
-            this.clientSocket.socket.emit('sendEasel', this.playerService.opponents[PLAYER_ONE_INDEX].letterTable, this.clientSocket.currentRoom.id);
-            this.sendMessageService.displayFinalMessage(PLAYER_ONE_INDEX);
-            this.sendMessageService.displayFinalMessage(PLAYER_TWO_INDEX);
-            this.shouldNotBeDisplayed = true;
-        }
-    }
+    //     checkEndGame(): void {
+    //         if (this.endGameService.isEndGame) return;
+    //         this.endGameService.checkEndGame();
+    //         if (this.endGameService.isEndGame) {
+    //             this.clientSocket.socket.emit('stopTimer', this.clientSocket.currentRoom.id);
+    //             this.clientSocket.socket.emit('sendEasel', this.playerService.opponents[PLAYER_ONE_INDEX].letterTable, this.clientSocket.currentRoom.id);
+    //             this.shouldNotBeDisplayed = true;
+    //         }
+    //     }
 }

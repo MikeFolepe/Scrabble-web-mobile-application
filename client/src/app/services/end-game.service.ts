@@ -1,13 +1,13 @@
+/* eslint-disable no-underscore-dangle */
 import { Injectable } from '@angular/core';
-import { NUMBER_OF_SKIP, PLAYER_ONE_INDEX, PLAYER_TWO_INDEX } from '@app/classes/constants';
-import { DebugService } from '@app/services/debug.service';
-import { Letter } from '@common/letter';
 import { PlayerScore } from '@common/player';
+import { GameDB } from '@common/user-stats';
+import { AuthService } from './auth.service';
 import { ClientSocketService } from './client-socket.service';
-import { GameSettingsService } from './game-settings.service';
+import { CommunicationService } from './communication.service';
 import { LetterService } from './letter.service';
 import { PlayerService } from './player.service';
-import { SendMessageService } from './send-message.service';
+import { UserService } from './user.service';
 
 @Injectable({
     providedIn: 'root',
@@ -23,80 +23,33 @@ export class EndGameService {
         public clientSocketService: ClientSocketService,
         public letterService: LetterService,
         public playerService: PlayerService,
-        public debugService: DebugService,
-        public gameSettingsService: GameSettingsService,
-        private sendMessageService: SendMessageService,
+        private authService: AuthService,
+        private userService: UserService,
+        private communicationService: CommunicationService,
     ) {
         this.clearAllData();
         this.actionsLog = [];
         this.isEndGame = false;
         this.receiveEndGameFromServer();
-        this.receiveActionsFromServer();
     }
 
     receiveEndGameFromServer(): void {
-        this.clientSocketService.socket.on('receiveEndGame', (isEndGame: boolean, letterTable: Letter[]) => {
-            this.isEndGame = isEndGame;
-            this.playerService.opponents[PLAYER_TWO_INDEX].letterTable = letterTable;
-            this.clientSocketService.socket.emit(
-                'sendEasel',
-                this.playerService.opponents[PLAYER_ONE_INDEX].letterTable,
-                this.clientSocketService.currentRoom.id,
-            );
-            this.sendMessageService.displayFinalMessage(PLAYER_ONE_INDEX);
-            this.sendMessageService.displayFinalMessage(PLAYER_TWO_INDEX);
-        });
-    }
+        this.clientSocketService.socket.on('receiveEndGame', (winnerName: string, startDate: string, startTime: string) => {
+            this.isEndGame = true;
 
-    receiveActionsFromServer(): void {
-        this.clientSocketService.socket.on('receiveActions', (actionsLog: string[]) => {
-            this.actionsLog = actionsLog;
-        });
-    }
-
-    getWinnerName(): string {
-        if (this.playerService.opponents[PLAYER_ONE_INDEX].score > this.playerService.opponents[PLAYER_TWO_INDEX].score) {
-            return this.playerService.opponents[PLAYER_ONE_INDEX].name;
-        }
-        if (this.playerService.opponents[PLAYER_ONE_INDEX].score < this.playerService.opponents[PLAYER_TWO_INDEX].score) {
-            return this.playerService.opponents[PLAYER_TWO_INDEX].name;
-        }
-        return this.playerService.opponents[PLAYER_ONE_INDEX].name + '  ' + this.playerService.opponents[PLAYER_TWO_INDEX].name;
-    }
-
-    addActionsLog(actionLog: string): void {
-        this.actionsLog.push(actionLog);
-        this.clientSocketService.socket.emit('sendActions', this.actionsLog, this.clientSocketService.currentRoom.id);
-    }
-
-    checkEndGame(): void {
-        this.isEndGame = this.isEndGameByActions() || this.isEndGameByEasel() || this.isEndGameByGiveUp;
-        if (this.isEndGame) {
-            this.clientSocketService.socket.emit(
-                'sendEndGame',
-                this.isEndGame,
-                this.playerService.opponents[PLAYER_ONE_INDEX].letterTable,
-                this.clientSocketService.currentRoom.id,
-            );
-        }
-    }
-
-    getFinalScore(indexPlayer: number): void {
-        for (const letter of this.playerService.opponents[indexPlayer].letterTable) {
-            this.playerService.opponents[indexPlayer].score -= letter.points;
-            // Check if score decrease under 0 after substraction
-
-            if (this.playerService.opponents[indexPlayer].score <= 0) {
-                this.playerService.opponents[indexPlayer].score = 0;
+            const newGame = new GameDB(startDate, startTime, winnerName);
+            this.communicationService.addNewGameToStats(newGame, this.authService.currentUser._id).subscribe();
+            this.communicationService
+                .updateTotalPoints(this.authService.currentUser._id, this.playerService.currentPlayer.score + this.userService.userStats.totalPoints)
+                .subscribe();
+            if (this.playerService.currentPlayer.name === winnerName) {
+                this.communicationService.updateGamesWon(this.authService.currentUser._id, this.userService.userStats.gamesWon++).subscribe();
             }
-        }
-        if (this.playerService.opponents[indexPlayer]) return;
-
-        this.playersScores.push({
-            score: this.playerService.opponents[indexPlayer].score,
-            playerName: this.playerService.opponents[indexPlayer].name,
-            isDefault: false,
         });
+    }
+
+    getFinalScore(): void {
+        this.playerService.players.sort((player1, player2) => player1.score - player2.score);
     }
 
     clearAllData(): void {
@@ -105,24 +58,5 @@ export class EndGameService {
         this.winnerNameByGiveUp = '';
         this.isEndGame = false;
         this.actionsLog = [];
-        this.debugService.debugServiceMessage = [];
-    }
-
-    isEndGameByActions(): boolean {
-        if (this.actionsLog.length < NUMBER_OF_SKIP) {
-            return false;
-        }
-        const lastIndex = this.actionsLog.length - 1;
-        for (let i = lastIndex; i > lastIndex - NUMBER_OF_SKIP; i--) {
-            if (this.actionsLog[i] !== 'passer') {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    isEndGameByEasel(): boolean {
-        return this.letterService.reserveSize === 0;
-        // (this.playerService.isEaselEmpty(PLAYER_ONE_INDEX) || this.playerService.isEaselEmpty(PLAYER_AI_INDEX)));
     }
 }

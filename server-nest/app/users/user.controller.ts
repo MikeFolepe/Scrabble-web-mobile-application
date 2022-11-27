@@ -1,6 +1,6 @@
 import { User } from '@common/user';
-import { UserStatsDB } from '@common/user-stats';
-import { Body, Controller, Get, HttpStatus, Param, Post, Req, Res } from '@nestjs/common';
+import { GameDB, UserStatsDB } from '@common/user-stats';
+import { Body, Controller, Get, HttpStatus, Param, Post, Put, Req, Res } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { Response } from 'express';
 import { UserService } from './user.service';
@@ -57,5 +57,30 @@ export class UserController {
             .catch((error: Error) => {
                 response.status(HttpStatus.NOT_FOUND).send('An error occurred while trying to get the stats' + error.message);
             });
+    }
+
+    @Post('/userStats/login/:userId')
+    async addLogin(@Param('userId') userId: string) {
+        await this.userService.addLogin(userId);
+    }
+
+    @Post('/userStats/game/:userId')
+    async addGame(@Param('userId') userId: string, @Body() game: GameDB) {
+        await this.userService.addGame(game, userId);
+    }
+
+    @Put('/userStats/gamesWon/:userId')
+    async updateGamesWon(@Param('userId') userId: string, @Body() gamesWon: number) {
+        await this.userService.updateGamesWon(userId, gamesWon);
+    }
+
+    @Put('/userStats/gamesPlayed/:userId')
+    async updateGamesPlayed(@Param('userId') userId: string, @Body() gamesPlayed: number) {
+        await this.userService.updateGamesPlayed(userId, gamesPlayed);
+    }
+
+    @Put('/userStats/totalPoints/:userId')
+    async updateTotalPoints(@Param('userId') userId: string, @Body() totalPoints: number) {
+        await this.userService.updateTotalPoints(userId, totalPoints);
     }
 }

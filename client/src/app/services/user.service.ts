@@ -5,7 +5,6 @@ import { UserStats } from '@app/classes/user-stats';
 import { User } from '@common/user';
 import { UserStatsDB } from '@common/user-stats';
 import { AdministratorService } from './administrator.service';
-import { AuthService } from './auth.service';
 import { CommunicationService } from './communication.service';
 import { ErrorHandlerService } from './error-handler.service';
 
@@ -18,7 +17,6 @@ export class UserService {
     constructor(
         private communicationService: CommunicationService,
         private administratorService: AdministratorService,
-        private authService: AuthService,
         public errorHandler: ErrorHandlerService,
     ) {}
 
@@ -26,8 +24,8 @@ export class UserService {
         this.addUser(user);
     }
 
-    getUserStats(): void {
-        this.communicationService.getUserStats(this.authService.currentUser._id).subscribe(
+    getUserStats(userId: string): void {
+        this.communicationService.getUserStats(userId).subscribe(
             (userStat: UserStatsDB) => {
                 this.userStats = new UserStats(userStat);
                 console.log(this.userStats);

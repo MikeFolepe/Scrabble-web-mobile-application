@@ -11,7 +11,6 @@ import { GameSettingsService } from '@app/services/game-settings.service';
 import { GiveUpHandlerService } from '@app/services/give-up-handler.service';
 import { LetterService } from '@app/services/letter.service';
 import { PlaceLetterService } from '@app/services/place-letter.service';
-import { UserService } from '@app/services/user.service';
 import { GameType } from '@common/game-type';
 
 @Component({
@@ -43,7 +42,6 @@ export class MainPageComponent {
         private giveUpHandlerService: GiveUpHandlerService,
         private endGameService: EndGameService,
         public chatRoomService: ChatRoomService,
-        private userService: UserService,
     ) {
         this.selectedGameTypeIndex = 0;
         this.gameType = ['Scrabble classique'];
@@ -53,7 +51,6 @@ export class MainPageComponent {
         this.chatRoomForm = false;
         this.isOpen = false;
         this.resetServices();
-        this.userService.getUserStats();
     }
 
     routeToGameMode(): void {

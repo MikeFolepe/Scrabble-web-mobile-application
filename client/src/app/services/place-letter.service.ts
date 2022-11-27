@@ -7,7 +7,6 @@ import { GridService } from '@app/services/grid.service';
 import { PlayerService } from '@app/services/player.service';
 import { Vec2 } from '@common/vec2';
 import { ClientSocketService } from './client-socket.service';
-import { EndGameService } from './end-game.service';
 import { PlacementsHandlerService } from './placements-handler.service';
 import { SendMessageService } from './send-message.service';
 import { SkipTurnService } from './skip-turn.service';
@@ -37,7 +36,6 @@ export class PlaceLetterService implements OnDestroy {
         private sendMessageService: SendMessageService,
         private skipTurnService: SkipTurnService,
         private clientSocketService: ClientSocketService,
-        private endGameService: EndGameService,
         private placementsService: PlacementsHandlerService,
     ) {
         this.isFirstRound = true;
@@ -359,8 +357,6 @@ export class PlaceLetterService implements OnDestroy {
 
     private receiveSuccess() {
         this.clientSocketService.socket.on('receiveSuccess', () => {
-            this.endGameService.addActionsLog('placerSucces');
-            this.clientSocketService.socket.emit('sendActions', this.endGameService.actionsLog, this.clientSocketService.currentRoom.id);
             this.handleValidPlacement();
             this.skipTurnService.switchTurn();
         });
@@ -368,8 +364,6 @@ export class PlaceLetterService implements OnDestroy {
 
     private receiveFailure() {
         this.clientSocketService.socket.on('receiveFail', (position: Vec2, orientation: Orientation, word: string, isDragActivated = false) => {
-            this.endGameService.addActionsLog('placerEchec');
-            this.clientSocketService.socket.emit('sendActions', this.endGameService.actionsLog, this.clientSocketService.currentRoom.id);
             this.handleInvalidPlacement(position, orientation, word, isDragActivated);
             this.sendMessageService.displayMessageByType('ERREUR : Un ou des mots formés sont invalides', MessageType.Error);
             console.log('faillllllllllll');
