@@ -1,0 +1,21 @@
+<h1 mat-dialog-title>Liste des meilleurs coups</h1>
+<div mat-dialog-content>
+    <mat-label>Voici la liste des meilleurs coups</mat-label>
+</div>
+<br />
+<br />
+<br />
+<div mat-dialog-actions
+*ngFor="let i of possibilities">
+    <span>
+        Mot : {{i.word}}, Points : {{i.point}} - 
+    </span>
+    <button
+        mat-raised-button
+        mat-dialog-close
+        (click)="play(i.line, i.startIndex, i.orientation, i.word)"
+        color="warn"
+    >
+        jouer 
+    </button>
+</div>

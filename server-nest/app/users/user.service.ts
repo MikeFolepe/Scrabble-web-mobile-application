@@ -5,6 +5,7 @@ import { FriendDocument } from '@app/model/friend.schema';
 import { GameDocument } from '@app/model/game-schema';
 import { UserStatsDocument } from '@app/model/user-stats.schema';
 import { UserDocument } from '@app/model/user.schema';
+import { PreferenceService } from '@app/Preference/preference.service';
 import { User } from '@common/user';
 import { GameDB, UserStatsDB } from '@common/user-stats';
 import { Injectable } from '@nestjs/common';
@@ -14,6 +15,7 @@ import { Model } from 'mongoose';
 @Injectable()
 export class UserService {
     activeUsers: User[];
+
     // private users: User[] = [];
 
     constructor(
@@ -22,6 +24,7 @@ export class UserService {
         @InjectModel('UserStats') private readonly userStatsModel: Model<UserStatsDocument>,
         @InjectModel('Game') private readonly gameModel: Model<GameDocument>,
         @InjectModel('Connection') private readonly connectionModel: Model<ConnectionDocument>,
+        private preferenceService: PreferenceService,
     ) {
         this.activeUsers = [];
     }
@@ -40,6 +43,7 @@ export class UserService {
         const newUser = new this.userModel({ pseudonym, avatar, password, email, xpPoints: 0, friends: [] });
         await newUser.save();
         await this.initializeUserStat(newUser._id);
+        this.preferenceService.addPreference(newUser._id);
     }
 
     async initializeUserStat(userId: string) {
@@ -174,5 +178,32 @@ export class UserService {
             const newTime = userStats.totalTimeMs + totalTimeMs;
             await this.userStatsModel.updateOne({ userId }, { totalPoints: newTime });
         }
+    }
+
+    encryptPassword(password: string): string {
+        const encryptedPassword = password
+            .split('')
+            .map((char) => char.charCodeAt(0) * 2 + 2)
+            .toString()
+            .split(',')
+            .map((char) => (char.length === 2 ? '0' + char : char))
+            .map((char) => (char.length === 1 ? '00' + char : char))
+            .join('');
+
+        return encryptedPassword;
+    }
+
+    async decryptPassword(pseudonym: string) {
+        const user = await this.getSingleUser(pseudonym);
+        if (!user) return;
+
+        const encryptedPassword = user.password;
+
+        const password = encryptedPassword
+            .match(/.{1,3}/g)
+            .map((char) => String.fromCharCode((parseInt(char, 10) - 2) / 2))
+            .join('');
+
+        return password;
     }
 }

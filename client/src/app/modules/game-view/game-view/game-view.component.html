@@ -22,6 +22,15 @@
                 >
                     Passer son tour
                 </button>
+                <button
+                    mat-raised-button
+                    color="primary"
+                    id="regular-button-1"
+                    [disabled]="!playerService.currentPlayer.isTurn || this.skipTurnService.shouldNotBeDisplayed"
+                    (click)="openBestActionsDialog()"
+                >
+                    Meilleurs coups
+                </button>
                 <div *ngIf="gameSettingsService.isSoloMode">
                     <button mat-raised-button color="warn" id="regular-button-2" (click)="leaveGame()" routerLink="/home">
                         {{ endGameService.isEndGame ? 'Quitter' : 'Abandonner' }}
@@ -44,6 +53,21 @@
                         Quitter
                     </button>
                 </div>
+                <audio controls
+                #audio
+                class="audio">
+                 <source src=" https://docs.google.com/uc?export=download&id=1-iRhSChJbr53df3HcJB4ApZxtq5a2Aec" type="audio/mpeg">
+                </audio>
+                <audio controls
+                #encou
+                class="audio">
+                 <source src=" https://docs.google.com/uc?export=download&id=1NrCnDFh6i7by3WfL-Tcnt6G-PLzjdoNL" type="audio/mpeg">
+                </audio>
+                <audio controls
+                #decou
+                class="audio">
+                 <source src=" https://docs.google.com/uc?export=download&id=1-iRhSChJbr53df3HcJB4ApZxtq5a2Aec" type="audio/mpeg">
+                </audio>
             </div>
             <app-font-size id="font-size" [fontSize]="fontSize" (sizeChange)="handleFontSizeEvent($event)"></app-font-size>
         </div>

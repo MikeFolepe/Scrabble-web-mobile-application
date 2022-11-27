@@ -10,7 +10,10 @@
 
             <div class="conversation" #scrollMe>
                 <div class="text" *ngFor="let message of this.chatRoomService.chatRooms[this.chatRoomIndexService.chatRoomIndex].messages">
-                    <img src="{{message.avatar}}" class="avatar" alt="Avatar"/><p> {{ message.pseudonym }}: {{ message.text }}</p>
+                    <div *ngIf="message.text === 'a rejoint le canal de communication' || message.text === 'a quitté le canal de communication'; else elseBlock">
+                        <p class="systemText">{{message.pseudonym}} {{message.text}}</p>
+                    </div>
+                    <ng-template #elseBlock><img src="{{message.avatar}}" class="avatar" alt="Avatar"/><p> {{ message.pseudonym }}: {{ message.text }}</p></ng-template>
                 </div>
             </div>
 
@@ -18,7 +21,7 @@
 
             <div class="sendMessage">
                 <input placeholder="Cliquez pour envoyer un message" [(ngModel)]="currentMessage" (keypress)="handleKeyEvent($event)" />
-                <button mat-button class="sendButton" (click)="sendMessage()">Envoyer</button>
+                <button mat-button class="sendButton" (click)="sendMessage()" [disabled]="!currentMessage">Envoyer</button>
             </div>
         </div>
         <div *ngIf="!chatRoomInSelectedRooms()">

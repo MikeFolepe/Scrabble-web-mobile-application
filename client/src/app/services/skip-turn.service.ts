@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ClientSocketService } from '@app/services/client-socket.service';
 import { GameSettingsService } from '@app/services/game-settings.service';
+import { Subject } from 'rxjs';
 import { EndGameService } from './end-game.service';
 import { PlayerService } from './player.service';
 
@@ -10,6 +11,7 @@ import { PlayerService } from './player.service';
 export class SkipTurnService {
     minutes: number;
     seconds: number;
+    activeSound: Subject<boolean>;
     // JUSTIFICATION : Next line is mandatory, NodeJS return an eslint issue
     // eslint-disable-next-line no-undef
     shouldNotBeDisplayed: boolean;
@@ -24,12 +26,14 @@ export class SkipTurnService {
         this.receiveTimer();
         this.switchAiTurn();
         this.shouldNotBeDisplayed = false;
+        this.activeSound = new Subject();
     }
 
     receiveNewTurn(): void {
         this.clientSocket.socket.on('turnSwitched', (playerName: string) => {
             if (playerName === this.playerService.currentPlayer.name) {
                 this.playerService.currentPlayer.isTurn = true;
+                this.activeSound.next(this.playerService.currentPlayer.isTurn);
             }
             const index = this.playerService.players.findIndex((playerC) => playerC.name === playerName);
             this.playerService.players[index].isTurn = true;

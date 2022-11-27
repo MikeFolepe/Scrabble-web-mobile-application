@@ -19,9 +19,9 @@
             [disabled]="alreadyInRoom(chatRoom)"
             *ngFor="let chatRoom of chatRoomService.chatRooms"
         >
-            {{ chatRoom.chatRoomName }}{{ ', par ' }}{{ chatRoom.creatorName }}
+            {{ chatRoom.chatRoomName }}{{ ', par ' }}{{ chatRoom.creator.pseudonym }}
 
-            <span *ngIf="chatRoom.creatorName === this.authService.currentUser.pseudonym">
+            <span *ngIf="chatRoom.creator.pseudonym === this.authService.currentUser.pseudonym">
                 <button mat-button color="warn" (click)="deleteChatRoom(chatRoomService.chatRooms.indexOf(chatRoom))">Supprimer</button>
             </span>
         </mat-checkbox>

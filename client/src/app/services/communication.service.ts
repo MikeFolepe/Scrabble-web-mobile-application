@@ -68,8 +68,20 @@ export class CommunicationService {
         return this.http.get<boolean>(`${this.baseUrl}/user/checkPseudonym/${pseudonym}`).toPromise();
     }
 
-    addNewUserToDB(userData: User): Observable<void> {
-        return this.http.post<void>(`${this.baseUrl}/user/users`, userData);
+    async getEmail(pseudonym : string): Promise<string> {
+        return this.http.get(`${this.baseUrl}/user/getEmail/${pseudonym}`, {responseType : 'text'}).toPromise();
+    }
+
+    async sendEmailToUser(pseudonym: string) : Promise<boolean> {
+        return this.http.get<boolean>(`${this.baseUrl}/user/sendEmailToUser/${pseudonym}`).toPromise();
+    }
+
+    async getDecryptedPassword(pseudonym : string): Promise<string> {
+        return this.http.get(`${this.baseUrl}/user/getDecryptedPassword/${pseudonym}`, {responseType : 'text'}).toPromise();
+    }
+
+    addNewUserToDB(userData: User): Observable<User> {
+        return this.http.post<User>(`${this.baseUrl}/user/users`, userData);
     }
 
     addAiPlayer(aiPlayer: AiPlayer, aiType: AiType): Observable<AiPlayerDB> {
