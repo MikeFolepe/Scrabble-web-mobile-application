@@ -281,7 +281,6 @@ export class GameHandlerGateway implements OnGatewayConnection {
         room.aiForBestActions.strategy.initializeArray(room.placeLetter.scrabbleBoard);
         room.aiForBestActions.strategy.player = playerReceived;
         const allPossibilities = await room.aiForBestActions.getPossibilities(room.aiForBestActions.strategy.getEasel(playerReceived.letterTable));
-        console.log(allPossibilities);
         socket.emit('receiveBest', JSON.stringify(allPossibilities));
     }
     // onEndGameByGiveUp(socket: Socket): void {
