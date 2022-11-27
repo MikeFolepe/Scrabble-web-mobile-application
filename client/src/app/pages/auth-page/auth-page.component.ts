@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { AvatarChoiceComponent } from '@app/modules/game-view/avatar-choice/avatar-choice.component';
+import { PasswordForgottenComponent } from '@app/modules/game-view/password-forgotten/password-forgotten.component';
 import { AuthService } from '@app/services/auth.service';
 import { UserService } from '@app/services/user.service';
 import { User } from '@common/user';
@@ -32,6 +33,7 @@ export class AuthPageComponent implements OnInit {
         public userService: UserService,
         public authService: AuthService,
         private formBuilder: FormBuilder,
+        public passwordForgottenDialog : MatDialog,
         public avatarChoiceDialog: MatDialog,
     ) {}
 
@@ -90,10 +92,23 @@ export class AuthPageComponent implements OnInit {
         }
         this.signUpError = '';
 
+
+        //verification de la bonne ecriture de l'addresse courriel
+        const regex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+        if (!this.emailValue.match(regex)) {
+            this.signUpError = 'L\'adresse courriel entrée n\'est pas valide';
+            return;
+        }
+
+        this.signUpError = '';
+
         if (this.passwordValue !== this.confirmPasswordValue) {
             this.signUpError = 'Les mots de passe ne correspondent pas';
             return;
         }
+        
+        this.signUpError = '';
+        
 
         const user = new User(this.avatarValue, this.pseudonymValue, this.passwordValue, this.emailValue, false, '');
         console.log(user);
@@ -104,6 +119,10 @@ export class AuthPageComponent implements OnInit {
         this.authService.chosenAvatar = '';
         this.emailValue = '';
         this.hasAccount = true;
+    }
+
+    openPasswordForgottenDialog() {
+        this.passwordForgottenDialog.open(PasswordForgottenComponent, {disableClose : true});
     }
 
     invalidPassword() {
@@ -119,7 +138,7 @@ export class AuthPageComponent implements OnInit {
         return true;
     }
 
-    openDialog() {
+    openAvatarDialog() {
         this.avatarChoiceDialog.open(AvatarChoiceComponent, { disableClose: true });
     }
 }

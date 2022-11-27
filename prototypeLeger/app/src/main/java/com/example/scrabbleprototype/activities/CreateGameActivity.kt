@@ -11,6 +11,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.model.*
+import com.example.scrabbleprototype.model.Dictionary
 import com.example.scrabbleprototype.objects.CurrentRoom
 import com.example.scrabbleprototype.objects.Players
 import com.example.scrabbleprototype.objects.ThemeManager
@@ -28,6 +29,9 @@ import kotlinx.coroutines.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONObject
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.concurrent.timerTask
 import kotlin.coroutines.CoroutineContext
 
 
@@ -64,7 +68,6 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
         }
         receiveMyPlayer()
         setUpButtons()
-        receiveMyPlayer()
         currRoom()
         receiveAis()
         launch { setupSpinners() }
@@ -247,7 +250,7 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
         socket.on("MyPlayer") { response ->
             Players.currentPlayer = mapper.readValue(response[0].toString(), Player::class.java)
             Log.d("waiting11", Players.currentPlayer.name)
-            startActivity(Intent(this, WaitingRoomActivity::class.java))
+            startActivity(Intent(this@CreateGameActivity, WaitingRoomActivity::class.java))
         }
     }
 

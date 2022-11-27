@@ -41,7 +41,7 @@ import kotlin.coroutines.CoroutineContext
 class ConnectionActivity : AppCompatActivity(), CoroutineScope {
     val users = Users
     lateinit var client: HttpClient
-    lateinit var chatSocket: Socket
+    lateinit var socket: Socket
 
     private var job: Job = Job()
     override val coroutineContext: CoroutineContext
@@ -158,12 +158,12 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
 
         SocketHandler.setPlayerSocket("http://" + user.ipAddress)
         SocketHandler.establishConnection()
-        chatSocket = SocketHandler.getPlayerSocket()
+        socket = SocketHandler.getPlayerSocket()
 
-        chatSocket.emit("joinRoom")
-        chatSocket.on("socketId") { response ->
+        socket.emit("joinRoom")
+        socket.on("socketId") { response ->
             users.currentUser.socketId = response[0].toString()
-            chatSocket.emit("updateUserSocket", JSONObject(Json.encodeToString(users.currentUser)))
+            socket.emit("updateUserSocket", JSONObject(Json.encodeToString(users.currentUser)))
         }
         startActivity(intent)
     }

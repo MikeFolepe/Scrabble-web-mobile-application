@@ -12,12 +12,12 @@
             [disabled]="disableJoinCurrentRoom(chatRoom)"
             *ngFor="let chatRoom of userChatsRooms"
             [value]="chatRoom"
-            >{{ chatRoom.chatRoomName }}{{ ', par ' }}{{ chatRoom.creatorName }}
+            >{{ chatRoom.chatRoomName }}{{ ', par ' }}{{ chatRoom.creator.pseudonym }}
             <button
                 mat-button
                 color="warn"
                 (click)="leaveChatRoom(chatRoom)"
-                *ngIf="chatRoom.chatRoomName != this.chatRoomService.chatRooms[0].chatRoomName"
+                *ngIf="chatRoom.chatRoomName !== this.chatRoomService.chatRooms[0].chatRoomName"
             >
                 Quitter
             </button>

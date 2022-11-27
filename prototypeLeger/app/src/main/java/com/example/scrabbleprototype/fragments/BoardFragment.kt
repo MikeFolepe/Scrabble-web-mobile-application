@@ -12,6 +12,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
@@ -100,7 +102,7 @@ class BoardFragment : Fragment() {
     private fun setupBoard(view: View) {
         initializeBoard()
         boardView = view.findViewById(R.id.board)
-        val gridLayoutManager = GridLayoutManager(activity, 15, GridLayoutManager.VERTICAL, false)
+        val gridLayoutManager = object: GridLayoutManager(activity, 15, VERTICAL, false) { override fun canScrollVertically() = false }
         boardView.layoutManager = gridLayoutManager
         boardAdapter = BoardAdapter(board)
         boardView.adapter = boardAdapter
@@ -114,6 +116,12 @@ class BoardFragment : Fragment() {
                 val letterRackAdapter = activity?.findViewById<RecyclerView>(R.id.letter_rack)?.adapter
                 letterRackAdapter?.notifyDataSetChanged()
             } else { // We drag from the board
+                val lastCaseView = boardView.findViewHolderForAdapterPosition(dragStartPosition)?.itemView
+                boardAdapter.setupBonus(lastCaseView?.findViewById(R.id.bonus_layer)!!, dragStartPosition)
+                lastCaseView.findViewById<LinearLayout>(R.id.letter_layer)?.setBackgroundResource(0)
+                lastCaseView.findViewById<TextView>(R.id.letter_score)?.text = ""
+                lastCaseView.findViewById<TextView>(R.id.letter)?.text = ""
+
                 board[dragStartPosition] = Constants.EMPTY_LETTER
                 boardAdapter.notifyItemChanged(dragStartPosition)
                 placementViewModel.removeLetter(dragStartPosition)

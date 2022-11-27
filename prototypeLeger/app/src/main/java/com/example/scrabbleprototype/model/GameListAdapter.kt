@@ -81,6 +81,8 @@ class GameListAdapter(private var gameList: ArrayList<Room>) :
         val joinGameButton = viewHolder.gameRoom.findViewById<Button>(R.id.join_game_room_button)
         if(gameList[position].state == State.Playing && gameList[position].gameSettings.type == RoomType.public.ordinal){
             joinGameButton.text ="Observer"
+        } else {
+            joinGameButton.text = joinGameButton.context.getString(R.string.join_game_item)
         }
     }
 

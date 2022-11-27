@@ -2,11 +2,11 @@
 
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/letter_layout"
-    android:layout_width="40dp"
+    android:layout_width="44dp"
     android:layout_height="60dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:cardCornerRadius="0dp"
-    android:layout_margin="5dp"
+    android:layout_margin="3dp"
     app:cardBackgroundColor="?attr/colorPrimary">
 
     <LinearLayout
@@ -16,7 +16,6 @@
         android:orientation="vertical"
         android:elevation="5dp"
         android:padding="5dp"
-        android:layout_margin="2dp"
         android:background="@drawable/letter_background">
 
         <TextView
