@@ -19,24 +19,20 @@ import { ChatEvents } from './../../../../common/chat.gateway.events';
 @WebSocketGateway({ cors: true })
 export class GameHandlerGateway implements OnGatewayConnection {
     @WebSocketServer() private server: Server;
-    
 
     constructor(private readonly logger: Logger, private userService: UserService, private roomManagerService: RoomManagerService) {}
 
     // TODO: set a socket id in player class to easily find the player
 
-
     @SubscribeMessage('sendEmail')
-    sendEmail(@ConnectedSocket() socket, @MessageBody() email : string, @MessageBody() decryptedPassword : string){
-
-        const sgMail = require('@sendgrid/mail')
-        sgMail.setApiKey('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')
+    sendEmail(@ConnectedSocket() socket, @MessageBody() email: string, @MessageBody() decryptedPassword: string) {
+        const sgMail = require('@sendgrid/mail');
+        sgMail.setApiKey('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');
         const msg = {
-          to: 'cherkaoui_08@hotmail.fr', // Change to your recipient
-          from: 'log3900.110.22@gmail.com', // Change to your verified sender
-          subject: 'Mot de passe oublié - Scrabble', 
-          text: `Bonjour, voici votre mot de passe : ${decryptedPassword[1]}`,
-          
+            to: 'cherkaoui_08@hotmail.fr', // Change to your recipient
+            from: 'log3900.110.22@gmail.com', // Change to your verified sender
+            subject: 'Mot de passe oublié - Scrabble',
+            text: `Bonjour, voici votre mot de passe : ${decryptedPassword[1]}`,
         };
         sgMail.send(msg);
     }
@@ -210,6 +206,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
         @MessageBody() player: string,
         @MessageBody() isDragActivated = false,
     ) {
+        if (word[1].length === 7) socket.emit('playAudio');
         const room = this.roomManagerService.find(roomId[6]);
         const validationResult = await room.wordValidation.validateAllWordsOnBoard(JSON.parse(board[5]), isEaselSize[4], isRow[3]);
         const playerReceived = JSON.parse(player[7]);
