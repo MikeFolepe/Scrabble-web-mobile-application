@@ -2,11 +2,15 @@ package com.example.scrabbleprototype.fragments
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
-import android.view.*
+import android.view.KeyEvent
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.AbsListView
+import android.widget.EditText
+import android.widget.ImageButton
+import android.widget.ListView
 import androidx.fragment.app.Fragment
-import android.widget.*
-import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.model.ChatAdapter
 import com.example.scrabbleprototype.model.ChatRoomMessage
 import com.example.scrabbleprototype.model.SocketHandler
@@ -37,12 +41,11 @@ class ChatFragment: Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val inflaterWithTheme = ThemeManager.setFragmentTheme(layoutInflater, requireContext())
-        return inflaterWithTheme.inflate(R.layout.fragment_chat, container, false)
+        return inflaterWithTheme.inflate(com.example.scrabbleprototype.R.layout.fragment_chat, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         socket.on("receiveRoomMessage"){ response ->
             val mapper = jacksonObjectMapper()
             val message = mapper.readValue(response[0].toString(), ChatRoomMessage::class.java)
@@ -63,16 +66,16 @@ class ChatFragment: Fragment() {
     }
 
     private fun setupChatBox(view: View) {
-        val messagesList = view.findViewById<ListView>(R.id.chat_box)
-        val chatAdapter = ChatAdapter(activityContext, R.layout.chat_message_style, messages)
+        val messagesList = view.findViewById<ListView>(com.example.scrabbleprototype.R.id.chat_box)
+        val chatAdapter = ChatAdapter(activityContext, com.example.scrabbleprototype.R.layout.chat_message_style, messages)
         messagesList.adapter = chatAdapter
         messagesList.transcriptMode = AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL
 
-        val sendButton = view.findViewById<ImageButton>(R.id.send_button)
+        val sendButton = view.findViewById<ImageButton>(com.example.scrabbleprototype.R.id.send_button)
         sendButton.setOnClickListener{
             sendMessage(view)
         }
-        val messageInput = view.findViewById<EditText>(R.id.message_input)
+        val messageInput = view.findViewById<EditText>(com.example.scrabbleprototype.R.id.message_input)
         messageInput.setOnKeyListener(View.OnKeyListener {v, keyCode, event ->
             if(keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
                 sendMessage(view)
@@ -84,7 +87,7 @@ class ChatFragment: Fragment() {
     }
 
     private fun sendMessage(view: View) {
-        val messageInput = view.findViewById<EditText>(R.id.message_input)
+        val messageInput = view.findViewById<EditText>(com.example.scrabbleprototype.R.id.message_input)
         val message = ChatRoomMessage(messageInput.text.toString(), "", currentUser.pseudonym)
 
         if(validateMessage(messageInput.text.toString())) {
@@ -98,7 +101,7 @@ class ChatFragment: Fragment() {
     }
 
     private fun addMessage(message: ChatRoomMessage, view: View) {
-        val messagesList = view.findViewById<ListView>(R.id.chat_box)
+        val messagesList = view.findViewById<ListView>(com.example.scrabbleprototype.R.id.chat_box)
         messages.add(message)
 
         activity?.runOnUiThread {

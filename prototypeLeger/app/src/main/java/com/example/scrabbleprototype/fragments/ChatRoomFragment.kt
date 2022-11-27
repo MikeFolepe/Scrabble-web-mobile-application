@@ -1,18 +1,23 @@
 package com.example.scrabbleprototype.fragments
 
 import android.content.Context
+import android.media.RingtoneManager
 import android.os.Bundle
 import android.util.Log
-import android.view.*
-import androidx.fragment.app.Fragment
+import android.view.KeyEvent
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.*
+import androidx.fragment.app.Fragment
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.model.ChatAdapter
-import com.example.scrabbleprototype.model.ChatRoomMessage
 import com.example.scrabbleprototype.model.SocketHandler
-import com.example.scrabbleprototype.objects.*
+import com.example.scrabbleprototype.objects.ChatRooms
 import com.example.scrabbleprototype.objects.ChatRooms.chatRooms
 import com.example.scrabbleprototype.objects.ChatRooms.currentChatRoom
+import com.example.scrabbleprototype.objects.ThemeManager
+import com.example.scrabbleprototype.objects.Users
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONObject
@@ -96,9 +101,29 @@ class ChatRoomFragment: Fragment() {
                 currentChatRoom = chatRooms.find { it.chatRoomName == currentChatRoom?.chatRoomName }
                 activity?.runOnUiThread {
                     if(currentChatRoom == null || chatAdapter == null) return@runOnUiThread
+                    if (currentChatRoom?.messages?.last()?.pseudonym != currentUser.pseudonym) {
+                        playNotificationSound(activityContext)
+                    }
                     chatAdapter?.updateData(currentChatRoom!!.messages)
                 }
             }, 200)
+        }
+    }
+
+    fun playNotificationSound(context: Context){
+        try{
+            var defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+            if(defaultSoundUri == null) {
+                // alert backup is null, using 2nd backup
+                defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
+            }
+            Log.d("alert:", defaultSoundUri.toString())
+            //val mp = MediaPlayer.create(context, defaultSoundUri)
+            //mp.start()
+            val r = RingtoneManager.getRingtone(context, defaultSoundUri)
+            r.play()
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 }

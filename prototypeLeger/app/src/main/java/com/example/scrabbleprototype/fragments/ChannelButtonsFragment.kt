@@ -12,7 +12,6 @@ import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -22,12 +21,10 @@ import com.example.scrabbleprototype.model.AllChatRoomsAdapter
 import com.example.scrabbleprototype.model.ChatRoom
 import com.example.scrabbleprototype.model.MyChatRoomsAdapter
 import com.example.scrabbleprototype.model.SocketHandler
-import com.example.scrabbleprototype.objects.ChatRooms
 import com.example.scrabbleprototype.objects.ChatRooms.chatRoomToChange
 import com.example.scrabbleprototype.objects.ChatRooms.chatRooms
-import com.example.scrabbleprototype.objects.ChatRooms.myChatRooms
 import com.example.scrabbleprototype.objects.ChatRooms.currentChatRoom
-import com.example.scrabbleprototype.objects.Players
+import com.example.scrabbleprototype.objects.ChatRooms.myChatRooms
 import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.objects.Users.currentUser
 import com.fasterxml.jackson.core.type.TypeReference
@@ -91,7 +88,6 @@ class ChannelButtonsFragment : Fragment() {
     }
 
     private fun setUpFragments() {
-        // child supportmanager?
         val fragmentTransaction = childFragmentManager.beginTransaction() ?: return
         fragmentTransaction.add(R.id.channel_chat, ChatRoomFragment())
         fragmentTransaction.addToBackStack(null)
@@ -210,7 +206,6 @@ class ChannelButtonsFragment : Fragment() {
     }
 
     private fun setupCreateChatRoomDialog() {
-        // val inputEditTextField = EditText(requireActivity())
         val inflater = requireActivity().layoutInflater
         val createView = inflater.inflate(R.layout.create_chat_room_dialog, null)
         val newChatRoomName = createView.findViewById<EditText>(R.id.new_chatroom_name)
@@ -228,10 +223,6 @@ class ChannelButtonsFragment : Fragment() {
             val chatItem = chatsView.findViewHolderForAdapterPosition(i)?.itemView
             chatItem?.findViewById<CheckBox>(R.id.checkbox)?.isChecked = false
         }
-    }
-
-    private fun uncheckAllRadioButtons(chatsView: RecyclerView) {
-
     }
 
     private fun recreateChatFragment() {
