@@ -1,4 +1,4 @@
-KSpackage com.example.scrabbleprototype.activities
+package com.example.scrabbleprototype.activities
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -86,14 +86,13 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
     }
 
     fun onConnection() {
-        val usernameInput = findViewById<EditText>(R.id.username);
-        val username = usernameInput.text.toString()
+        val pseudonymInput = findViewById<EditText>(R.id.username);
+        val pseudonym = pseudonymInput.text.toString()
         val passwordInput = findViewById<EditText>(R.id.password)
-        val password = resources.getString(R.string.http) + passwordInput.text.toString()
-        val serverError = "Ce serveur est déconnecté"
+        val password = passwordInput.text.toString()
 
-        if(username.isEmpty())  {
-            usernameInput.error = "Le pseudonyme ne peut pas être vide"
+        if(pseudonym.isEmpty())  {
+            pseudonymInput.error = "Le pseudonyme ne peut pas être vide"
             return
         }
         if(passwordInput.text.isEmpty()) {
@@ -101,20 +100,28 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
             return
         }
 
+
+        //TO DO mettre une erreur pour si le serveur est down
         //validate username and ip
         launch {
-            val user = User("", username, password, "", false, null)
-            val response = findUserInDb(user, username, password)
+            val user = User("", pseudonym, password, "", false, null)
+            val response = findUserInDb(user, pseudonym, password)
             if(response != null) {
-                if (response.body()) {
-                    val response = async {postAuthentication(user)}
-                    val newUser = response.await()
-                    Log.d("newUser" , newUser.toString())
-
-
-                        users.currentUser = user
-                        joinChat(user)
+                val decision: String = response.body()
+                if (decision == "true") {
+                    val response = postAuthentication(user)
+                    if(response != null) {
+                        if (response.status == HttpStatusCode.OK) {
+                            Log.d("newUser", response.body())
+                            val newUser= response.body() as User
+                            Log.d("newUser", newUser.toString())
+                            users.currentUser = newUser
+                            joinChat(user)
+                        }
+                        else if (response.status == HttpStatusCode.NotModified) pseudonymInput.error = "Cet utilisateur est déjà connecté"
+                    }
                     } else {
+                    ///Toast.makeText(this, "Aucun compte touvé. Veuillez créer un compte.", Toast.LENGTH_SHORT).show()
                 }
                 }
         }
@@ -145,14 +152,11 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
         return response
     }
 
-<<<<<<< HEAD
+
     fun joinChat(user: User) {
-=======
-    fun join(serverIp: String) {
->>>>>>> develop
         val intent = Intent(this, MainMenuActivity::class.java)
 
-        SocketHandler.setPlayerSocket(user.ipAddress)
+        SocketHandler.setPlayerSocket("http://" + user.ipAddress)
         SocketHandler.establishConnection()
         chatSocket = SocketHandler.getPlayerSocket()
 
@@ -164,7 +168,7 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
         startActivity(intent)
     }
 
-    fun createAccount(){
+    fun createAccount() {
         val textAccount = findViewById<TextView>(R.id.create_account)
         val mString = "Pas de compte? Créez-en un."
         val mSpannableString = SpannableString(mString)

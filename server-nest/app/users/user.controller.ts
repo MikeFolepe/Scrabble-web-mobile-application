@@ -20,6 +20,7 @@ export class UserController {
     async findUserInDb(@Req() req) {
         const pseudonym = req.params.pseudonym;
         const password = req.params.password;
+        Logger.log({ password, pseudonym });
         const userFound = await this.userService.getSingleUser(pseudonym);
         if (!userFound) return false;
         const hashedPassword = userFound.password;

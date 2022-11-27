@@ -1,15 +1,28 @@
 package com.example.scrabbleprototype.activities
 
+import android.Manifest
+import android.app.Activity
+import android.app.Dialog
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
+import android.text.SpannableString
+import android.text.style.UnderlineSpan
 import android.util.Log
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Toast
+import android.view.View
+import android.widget.*
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
+import com.example.scrabbleprototype.model.AvatarAdapter
 import com.example.scrabbleprototype.model.User
-import com.example.scrabbleprototype.objects.Users
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
@@ -18,15 +31,17 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.*
-import java.lang.Exception
-import java.util.regex.Pattern
 import kotlin.coroutines.CoroutineContext
 
+
 class RegisterActivity : AppCompatActivity(), CoroutineScope {
-    val users = Users
-    val avatarSrcImages= arrayListOf("@drawable/orange_guy", "drawable/blonde_girl", "@drawable/blonde_guy", "@drawable/brunette_girl", "@drawable/doggo", "@drawable/earrings_girl", "@drawable/ginger_girl", "@drawable/hat_girl", "@drawable/music_guy", "@drawable/mustache_guy", "@drawable/orange_guy")
+
+    var user = User("", "", "", "", false, null)
+    lateinit var myavatar : ImageView
+    val avatarSrcImages = arrayListOf(R.drawable.blonde_girl, R.drawable.blonde_guy, R.drawable.brunette_girl, R.drawable.doggo, R.drawable.earrings_girl, R.drawable.ginger_girl, R.drawable.hat_girl, R.drawable.music_guy, R.drawable.mustache_guy, R.drawable.orange_guy, R.drawable.t_l_chargement)
     lateinit var client: HttpClient
     private var job: Job = Job()
+
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main + job
 
@@ -37,6 +52,7 @@ class RegisterActivity : AppCompatActivity(), CoroutineScope {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
+        myavatar = findViewById(R.id.myAvatar)
 
         client = HttpClient() {
             install(ContentNegotiation) {
@@ -49,10 +65,94 @@ class RegisterActivity : AppCompatActivity(), CoroutineScope {
                 onRegister()
             }
         }
+        chooseAvatar(user)
+
+    }
+
+    private fun takeImageFromCamera(){
+        val takePicture = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        resultLauncher.launch(takePicture)
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>,
+                                            grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            1 -> {
+                if (grantResults.isNotEmpty() && grantResults[0] ==
+                    PackageManager.PERMISSION_GRANTED) {
+                    if ((ContextCompat.checkSelfPermission(this,
+                            Manifest.permission.CAMERA) ===
+                            PackageManager.PERMISSION_GRANTED)) {
+                        Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show()
+                        takeImageFromCamera()
+                    }
+                } else {
+                    Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show()
+                }
+                return
+            }
+        }
+    }
+
+    private fun checkAndRequestPermissions(): Boolean {
+        if (Build.VERSION.SDK_INT >= 23) {
+            val cameraPermission =
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+            if (cameraPermission == PackageManager.PERMISSION_DENIED) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.CAMERA),
+                    20
+                )
+                return false
+            }
+        }
+        return true
+    }
+
+    var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val data: Intent? = result.data
+            val bundle = data?.extras
+            val bitmapImage = bundle?.get("data") as Bitmap
+            myavatar.setImageBitmap(bitmapImage)
+            Log.d("nouveau", bitmapImage.toString())
+        }
+    }
+
+    private fun chooseAvatar(user: User) {
+        changeAvatar()
+        val avatarButton = findViewById<Button>(R.id.avatar)
+        avatarButton.setOnClickListener {
+            var avatarDialog = Dialog(this)
+            avatarDialog.setContentView(R.layout.avatar_choice)
+            val recycler = avatarDialog.findViewById<RecyclerView>(R.id.avatar_image_list)
+            recycler.setHasFixedSize(true)
+            recycler.layoutManager = GridLayoutManager(application, 3)
+            val avatarListAdapter = AvatarAdapter(avatarSrcImages)
+            recycler.adapter = avatarListAdapter
+            val addAvatarId = resources.getIdentifier("t_l_chargement", "drawable", packageName)
+            Log.d("cameraId", addAvatarId.toString())
+            avatarDialog.show()
+            avatarListAdapter.onClickAvatar = { position ->
+                myavatar.setImageResource(avatarSrcImages[position])
+                user.avatar =avatarSrcImages[position].toString()
+                avatarButton.setVisibility(View.INVISIBLE)
+                avatarDialog.hide()
+                Log.d("avatarpath", avatarSrcImages[position].toString())
+                if(addAvatarId == avatarSrcImages[position]) {
+                    if(checkAndRequestPermissions()) {
+                        takeImageFromCamera()
+                    }
+                }
+            }
+        }
     }
 
     private suspend fun onRegister() {
         val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"
+        val passwordPattern = "(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}"
         val pseudoInput = findViewById<EditText>(R.id.pseudonym)
         val pseudonym = pseudoInput.text.toString()
         val emailInput = findViewById<EditText>(R.id.courriel)
@@ -70,13 +170,17 @@ class RegisterActivity : AppCompatActivity(), CoroutineScope {
             Toast.makeText(this, "Veuillez entrer une adresse email valide", Toast.LENGTH_LONG).show()
             return
         }
+        else if(!password.matches(passwordPattern.toRegex())) {
+            Toast.makeText(this, "Le mot de passe doit contenir au moins 8 caracteres, 1 majuscule, 1 minuscule et 1 caractère spécial.", Toast.LENGTH_LONG).show()
+            return
+        }
         else if(password != confirmPassword) {
             Toast.makeText(this, "Les deux mots de passe ne correspondent pas", Toast.LENGTH_LONG).show()
             return
         }
-
-        val user = User("", pseudonym, password, email, false, null)
-
+        user.pseudonym = pseudonym
+        user.password = password
+        user.email = email
         val response = async {checkPseudonym(user)}
         val pseudoChecked = response.await()
         if (pseudoChecked != null) {
@@ -86,19 +190,32 @@ class RegisterActivity : AppCompatActivity(), CoroutineScope {
                 return;
             }
         }
+        if(user.avatar == "") {
+            Toast.makeText(this, "Veuillez choisir un avatar", Toast.LENGTH_LONG).show()
+            return;
+        }
         Log.d("avant", "registration")
         val registerResponse = postRegistration(user)
         if(registerResponse != null) {
-            if(registerResponse.status == HttpStatusCode.OK) {
                 Toast.makeText(
                     this,
                     "Votre compte a bien été créé, veuillez vous connecter.",
                     Toast.LENGTH_LONG
                 ).show()
                 startActivity(Intent(this, ConnectionActivity::class.java))
-            }
         }
 
+    }
+
+    fun changeAvatar() {
+        val changeAvatar = findViewById<TextView>(R.id.change_avatar)
+        val mString ="Changer d'avatar"
+        val mSpannableString = SpannableString(mString)
+        mSpannableString.setSpan(UnderlineSpan(), 0, mSpannableString.length, 0)
+        changeAvatar.text = mSpannableString
+        changeAvatar.setOnClickListener {
+            chooseAvatar(user)
+        }
     }
 
     suspend fun checkPseudonym(user: User): HttpResponse? {
