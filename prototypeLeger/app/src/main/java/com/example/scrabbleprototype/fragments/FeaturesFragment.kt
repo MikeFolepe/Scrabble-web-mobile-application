@@ -1,8 +1,13 @@
 package com.example.scrabbleprototype.fragments
 
 import android.app.Dialog
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.Environment
+import android.os.IBinder
 import android.view.ContextThemeWrapper
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -21,6 +26,10 @@ import com.example.scrabbleprototype.databinding.FragmentFeaturesBinding
 import com.example.scrabbleprototype.databinding.FragmentLetterRackBinding
 import com.example.scrabbleprototype.model.*
 import com.example.scrabbleprototype.objects.*
+import com.example.scrabbleprototype.services.EndTurnCallback
+import com.example.scrabbleprototype.services.PlaceService
+import com.example.scrabbleprototype.services.SkipTurnService
+import com.example.scrabbleprototype.services.SwapLetterService
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.client.*
@@ -46,6 +55,11 @@ class FeaturesFragment : Fragment(), CoroutineScope {
     private lateinit var possibleWordsDialog: Dialog
     private lateinit var possibleWordsAdapter: PossibleWordsAdapter
 
+    private lateinit var skipTurnService: SkipTurnService
+    private var skipTurnBound: Boolean = false
+    private lateinit var placeService: PlaceService
+    private var placeBound: Boolean = false
+
     private var client = HttpClient() {
         install(ContentNegotiation) {}
     }
@@ -54,8 +68,26 @@ class FeaturesFragment : Fragment(), CoroutineScope {
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Default + job
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    private val connection = object: ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            if(service is SkipTurnService.LocalBinder) {
+                skipTurnService = service.getService()
+                skipTurnBound = true
+            } else if (service is PlaceService.LocalBinder) {
+                placeService = service.getService()
+                placeBound = true
+            }
+        }
+        override fun onServiceDisconnected(name: ComponentName?) {
+            skipTurnBound = false
+            placeBound = false
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        skipTurnBound = false
+        placeBound = false
     }
 
     override fun onCreateView(
@@ -71,6 +103,12 @@ class FeaturesFragment : Fragment(), CoroutineScope {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        Intent(requireContext(), SkipTurnService::class.java).also { intent ->
+            requireContext().bindService(intent, connection, Context.BIND_AUTO_CREATE)
+        }
+        Intent(requireContext(), PlaceService::class.java).also { intent ->
+            requireContext().bindService(intent, connection, Context.BIND_AUTO_CREATE)
+        }
         setupDictionaryVerif()
         setupBestPlacements()
         setUpPossibleWordsDialog()
@@ -119,7 +157,10 @@ class FeaturesFragment : Fragment(), CoroutineScope {
         possibleWordsView.adapter = possibleWordsAdapter
 
         possibleWordsAdapter.onWordClick = { position ->
-            //place word
+            if(Players.currentPlayer.getTurn()) {
+                placeService.placeBestWord(possibleWords[position], requireActivity().findViewById(R.id.board))
+                skipTurnService.switchTimer()
+            }
             Timer().schedule(timerTask {
                 possibleWordsDialog.dismiss()
             }, 200)
