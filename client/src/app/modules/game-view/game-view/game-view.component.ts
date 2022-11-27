@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { DEFAULT_FONT_SIZE } from '@app/classes/constants';
 import { GiveUpGameDialogComponent } from '@app/modules/game-view/give-up-game-dialog/give-up-game-dialog.component';
@@ -27,6 +27,7 @@ import { JoinChatRoomsComponent } from '../join-chat-rooms/join-chat-rooms.compo
     styleUrls: ['./game-view.component.scss'],
 })
 export class GameViewComponent {
+    @ViewChild('audio') audio: ElementRef;
     fontSize: number;
     selectedChatRooms: string[];
     chatRoomForm: boolean;
@@ -59,6 +60,7 @@ export class GameViewComponent {
         this.selectedChatRooms = [];
         this.chatRoomForm = false;
         this.isOpen = false;
+        this.playAudio();
     }
 
     handleFontSizeEvent(fontSizeEvent: number): void {
@@ -91,9 +93,13 @@ export class GameViewComponent {
         this.changeChatRoomDialog.open(ChangeChatRoomComponent, { disableClose: true });
     }
     openBestActionsDialog(): void {
-        console.log('sendinggggg');
         this.clientSocketService.socket.emit('sendBest', this.clientSocketService.currentRoom.id, this.playerService.currentPlayer.name);
         this.bestActionsDialog.open(BestActionsDialogComponent, { disableClose: true });
+    }
+    playAudio(): void {
+        this.clientSocketService.socket.on('playAudio', () => {
+            this.audio.nativeElement.play();
+        });
     }
 
     openJoinChatRoomDialog(): void {
