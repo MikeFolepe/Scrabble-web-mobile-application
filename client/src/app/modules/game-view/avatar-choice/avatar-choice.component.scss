@@ -6,6 +6,27 @@
     color: rgb(35,80,31);
 }
 
+.btn {
+    background-color: rgb(35,80,31);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px;
+    display: block;
+    margin: 0 auto;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    width: 200px;
+    cursor : pointer;
+    text-align: center;
+    transition: all 0.3s ease-in-out;
+    &:hover {
+        transform: scale(1.1);
+    }
+    
+    
+}
+
 .avatar {
     width: 200px;
     height: 200px;
@@ -28,6 +49,7 @@
 
 .closeButton {
     //align the button in the middle of the dialog
+    margin-top : 20px;
     margin-left:46.5%;
 
 }
