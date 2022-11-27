@@ -57,6 +57,8 @@ export class GameViewComponent {
         this.selectedChatRooms = [];
         this.chatRoomForm = false;
         this.isOpen = false;
+
+        console.log(playerService);
     }
 
     handleFontSizeEvent(fontSizeEvent: number): void {
@@ -71,8 +73,19 @@ export class GameViewComponent {
             // if user closes the dialog box without input nothing
             if (!decision) return;
             // if decision is true the EndGame occurred
-            this.sendMessageService.sendConversionMessage();
-            this.clientSocketService.socket.emit('sendEndGameByGiveUp', decision, this.clientSocketService.currentRoom.id);
+            console.log('here', this.authService.currentUser.pseudonym);
+            this.clientSocketService.socket.emit('sendGiveUp', this.authService.currentUser.pseudonym, this.clientSocketService.currentRoom.id);
+        });
+    }
+
+    confirmLeaveByObserver(): void {
+        const ref = this.dialog.open(GiveUpGameDialogComponent, { disableClose: true });
+
+        ref.afterClosed().subscribe((decision: boolean) => {
+            // if user closes the dialog box without input nothing
+            if (!decision) return;
+            // if decision is true the EndGame occurred
+            this.clientSocketService.socket.emit('sendObserverLeave', this.clientSocketService.currentRoom.id);
         });
     }
 
