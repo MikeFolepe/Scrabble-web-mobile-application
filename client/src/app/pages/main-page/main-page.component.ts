@@ -4,7 +4,6 @@ import { Router } from '@angular/router';
 import { AddChatRoomComponent } from '@app/modules/game-view/add-chat-room/add-chat-room.component';
 import { ChangeChatRoomComponent } from '@app/modules/game-view/change-chat-room/change-chat-room.component';
 import { JoinChatRoomsComponent } from '@app/modules/game-view/join-chat-rooms/join-chat-rooms.component';
-import { BestScoresComponent } from '@app/pages/best-scores/best-scores.component';
 import { AuthService } from '@app/services/auth.service';
 import { ChatRoomService } from '@app/services/chat-room.service';
 import { EndGameService } from '@app/services/end-game.service';
@@ -12,6 +11,7 @@ import { GameSettingsService } from '@app/services/game-settings.service';
 import { GiveUpHandlerService } from '@app/services/give-up-handler.service';
 import { LetterService } from '@app/services/letter.service';
 import { PlaceLetterService } from '@app/services/place-letter.service';
+import { UserService } from '@app/services/user.service';
 import { GameType } from '@common/game-type';
 
 @Component({
@@ -43,6 +43,7 @@ export class MainPageComponent {
         private giveUpHandlerService: GiveUpHandlerService,
         private endGameService: EndGameService,
         public chatRoomService: ChatRoomService,
+        private userService: UserService,
     ) {
         this.selectedGameTypeIndex = 0;
         this.gameType = ['Scrabble classique'];
@@ -52,6 +53,7 @@ export class MainPageComponent {
         this.chatRoomForm = false;
         this.isOpen = false;
         this.resetServices();
+        this.userService.getUserStats();
     }
 
     routeToGameMode(): void {
@@ -79,9 +81,6 @@ export class MainPageComponent {
         this.chatRoomForm = true;
     }
 
-    openBestScoresDialog(): void {
-        this.bestScoresDialog.open(BestScoresComponent, { disableClose: true });
-    }
 
     openChangeChatRoomDialog(): void {
         this.changeChatRoomDialog.open(ChangeChatRoomComponent, { disableClose: true });

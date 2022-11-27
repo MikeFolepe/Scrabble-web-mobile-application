@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { AiPlayer, AiPlayerDB, AiType } from '@common/ai-name';
 import { Dictionary } from '@common/dictionary';
 import { User } from '@common/user';
+import { UserStatsDB } from '@common/user-stats';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -36,6 +37,10 @@ export class CommunicationService {
         return this.http.get<User[]>(`${this.baseUrl}/user/users`);
     }
 
+    getUserStats(userId: string): Observable<UserStatsDB> {
+        return this.http.get<UserStatsDB>(`${this.baseUrl}/user/userStats/${userId}`);
+    }
+
     async findUserInDb(pseudonym: string, password: string): Promise<boolean> {
         return this.http.get<boolean>(`${this.baseUrl}/user/findUserInDb/${pseudonym}/${password}`).toPromise();
     }
@@ -44,8 +49,8 @@ export class CommunicationService {
         return this.http.get<boolean>(`${this.baseUrl}/user/checkPseudonym/${pseudonym}`).toPromise();
     }
 
-    addNewUserToDB(userData: User): Observable<User> {
-        return this.http.post<User>(`${this.baseUrl}/user/users`, userData);
+    addNewUserToDB(userData: User): Observable<void> {
+        return this.http.post<void>(`${this.baseUrl}/user/users`, userData);
     }
 
     addAiPlayer(aiPlayer: AiPlayer, aiType: AiType): Observable<AiPlayerDB> {

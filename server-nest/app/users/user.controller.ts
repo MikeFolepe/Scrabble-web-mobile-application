@@ -1,6 +1,8 @@
 import { User } from '@common/user';
-import { Body, Controller, Get, Post, Req } from '@nestjs/common';
+import { UserStatsDB } from '@common/user-stats';
+import { Body, Controller, Get, HttpStatus, Param, Post, Req, Res } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
+import { Response } from 'express';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -12,7 +14,6 @@ export class UserController {
         const salt = 10;
         const password = await bcrypt.hash(user.password, salt);
         await this.userService.insertUser(user.avatar, user.pseudonym, password, user.email);
-        return { ...user };
     }
 
     // check if the password is correct.
@@ -35,8 +36,26 @@ export class UserController {
     }
 
     @Get('/users')
-    async getAllUsers() {
-        const accounts = await this.userService.getUsers();
-        return accounts;
+    async getAllUsers(@Res() response: Response) {
+        await this.userService
+            .getUsers()
+            .then((users: User[]) => {
+                response.status(HttpStatus.OK).send(users);
+            })
+            .catch((error: Error) => {
+                response.status(HttpStatus.NOT_FOUND).send('An error occurred while trying to get the users' + error.message);
+            });
+    }
+
+    @Get('/userStats/:userId')
+    async getUserStats(@Param('userId') userId: string, @Res() response: Response) {
+        await this.userService
+            .getUserStats(userId)
+            .then((usersStats: UserStatsDB) => {
+                response.status(HttpStatus.OK).send(usersStats);
+            })
+            .catch((error: Error) => {
+                response.status(HttpStatus.NOT_FOUND).send('An error occurred while trying to get the stats' + error.message);
+            });
     }
 }

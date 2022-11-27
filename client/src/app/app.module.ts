@@ -14,10 +14,10 @@ import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { PageNotFoundComponent } from '@app/pages/page-not-found/page-not-found.component';
 import { WaitingRoomComponent } from '@app/pages/waiting-room/waiting-room.component';
 import { ClickOutsideModule } from 'ng-click-outside';
+import { UserManagerModule } from './modules/user-manager/user-manager.module';
 import { AdminPageComponent } from './pages/admin-page/admin-page.component';
 import { EditDictionaryDialogComponent } from './pages/admin-page/edit-dictionary-dialog/edit-dictionary-dialog.component';
 import { AuthPageComponent } from './pages/auth-page/auth-page.component';
-import { BestScoresComponent } from './pages/best-scores/best-scores.component';
 import { PrototypeChatBoxComponent } from './pages/prototype-chat-box/prototype-chat-box.component';
 /**
  * Main module that is used in main.ts.
@@ -34,7 +34,6 @@ import { PrototypeChatBoxComponent } from './pages/prototype-chat-box/prototype-
         JoinRoomComponent,
         AdminPageComponent,
         EditDictionaryDialogComponent,
-        BestScoresComponent,
         AuthPageComponent,
         PrototypeChatBoxComponent,
     ],
@@ -50,6 +49,7 @@ import { PrototypeChatBoxComponent } from './pages/prototype-chat-box/prototype-
         SharedModule,
         ClickOutsideModule,
         ReactiveFormsModule,
+        UserManagerModule,
     ],
     providers: [MainPageComponent],
     bootstrap: [AppComponent],
