@@ -169,7 +169,6 @@ class PlaceService : Service() {
             Handler(Looper.getMainLooper()).post {
                 for (letter in placement.word) {
                     if (!board[currentPosition].isEmpty()) {
-                        Log.d("not empty", "continue")
                         currentPosition += spaceBetweenEachLetter
                         continue
                     }
