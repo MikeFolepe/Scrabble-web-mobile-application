@@ -30,7 +30,7 @@ export class UserService {
         await newUser.save();
     }
 
-    async getUsers() {
+    async getUsers(): Promise<User[]> {
         const users = await this.userModel.find().exec();
         return users.map((user) => ({
             // eslint-disable-next-line no-underscore-dangle
@@ -41,6 +41,7 @@ export class UserService {
             password: user.password,
             email: user.email,
             socketId: '',
+            isObserver: false,
         }));
     }
 
@@ -48,7 +49,7 @@ export class UserService {
         const user = await this.userModel.findOne({ pseudonym });
 
         if (!user) return;
-        const userToSend = new User(user.avatar, user.pseudonym, user.password, user.email, user.isObserver, user.socketId);
+        const userToSend = new User(user.avatar, user.pseudonym, user.password, user.email, false, '');
         return userToSend;
     }
 

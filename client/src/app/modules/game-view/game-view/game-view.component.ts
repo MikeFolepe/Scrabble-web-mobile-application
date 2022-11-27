@@ -16,6 +16,7 @@ import { PlayerService } from '@app/services/player.service';
 import { SendMessageService } from '@app/services/send-message.service';
 import { SkipTurnService } from '@app/services/skip-turn.service';
 import { AddChatRoomComponent } from '../add-chat-room/add-chat-room.component';
+import { BestActionsDialogComponent } from '../best-actions-dialog/best-actions-dialog.component';
 import { ChangeChatRoomComponent } from '../change-chat-room/change-chat-room.component';
 import { JoinChatRoomsComponent } from '../join-chat-rooms/join-chat-rooms.component';
 // import { MainPageComponent } from '@app/pages/main-page/main-page.component';
@@ -45,6 +46,7 @@ export class GameViewComponent {
         public joinChatRoomsDialog: MatDialog,
         public changeChatRoomDialog: MatDialog,
         public addChatRoomDialog: MatDialog,
+        public bestActionsDialog: MatDialog,
         public sendMessageService: SendMessageService,
         public giveUpHandlerService: GiveUpHandlerService,
         private placeLetterService: PlaceLetterService,
@@ -75,7 +77,6 @@ export class GameViewComponent {
             this.clientSocketService.socket.emit('sendEndGameByGiveUp', decision, this.clientSocketService.currentRoom.id);
         });
     }
-
     leaveGame(): void {
         this.clientSocketService.socket.emit('stopTimer', this.clientSocketService.currentRoom.id);
         this.placeLetterService.ngOnDestroy();
@@ -88,6 +89,11 @@ export class GameViewComponent {
 
     openChangeChatRoomDialog(): void {
         this.changeChatRoomDialog.open(ChangeChatRoomComponent, { disableClose: true });
+    }
+    openBestActionsDialog(): void {
+        console.log('sendinggggg');
+        this.clientSocketService.socket.emit('sendBest', this.clientSocketService.currentRoom.id, this.playerService.currentPlayer.name);
+        this.bestActionsDialog.open(BestActionsDialogComponent, { disableClose: true });
     }
 
     openJoinChatRoomDialog(): void {

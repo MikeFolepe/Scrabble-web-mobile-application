@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="?attr/backgroundColor">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/possible_words_title"
+        android:textSize="18sp"
+        android:textColor="?android:textColor"
+        android:layout_gravity="center"
+        android:layout_marginTop="5dp"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/possible_words"
+        android:layout_width="400dp"
+        android:layout_height="550dp"
+        android:minHeight="100dp"
+        android:layout_margin="8dp"
+        android:padding="5dp"
+        android:background="@drawable/board_border"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/dismiss_dialog_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/cancel_button"
+        android:textSize="16sp"
+        android:textColor="?android:textColorSecondary"
+        android:padding="10dp"
+        android:background="@drawable/teal_shadow_button"
+        android:layout_marginBottom="10dp"
+        android:layout_gravity="center"/>
+
+</LinearLayout>

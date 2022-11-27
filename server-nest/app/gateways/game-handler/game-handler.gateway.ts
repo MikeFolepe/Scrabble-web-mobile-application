@@ -290,7 +290,16 @@ export class GameHandlerGateway implements OnGatewayConnection {
         }
         socket.emit('activeUsers', simplifiedUsers);
     }
+    @SubscribeMessage('sendBest')
+    async bestActions(@ConnectedSocket() socket, @MessageBody() roomId: string, @MessageBody() playerName: string) {
+        const room = this.roomManagerService.find(roomId[0]);
+        const playerReceived = room.playerService.players.find((player) => player.name === playerName[1]);
 
+        room.aiForBestActions.strategy.initializeArray(room.placeLetter.scrabbleBoard);
+        room.aiForBestActions.strategy.player = playerReceived;
+        const allPossibilities = await room.aiForBestActions.getPossibilities(room.aiForBestActions.strategy.getEasel(playerReceived.letterTable));
+        socket.emit('receiveBest', JSON.stringify(allPossibilities));
+    }
     // onEndGameByGiveUp(socket: Socket): void {
     //     socket.on('sendEndGameByGiveUp', (isGiveUp: boolean, roomId: string) => {
     //         socket
@@ -385,6 +394,11 @@ export class GameHandlerGateway implements OnGatewayConnection {
             return;
         }
         if (room.state === State.Playing) {
+            if (room.humanPlayersNumber === 1) {
+                room.skipTurnService.stopTimer();
+                // this.server.to(roomId).emit('youAreWinner');
+                // envoyer le nouveau tableau de joueur
+            }
             room.skipTurnService.stopTimer();
             room.state = State.Finish;
             // Emit the event

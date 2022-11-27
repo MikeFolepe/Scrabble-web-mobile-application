@@ -11,6 +11,7 @@ import { ScrabbleBoardComponent } from '@app/modules/game-view/scrabble-board/sc
 import { AppMaterialModule } from '@app/modules/material.module';
 import { SharedModule } from '@app/modules/shared/shared.module';
 import { AvatarChoiceComponent } from './avatar-choice/avatar-choice.component';
+import { BestActionsDialogComponent } from './best-actions-dialog/best-actions-dialog.component';
 
 @NgModule({
     declarations: [
@@ -21,9 +22,10 @@ import { AvatarChoiceComponent } from './avatar-choice/avatar-choice.component';
         FontSizeComponent,
         ChatboxComponent,
         AvatarChoiceComponent,
+        BestActionsDialogComponent,
     ],
     imports: [CommonModule, AppRoutingModule, FormsModule, SharedModule, AppMaterialModule],
-    exports: [GameViewComponent],
+    exports: [GameViewComponent, BestActionsDialogComponent],
     bootstrap: [GameViewComponent],
 })
 export class GameViewModule {}

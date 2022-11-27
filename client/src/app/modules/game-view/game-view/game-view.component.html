@@ -22,6 +22,15 @@
                 >
                     Passer son tour
                 </button>
+                <button
+                    mat-raised-button
+                    color="primary"
+                    id="regular-button-1"
+                    [disabled]="!playerService.currentPlayer.isTurn || this.skipTurnService.shouldNotBeDisplayed"
+                    (click)="openBestActionsDialog()"
+                >
+                    Meilleurs coups
+                </button>
                 <div *ngIf="gameSettingsService.isSoloMode">
                     <button mat-raised-button color="warn" id="regular-button-2" (click)="leaveGame()" routerLink="/home">
                         {{ endGameService.isEndGame ? 'Quitter' : 'Abandonner' }}
