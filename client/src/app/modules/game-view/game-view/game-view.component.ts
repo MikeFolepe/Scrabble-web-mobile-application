@@ -28,6 +28,8 @@ import { JoinChatRoomsComponent } from '../join-chat-rooms/join-chat-rooms.compo
 })
 export class GameViewComponent {
     @ViewChild('audio') audio: ElementRef;
+    @ViewChild('encou') encou: ElementRef;
+    @ViewChild('decou') decou: ElementRef;
     fontSize: number;
     selectedChatRooms: string[];
     chatRoomForm: boolean;
@@ -61,6 +63,9 @@ export class GameViewComponent {
         this.chatRoomForm = false;
         this.isOpen = false;
         this.playAudio();
+        this.skipTurnService.activeSound.subscribe((res) => {
+            this.encou.nativeElement.play();
+        });
     }
 
     handleFontSizeEvent(fontSizeEvent: number): void {
