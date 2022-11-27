@@ -1,6 +1,6 @@
 import { User } from '@common/user';
 import * as email from '@nativescript/email';
-import { Body, Controller, Get, Post, Req } from '@nestjs/common';
+import { Body, Controller, Get, Logger, Post, Req } from '@nestjs/common';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -43,6 +43,7 @@ export class UserController {
     @Get('getEmail/:pseudonym')
     async checkPseudonymForPassword(@Req() req) {
         const pseudonym = req.params.pseudonym;
+        Logger.log(pseudonym);
         const userFound = await this.userService.getSingleUser(pseudonym);
         if (!userFound) return;
         return userFound.email;
@@ -51,6 +52,7 @@ export class UserController {
     @Get('sendEmailToUser/:pseudonym')
     async sendEmailToUser(@Req() req) {
         const pseudonym = req.params.pseudonym;
+        Logger.log(pseudonym);
         const userFound = await this.userService.getSingleUser(pseudonym);
         if (!userFound) return false;
         const email = userFound.email;

@@ -44,7 +44,6 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
         super.onDestroy()
         job.cancel()
     }
-    var dicoFileName= ""
     var currentRoom = CurrentRoom;
     var gameSetting: GameSettings = GameSettings(Users.currentUser.pseudonym, StartingPlayer.Player1, "00", "00", AiType.beginner, "", RoomType.public.ordinal)
     val minutes = arrayListOf("00", "01", "02", "03")

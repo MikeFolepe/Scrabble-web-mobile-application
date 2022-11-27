@@ -1,17 +1,21 @@
 package com.example.scrabbleprototype.activities
 
 import android.annotation.SuppressLint
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.style.UnderlineSpan
+import android.util.Base64
 import android.util.Log
 import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -21,7 +25,6 @@ import com.example.scrabbleprototype.model.User
 import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.objects.Users
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import environments.Environment
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
@@ -42,6 +45,7 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
     val users = Users
     lateinit var client: HttpClient
     lateinit var socket: Socket
+    private val mapper = jacksonObjectMapper()
 
     private var job: Job = Job()
     override val coroutineContext: CoroutineContext
@@ -57,10 +61,17 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
         ThemeManager.setActivityTheme(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_connection)
-
+        users.currentUser = User("", "", "", "", false, null)
         val connectionButton = findViewById<Button>(R.id.connection_button)
         connectionButton.setOnClickListener {
-            onConnection()
+            launch {
+                onConnection()
+            }
+        }
+
+        val retrievePassword = findViewById<TextView>(R.id.password_forgot)
+        retrievePassword.setOnClickListener {
+            forgotPassword()
         }
 
         client = HttpClient() {
@@ -85,7 +96,59 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
         if(this.currentFocus?.windowToken != null) imm.hideSoftInputFromWindow(this.currentFocus!!.windowToken, 0)
     }
 
-    fun onConnection() {
+    private fun forgotPassword() {
+        var passwordDialog = Dialog(this)
+        passwordDialog.setContentView(R.layout.forgot_password)
+        passwordDialog.show()
+        val closeDialog = passwordDialog.findViewById<ImageView>(R.id.close)
+        closeDialog.setOnClickListener {
+            passwordDialog.hide()
+        }
+        val validateButton = passwordDialog.findViewById<Button>(R.id.validate_button)
+
+        validateButton.setOnClickListener {
+            var pseudonymInput = passwordDialog.findViewById<EditText>(R.id.pseudonym)
+            var checkPseudonym = pseudonymInput.text.toString()
+            launch {
+                val response = getEmail(checkPseudonym)
+                if(response != null) {
+                    val emailfound: String = response.body()
+                    if(emailfound != "false") {
+                        sendEmailToUser(checkPseudonym)
+                    }
+                    else {
+
+                        Toast.makeText(this@ConnectionActivity, "Ce pseudonyme n'existe pas.", Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+        }
+    }
+
+    private suspend fun sendEmailToUser( pseudonym: String): HttpResponse? {
+        var response: HttpResponse?
+        try {
+            response = client.get(resources.getString(R.string.http)+users.currentUser.ipAddress+ "/api/user/sendEmailToUser/" + pseudonym){
+                contentType(ContentType.Application.Json)
+            }
+        }  catch(e: Exception) {
+            response = null
+        }
+        return response
+    }
+
+    private suspend fun getEmail(pseudonym: String): HttpResponse? {
+        var response: HttpResponse?
+        try {
+            response = client.get(resources.getString(R.string.http)+users.currentUser.ipAddress+ "/api/user/getEmail/" + pseudonym){
+                contentType(ContentType.Application.Json)
+            }
+        }  catch(e: Exception) {
+            response = null
+        }
+        return response
+    }
+    suspend fun onConnection() {
         val pseudonymInput = findViewById<EditText>(R.id.username);
         val pseudonym = pseudonymInput.text.toString()
         val passwordInput = findViewById<EditText>(R.id.password)
@@ -103,7 +166,6 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
 
         //TO DO mettre une erreur pour si le serveur est down
         //validate username and ip
-        launch {
             val user = User("", pseudonym, password, "", false, null)
             val response = findUserInDb(user, pseudonym, password)
             if(response != null) {
@@ -113,9 +175,16 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
                     if(response != null) {
                         if (response.status == HttpStatusCode.OK) {
                             Log.d("newUser", response.body())
-                            val newUser= response.body() as User
-                            Log.d("newUser", newUser.toString())
+                            var newUser =  mapper.readValue(response.body() as String, User::class.java)
+                            val split = newUser.avatar.split(",")
+                            Log.d("size", split.size.toString())
+                            val imageBytes = Base64.decode(split[1], Base64.NO_WRAP)
+                            Log.d("image", imageBytes.toString())
+                            val image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+                            Log.d("image", image.toString())
                             users.currentUser = newUser
+                            users.avatarBmp = image
+                            Log.d("newUser", users.currentUser.toString())
                             joinChat(user)
                         }
                         else if (response.status == HttpStatusCode.NotModified) pseudonymInput.error = "Cet utilisateur est déjà connecté"
@@ -124,8 +193,11 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
                     ///Toast.makeText(this, "Aucun compte touvé. Veuillez créer un compte.", Toast.LENGTH_SHORT).show()
                 }
                 }
-        }
+
     }
+
+
+
 /// penser a retirer user ici car il sert que pour l'adresse ip qui est hardcoder bad practice
     suspend fun findUserInDb(user: User ,pseudonym: String, password: String): HttpResponse? {
         var response: HttpResponse?

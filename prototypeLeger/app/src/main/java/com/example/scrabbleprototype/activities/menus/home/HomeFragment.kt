@@ -1,6 +1,7 @@
 package com.example.scrabbleprototype.activities.menus.home
 
 import android.content.Intent
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -17,7 +18,7 @@ import com.example.scrabbleprototype.objects.Users
 
 class HomeFragment : Fragment() {
 
-    private val user = Users.currentUser
+    private val user = Users
 
     private var _binding: FragmentHomeBinding? = null
 
@@ -44,7 +45,8 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupUserInfo() {
-        binding.userInfoName.text = user.pseudonym
+        binding.userInfoName.text = user.currentUser.pseudonym
+        binding.userProfile.setImageBitmap(user.avatarBmp)
     }
 
     private fun setupButtons() {

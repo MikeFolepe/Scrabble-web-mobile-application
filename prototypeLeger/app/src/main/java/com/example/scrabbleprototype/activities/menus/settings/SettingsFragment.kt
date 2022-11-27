@@ -15,6 +15,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
+import com.example.scrabbleprototype.activities.RegisterActivity
 import com.example.scrabbleprototype.databinding.FragmentSettingsBinding
 import com.example.scrabbleprototype.model.*
 import com.example.scrabbleprototype.objects.ThemeManager
@@ -25,7 +26,7 @@ import kotlin.concurrent.timerTask
 
 class SettingsFragment : Fragment() {
 
-    private val user = Users.currentUser
+    private val user = Users
     private val userPrefences = Users.userPreferences
 
     private lateinit var boardItemsDialog: Dialog
@@ -57,17 +58,25 @@ class SettingsFragment : Fragment() {
         setupChatItems()
         setupLanguages()
         setupSaveButton()
+        setupChageAvatarButtons()
     }
 
     override fun onResume() {
         super.onResume()
-        binding.profilePseudonym.setText(user.pseudonym)
-        binding.profileEmail.setText(user.email)
+        binding.profilePseudonym.setText(user.currentUser.pseudonym)
+        binding.profileEmail.setText(user.currentUser.email)
     }
 
     private fun setupUserInfos() {
-        binding.profilePseudonym.setText(user.pseudonym)
-        binding.profileEmail.setText(user.email)
+        binding.profilePseudonym.setText(user.currentUser.pseudonym)
+        binding.profileEmail.setText(user.currentUser.email)
+        binding.avatar.setImageBitmap(user.avatarBmp)
+    }
+
+    private fun setupChageAvatarButtons() {
+        binding.editAvatarBtn.setOnClickListener {
+            this.context?.let { it1 -> RegisterActivity().chooseAvatar(it1) }
+        }
     }
 
     private fun setupAppThemes() {
@@ -178,8 +187,8 @@ class SettingsFragment : Fragment() {
 
     private fun setupSaveButton() {
         binding.saveEditsBtn.setOnClickListener {
-            user.pseudonym = binding.profilePseudonym.text.toString()
-            user.email = binding.profileEmail.text.toString()
+            user.currentUser.pseudonym = binding.profilePseudonym.text.toString()
+            user.currentUser.email = binding.profileEmail.text.toString()
             Toast.makeText(requireContext(), "Les changements ont été sauvegardés", Toast.LENGTH_LONG).show()
         }
     }

@@ -1,5 +1,6 @@
 package com.example.scrabbleprototype.model
 
+import android.graphics.Bitmap
 import com.fasterxml.jackson.annotation.JsonIgnore
 import environments.Environment
 import kotlinx.serialization.Serializable
