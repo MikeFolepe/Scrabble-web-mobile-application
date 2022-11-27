@@ -29,8 +29,6 @@ export class BestActionsDialogComponent implements OnInit {
     receivePossibilities() {
         this.clientService.socket.on('receiveBest', (possibilities: string) => {
             this.possibilities = JSON.parse(possibilities);
-            console.log('meilleur');
-            console.log(this.possibilities);
         });
     }
     play(line: number, startIndex: number, orientation: Orientation, word: string) {
