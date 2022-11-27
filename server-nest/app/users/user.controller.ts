@@ -4,7 +4,7 @@ import { Body, Controller, Get, HttpStatus, Param, Post, Put, Req, Res } from '@
 import { Response } from 'express';
 import * as emailS from '@nativescript/email';
 import { UserService } from './user.service';
-import * as sgMail from  '@sendgrid/mail'
+import * as sgMail from '@sendgrid/mail';
 @Controller('user')
 export class UserController {
     composeOptions: emailS.ComposeOptions;

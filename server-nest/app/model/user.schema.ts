@@ -8,27 +8,27 @@ export type UserDocument = User & Document;
 @Schema()
 export class User {
     @ApiProperty()
-    @Prop({ required: true })
+    @Prop({ type: String, required: true })
     pseudonym: string;
 
     @ApiProperty()
-    @Prop({ required: true })
+    @Prop({ type: String, required: true })
     avatar: string;
 
     @ApiProperty()
-    @Prop({ required: true })
+    @Prop({ type: String, required: true })
     email: string;
 
     @ApiProperty()
-    @Prop({ required: true })
+    @Prop({ type: String, required: true })
     password: string;
 
     @ApiProperty()
-    @Prop({ required: true })
+    @Prop({ type: Number, required: true, default: 0 })
     xpPoints: number;
 
     @ApiProperty()
-    @Prop({ required: true })
+    @Prop({ required: true, default: [] })
     friends: [Friend];
 }
 

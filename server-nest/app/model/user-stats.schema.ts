@@ -9,35 +9,35 @@ export type UserStatsDocument = UserStats & Document;
 @Schema()
 export class UserStats {
     @ApiProperty()
-    @Prop({ required: true })
+    @Prop({ type: String, required: true })
     userId: string;
 
     @ApiProperty()
-    @Prop({ required: true })
+    @Prop({ type: Number, required: true, default: 0 })
     gamesPlayed: number;
 
     @ApiProperty()
-    @Prop({ required: true })
+    @Prop({ type: Number, required: true, default: 0 })
     gamesWon: number;
 
     @ApiProperty()
-    @Prop({ required: true })
+    @Prop({ type: Number, required: true, default: 0 })
     totalPoints: number;
 
     @ApiProperty()
-    @Prop({ required: true })
+    @Prop({ type: Number, required: true, default: 0 })
     totalTimeMs: number;
 
     @ApiProperty()
-    @Prop({ required: true })
+    @Prop({ required: true, default: [] })
     logins: [Connection];
 
     @ApiProperty()
-    @Prop({ required: true })
+    @Prop({ required: true, default: [] })
     logouts: [Connection];
 
     @ApiProperty()
-    @Prop({ required: true })
+    @Prop({ required: true, default: [] })
     games: [Game];
 }
 

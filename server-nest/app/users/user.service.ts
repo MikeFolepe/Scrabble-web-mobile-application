@@ -40,23 +40,14 @@ export class UserService {
     }
 
     async insertUser(avatar: string, pseudonym: string, password: string, email: string) {
-        const newUser = new this.userModel({ pseudonym, avatar, password, email, xpPoints: 0, friends: [] });
+        const newUser = new this.userModel({ pseudonym, avatar, password, email });
         await newUser.save();
         await this.initializeUserStat(newUser._id);
         this.preferenceService.addPreference(newUser._id);
     }
 
     async initializeUserStat(userId: string) {
-        const newStat = new this.userStatsModel({
-            userId,
-            gamesPlayed: 0,
-            gamesWon: 0,
-            totalPoints: 0,
-            totalTimeMs: 0,
-            logins: [],
-            logouts: [],
-            games: [],
-        });
+        const newStat = new this.userStatsModel({ userId });
         await newStat.save();
     }
 
