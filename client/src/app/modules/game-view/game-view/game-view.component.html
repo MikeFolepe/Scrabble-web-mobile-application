@@ -27,7 +27,7 @@
                     color="primary"
                     id="regular-button-1"
                     [disabled]="!playerService.currentPlayer.isTurn || this.skipTurnService.shouldNotBeDisplayed"
-                    (click)="bestActions()"
+                    (click)="openBestActionsDialog()"
                 >
                     Meilleurs coups
                 </button>
