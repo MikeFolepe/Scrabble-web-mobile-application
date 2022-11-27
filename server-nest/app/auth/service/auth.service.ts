@@ -12,10 +12,10 @@ export class AuthService {
         const userFromDB = await this.userService.getSingleUser(userData.pseudonym);
         // TODO a fix
         if (userFromDB === undefined || userFromDB === null) {
-            this.userService.addUser(userData);
-            return userData;
+            return userFromDB;
         }
         this.userService.addUser(userFromDB);
+        console.log(userFromDB);
         return userFromDB;
     }
 }
