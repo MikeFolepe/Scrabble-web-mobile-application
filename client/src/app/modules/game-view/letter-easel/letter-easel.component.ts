@@ -1,8 +1,11 @@
+import { HttpResponse, HttpStatusCode } from '@angular/common/http';
 import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { EASEL_SIZE } from '@app/classes/constants';
 import { MessageType } from '@app/classes/enum';
 import { AuthService } from '@app/services/auth.service';
 import { BoardHandlerService } from '@app/services/board-handler.service';
+import { ClientSocketService } from '@app/services/client-socket.service';
+import { CommunicationService } from '@app/services/communication.service';
 import { EndGameService } from '@app/services/end-game.service';
 import { LetterService } from '@app/services/letter.service';
 import { ManipulateService } from '@app/services/manipulate.service';
@@ -19,8 +22,10 @@ import { Letter } from '@common/letter';
 })
 export class LetterEaselComponent {
     @ViewChild('easel') easel: ElementRef;
-
+    word: string;
     indexOfLetterToSwap: number[];
+    display: boolean;
+    isCorrect: boolean;
 
     constructor(
         public boardHandlerService: BoardHandlerService,
@@ -28,15 +33,23 @@ export class LetterEaselComponent {
         public authService: AuthService,
         private letterService: LetterService,
         private swapLetterService: SwapLetterService,
+        private clientSocket: ClientSocketService,
         private sendMessageService: SendMessageService,
         private manipulateService: ManipulateService,
         private skipTurnService: SkipTurnService,
         private endGameService: EndGameService,
-    ) {}
+        private communication: CommunicationService,
+    ) {
+        this.word = '';
+        this.display = false;
+        this.isCorrect = false;
+    }
 
     @HostListener('document:click', ['$event'])
     @HostListener('document:contextmenu', ['$event'])
     clickEvent(event: MouseEvent): void {
+        this.display = false;
+        this.word = '';
         if (this.easel.nativeElement.contains(event.target)) return;
         // Disable all easel selections made when a click occurs outside the easel
         for (const letterEasel of this.playerService.currentPlayer.letterTable) {
@@ -114,6 +127,21 @@ export class LetterEaselComponent {
             letter.isSelectedForSwap = false;
             letter.isSelectedForManipulation = false;
         }
+    }
+
+    checkWord() {
+        this.communication
+            .checkingWord(this.word, this.clientSocket.currentRoom.gameSettings.dictionary)
+            .subscribe((response: HttpResponse<void>) => {
+                if (response.status === HttpStatusCode.Ok) {
+                    this.display = true;
+                    this.isCorrect = true;
+                } else if (response.status === HttpStatusCode.NotFound) {
+                    console.log('nottttttttttttttt');
+                    this.display = true;
+                    this.isCorrect = false;
+                }
+            });
     }
 
     isSwapButtonActive(): boolean {

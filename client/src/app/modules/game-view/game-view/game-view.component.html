@@ -26,7 +26,7 @@
                     mat-raised-button
                     color="primary"
                     id="regular-button-1"
-                    [disabled]="!playerService.currentPlayer.isTurn || this.skipTurnService.shouldNotBeDisplayed"
+                    [disabled]="!playerService.currentPlayer.isTurn || this.skipTurnService.shouldNotBeDisplayed || (this.playerService.currentPlayer.letterTable.length !== 7)"
                     (click)="openBestActionsDialog()"
                 >
                     Meilleurs coups

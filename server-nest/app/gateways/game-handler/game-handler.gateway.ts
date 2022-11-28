@@ -206,7 +206,6 @@ export class GameHandlerGateway implements OnGatewayConnection {
         @MessageBody() player: string,
         @MessageBody() isDragActivated = false,
     ) {
-        if (word[1].length === 7) socket.emit('playAudio');
         const room = this.roomManagerService.find(roomId[6]);
         const validationResult = await room.wordValidation.validateAllWordsOnBoard(JSON.parse(board[5]), isEaselSize[4], isRow[3]);
         const playerReceived = JSON.parse(player[7]);
@@ -218,6 +217,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
             }
             room.placeLetter.handleValidPlacement(validationResult, index);
             room.placeLetter.scrabbleBoard = JSON.parse(board[5]);
+            if (word.length === 7) socket.emit('playAudio');
             socket.emit('receiveSuccess');
             socket.to(roomId[6]).emit('receivePlacement', board[5], position[0], orientation[2], word[1]);
             this.server.to(roomId[6]).emit('updatePlayer', room.playerService.players[index]);

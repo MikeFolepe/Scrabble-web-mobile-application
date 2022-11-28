@@ -12,7 +12,6 @@ import { AppMaterialModule } from '@app/modules/material.module';
 import { SharedModule } from '@app/modules/shared/shared.module';
 import { AvatarChoiceComponent } from './avatar-choice/avatar-choice.component';
 import { BestActionsDialogComponent } from './best-actions-dialog/best-actions-dialog.component';
-import { WordCheckingDialogComponent } from './word-checking-dialog/word-checking-dialog.component';
 
 @NgModule({
     declarations: [
@@ -24,7 +23,6 @@ import { WordCheckingDialogComponent } from './word-checking-dialog/word-checkin
         ChatboxComponent,
         AvatarChoiceComponent,
         BestActionsDialogComponent,
-        WordCheckingDialogComponent,
     ],
     imports: [CommonModule, AppRoutingModule, FormsModule, SharedModule, AppMaterialModule],
     exports: [GameViewComponent, BestActionsDialogComponent],
