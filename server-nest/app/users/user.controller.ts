@@ -59,7 +59,7 @@ export class UserController {
           to: email, 
           from: 'log3900.110.22@gmail.com', 
           subject: 'Mot de passe oublié - Scrabble', 
-          text: `Bonjour, voici votre mot de passe : ${password}`,
+          text: `- SRABBLE 110 - \n\n Utilisateur : ${pseudonym}. \n\n Bonjour, voici votre mot de passe : ${password}`,
           
         };
         sgMail.send(msg);
