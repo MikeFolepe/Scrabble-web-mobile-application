@@ -22,6 +22,7 @@ import androidx.navigation.ui.setupWithNavController
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.navigation.NavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
@@ -105,6 +106,11 @@ class MainMenuActivity : AppCompatActivity() {
         notificationsView.adapter = notifAdapter
 
         notifAdapter.onNotifClick = { position ->
+            if(Users.currentUser.notifications[position].type == NotifType.Friend) {
+                val navController = findNavController(R.id.nav_host_fragment_content_main_menu)
+                navController.popBackStack()
+                navController.navigate(R.id.nav_profile)
+            }
             Toast.makeText(this, "Click on notif # " + position.toString(), Toast.LENGTH_LONG).show()
         }
         return PopupWindow(view, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
