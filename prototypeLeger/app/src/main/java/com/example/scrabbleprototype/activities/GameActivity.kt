@@ -1,24 +1,40 @@
 package com.example.scrabbleprototype.activities
 
+import android.app.Dialog
 import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.AttributeSet
 import android.util.Log
+import android.view.ContextThemeWrapper
 import android.view.MotionEvent
+import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.Button
 import android.widget.LinearLayout
+import android.widget.TextView
+import androidx.activity.viewModels
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.activityViewModels
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.fragments.*
-import com.example.scrabbleprototype.model.Letter
-import com.example.scrabbleprototype.model.Player
-import com.example.scrabbleprototype.model.SocketHandler
+import com.example.scrabbleprototype.model.*
 import com.example.scrabbleprototype.objects.*
+import com.example.scrabbleprototype.viewModel.PreferenceViewModel
+import com.example.scrabbleprototype.viewModel.StatsViewmodel
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import java.util.*
+import kotlin.concurrent.timerTask
 
 class GameActivity : AppCompatActivity() {
+    private lateinit var endGameDialog: Dialog
+    private lateinit var endGameAdapter: EndGameAdapter
+
+    private val statsViewModel: StatsViewmodel by viewModels()
     private val socket = SocketHandler.getPlayerSocket()
     private val mapper = jacksonObjectMapper()
 
@@ -35,9 +51,10 @@ class GameActivity : AppCompatActivity() {
             }
             v?.onTouchEvent(event) ?: true
         }
-
+        setupEndGameDialog()
         switchAiTurn()
         receiveReserve()
+        receiveEndGame()
         if(savedInstanceState == null) {
             setUpFragments()
         }
@@ -55,6 +72,23 @@ class GameActivity : AppCompatActivity() {
         fragmentTransaction.commit()
     }
 
+    private fun setupEndGameDialog() {
+        endGameDialog = Dialog(ContextThemeWrapper(this, ThemeManager.getTheme()))
+        endGameDialog.setContentView(R.layout.dialog_endgame)
+
+        val endGamePlayersView = endGameDialog.findViewById<RecyclerView>(R.id.endgame_players)
+        val horizontalLayoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        endGamePlayersView.layoutManager = horizontalLayoutManager
+        endGameAdapter = EndGameAdapter(Players.players)
+        endGamePlayersView.adapter = endGameAdapter
+
+        val leaveButton = endGameDialog.findViewById<Button>(R.id.leave_endgame_button)
+        leaveButton.setOnClickListener {
+            startActivity(Intent(this, MainMenuActivity::class.java))
+            endGameDialog.dismiss()
+        }
+    }
+
     private fun receiveReserve() {
         socket.on("receiveReserve") { response ->
             Reserve.RESERVE = mapper.readValue(response[0].toString(), object : TypeReference<Array<Letter>>() {})
@@ -65,6 +99,23 @@ class GameActivity : AppCompatActivity() {
     private fun switchAiTurn() {
         socket.on("switchAiTurn") {
             socket.emit("switchTurn", CurrentRoom.myRoom.id)
+        }
+    }
+
+    private fun receiveEndGame() {
+        socket.on("receiveEndGame") { response ->
+            val winnerName = response[0] as String
+            val startDate = response[1] as String
+            val startTime = response[2] as String
+
+            statsViewModel.saveNewGame(Game(startDate, startTime, winnerName))
+            statsViewModel.saveScore(Players.currentPlayer.score + Users.userStats.totalPoints)
+
+            val playersSorted = Players.players.sortedByDescending { it.score }
+            runOnUiThread {
+                endGameAdapter.updateData(ArrayList(playersSorted))
+                endGameDialog.show()
+            }
         }
     }
 
