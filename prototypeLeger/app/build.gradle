@@ -9,7 +9,7 @@ apply plugin: "org.jetbrains.kotlin.kapt"
 
 android {
     namespace 'com.example.scrabbleprototype'
-    compileSdk 33
+    compileSdk 32
 
     defaultConfig {
         applicationId "com.example.scrabbleprototype"
@@ -70,6 +70,7 @@ dependencies {
     implementation "androidx.recyclerview:recyclerview-selection:1.1.0"
     implementation "de.hdodenhof:circleimageview:3.1.0"
 
+    implementation("io.ktor:ktor-serialization-jackson:2.1.1")
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin:2.13.+"
 
     testImplementation 'junit:junit:4.13.2'

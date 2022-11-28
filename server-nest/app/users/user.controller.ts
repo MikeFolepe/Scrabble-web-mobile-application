@@ -2,7 +2,6 @@ import { User } from '@common/user';
 import * as email from '@nativescript/email';
 import { Body, Controller, Get, Logger, Post, Req } from '@nestjs/common';
 import { UserService } from './user.service';
-
 @Controller('user')
 export class UserController {
     composeOptions: email.ComposeOptions;

@@ -32,6 +32,7 @@ export class ServerRoom {
     humanPlayersNumber: number;
     ais: PlayerAI[];
     aiTurn: number;
+    aiForBestActions: PlayerAI;
     constructor(roomId: string, socketId: string, gameSettings: GameSettings, state: State = State.Waiting) {
         this.aiPlayersNumber = DEFAULT_AI_PLAYERS_NB;
         this.humanPlayersNumber = DEFAULT_HUMAN_PLAYERS_NB;
@@ -51,6 +52,8 @@ export class ServerRoom {
         this.ais = [];
         this.aiTurn = 0;
         this.initializeAiPlayers();
+        // eslint-disable-next-line prettier/prettier, max-len
+        this.aiForBestActions = new PlayerAI('BOT', this.letter.getRandomLetters(), this.playerService.players[0], this.gameSettings, this.placeLetter, this.letter, this.wordValidation);
     }
 
     createAi(player: Player) {

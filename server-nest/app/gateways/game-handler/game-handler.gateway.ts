@@ -19,24 +19,20 @@ import { ChatEvents } from './../../../../common/chat.gateway.events';
 @WebSocketGateway({ cors: true })
 export class GameHandlerGateway implements OnGatewayConnection {
     @WebSocketServer() private server: Server;
-    
 
     constructor(private readonly logger: Logger, private userService: UserService, private roomManagerService: RoomManagerService) {}
 
     // TODO: set a socket id in player class to easily find the player
 
-
     @SubscribeMessage('sendEmail')
-    sendEmail(@ConnectedSocket() socket, @MessageBody() email : string, @MessageBody() decryptedPassword : string){
-
-        const sgMail = require('@sendgrid/mail')
-        sgMail.setApiKey('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')
+    sendEmail(@ConnectedSocket() socket, @MessageBody() email: string, @MessageBody() decryptedPassword: string) {
+        const sgMail = require('@sendgrid/mail');
+        sgMail.setApiKey('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');
         const msg = {
-          to: 'cherkaoui_08@hotmail.fr', // Change to your recipient
-          from: 'log3900.110.22@gmail.com', // Change to your verified sender
-          subject: 'Mot de passe oublié - Scrabble', 
-          text: `Bonjour, voici votre mot de passe : ${decryptedPassword[1]}`,
-          
+            to: 'cherkaoui_08@hotmail.fr', // Change to your recipient
+            from: 'log3900.110.22@gmail.com', // Change to your verified sender
+            subject: 'Mot de passe oublié - Scrabble',
+            text: `Bonjour, voici votre mot de passe : ${decryptedPassword[1]}`,
         };
         sgMail.send(msg);
     }
@@ -210,6 +206,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
         @MessageBody() player: string,
         @MessageBody() isDragActivated = false,
     ) {
+        if (word[1].length === 7) socket.emit('playAudio');
         const room = this.roomManagerService.find(roomId[6]);
         const validationResult = await room.wordValidation.validateAllWordsOnBoard(JSON.parse(board[5]), isEaselSize[4], isRow[3]);
         const playerReceived = JSON.parse(player[7]);
@@ -290,7 +287,16 @@ export class GameHandlerGateway implements OnGatewayConnection {
         }
         socket.emit('activeUsers', simplifiedUsers);
     }
+    @SubscribeMessage('sendBest')
+    async bestActions(@ConnectedSocket() socket, @MessageBody() roomId: string, @MessageBody() playerName: string) {
+        const room = this.roomManagerService.find(roomId[0]);
+        const playerReceived = room.playerService.players.find((player) => player.name === playerName[1]);
 
+        room.aiForBestActions.strategy.initializeArray(room.placeLetter.scrabbleBoard);
+        room.aiForBestActions.strategy.player = playerReceived;
+        const allPossibilities = await room.aiForBestActions.getPossibilities(room.aiForBestActions.strategy.getEasel(playerReceived.letterTable));
+        socket.emit('receiveBest', JSON.stringify(allPossibilities));
+    }
     // onEndGameByGiveUp(socket: Socket): void {
     //     socket.on('sendEndGameByGiveUp', (isGiveUp: boolean, roomId: string) => {
     //         socket
@@ -385,6 +391,11 @@ export class GameHandlerGateway implements OnGatewayConnection {
             return;
         }
         if (room.state === State.Playing) {
+            if (room.humanPlayersNumber === 1) {
+                room.skipTurnService.stopTimer();
+                // this.server.to(roomId).emit('youAreWinner');
+                // envoyer le nouveau tableau de joueur
+            }
             room.skipTurnService.stopTimer();
             room.state = State.Finish;
             // Emit the event

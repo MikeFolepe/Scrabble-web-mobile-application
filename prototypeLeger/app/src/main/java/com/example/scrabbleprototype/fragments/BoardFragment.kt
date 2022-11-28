@@ -4,6 +4,8 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.content.res.Resources.Theme
+import android.graphics.drawable.AnimationDrawable
 import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
@@ -15,6 +17,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
@@ -78,6 +81,8 @@ class BoardFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         receiveOpponentPlacement(view)
         receiveOpponentStartingCase()
+
+        setupBoardTheme(view)
         setupBoard(view)
     }
 
@@ -99,6 +104,17 @@ class BoardFragment : Fragment() {
         }
     }
 
+    private fun setupBoardTheme(view: View) {
+        val boardLayout = view.findViewById<ConstraintLayout>(R.id.board_layout)
+        boardLayout.setBackgroundResource(ThemeManager.getBoardTheme())
+        if(ThemeManager.currentBoardTheme == ThemeManager.GRADIENT) {
+            val animatedBackground: AnimationDrawable = boardLayout.background as AnimationDrawable
+            animatedBackground.setEnterFadeDuration(4000)
+            animatedBackground.setExitFadeDuration(4000)
+            animatedBackground.start()
+        }
+    }
+
     private fun setupBoard(view: View) {
         initializeBoard()
         boardView = view.findViewById(R.id.board)
@@ -115,6 +131,7 @@ class BoardFragment : Fragment() {
                 LetterRack.letters.removeAt(dragStartPosition)
                 val letterRackAdapter = activity?.findViewById<RecyclerView>(R.id.letter_rack)?.adapter
                 letterRackAdapter?.notifyDataSetChanged()
+                view.findViewById<ConstraintLayout>(R.id.board_layout).setBackgroundResource(ThemeManager.getBoardTheme())
             } else { // We drag from the board
                 val lastCaseView = boardView.findViewHolderForAdapterPosition(dragStartPosition)?.itemView
                 boardAdapter.setupBonus(lastCaseView?.findViewById(R.id.bonus_layer)!!, dragStartPosition)

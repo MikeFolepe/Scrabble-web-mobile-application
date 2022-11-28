@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/board_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -31,105 +32,105 @@
             android:layout_width="14.4dp"
             android:layout_height="wrap_content"
             android:text="1"
-            android:textColor="?android:textColor"
+            android:textColor="?android:textColorSecondary"
             android:textSize="12sp"
             android:textAlignment="center"/>
         <TextView
             android:layout_width="14.4dp"
             android:layout_height="wrap_content"
             android:text="2"
-            android:textColor="?android:textColor"
+            android:textColor="?android:textColorSecondary"
             android:textSize="12sp"
             android:textAlignment="center"/>
         <TextView
             android:layout_width="14.4dp"
             android:layout_height="wrap_content"
             android:text="3"
-            android:textColor="?android:textColor"
+            android:textColor="?android:textColorSecondary"
             android:textSize="12sp"
             android:textAlignment="center"/>
         <TextView
             android:layout_width="14.4dp"
             android:layout_height="wrap_content"
             android:text="4"
-            android:textColor="?android:textColor"
+            android:textColor="?android:textColorSecondary"
             android:textSize="12sp"
             android:textAlignment="center"/>
         <TextView
             android:layout_width="14.4dp"
             android:layout_height="wrap_content"
             android:text="5"
-            android:textColor="?android:textColor"
+            android:textColor="?android:textColorSecondary"
             android:textSize="12sp"
             android:textAlignment="center"/>
         <TextView
             android:layout_width="14.4dp"
             android:layout_height="wrap_content"
             android:text="6"
-            android:textColor="?android:textColor"
+            android:textColor="?android:textColorSecondary"
             android:textSize="12sp"
             android:textAlignment="center"/>
         <TextView
             android:layout_width="14.4dp"
             android:layout_height="wrap_content"
             android:text="7"
-            android:textColor="?android:textColor"
+            android:textColor="?android:textColorSecondary"
             android:textSize="12sp"
             android:textAlignment="center"/>
         <TextView
             android:layout_width="14.4dp"
             android:layout_height="wrap_content"
             android:text="8"
-            android:textColor="?android:textColor"
+            android:textColor="?android:textColorSecondary"
             android:textSize="12sp"
             android:textAlignment="center"/>
         <TextView
             android:layout_width="14.4dp"
             android:layout_height="wrap_content"
             android:text="9"
-            android:textColor="?android:textColor"
+            android:textColor="?android:textColorSecondary"
             android:textSize="12sp"
             android:textAlignment="center"/>
         <TextView
             android:layout_width="14.4dp"
             android:layout_height="wrap_content"
             android:text="10"
-            android:textColor="?android:textColor"
+            android:textColor="?android:textColorSecondary"
             android:textSize="12sp"
             android:textAlignment="center"/>
         <TextView
             android:layout_width="14.4dp"
             android:layout_height="wrap_content"
             android:text="11"
-            android:textColor="?android:textColor"
+            android:textColor="?android:textColorSecondary"
             android:textSize="12sp"
             android:textAlignment="center"/>
         <TextView
             android:layout_width="14.4dp"
             android:layout_height="wrap_content"
             android:text="12"
-            android:textColor="?android:textColor"
+            android:textColor="?android:textColorSecondary"
             android:textSize="12sp"
             android:textAlignment="center"/>
         <TextView
             android:layout_width="14.4dp"
             android:layout_height="wrap_content"
             android:text="13"
-            android:textColor="?android:textColor"
+            android:textColor="?android:textColorSecondary"
             android:textSize="12sp"
             android:textAlignment="center"/>
         <TextView
             android:layout_width="14.4dp"
             android:layout_height="wrap_content"
             android:text="14"
-            android:textColor="?android:textColor"
+            android:textColor="?android:textColorSecondary"
             android:textSize="12sp"
             android:textAlignment="center"/>
         <TextView
             android:layout_width="14.4dp"
             android:layout_height="wrap_content"
             android:text="15"
-            android:textColor="?android:textColor"
+            android:textColor="?android:textColorSecondary"
             android:textSize="12sp"
             android:textAlignment="center"/>
     </LinearLayout>
@@ -148,105 +149,105 @@
             android:layout_width="14dp"
             android:layout_height="wrap_content"
             android:text="A"
-            android:textColor="?android:textColor"
+            android:textColor="?android:textColorSecondary"
             android:textSize="12sp"
             android:textAlignment="center"/>
         <TextView
             android:layout_width="14dp"
             android:layout_height="wrap_content"
             android:text="B"
-            android:textColor="?android:textColor"
+            android:textColor="?android:textColorSecondary"
             android:textSize="12sp"
             android:textAlignment="center"/>
         <TextView
             android:layout_width="14dp"
             android:layout_height="wrap_content"
             android:text="C"
-            android:textColor="?android:textColor"
+            android:textColor="?android:textColorSecondary"
             android:textSize="12sp"
             android:textAlignment="center"/>
         <TextView
             android:layout_width="14dp"
             android:layout_height="wrap_content"
             android:text="D"
-            android:textColor="?android:textColor"
+            android:textColor="?android:textColorSecondary"
             android:textSize="12sp"
             android:textAlignment="center"/>
         <TextView
             android:layout_width="14dp"
             android:layout_height="wrap_content"
             android:text="E"
-            android:textColor="?android:textColor"
+            android:textColor="?android:textColorSecondary"
             android:textSize="12sp"
             android:textAlignment="center"/>
         <TextView
             android:layout_width="14dp"
             android:layout_height="wrap_content"
             android:text="F"
-            android:textColor="?android:textColor"
+            android:textColor="?android:textColorSecondary"
             android:textSize="12sp"
             android:textAlignment="center"/>
         <TextView
             android:layout_width="14dp"
             android:layout_height="wrap_content"
             android:text="G"
-            android:textColor="?android:textColor"
+            android:textColor="?android:textColorSecondary"
             android:textSize="12sp"
             android:textAlignment="center"/>
         <TextView
             android:layout_width="14dp"
             android:layout_height="wrap_content"
             android:text="H"
-            android:textColor="?android:textColor"
+            android:textColor="?android:textColorSecondary"
             android:textSize="12sp"
             android:textAlignment="center"/>
         <TextView
             android:layout_width="14dp"
             android:layout_height="wrap_content"
             android:text="I"
-            android:textColor="?android:textColor"
+            android:textColor="?android:textColorSecondary"
             android:textSize="12sp"
             android:textAlignment="center"/>
         <TextView
             android:layout_width="14dp"
             android:layout_height="wrap_content"
             android:text="J"
-            android:textColor="?android:textColor"
+            android:textColor="?android:textColorSecondary"
             android:textSize="12sp"
             android:textAlignment="center"/>
         <TextView
             android:layout_width="14dp"
             android:layout_height="wrap_content"
             android:text="K"
-            android:textColor="?android:textColor"
+            android:textColor="?android:textColorSecondary"
             android:textSize="12sp"
             android:textAlignment="center"/>
         <TextView
             android:layout_width="14dp"
             android:layout_height="wrap_content"
             android:text="L"
-            android:textColor="?android:textColor"
+            android:textColor="?android:textColorSecondary"
             android:textSize="12sp"
             android:textAlignment="center"/>
         <TextView
             android:layout_width="14dp"
             android:layout_height="wrap_content"
             android:text="M"
-            android:textColor="?android:textColor"
+            android:textColor="?android:textColorSecondary"
             android:textSize="12sp"
             android:textAlignment="center"/>
         <TextView
             android:layout_width="14dp"
             android:layout_height="wrap_content"
             android:text="N"
-            android:textColor="?android:textColor"
+            android:textColor="?android:textColorSecondary"
             android:textSize="12sp"
             android:textAlignment="center"/>
         <TextView
             android:layout_width="14dp"
             android:layout_height="wrap_content"
             android:text="O"
-            android:textColor="?android:textColor"
+            android:textColor="?android:textColorSecondary"
             android:textSize="12sp"
             android:textAlignment="center"/>
     </LinearLayout>

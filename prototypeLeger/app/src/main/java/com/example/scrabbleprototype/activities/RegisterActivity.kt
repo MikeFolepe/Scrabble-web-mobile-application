@@ -72,7 +72,7 @@ class RegisterActivity : AppCompatActivity(), CoroutineScope {
         }
         avatarButton = findViewById<Button>(R.id.avatar)
         avatarButton.setOnClickListener {
-        chooseAvatar(this)
+        chooseAvatar()
         }
 
     }
@@ -131,8 +131,8 @@ class RegisterActivity : AppCompatActivity(), CoroutineScope {
     }
 
 
-    fun chooseAvatar(context: Context) {
-            var avatarDialog = Dialog(context.applicationContext)
+    fun chooseAvatar() {
+            var avatarDialog = Dialog(this)
             avatarDialog.setContentView(R.layout.avatar_choice)
             val recycler = avatarDialog.findViewById<RecyclerView>(R.id.avatar_image_list)
             recycler.setHasFixedSize(true)
@@ -150,9 +150,7 @@ class RegisterActivity : AppCompatActivity(), CoroutineScope {
 
                 avatarButton.setVisibility(View.INVISIBLE)
                 avatarDialog.hide()
-                if(context.applicationContext == RegisterActivity()) {
-                    changeAvatar()
-                }
+                changeAvatar()
                 Log.d("avatarpath", avatarSrcImages[position].toString())
                 if(addAvatarId == avatarSrcImages[position]) {
                     if(checkAndRequestPermissions()) {
@@ -235,7 +233,7 @@ class RegisterActivity : AppCompatActivity(), CoroutineScope {
         mSpannableString.setSpan(UnderlineSpan(), 0, mSpannableString.length, 0)
         changeAvatar.text = mSpannableString
         changeAvatar.setOnClickListener {
-            chooseAvatar(this)
+            chooseAvatar()
         }
     }
 
