@@ -17,7 +17,7 @@
                     mat-raised-button
                     color="primary"
                     id="regular-button-1"
-                    [disabled]="!playerService.currentPlayer.isTurn || this.skipTurnService.shouldNotBeDisplayed"
+                    [disabled]="!playerService.currentPlayer.isTurn || this.skipTurnService.shouldNotBeDisplayed || this.endGameService.isEndGame"
                     (click)="this.chatBoxService.sendPlayerMessage('!passer')"
                 >
                     Passer son tour
@@ -26,47 +26,32 @@
                     mat-raised-button
                     color="primary"
                     id="regular-button-1"
-                    [disabled]="!playerService.currentPlayer.isTurn || this.skipTurnService.shouldNotBeDisplayed"
+                    [disabled]="!playerService.currentPlayer.isTurn || this.skipTurnService.shouldNotBeDisplayed || this.endGameService.isEndGame"
                     (click)="openBestActionsDialog()"
                 >
                     Meilleurs coups
                 </button>
-                <div *ngIf="gameSettingsService.isSoloMode">
-                    <button mat-raised-button color="warn" id="regular-button-2" (click)="leaveGame()" routerLink="/home">
-                        {{ endGameService.isEndGame ? 'Quitter' : 'Abandonner' }}
-                    </button>
-                </div>
-                <div *ngIf="!endGameService.isEndGame && !gameSettingsService.isSoloMode && !giveUpHandlerService.isGivenUp && !authService.currentUser.isObserver">
+                <div
+                    *ngIf="
+                        !endGameService.isEndGame &&
+                        !gameSettingsService.isSoloMode &&
+                        !giveUpHandlerService.isGivenUp &&
+                        !authService.currentUser.isObserver
+                    "
+                >
                     <button mat-raised-button color="warn" id="regular-button-3" (click)="confirmGiveUpGame()">Abandonner</button>
                 </div>
                 <div *ngIf="authService.currentUser.isObserver">
                     <button mat-raised-button color="warn" id="regular-button-3" (click)="confirmLeaveByObserver()">Quitter</button>
                 </div>
-                <div *ngIf="endGameService.isEndGame && !gameSettingsService.isSoloMode && !giveUpHandlerService.isGivenUp">
-                    <button
-                        mat-raised-button
-                        color="warn"
-                        id="regular-button-4"
-                        (click)="this.clientSocketService.socket.emit('deleteGame', this.clientSocketService.currentRoom.id); leaveGame()"
-                        routerLink="/home"
-                    >
-                        Quitter
-                    </button>
-                </div>
-                <audio controls
-                #audio
-                class="audio">
-                 <source src=" https://docs.google.com/uc?export=download&id=1-iRhSChJbr53df3HcJB4ApZxtq5a2Aec" type="audio/mpeg">
+                <audio controls #audio class="audio">
+                    <source src=" https://docs.google.com/uc?export=download&id=1-iRhSChJbr53df3HcJB4ApZxtq5a2Aec" type="audio/mpeg" />
                 </audio>
-                <audio controls
-                #encou
-                class="audio">
-                 <source src=" https://docs.google.com/uc?export=download&id=1NrCnDFh6i7by3WfL-Tcnt6G-PLzjdoNL" type="audio/mpeg">
+                <audio controls #encou class="audio">
+                    <source src=" https://docs.google.com/uc?export=download&id=1NrCnDFh6i7by3WfL-Tcnt6G-PLzjdoNL" type="audio/mpeg" />
                 </audio>
-                <audio controls
-                #decou
-                class="audio">
-                 <source src=" https://docs.google.com/uc?export=download&id=1-iRhSChJbr53df3HcJB4ApZxtq5a2Aec" type="audio/mpeg">
+                <audio controls #decou class="audio">
+                    <source src=" https://docs.google.com/uc?export=download&id=1-iRhSChJbr53df3HcJB4ApZxtq5a2Aec" type="audio/mpeg" />
                 </audio>
             </div>
             <app-font-size id="font-size" [fontSize]="fontSize" (sizeChange)="handleFontSizeEvent($event)"></app-font-size>

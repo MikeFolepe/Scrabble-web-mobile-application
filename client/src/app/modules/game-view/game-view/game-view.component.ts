@@ -10,8 +10,6 @@ import { ClientSocketService } from '@app/services/client-socket.service';
 import { EndGameService } from '@app/services/end-game.service';
 import { GameSettingsService } from '@app/services/game-settings.service';
 import { GiveUpHandlerService } from '@app/services/give-up-handler.service';
-import { GridService } from '@app/services/grid.service';
-import { PlaceLetterService } from '@app/services/place-letter.service';
 import { PlayerService } from '@app/services/player.service';
 import { SendMessageService } from '@app/services/send-message.service';
 import { SkipTurnService } from '@app/services/skip-turn.service';
@@ -39,7 +37,6 @@ export class GameViewComponent {
     constructor(
         public endGameService: EndGameService,
         public clientSocketService: ClientSocketService,
-        private gridService: GridService,
         public gameSettingsService: GameSettingsService,
         public chatBoxService: ChatboxService,
         public boardHandlerService: BoardHandlerService,
@@ -52,7 +49,6 @@ export class GameViewComponent {
         public bestActionsDialog: MatDialog,
         public sendMessageService: SendMessageService,
         public giveUpHandlerService: GiveUpHandlerService,
-        private placeLetterService: PlaceLetterService,
         public chatRoomService: ChatRoomService,
         public authService: AuthService,
     ) {
@@ -94,13 +90,6 @@ export class GameViewComponent {
             // if decision is true the EndGame occurred
             this.clientSocketService.socket.emit('sendObserverLeave', this.clientSocketService.currentRoom.id);
         });
-    }
-    leaveGame(): void {
-        this.placeLetterService.ngOnDestroy();
-        this.gridService.ngOnDestroy();
-        this.endGameService.clearAllData();
-        this.playerService.clearPlayers();
-        this.gameSettingsService.ngOnDestroy();
     }
 
     openChangeChatRoomDialog(): void {

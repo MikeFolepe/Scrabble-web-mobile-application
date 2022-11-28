@@ -22,18 +22,12 @@ export class EndGameService {
         }
         return name;
     }
-    checkEndGame(players: Player[]): void {
-        this.isEndGame = this.isEndGameByEasel(players) || this.isEndGameByGiveUp;
+    checkEndGame(reserveSize: number): void {
+        this.isEndGame = this.isEndGameByEasel(reserveSize) || this.isEndGameByGiveUp;
     }
 
-    isEndGameByEasel(players: Player[]): boolean {
-        for (const player of players) {
-            if (player.letterTable.length !== 0) {
-                return false;
-            }
-        }
-
-        return true;
+    isEndGameByEasel(reserveSize: number): boolean {
+        return reserveSize === 0;
     }
 
     computeTotalTime(): number {

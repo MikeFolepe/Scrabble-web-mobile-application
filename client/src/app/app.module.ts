@@ -19,6 +19,7 @@ import { AdminPageComponent } from './pages/admin-page/admin-page.component';
 import { EditDictionaryDialogComponent } from './pages/admin-page/edit-dictionary-dialog/edit-dictionary-dialog.component';
 import { AuthPageComponent } from './pages/auth-page/auth-page.component';
 import { PrototypeChatBoxComponent } from './pages/prototype-chat-box/prototype-chat-box.component';
+import { RankingComponent } from './pages/ranking/ranking.component';
 /**
  * Main module that is used in main.ts.
  * All automatically generated components will appear in this module.
@@ -36,6 +37,7 @@ import { PrototypeChatBoxComponent } from './pages/prototype-chat-box/prototype-
         EditDictionaryDialogComponent,
         AuthPageComponent,
         PrototypeChatBoxComponent,
+        RankingComponent,
     ],
     imports: [
         AppMaterialModule,

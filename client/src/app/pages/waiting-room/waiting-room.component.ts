@@ -106,8 +106,10 @@ export class WaitingRoomComponent implements OnInit {
 
     routeToGameView(): void {
         this.clientSocket.socket.on('goToGameView', () => {
+            console.log('played');
+            this.userService.userStats.gamesPlayed++;
+            this.communicationService.updateGamesPlayed(this.authService.currentUser._id, this.userService.userStats.gamesPlayed).subscribe();
             this.router.navigate(['game']);
-            this.communicationService.updateGamesPlayed(this.authService.currentUser._id, this.userService.userStats.gamesPlayed++).subscribe();
         });
     }
 

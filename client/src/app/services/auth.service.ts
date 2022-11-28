@@ -41,6 +41,7 @@ export class AuthService {
                     this.setMainChatRoom();
                     this.receiveUserSocket();
                     this.addLogin();
+                    this.userService.getUserStats(this.currentUser._id);
                     this.clientSocketService.socket.emit('joinMainRoom', this.currentUser);
                     this.setAccess();
                 } else if (response.status === HttpStatusCode.NotModified) {

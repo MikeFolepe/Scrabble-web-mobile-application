@@ -1,10 +1,10 @@
 import { User } from '@common/user';
 import { GameDB, UserStatsDB } from '@common/user-stats';
-import { Body, Controller, Get, HttpStatus, Param, Post, Put, Req, Res } from '@nestjs/common';
-import { Response } from 'express';
 import * as emailS from '@nativescript/email';
-import { UserService } from './user.service';
+import { Body, Controller, Get, HttpStatus, Param, Post, Put, Req, Res } from '@nestjs/common';
 import * as sgMail from '@sendgrid/mail';
+import { Response } from 'express';
+import { UserService } from './user.service';
 @Controller('user')
 export class UserController {
     composeOptions: emailS.ComposeOptions;
@@ -99,18 +99,23 @@ export class UserController {
         await this.userService.addGame(game, userId);
     }
 
-    @Put('/userStats/gamesWon/:userId')
+    @Post('/userStats/gamesWon/:userId')
     async updateGamesWon(@Param('userId') userId: string, @Body() gamesWon: number) {
         await this.userService.updateGamesWon(userId, gamesWon);
     }
 
-    @Put('/userStats/gamesPlayed/:userId')
+    @Post('/userStats/gamesPlayed/:userId')
     async updateGamesPlayed(@Param('userId') userId: string, @Body() gamesPlayed: number) {
+        console.log('arrived in controller');
         await this.userService.updateGamesPlayed(userId, gamesPlayed);
     }
 
-    @Put('/userStats/totalPoints/:userId')
+    @Post('/userStats/totalPoints/:userId')
     async updateTotalPoints(@Param('userId') userId: string, @Body() totalPoints: number) {
         await this.userService.updateTotalPoints(userId, totalPoints);
+    }
+    @Post('/users/xpPoints/:userId')
+    async updateXpPoints(@Param('userId') userId: string, @Body() xpPoints: number) {
+        await this.userService.updateXpPoints(userId, xpPoints);
     }
 }

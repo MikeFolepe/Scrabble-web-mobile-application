@@ -3,35 +3,31 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { UserService } from '@app/services/user.service';
 
 @Component({
-  selector: 'app-password-forgotten',
-  templateUrl: './password-forgotten.component.html',
-  styleUrls: ['./password-forgotten.component.scss']
+    selector: 'app-password-forgotten',
+    templateUrl: './password-forgotten.component.html',
+    styleUrls: ['./password-forgotten.component.scss'],
 })
-export class PasswordForgottenComponent{
+export class PasswordForgottenComponent {
+    pseudonym: string;
+    errorMessage: string = '';
+    email: string;
+    password: string;
 
-  pseudonym : string;
-  errorMessage : string = '';
-  email : string;
-  password : string;
- 
-  constructor(public passwordForgotten: MatDialogRef<PasswordForgottenComponent>, private userService : UserService) {
-  }
+    constructor(public passwordForgotten: MatDialogRef<PasswordForgottenComponent>, private userService: UserService) {}
 
-  async checkPseudonym(){
+    async checkPseudonym() {
+        this.email = await this.userService.getEmail(this.pseudonym);
 
-    this.email = await this.userService.getEmail(this.pseudonym);
-
-    if(!this.email){
-      this.errorMessage = "Ce pseudonyme n'existe pas";
-      return;
+        if (!this.email) {
+            this.errorMessage = "Ce pseudonyme n'existe pas";
+            return;
+        }
+        await this.sendEmail();
     }
-    this.sendEmail();
-  }
 
-
-  private async sendEmail() {
-    this.errorMessage = '';
-    await this.userService.sendEmailToUser(this.pseudonym);
-    this.passwordForgotten.close();
-  }
+    private async sendEmail() {
+        this.errorMessage = '';
+        await this.userService.sendEmailToUser(this.pseudonym);
+        this.passwordForgotten.close();
+    }
 }

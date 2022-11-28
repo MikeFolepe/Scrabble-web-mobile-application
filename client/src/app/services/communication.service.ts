@@ -38,15 +38,19 @@ export class CommunicationService {
     }
 
     updateGamesWon(userId: string, gamesWon: number): Observable<void> {
-        return this.http.put<void>(`${this.baseUrl}/user/userStats/gamesWon/${userId}`, gamesWon);
+        return this.http.post<void>(`${this.baseUrl}/user/userStats/gamesWon/${userId}`, gamesWon);
     }
 
     updateGamesPlayed(userId: string, gamesPlayed: number): Observable<void> {
-        return this.http.put<void>(`${this.baseUrl}/user/userStats/gamesPlayed/${userId}`, gamesPlayed);
+        return this.http.post<void>(`${this.baseUrl}/user/userStats/gamesPlayed/${userId}`, gamesPlayed);
     }
 
     updateTotalPoints(userId: string, totalPoints: number): Observable<void> {
         return this.http.post<void>(`${this.baseUrl}/user/userStats/totalPoints/${userId}`, totalPoints);
+    }
+
+    updateXps(userId: string, xpPoints: number): Observable<void> {
+        return this.http.post<void>(`${this.baseUrl}/user/users/xpPoints/${userId}`, xpPoints);
     }
 
     getUserStats(userId: string): Observable<UserStatsDB> {
@@ -68,16 +72,16 @@ export class CommunicationService {
         return this.http.get<boolean>(`${this.baseUrl}/user/checkPseudonym/${pseudonym}`).toPromise();
     }
 
-    async getEmail(pseudonym : string): Promise<string> {
-        return this.http.get(`${this.baseUrl}/user/getEmail/${pseudonym}`, {responseType : 'text'}).toPromise();
+    async getEmail(pseudonym: string): Promise<string> {
+        return this.http.get(`${this.baseUrl}/user/getEmail/${pseudonym}`, { responseType: 'text' }).toPromise();
     }
 
-    async sendEmailToUser(pseudonym: string) : Promise<boolean> {
+    async sendEmailToUser(pseudonym: string): Promise<boolean> {
         return this.http.get<boolean>(`${this.baseUrl}/user/sendEmailToUser/${pseudonym}`).toPromise();
     }
 
-    async getDecryptedPassword(pseudonym : string): Promise<string> {
-        return this.http.get(`${this.baseUrl}/user/getDecryptedPassword/${pseudonym}`, {responseType : 'text'}).toPromise();
+    async getDecryptedPassword(pseudonym: string): Promise<string> {
+        return this.http.get(`${this.baseUrl}/user/getDecryptedPassword/${pseudonym}`, { responseType: 'text' }).toPromise();
     }
 
     addNewUserToDB(userData: User): Observable<User> {

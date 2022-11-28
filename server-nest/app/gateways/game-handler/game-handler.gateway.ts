@@ -24,20 +24,6 @@ export class GameHandlerGateway implements OnGatewayConnection {
     constructor(private readonly logger: Logger, private userService: UserService, private roomManagerService: RoomManagerService) {}
 
     // TODO: set a socket id in player class to easily find the player
-
-    @SubscribeMessage('sendEmail')
-    sendEmail(@ConnectedSocket() socket, @MessageBody() email: string, @MessageBody() decryptedPassword: string) {
-        const sgMail = require('@sendgrid/mail');
-        sgMail.setApiKey('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');
-        const msg = {
-            to: 'cherkaoui_08@hotmail.fr', // Change to your recipient
-            from: 'log3900.110.22@gmail.com', // Change to your verified sender
-            subject: 'Mot de passe oublié - Scrabble',
-            text: `Bonjour, voici votre mot de passe : ${decryptedPassword[1]}`,
-        };
-        sgMail.send(msg);
-    }
-
     @SubscribeMessage('getRoomsConfiguration')
     getRoomsConfiguration(socket: Socket) {
         socket.emit('roomConfiguration', this.roomManagerService.getRoomsToSend());
@@ -142,7 +128,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
         }, 5000);
 
         const interval = setInterval(async () => {
-            room.endGameService.checkEndGame(room.playerService.players);
+            room.endGameService.checkEndGame(room.letter.reserveSize);
             console.log('hhhhfg');
             if (room.endGameService.isEndGame) {
                 const name = room.endGameService.getWinnerName(players);
@@ -446,12 +432,13 @@ export class GameHandlerGateway implements OnGatewayConnection {
         }
         if (room.state === State.Playing) {
             if (room.aiPlayersNumber === 2 || room.humanPlayersNumber <= 1) {
-                room.skipTurnService.stopTimer();
-                this.server.to(room.id).emit('leave');
-                room.state = State.Finish;
-                this.roomManagerService.deleteRoom(room.id);
-                this.server.emit('roomConfiguration', this.roomManagerService.getRoomsToSend());
-                this.server.socketsLeave(room.id);
+                // room.skipTurnService.stopTimer();
+                // this.server.to(room.id).emit('leave');
+                // room.state = State.Finish;
+                // this.roomManagerService.deleteRoom(room.id);
+                // this.server.emit('roomConfiguration', this.roomManagerService.getRoomsToSend());
+                // this.server.socketsLeave(room.id);
+                room.endGameService.isEndGameByGiveUp = true;
             } else if (room.aiPlayersNumber < 2) {
                 socket.emit('leave');
                 socket.to(room.id).emit('leaveNotification', room.playerService.players[indexPlayer].name + ' a quitté la partie');
@@ -471,7 +458,6 @@ export class GameHandlerGateway implements OnGatewayConnection {
                 this.server.to(room.id).emit('newPlayerAi', room.playerService.players[indexPlayer], indexPlayer);
                 room.createAi(room.playerService.players[indexPlayer]);
             }
-
             return;
         }
     }

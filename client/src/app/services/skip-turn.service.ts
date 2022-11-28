@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { ClientSocketService } from '@app/services/client-socket.service';
 import { GameSettingsService } from '@app/services/game-settings.service';
 import { Subject } from 'rxjs';
-import { EndGameService } from './end-game.service';
 import { PlayerService } from './player.service';
 
 @Injectable({
@@ -16,12 +15,7 @@ export class SkipTurnService {
     // eslint-disable-next-line no-undef
     shouldNotBeDisplayed: boolean;
 
-    constructor(
-        public gameSettingsService: GameSettingsService,
-        private endGameService: EndGameService,
-        private clientSocket: ClientSocketService,
-        private playerService: PlayerService,
-    ) {
+    constructor(public gameSettingsService: GameSettingsService, private clientSocket: ClientSocketService, private playerService: PlayerService) {
         this.receiveNewTurn();
         this.receiveTimer();
         this.switchAiTurn();
@@ -62,7 +56,6 @@ export class SkipTurnService {
     }
 
     switchTurn(): void {
-        if (this.endGameService.isEndGame) return;
         if (this.playerService.currentPlayer.isTurn) this.shouldNotBeDisplayed = true;
         if (this.playerService.currentPlayer.isTurn) {
             console.log('turrrrrrrnnnnnn');
