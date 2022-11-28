@@ -35,6 +35,7 @@ export class EndGameService {
     ) {
         this.clearAllData();
         this.receiveEndGameFromServer();
+        this.leave();
     }
 
     receiveEndGameFromServer(): void {
@@ -83,6 +84,7 @@ export class EndGameService {
         const ref = this.dialog.open(RankingComponent, { disableClose: true });
         ref.afterClosed().subscribe(() => {
             this.leaveGame();
+            this.router.navigate(['/home']);
         });
     }
 
@@ -90,13 +92,18 @@ export class EndGameService {
         this.isEndGame = false;
     }
 
+    leave(): void {
+        this.clientSocketService.socket.on('leave', () => {
+            this.leaveGame();
+            this.router.navigate(['home']);
+        });
+    }
+
     leaveGame(): void {
         this.placeLetterService.ngOnDestroy();
         this.gridService.ngOnDestroy();
         this.playerService.clearPlayers();
         this.gameSettingsService.ngOnDestroy();
-        this.router.navigate(['/home']);
-
         this.clearAllData();
     }
 }

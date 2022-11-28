@@ -7,7 +7,5 @@
 <br />
 <div mat-dialog-actions>
     <button mat-button mat-dialog-close (click)="this.giveUpDialogRef.close(null)" color="warn">Non</button>
-    <button mat-raised-button mat-dialog-close (click)="endGameService.leaveGame(); this.giveUpDialogRef.close(true)" routerLink="/home" color="warn">
-        Oui
-    </button>
+    <button mat-raised-button mat-dialog-close (click)="this.giveUpDialogRef.close(true)" color="warn">Oui</button>
 </div>

@@ -6,7 +6,6 @@ import { Room } from '@common/room';
 import { AuthService } from './auth.service';
 
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
 import { ClientSocketService } from './client-socket.service';
 
 @Injectable({
@@ -21,12 +20,7 @@ export class PlayerService {
     letterForDrag: Letter[];
     isFirstPlacement: boolean;
 
-    constructor(
-        private clientSocketService: ClientSocketService,
-        private authService: AuthService,
-        private router: Router,
-        private snackBar: MatSnackBar,
-    ) {
+    constructor(private clientSocketService: ClientSocketService, private authService: AuthService, private snackBar: MatSnackBar) {
         this.currentPlayer = new Player('', []);
         this.letterForDrag = [];
         this.fontSize = 14;
@@ -39,7 +33,6 @@ export class PlayerService {
         this.clientSocketService.initialize();
         this.onReplaceAi();
         this.isFirstPlacement = true;
-        this.leave();
         this.onReplaceHuman();
         this.onLeaveNotif();
     }
@@ -76,12 +69,6 @@ export class PlayerService {
             if (this.authService.currentUser.pseudonym === player.name) {
                 this.currentPlayer = player;
             }
-        });
-    }
-
-    leave(): void {
-        this.clientSocketService.socket.on('leave', () => {
-            this.router.navigate(['home']);
         });
     }
 
