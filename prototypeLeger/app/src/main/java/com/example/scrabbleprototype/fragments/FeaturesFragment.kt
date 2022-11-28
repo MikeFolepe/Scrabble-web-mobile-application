@@ -54,6 +54,7 @@ class FeaturesFragment : Fragment(), CoroutineScope {
     private var possibleWords = arrayListOf<PossibleWords>()
     private lateinit var possibleWordsDialog: Dialog
     private lateinit var possibleWordsAdapter: PossibleWordsAdapter
+    val user = Users.currentUser
 
     private lateinit var skipTurnService: SkipTurnService
     private var skipTurnBound: Boolean = false
@@ -197,7 +198,7 @@ class FeaturesFragment : Fragment(), CoroutineScope {
     private suspend fun isWordInDictionary(word: String): Boolean {
         var response: HttpResponse?
         try{
-            response = client.get(environments.Environment.serverUrl + "/api/game/dictionaryVerif/" + word + "/" + CurrentRoom.myRoom.gameSettings.dictionary) {}
+            response = client.get(resources.getString(R.string.http) + user.ipAddress+  "/api/game/dictionaryVerif/" + word + "/" + CurrentRoom.myRoom.gameSettings.dictionary) {}
         } catch(e: Exception) {
             response = null
         }

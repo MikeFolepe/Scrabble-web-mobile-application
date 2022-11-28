@@ -1,19 +1,25 @@
 package com.example.scrabbleprototype.viewModel
 
+import android.graphics.BitmapFactory
+import android.util.Base64
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.model.Item
 import com.example.scrabbleprototype.model.Language
+import com.example.scrabbleprototype.model.User
 import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.objects.Themes
 import com.example.scrabbleprototype.objects.Users
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import environments.Environment
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
+import io.ktor.client.utils.EmptyContent.contentType
 import io.ktor.http.*
 import io.ktor.serialization.jackson.*
 import kotlinx.coroutines.Dispatchers
@@ -24,7 +30,7 @@ import java.lang.Exception
 
 class PreferenceViewModel: ViewModel() {
 
-    private var serverUrl = Environment.serverUrl
+    private var serverUrl = "http://192.168.0.31:3000"
     private var client: HttpClient = HttpClient() {
         install(ContentNegotiation) {
             jackson()
@@ -70,6 +76,8 @@ class PreferenceViewModel: ViewModel() {
             ThemeManager.currentBoardTheme = boardReceived.name
         }
     }
+
+
 
     private suspend fun getCurrentChat() = withContext(Dispatchers.Default) {
         var response: HttpResponse?
@@ -179,6 +187,15 @@ class PreferenceViewModel: ViewModel() {
         }
     }
 
+    fun saveAvatar(currentUser : User) {
+        viewModelScope.launch {
+            var response = changeAvatar(currentUser)
+            if(response != null) {
+                Users.currentUser = response.body()
+            }
+        }
+    }
+
     private suspend fun postAppTheme(appThemeName: String): HttpResponse? = withContext(Dispatchers.Default) {
         var response: HttpResponse?
         try{
@@ -250,6 +267,19 @@ class PreferenceViewModel: ViewModel() {
             response = client.post("$serverUrl/api/user/preference/setLanguage/" + Users.currentUser._id) {
                 contentType(ContentType.Application.Json)
                 setBody(language)
+            }
+        } catch(e: Exception) {
+            response = null
+        }
+        return@withContext response
+    }
+
+    private suspend fun changeAvatar(currentUser : User): HttpResponse? = withContext(Dispatchers.Default)  {
+        var response: HttpResponse?
+        try{
+            response = client.post("$serverUrl/api/user/modifyAvatar") {
+                contentType(ContentType.Application.Json)
+                setBody(currentUser)
             }
         } catch(e: Exception) {
             response = null

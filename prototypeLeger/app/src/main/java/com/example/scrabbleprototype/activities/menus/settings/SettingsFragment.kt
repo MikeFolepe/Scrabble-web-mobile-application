@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
@@ -57,7 +58,6 @@ class SettingsFragment : Fragment(), CoroutineScope {
 
     private val user = Users
     lateinit var client: HttpClient
-    private val mapper = jacksonObjectMapper()
     private val userPrefences = Users.userPreferences
     val avatarSrcImages = arrayListOf(R.drawable.blonde_girl, R.drawable.blonde_guy, R.drawable.brunette_girl, R.drawable.doggo, R.drawable.earrings_girl, R.drawable.ginger_girl, R.drawable.hat_girl, R.drawable.music_guy, R.drawable.mustache_guy, R.drawable.orange_guy, R.drawable.t_l_chargement)
     private var job: Job = Job()
@@ -144,13 +144,8 @@ class SettingsFragment : Fragment(), CoroutineScope {
 
                     }
                 }
-
-            }
-        }
-        val response = changeAvatarInDb(user.currentUser)
-        if(response != null) {
-            var receivedUser =  mapper.readValue(response.body() as String, User::class.java)
-            user.currentUser = receivedUser
+                preferenceViewModel.saveAvatar(user.currentUser)
+                }
         }
         }
     fun encodeImageToBase64(bmp: Bitmap) {
@@ -215,18 +210,7 @@ class SettingsFragment : Fragment(), CoroutineScope {
         }
     }
 
-    suspend fun changeAvatarInDb(currentUser : User ): HttpResponse? {
-        var response: HttpResponse?
-        try{
-            response = client.post(resources.getString(R.string.http) + currentUser.ipAddress + "/api/user/modifyAvatar" + currentUser.pseudonym + currentUser.avatar) {
-                contentType(ContentType.Application.Json)
-                setBody(currentUser)
-            }
-        } catch(e: Exception) {
-            response = null
-        }
-        return response
-    }
+
 
     private fun setupAppThemes() {
         isAppThemeSpinnerInit = false
@@ -348,6 +332,10 @@ class SettingsFragment : Fragment(), CoroutineScope {
         binding.saveEditsBtn.setOnClickListener {
             user.currentUser.pseudonym = binding.profilePseudonym.text.toString()
             user.currentUser.email = binding.profileEmail.text.toString()
+            val split = user.currentUser.avatar.split(",")
+            val imageBytes = android.util.Base64.decode(split[1], android.util.Base64.NO_WRAP)
+            val image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+            user.avatarBmp = image
             Toast.makeText(requireContext(), "Les changements ont été sauvegardés", Toast.LENGTH_LONG).show()
         }
     }

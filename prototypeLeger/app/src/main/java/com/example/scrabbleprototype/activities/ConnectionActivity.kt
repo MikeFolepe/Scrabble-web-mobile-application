@@ -181,23 +181,18 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
                     val response = postAuthentication(user)
                     if(response != null) {
                         if (response.status == HttpStatusCode.OK) {
-                            Log.d("newUser", response.body())
                             var newUser =  mapper.readValue(response.body() as String, User::class.java)
                             val split = newUser.avatar.split(",")
-                            Log.d("size", split.size.toString())
                             val imageBytes = Base64.decode(split[1], Base64.NO_WRAP)
-                            Log.d("image", imageBytes.toString())
                             val image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-                            Log.d("image", image.toString())
                             users.currentUser = newUser
                             users.avatarBmp = image
-                            Log.d("newUser", users.currentUser.toString())
                             joinChat(user)
                         }
                         else if (response.status == HttpStatusCode.NotModified) pseudonymInput.error = "Cet utilisateur est déjà connecté"
                     }
                     } else {
-                    ///Toast.makeText(this, "Aucun compte touvé. Veuillez créer un compte.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@ConnectionActivity, "Aucun compte touvé. Veuillez créer un compte.", Toast.LENGTH_SHORT).show()
                 }
                 }
 

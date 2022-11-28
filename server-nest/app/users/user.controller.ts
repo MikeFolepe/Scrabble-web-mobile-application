@@ -1,6 +1,7 @@
 import { User } from '@common/user';
 import * as email from '@nativescript/email';
-import { Body, Controller, Get, Logger, Post, Req } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Logger, Post, Req, Res } from '@nestjs/common';
+import { Response } from 'express';
 import { UserService } from './user.service';
 @Controller('user')
 export class UserController {
@@ -73,5 +74,14 @@ export class UserController {
     async getAllUsers() {
         const accounts = await this.userService.getUsers();
         return accounts;
+    }
+
+    @Post('/modifyAvatar')
+    async modifyAvatarInDb(@Body() user: User, @Res() response: Response) {
+        const pseudonym = user.pseudonym;
+        const avatar = user.avatar;
+        await this.userService.modifyAvatar(pseudonym, avatar).then((newUser: User) => {
+            response.status(HttpStatus.OK).send(newUser);
+        });
     }
 }
