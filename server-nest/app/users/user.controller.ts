@@ -2,16 +2,15 @@ import { User } from '@common/user';
 import * as email from '@nativescript/email';
 import { Body, Controller, Get, Post, Req } from '@nestjs/common';
 import { UserService } from './user.service';
-
 @Controller('user')
 export class UserController {
-    composeOptions : email.ComposeOptions;
+    composeOptions: email.ComposeOptions;
 
     constructor(private readonly userService: UserService) {}
 
     @Post('/users')
     async addUser(@Body() user: User) {
-        const password = this.userService.encryptPassword(user.password) //await bcrypt.hash(user.password, salt);
+        const password = this.userService.encryptPassword(user.password); // await bcrypt.hash(user.password, salt);
         await this.userService.insertUser(user.avatar, user.pseudonym, password, user.email);
         return { ...user };
     }
@@ -24,7 +23,7 @@ export class UserController {
         const userFound = await this.userService.getSingleUser(pseudonym);
         if (!userFound) return false;
         const decryptedPassword = await this.userService.decryptPassword(pseudonym);
-        if(password === decryptedPassword) {
+        if (password === decryptedPassword) {
             return true;
         }
         return false;
@@ -53,8 +52,8 @@ export class UserController {
         const email = userFound.email;
         const password = await this.userService.decryptPassword(pseudonym);
 
-        const sgMail = require('@sendgrid/mail')
-        sgMail.setApiKey('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')
+        const sgMail = require('@sendgrid/mail');
+        sgMail.setApiKey('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');
         const msg = {
           to: email, 
           from: 'log3900.110.22@gmail.com', 
@@ -71,5 +70,4 @@ export class UserController {
         const accounts = await this.userService.getUsers();
         return accounts;
     }
-
 }

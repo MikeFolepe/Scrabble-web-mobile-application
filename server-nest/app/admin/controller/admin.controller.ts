@@ -60,7 +60,6 @@ export class AdminController {
         }
     }
 
-
     @Get('/dictionaries')
     getDictionnary(@Res() response) {
         response.status(HttpStatus.OK).send(this.adminService.getDictionaries());

@@ -1,4 +1,5 @@
 // import user for common
+import { PreferenceService } from '@app/Preference/preference.service';
 import { User } from '@common/user';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -11,7 +12,7 @@ export class UserService {
     
     // private users: User[] = [];
 
-    constructor(@InjectModel('User') private readonly userModel: Model<User>) {
+    constructor(@InjectModel('User') private readonly userModel: Model<User>, private preferenceService: PreferenceService) {
         this.activeUsers = [];
     }
 
@@ -28,9 +29,10 @@ export class UserService {
     async insertUser(avatar: string, pseudonym: string, password: string, email: string) {
         const newUser = new this.userModel({ avatar, pseudonym, password, email });
         await newUser.save();
+        this.preferenceService.addPreference(newUser._id);
     }
 
-    async getUsers() {
+    async getUsers(): Promise<User[]> {
         const users = await this.userModel.find().exec();
         return users.map((user) => ({
             // eslint-disable-next-line no-underscore-dangle
@@ -41,6 +43,7 @@ export class UserService {
             password: user.password,
             email: user.email,
             socketId: '',
+            isObserver: false,
         }));
     }
 
@@ -48,7 +51,8 @@ export class UserService {
         const user = await this.userModel.findOne({ pseudonym });
 
         if (!user) return;
-        const userToSend = new User(user.avatar, user.pseudonym, user.password, user.email, user.isObserver, user.socketId);
+        const userToSend = new User(user.avatar, user.pseudonym, user.password, user.email, false, '');
+        userToSend._id = user._id;
         return userToSend;
     }
 
