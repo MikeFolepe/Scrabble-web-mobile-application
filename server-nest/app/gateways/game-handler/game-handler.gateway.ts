@@ -136,6 +136,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
                 this.server.in(roomId).emit('updateTimer', room.skipTurnService.minutes, room.skipTurnService.seconds);
                 this.server.in(roomId).emit('receiveEndGame', name, room.endGameService.gameStartDate, room.endGameService.gameStartTime);
                 room.endGameService.initEndTime();
+                console.log(room.userIds);
                 await this.userService.updateTimesPlayed(room.endGameService.computeTotalTime(), room.userIds);
                 this.server.socketsLeave(roomId);
                 this.roomManagerService.deleteRoom(roomId);

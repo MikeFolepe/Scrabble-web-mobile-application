@@ -37,7 +37,7 @@ class ProfileFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        for(i in 0 until 12) user.friendsList.add(Friend("ami #" + i, (R.color.blue).toString(), 250 + i))
+        for(i in 0 until 12) user.friends.add(Friend("ami #" + i, (R.color.blue).toString(), 250 + i))
     }
 
     override fun onCreateView(
@@ -75,7 +75,7 @@ class ProfileFragment : Fragment() {
     private fun setupFriendsList() {
         val friendsListView = binding.friendsList
         friendsListView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        val friendsListAdapter = FriendsListAdapter(user.friendsList)
+        val friendsListAdapter = FriendsListAdapter(user.friends)
         friendsListView.adapter = friendsListAdapter
     }
 
@@ -91,7 +91,7 @@ class ProfileFragment : Fragment() {
         Log.d("activeusers", "setuped")
 
         activeUsersAdapter.onUserClick = { position ->
-            user.friendsList.add(activeUsers[position])
+            user.friends.add(activeUsers[position])
             // TODO send invitation
             Toast.makeText(addFriendDialog.context, "Une invitation d'ami a été envoyée à " + activeUsers[position].pseudonym, Toast.LENGTH_LONG).show()
             Timer().schedule(timerTask {

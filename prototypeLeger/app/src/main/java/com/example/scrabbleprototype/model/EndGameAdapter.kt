@@ -1,15 +1,10 @@
 package com.example.scrabbleprototype.model
 
-import android.content.ClipData
-import android.content.ClipDescription
-import android.os.Build
-import android.util.Log
 import android.view.LayoutInflater
+import android.content.Context
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -56,7 +51,7 @@ class EndGameAdapter(private var players: ArrayList<Player>) :
         viewHolder.position.text = (position + 1).toString()
         viewHolder.name.text = players[position].name
         viewHolder.score.text = players[position].score.toString()
-
+        setPositionColor(viewHolder, position)
     }
 
     // Return the size of your dataset (invoked by the layout manager)
@@ -65,6 +60,18 @@ class EndGameAdapter(private var players: ArrayList<Player>) :
     fun updateData(newPlayers: ArrayList<Player>) {
         players = newPlayers
         this.notifyDataSetChanged()
+    }
+
+    private fun setPositionColor(viewHolder: ViewHolder, position: Int) {
+        when(position){
+            0 -> viewHolder.position.setBackgroundColor(ContextCompat.getColor(viewHolder.itemView.context, R.color.gold))
+            1 -> viewHolder.position.setBackgroundColor(ContextCompat.getColor(viewHolder.itemView.context, R.color.silver))
+            2 -> viewHolder.position.setBackgroundColor(ContextCompat.getColor(viewHolder.itemView.context, R.color.bronze))
+            3 -> {
+                viewHolder.position.setBackgroundColor(ContextCompat.getColor(viewHolder.itemView.context, R.color.black))
+                viewHolder.position.setTextColor(ContextCompat.getColor(viewHolder.itemView.context, R.color.white))
+            }
+        }
     }
 
 }

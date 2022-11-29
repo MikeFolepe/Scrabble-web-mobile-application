@@ -1,6 +1,7 @@
 package com.example.scrabbleprototype.activities.menus.store
 
 import android.os.Bundle
+import android.view.ContextThemeWrapper
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -24,12 +25,10 @@ class StoreFragment : Fragment() {
     private val user = Users.currentUser
 
     private val preferenceViewModel: PreferenceViewModel by activityViewModels()
-    private lateinit var builder: AlertDialog.Builder
     private lateinit var binding: FragmentStoreBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        builder = AlertDialog.Builder(requireContext())
     }
 
     override fun onCreateView(
@@ -96,6 +95,7 @@ class StoreFragment : Fragment() {
     }
 
     private fun showConfirmPurchaseDialog(item: Item, userItems: ArrayList<Item>, isBoard: Boolean) {
+        val builder = AlertDialog.Builder(ContextThemeWrapper(requireContext(), ThemeManager.getTheme()))
         builder.setMessage("Veuillez confirmer l'achat du thème  : " + item.name)
             .setCancelable(false)
             .setPositiveButton("Confirmer") { dialog, id ->

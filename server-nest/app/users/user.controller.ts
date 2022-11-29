@@ -95,27 +95,28 @@ export class UserController {
     }
 
     @Post('/userStats/game/:userId')
-    async addGame(@Param('userId') userId: string, @Body() game: GameDB) {
-        await this.userService.addGame(game, userId);
+    async addGame(@Param('userId') userId: string, @Req() req) {
+        console.log(req.body);
+        await this.userService.addGame(req.body, userId);
     }
 
     @Post('/userStats/gamesWon/:userId')
-    async updateGamesWon(@Param('userId') userId: string, @Body() gamesWon: number) {
-        await this.userService.updateGamesWon(userId, gamesWon);
+    async updateGamesWon(@Param('userId') userId: string, @Req() req) {
+        await this.userService.updateGamesWon(userId, req.body.gamesWon);
     }
 
     @Post('/userStats/gamesPlayed/:userId')
-    async updateGamesPlayed(@Param('userId') userId: string, @Body() gamesPlayed: number) {
+    async updateGamesPlayed(@Param('userId') userId: string, @Req() req, @Body() gamesPlayed: number) {
         console.log('arrived in controller');
         await this.userService.updateGamesPlayed(userId, gamesPlayed);
     }
 
     @Post('/userStats/totalPoints/:userId')
-    async updateTotalPoints(@Param('userId') userId: string, @Body() totalPoints: number) {
-        await this.userService.updateTotalPoints(userId, totalPoints);
+    async updateTotalPoints(@Param('userId') userId: string, @Req() req) {
+        await this.userService.updateTotalPoints(userId, req.body.totalPoints);
     }
     @Post('/users/xpPoints/:userId')
-    async updateXpPoints(@Param('userId') userId: string, @Body() xpPoints: number) {
-        await this.userService.updateXpPoints(userId, xpPoints);
+    async updateXpPoints(@Param('userId') userId: string, @Req() req) {
+        await this.userService.updateXpPoints(userId, req.body.xpPoints);
     }
 }

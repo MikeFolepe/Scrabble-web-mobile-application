@@ -34,8 +34,10 @@ class StatsViewmodel: ViewModel() {
     }
 
     fun saveNewGame(game: Game) {
+        Log.d("saveGame", game.startDate + " " + game.startTime + " " + game.winnerName)
         viewModelScope.launch {
-            postGame(game)
+            val response = postGame(game)
+            if(response != null) Log.d("saveGame", response.body())
         }
     }
 
@@ -44,7 +46,27 @@ class StatsViewmodel: ViewModel() {
             val totalPoints = JSONObject().put("totalPoints", score)
             val response = postScore(totalPoints.toString())
             if(response != null) {
-                Users.userStats.totalPoints = score
+                Log.d("saveScore", response.body())
+            }
+        }
+    }
+
+    fun updateGamesWon(gamesWon: Int) {
+        viewModelScope.launch {
+            val gamesWon = JSONObject().put("gamesWon", gamesWon)
+            val response = postGamesWon(gamesWon.toString())
+            if(response != null) {
+                Log.d("updateGamesWon", response.body())
+            }
+        }
+    }
+
+    fun saveXp() {
+        viewModelScope.launch {
+            val xp = JSONObject().put("xpPoints", Users.currentUser.xpPoints)
+            val response = postXp(xp.toString())
+            if(response != null) {
+                Log.d("saveXp", response.body())
             }
         }
     }
@@ -52,25 +74,48 @@ class StatsViewmodel: ViewModel() {
     private suspend fun postGame(game: Game) = withContext(Dispatchers.Default) {
         var response: HttpResponse?
         try{
-            response = client.get("$serverUrl/api/user/userStats/game/" + Users.currentUser._id) {
+            response = client.post("$serverUrl/api/user/userStats/game/" + Users.currentUser._id) {
                 contentType(ContentType.Application.Json)
                 setBody(game)
             }
         } catch(e: Exception) {
             response = null
         }
-        if(response != null) {
-            Users.userStats.games.add(response.body())
-            Users.userStats.gamesPlayed += 1
-        }
+        return@withContext response
     }
 
     private suspend fun postScore(score: String) = withContext(Dispatchers.Default) {
         var response: HttpResponse?
         try{
-            response = client.get("$serverUrl/api/user/userStats/totalPoints/" + Users.currentUser._id) {
+            response = client.post("$serverUrl/api/user/userStats/totalPoints/" + Users.currentUser._id) {
                 contentType(ContentType.Application.Json)
                 setBody(score)
+            }
+        } catch(e: Exception) {
+            response = null
+        }
+        return@withContext response
+    }
+
+    private suspend fun postGamesWon(gamesWon: String) = withContext(Dispatchers.Default) {
+        var response: HttpResponse?
+        try{
+            response = client.post("$serverUrl/api/user/userStats/gamesWon/" + Users.currentUser._id) {
+                contentType(ContentType.Application.Json)
+                setBody(gamesWon)
+            }
+        } catch(e: Exception) {
+            response = null
+        }
+        return@withContext response
+    }
+
+    private suspend fun postXp(xp: String) = withContext(Dispatchers.Default) {
+        var response: HttpResponse?
+        try{
+            response = client.post("$serverUrl/api/user/users/xpPoints/" + Users.currentUser._id) {
+                contentType(ContentType.Application.Json)
+                setBody(xp)
             }
         } catch(e: Exception) {
             response = null

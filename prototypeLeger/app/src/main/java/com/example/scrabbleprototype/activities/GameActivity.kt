@@ -28,6 +28,7 @@ import com.example.scrabbleprototype.viewModel.StatsViewmodel
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.concurrent.timerTask
 
 class GameActivity : AppCompatActivity() {
@@ -55,6 +56,7 @@ class GameActivity : AppCompatActivity() {
         switchAiTurn()
         receiveReserve()
         receiveEndGame()
+        leave()
         if(savedInstanceState == null) {
             setUpFragments()
         }
@@ -108,15 +110,42 @@ class GameActivity : AppCompatActivity() {
             val startDate = response[1] as String
             val startTime = response[2] as String
 
-            statsViewModel.saveNewGame(Game(startDate, startTime, winnerName))
+            val gameEnded = Game(startDate, startTime, winnerName)
+            /*
+            statsViewModel.saveNewGame(gameEnded)
+            Users.userStats.games.add(gameEnded)
+            Users.userStats.gamesPlayed += 1
             statsViewModel.saveScore(Players.currentPlayer.score + Users.userStats.totalPoints)
-
-            val playersSorted = Players.players.sortedByDescending { it.score }
+            Users.userStats.totalPoints = Players.currentPlayer.score + Users.userStats.totalPoints
+            if(Users.currentUser.pseudonym == winnerName) {
+                Users.userStats.gamesWon += 1
+                statsViewModel.updateGamesWon(Users.userStats.gamesWon)
+            }
+*/
+            val playersSorted = ArrayList(Players.players.sortedByDescending { it.score })
+            //updateXp(playersSorted)
             runOnUiThread {
-                endGameAdapter.updateData(ArrayList(playersSorted))
+                endGameAdapter.updateData(playersSorted)
                 endGameDialog.show()
             }
         }
+    }
+
+    private fun leave() {
+        socket.on("leave") {
+            Users.currentUser.isObserver = false
+            runOnUiThread { startActivity(Intent(this, MainMenuActivity::class.java)) }
+        }
+    }
+
+    private fun updateXp(players: ArrayList<Player>) {
+        when(players.indexOfFirst { it.name == Users.currentUser.pseudonym }) {
+            0 -> Users.currentUser.xpPoints += 75
+            1 -> Users.currentUser.xpPoints += 40
+            2 -> Users.currentUser.xpPoints += 25
+            3 -> Users.currentUser.xpPoints += 10
+        }
+        statsViewModel.saveXp()
     }
 
     private fun hideKeyboard() {
