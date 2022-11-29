@@ -24,6 +24,7 @@ export class LetterEaselComponent {
     indexOfLetterToSwap: number[];
     display: boolean;
     isCorrect: boolean;
+    maxButtonCall: number;
 
     constructor(
         public boardHandlerService: BoardHandlerService,
@@ -41,6 +42,7 @@ export class LetterEaselComponent {
         this.display = false;
         this.isCorrect = false;
         this.receiveChecking();
+        this.maxButtonCall = 2;
     }
 
     @HostListener('document:click', ['$event'])
@@ -128,6 +130,7 @@ export class LetterEaselComponent {
     }
 
     checkWord() {
+        this.maxButtonCall--;
         this.clientSocket.socket.emit('checkingWord', this.word, this.clientSocket.currentRoom.id);
     }
     receiveChecking() {
