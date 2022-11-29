@@ -24,6 +24,6 @@ export class GameController {
         const word = req.params.word;
         this.wordValidationService = new WordValidationService(req.params.dictionary);
         if (this.wordValidationService.isWordInDictionary(word)) response.status(HttpStatus.OK).send();
-        else response.status(HttpStatus.BAD_REQUEST).send();
+        else response.status(HttpStatus.CONTINUE).send();
     }
 }

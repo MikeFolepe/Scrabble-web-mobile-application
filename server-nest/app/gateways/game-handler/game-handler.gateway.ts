@@ -251,6 +251,14 @@ export class GameHandlerGateway implements OnGatewayConnection {
         const index = room.playerService.players.findIndex((curPlayer) => curPlayer.name === playerName[0]);
         this.leaveGame(socket, index, room);
     }
+    @SubscribeMessage('checkingWord')
+    checkingWord(@ConnectedSocket() socket, @MessageBody() word: string, @MessageBody() roomId: string) {
+        const room = this.roomManagerService.find(roomId[1]);
+        if (room.wordValidation.isWordInDictionary(word[0])) socket.emit('receiveChecking', true);
+        else {
+            socket.emit('receiveChecking', false);
+        }
+    }
 
     @SubscribeMessage('replaceAi')
     replaceAi(@ConnectedSocket() socket, @MessageBody() playerName: string, @MessageBody() indexAiToReplace: number, @MessageBody() roomId: string) {

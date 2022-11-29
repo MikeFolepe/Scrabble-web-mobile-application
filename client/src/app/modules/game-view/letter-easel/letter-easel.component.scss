@@ -58,9 +58,15 @@ h2 {
 }
 
 .correct{
-    margin-top: 3em;
-    font-size: 45px;
+    margin-top: 2em;
+    font-size: 15px;
     color: green;
+    margin-left: 15px;
+}
+.notCorrect{
+    margin-top: 2em;
+    font-size: 15px;
+    color: red;
     margin-left: 15px;
 }
 .word{
@@ -71,7 +77,7 @@ h2 {
 .wordWrapper{
     display: flex;
     flex-direction:row;
-    width: 500px;
+    width: 400px;
 }
 
 .border-manipulation {

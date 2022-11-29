@@ -1,11 +1,9 @@
-import { HttpResponse, HttpStatusCode } from '@angular/common/http';
 import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { EASEL_SIZE } from '@app/classes/constants';
 import { MessageType } from '@app/classes/enum';
 import { AuthService } from '@app/services/auth.service';
 import { BoardHandlerService } from '@app/services/board-handler.service';
 import { ClientSocketService } from '@app/services/client-socket.service';
-import { CommunicationService } from '@app/services/communication.service';
 import { EndGameService } from '@app/services/end-game.service';
 import { LetterService } from '@app/services/letter.service';
 import { ManipulateService } from '@app/services/manipulate.service';
@@ -38,11 +36,11 @@ export class LetterEaselComponent {
         private manipulateService: ManipulateService,
         private skipTurnService: SkipTurnService,
         private endGameService: EndGameService,
-        private communication: CommunicationService,
     ) {
         this.word = '';
         this.display = false;
         this.isCorrect = false;
+        this.receiveChecking();
     }
 
     @HostListener('document:click', ['$event'])
@@ -130,18 +128,18 @@ export class LetterEaselComponent {
     }
 
     checkWord() {
-        this.communication
-            .checkingWord(this.word, this.clientSocket.currentRoom.gameSettings.dictionary)
-            .subscribe((response: HttpResponse<void>) => {
-                if (response.status === HttpStatusCode.Ok) {
-                    this.display = true;
-                    this.isCorrect = true;
-                } else if (response.status === HttpStatusCode.NotFound) {
-                    console.log('nottttttttttttttt');
-                    this.display = true;
-                    this.isCorrect = false;
-                }
-            });
+        this.clientSocket.socket.emit('checkingWord', this.word, this.clientSocket.currentRoom.id);
+    }
+    receiveChecking() {
+        this.clientSocket.socket.on('receiveChecking', (isCorrect) => {
+            if (isCorrect) {
+                this.display = true;
+                this.isCorrect = true;
+            } else {
+                this.display = true;
+                this.isCorrect = false;
+            }
+        });
     }
 
     isSwapButtonActive(): boolean {
