@@ -11,6 +11,7 @@ import { AuthGuard } from '@app/services/auth.guard';
 import { GameViewComponent } from './game-view/game-view/game-view.component';
 import { FormComponent } from './initialize-game/form/form.component';
 import { UserProfileComponent } from './user-manager/user-profile/user-profile.component';
+import { UserStatsComponent } from './user-manager/user-stats/user-stats.component';
 
 const routes: Routes = [
     // { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -27,6 +28,7 @@ const routes: Routes = [
     { path: 'page-not-found', component: PageNotFoundComponent },
     { path: 'admin', component: AdminPageComponent },
     { path: 'profile', component: UserProfileComponent },
+    { path: 'statistics', component: UserStatsComponent },
     { path: '**', redirectTo: '/page-not-found', pathMatch: 'full' },
 ];
 

@@ -1,5 +1,6 @@
 import { ServerRoom, State } from '@app/classes/server-room';
 import { Player } from '@app/game/models/player.model';
+import { UserService } from '@app/users/user.service';
 import { MAX_LENGTH_OBSERVERS } from '@common/constants';
 import { GameSettings } from '@common/game-settings';
 import { Room } from '@common/room';
@@ -10,12 +11,14 @@ import { OUT_BOUND_INDEX_OF_SOCKET } from '../../../classes/constants';
 export class RoomManagerService {
     rooms: ServerRoom[];
 
-    constructor() {
+    constructor(private userService: UserService) {
         this.rooms = [];
     }
 
     createRoom(socketId: string, roomId: string, gameSettings: GameSettings): ServerRoom {
         const newRoom = new ServerRoom(roomId, socketId, gameSettings);
+        const user = this.userService.activeUsers.find((curUser) => curUser.pseudonym === gameSettings.creatorName);
+        newRoom.playerService.players[0].avatar = user.avatar;
         this.rooms.push(newRoom);
         return newRoom;
     }
@@ -41,7 +44,9 @@ export class RoomManagerService {
             // eslint-disable-next-line @typescript-eslint/prefer-for-of
             for (let i = 0; i < room.playerService.players.length; i++) {
                 if (room.playerService.players[i].isAi) {
+                    const user = this.userService.activeUsers.find((curUser) => curUser.pseudonym === customerName);
                     const humanPlayer = new Player(customerName, room.playerService.players[i].letterTable);
+                    humanPlayer.avatar = user.avatar;
                     room.playerService.players[i] = humanPlayer;
                     room.aiPlayersNumber--;
                     room.humanPlayersNumber++;
