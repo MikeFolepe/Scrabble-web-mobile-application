@@ -45,11 +45,7 @@ class PreferenceViewModel: ViewModel() {
     private suspend fun getAppTheme() = withContext(Dispatchers.Default) {
         var response: HttpResponse?
         try{
-<<<<<<< HEAD
-            response = client.get("$serverUrl/api/user/preference/appTheme/" + Users.currentUser.pseudonym) {}
-=======
             response = client.get("$serverUrl/api/user/preference/appTheme/" + Users.currentUser._id) {}
->>>>>>> origin/develop
         } catch(e: Exception) {
             response = null
         }
@@ -63,11 +59,7 @@ class PreferenceViewModel: ViewModel() {
     private suspend fun getCurrentBoard() = withContext(Dispatchers.Default) {
         var response: HttpResponse?
         try{
-<<<<<<< HEAD
-            response = client.get("$serverUrl/api/user/preference/boardTheme/" + Users.currentUser.pseudonym) {}
-=======
             response = client.get("$serverUrl/api/user/preference/boardTheme/" + Users.currentUser._id) {}
->>>>>>> origin/develop
         } catch(e: Exception) {
             response = null
         }
@@ -82,11 +74,7 @@ class PreferenceViewModel: ViewModel() {
     private suspend fun getCurrentChat() = withContext(Dispatchers.Default) {
         var response: HttpResponse?
         try{
-<<<<<<< HEAD
-            response = client.get("$serverUrl/api/user/preference/chatTheme/" + Users.currentUser.pseudonym) {}
-=======
             response = client.get("$serverUrl/api/user/preference/chatTheme/" + Users.currentUser._id) {}
->>>>>>> origin/develop
         } catch(e: Exception) {
             response = null
         }
@@ -101,11 +89,7 @@ class PreferenceViewModel: ViewModel() {
     private suspend fun getBoards() = withContext(Dispatchers.Default) {
         var response: HttpResponse?
         try{
-<<<<<<< HEAD
-            response = client.get("$serverUrl/api/user/preference/boards/" + Users.currentUser.pseudonym) {}
-=======
             response = client.get("$serverUrl/api/user/preference/boards/" + Users.currentUser._id) {}
->>>>>>> origin/develop
         } catch(e: Exception) {
             response = null
         }
@@ -123,11 +107,7 @@ class PreferenceViewModel: ViewModel() {
     private suspend fun getChats() = withContext(Dispatchers.Default) {
         var response: HttpResponse?
         try{
-<<<<<<< HEAD
-            response = client.get("$serverUrl/api/user/preference/chats/" + Users.currentUser.pseudonym) {}
-=======
             response = client.get("$serverUrl/api/user/preference/chats/" + Users.currentUser._id) {}
->>>>>>> origin/develop
         } catch(e: Exception) {
             response = null
         }
@@ -145,11 +125,7 @@ class PreferenceViewModel: ViewModel() {
     private suspend fun getLanguage() = withContext(Dispatchers.Default) {
         var response: HttpResponse?
         try{
-<<<<<<< HEAD
-            response = client.get("$serverUrl/api/user/preference/language/" + Users.currentUser.pseudonym) {}
-=======
             response = client.get("$serverUrl/api/user/preference/language/" + Users.currentUser._id) {}
->>>>>>> origin/develop
         } catch(e: Exception) {
             response = null
         }
@@ -206,11 +182,7 @@ class PreferenceViewModel: ViewModel() {
     private suspend fun postAppTheme(appThemeName: String): HttpResponse? = withContext(Dispatchers.Default) {
         var response: HttpResponse?
         try{
-<<<<<<< HEAD
-            response = client.post("$serverUrl/api/user/preference/appTheme/" + Users.currentUser.pseudonym) {
-=======
             response = client.post("$serverUrl/api/user/preference/appTheme/" + Users.currentUser._id) {
->>>>>>> origin/develop
                 contentType(ContentType.Application.Json)
                 setBody(appThemeName)
             }
@@ -223,11 +195,7 @@ class PreferenceViewModel: ViewModel() {
     private suspend fun postBoard(): HttpResponse? = withContext(Dispatchers.Default) {
         var response: HttpResponse?
         try{
-<<<<<<< HEAD
-            response = client.post("$serverUrl/api/user/preference/boardTheme/" + Users.currentUser.pseudonym) {
-=======
             response = client.post("$serverUrl/api/user/preference/boardTheme/" + Users.currentUser._id) {
->>>>>>> origin/develop
                 contentType(ContentType.Application.Json)
                 setBody(Users.userPreferences.boardItemSelected)
             }
@@ -240,11 +208,7 @@ class PreferenceViewModel: ViewModel() {
     private suspend fun postChat(): HttpResponse? = withContext(Dispatchers.Default) {
         var response: HttpResponse?
         try{
-<<<<<<< HEAD
-            response = client.post("$serverUrl/api/user/preference/chatTheme/" + Users.currentUser.pseudonym) {
-=======
             response = client.post("$serverUrl/api/user/preference/chatTheme/" + Users.currentUser._id) {
->>>>>>> origin/develop
                 contentType(ContentType.Application.Json)
                 setBody(Users.userPreferences.chatItemSelected)
             }
@@ -257,11 +221,7 @@ class PreferenceViewModel: ViewModel() {
     private suspend fun addBoard(boughtBoard: Item): HttpResponse? = withContext(Dispatchers.Default) {
         var response: HttpResponse?
         try{
-<<<<<<< HEAD
-            response = client.post("$serverUrl/api/user/preference/addBoard/" + Users.currentUser.pseudonym) {
-=======
             response = client.post("$serverUrl/api/user/preference/addBoard/" + Users.currentUser._id) {
->>>>>>> origin/develop
                 contentType(ContentType.Application.Json)
                 setBody(boughtBoard)
             }
@@ -274,11 +234,7 @@ class PreferenceViewModel: ViewModel() {
     private suspend fun addChat(boughtChat: Item): HttpResponse? = withContext(Dispatchers.Default) {
         var response: HttpResponse?
         try{
-<<<<<<< HEAD
-            response = client.post("$serverUrl/api/user/preference/addChat/" + Users.currentUser.pseudonym) {
-=======
             response = client.post("$serverUrl/api/user/preference/addChat/" + Users.currentUser._id) {
->>>>>>> origin/develop
                 contentType(ContentType.Application.Json)
                 setBody(boughtChat)
             }
@@ -291,11 +247,7 @@ class PreferenceViewModel: ViewModel() {
     private suspend fun postLanguage(language: String): HttpResponse? = withContext(Dispatchers.Default) {
         var response: HttpResponse?
         try{
-<<<<<<< HEAD
-            response = client.post("$serverUrl/api/user/preference/setLanguage/" + Users.currentUser.pseudonym) {
-=======
             response = client.post("$serverUrl/api/user/preference/setLanguage/" + Users.currentUser._id) {
->>>>>>> origin/develop
                 contentType(ContentType.Application.Json)
                 setBody(language)
             }

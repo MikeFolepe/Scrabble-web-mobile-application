@@ -30,11 +30,7 @@ export class UserService {
     async insertUser(avatar: string, pseudonym: string, password: string, email: string) {
         const newUser = new this.userModel({ avatar, pseudonym, password, email });
         await newUser.save();
-<<<<<<< HEAD
-        this.preferenceService.addPreference(pseudonym);
-=======
         this.preferenceService.addPreference(newUser._id);
->>>>>>> origin/develop
     }
 
     async getUsers(): Promise<User[]> {
@@ -56,12 +52,8 @@ export class UserService {
         const user = await this.userModel.findOne({ pseudonym });
 
         if (!user) return;
-<<<<<<< HEAD
-        const userToSend = new User(user.avatar, user.pseudonym, user.password, user.email, user.isObserver, '');
-=======
         const userToSend = new User(user.avatar, user.pseudonym, user.password, user.email, false, '');
         userToSend._id = user._id;
->>>>>>> origin/develop
         return userToSend;
     }
 

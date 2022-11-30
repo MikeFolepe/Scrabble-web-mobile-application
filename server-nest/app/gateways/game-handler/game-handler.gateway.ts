@@ -6,10 +6,10 @@ import { PlayerAI } from '@app/game/models/player-ai.model';
 import { Player } from '@app/game/models/player.model';
 import { UserService } from '@app/users/user.service';
 import { ChatRoomMessage } from '@common/chatRoomMessage';
-import { Notification, NotifType } from '@common/notification';
 import { DELAY_BEFORE_PLAYING, ONE_SECOND_DELAY, THREE_SECONDS_DELAY } from '@common/constants';
 import { Friend } from '@common/friend';
 import { GameSettings } from '@common/game-settings';
+import { Notification, NotifType } from '@common/notification';
 import { User } from '@common/user';
 import { Logger } from '@nestjs/common';
 import { ConnectedSocket, MessageBody, OnGatewayConnection, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
@@ -25,7 +25,6 @@ export class GameHandlerGateway implements OnGatewayConnection {
 
     // TODO: set a socket id in player class to easily find the player
 
-<<<<<<< HEAD
     @SubscribeMessage('sendFriendRequest')
     sendFriendRequest(@ConnectedSocket() socket, @MessageBody() sender: User, @MessageBody() receiver: User) {
         let activeReceiver: User;
@@ -41,7 +40,8 @@ export class GameHandlerGateway implements OnGatewayConnection {
         }
         // IF NOT IN ACTIVE USERS JUST ADD TO DB AND DOENZO
         // GET SOCKET ID IN ACTIVE USERS
-=======
+    }
+
     @SubscribeMessage('sendEmail')
     sendEmail(@ConnectedSocket() socket, @MessageBody() email: string, @MessageBody() decryptedPassword: string) {
         const sgMail = require('@sendgrid/mail');
@@ -53,7 +53,6 @@ export class GameHandlerGateway implements OnGatewayConnection {
             text: `Bonjour, voici votre mot de passe : ${decryptedPassword[1]}`,
         };
         sgMail.send(msg);
->>>>>>> origin/develop
     }
 
     @SubscribeMessage('getRoomsConfiguration')
