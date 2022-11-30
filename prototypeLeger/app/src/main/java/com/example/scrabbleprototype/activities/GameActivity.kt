@@ -111,12 +111,10 @@ class GameActivity : AppCompatActivity() {
             val startTime = response[2] as String
 
             val gameEnded = Game(startDate, startTime, winnerName)
-
-            statsViewModel.saveNewGame(gameEnded)
-            Users.userStats.games.add(gameEnded)
             Users.userStats.gamesPlayed += 1
+            statsViewModel.saveNewGame(gameEnded)
+            statsViewModel.updateGamesPlayed(Users.userStats.gamesPlayed)
             statsViewModel.saveScore(Players.currentPlayer.score)
-            Users.userStats.totalPoints = Players.currentPlayer.score + Users.userStats.totalPoints
             if(Users.currentUser.pseudonym == winnerName) {
                 Users.userStats.gamesWon += 1
                 statsViewModel.updateGamesWon(Users.userStats.gamesWon)

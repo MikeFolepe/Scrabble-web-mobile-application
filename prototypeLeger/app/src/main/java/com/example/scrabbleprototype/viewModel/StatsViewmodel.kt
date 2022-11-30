@@ -63,9 +63,6 @@ class StatsViewmodel: ViewModel() {
         }
     }
 
-
-
-
     fun saveNewGame(game: Game) {
         Log.d("saveGame", game.startDate + " " + game.startTime + " " + game.winnerName)
         viewModelScope.launch {
@@ -90,6 +87,16 @@ class StatsViewmodel: ViewModel() {
             val response = postGamesWon(gamesWon.toString())
             if(response != null) {
                 Log.d("updateGamesWon", response.body())
+            }
+        }
+    }
+
+    fun updateGamesPlayed(gamesPlayed: Int) {
+        viewModelScope.launch {
+            val gamesPlayed = JSONObject().put("gamesPlayed", gamesPlayed)
+            val response = postGamesPlayed(gamesPlayed.toString())
+            if(response != null) {
+                Log.d("updateGamesPlayed", response.body())
             }
         }
     }
@@ -136,6 +143,19 @@ class StatsViewmodel: ViewModel() {
             response = client.post("$serverUrl/api/user/userStats/gamesWon/" + Users.currentUser._id) {
                 contentType(ContentType.Application.Json)
                 setBody(gamesWon)
+            }
+        } catch(e: Exception) {
+            response = null
+        }
+        return@withContext response
+    }
+
+    private suspend fun postGamesPlayed(gamesPlayed: String) = withContext(Dispatchers.Default) {
+        var response: HttpResponse?
+        try{
+            response = client.post("$serverUrl/api/user/userStats/gamesPlayed/" + Users.currentUser._id) {
+                contentType(ContentType.Application.Json)
+                setBody(gamesPlayed)
             }
         } catch(e: Exception) {
             response = null
