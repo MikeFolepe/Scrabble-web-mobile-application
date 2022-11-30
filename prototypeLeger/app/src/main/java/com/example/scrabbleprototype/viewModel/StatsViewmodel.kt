@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.scrabbleprototype.model.Game
 import com.example.scrabbleprototype.model.Item
 import com.example.scrabbleprototype.model.Language
+import com.example.scrabbleprototype.model.UserStatsDB
 import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.objects.Themes
 import com.example.scrabbleprototype.objects.Users
@@ -16,11 +17,13 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import io.ktor.http.ContentType.Application.Json
 import io.ktor.serialization.jackson.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
 import org.json.JSONObject
 import java.lang.Exception
 
@@ -29,9 +32,39 @@ class StatsViewmodel: ViewModel() {
     private var serverUrl = Environment.serverUrl
     private var client: HttpClient = HttpClient() {
         install(ContentNegotiation) {
-            json()
+            json(Json{ ignoreUnknownKeys = true })
         }
     }
+
+    fun updateStats() {
+        viewModelScope.launch {
+            getStats()
+        }
+    }
+
+    private suspend fun getStats() = withContext(Dispatchers.Default) {
+        var response: HttpResponse?
+        try{
+            response = client.get("$serverUrl/api/user/userStats/" + Users.currentUser._id) {}
+        } catch(e: Exception) {
+            response = null
+        }
+        if(response != null) {
+            Log.d("getStats", response.body())
+            var statsDB: UserStatsDB = response.body()
+            Log.d("getstats", statsDB.gamesPlayed.toString())
+            Users.userStats.gamesPlayed = statsDB.gamesPlayed
+            Users.userStats.gamesWon = statsDB.gamesWon
+            Users.userStats.totalPoints = statsDB.totalPoints
+            Users.userStats.totalTimeMS = statsDB.totalTimeMs
+            Users.userStats.logins = statsDB.logins
+            Users.userStats.logouts = statsDB.logouts
+            Users.userStats.games = statsDB.games
+        }
+    }
+
+
+
 
     fun saveNewGame(game: Game) {
         Log.d("saveGame", game.startDate + " " + game.startTime + " " + game.winnerName)
