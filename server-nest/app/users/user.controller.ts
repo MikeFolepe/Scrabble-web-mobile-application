@@ -1,5 +1,5 @@
 import { User } from '@common/user';
-import { GameDB, UserStatsDB } from '@common/user-stats';
+import { UserStatsDB } from '@common/user-stats';
 import * as emailS from '@nativescript/email';
 import { Body, Controller, Get, HttpStatus, Param, Post, Req, Res } from '@nestjs/common';
 import * as sgMail from '@sendgrid/mail';
