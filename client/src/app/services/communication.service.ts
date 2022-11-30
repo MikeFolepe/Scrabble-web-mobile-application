@@ -38,19 +38,19 @@ export class CommunicationService {
     }
 
     updateGamesWon(userId: string, gamesWon: number): Observable<void> {
-        return this.http.post<void>(`${this.baseUrl}/user/userStats/gamesWon/${userId}`, gamesWon);
+        return this.http.post<void>(`${this.baseUrl}/user/userStats/gamesWon/${userId}`, { gamesWon });
     }
 
     updateGamesPlayed(userId: string, gamesPlayed: number): Observable<void> {
-        return this.http.post<void>(`${this.baseUrl}/user/userStats/gamesPlayed/${userId}`, gamesPlayed);
+        return this.http.post<void>(`${this.baseUrl}/user/userStats/gamesPlayed/${userId}`, { gamesPlayed });
     }
 
     updateTotalPoints(userId: string, totalPoints: number): Observable<void> {
-        return this.http.post<void>(`${this.baseUrl}/user/userStats/totalPoints/${userId}`, totalPoints);
+        return this.http.post<void>(`${this.baseUrl}/user/userStats/totalPoints/${userId}`, { totalPoints });
     }
 
     updateXps(userId: string, xpPoints: number): Observable<void> {
-        return this.http.post<void>(`${this.baseUrl}/user/users/xpPoints/${userId}`, xpPoints);
+        return this.http.post<void>(`${this.baseUrl}/user/users/xpPoints/${userId}`, { xpPoints });
     }
 
     getUserStats(userId: string): Observable<UserStatsDB> {

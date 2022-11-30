@@ -159,11 +159,14 @@ export class UserService {
     }
 
     async updateTotalPoints(userId: string, totalPoints: number): Promise<void> {
-        await this.userStatsModel.findOneAndUpdate({ userId }, { totalPoints });
+        console.log(totalPoints);
+        const userStat = await this.userStatsModel.findOne({ userId });
+        const newPoints = userStat.totalPoints + totalPoints;
+        await this.userStatsModel.findOneAndUpdate({ userId }, { totalPoints: newPoints });
     }
 
     async updateXpPoints(userId: string, xpPoints: number): Promise<void> {
-        await this.userModel.findByIdAndUpdate({ userId }, { xpPoints });
+        await this.userModel.findOneAndUpdate({ _id: userId }, { xpPoints });
     }
 
     async updateTimesPlayed(totalTimeMs: number, userIds: string[]): Promise<void> {
@@ -171,7 +174,7 @@ export class UserService {
             const userStats = await this.userStatsModel.findOne({ userId });
 
             const newTime = userStats.totalTimeMs + totalTimeMs;
-            await this.userStatsModel.updateOne({ userId }, { totalPoints: newTime });
+            await this.userStatsModel.updateOne({ userId }, { totalTimeMs: newTime });
         }
     }
 

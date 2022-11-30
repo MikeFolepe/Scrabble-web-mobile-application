@@ -41,14 +41,16 @@ export class EndGameService {
     receiveEndGameFromServer(): void {
         this.clientSocketService.socket.on('receiveEndGame', (winnerName: string, startDate: string, startTime: string) => {
             this.isEndGame = true;
+            console.log('winner', winnerName);
+            console.log('user');
 
             const newGame = new GameDB(startDate, startTime, winnerName);
             this.communicationService.addNewGameToStats(newGame, this.authService.currentUser._id).subscribe();
-            this.communicationService
-                .updateTotalPoints(this.authService.currentUser._id, this.playerService.currentPlayer.score + this.userService.userStats.totalPoints)
-                .subscribe();
-            if (this.playerService.currentPlayer.name === winnerName) {
-                this.communicationService.updateGamesWon(this.authService.currentUser._id, this.userService.userStats.gamesWon++).subscribe();
+            this.communicationService.updateTotalPoints(this.authService.currentUser._id, this.playerService.currentPlayer.score).subscribe();
+            if (this.authService.currentUser.pseudonym === winnerName) {
+                console.log('winner');
+                const gamesWon = this.userService.userStats.gamesWon + 1;
+                this.communicationService.updateGamesWon(this.authService.currentUser._id, gamesWon).subscribe();
             }
             this.getFinalScore();
         });

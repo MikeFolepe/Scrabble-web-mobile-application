@@ -1,7 +1,7 @@
 import { User } from '@common/user';
 import { GameDB, UserStatsDB } from '@common/user-stats';
 import * as emailS from '@nativescript/email';
-import { Body, Controller, Get, HttpStatus, Param, Post, Put, Req, Res } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Param, Post, Req, Res } from '@nestjs/common';
 import * as sgMail from '@sendgrid/mail';
 import { Response } from 'express';
 import { UserService } from './user.service';
@@ -100,22 +100,23 @@ export class UserController {
     }
 
     @Post('/userStats/gamesWon/:userId')
-    async updateGamesWon(@Param('userId') userId: string, @Body() gamesWon: number) {
-        await this.userService.updateGamesWon(userId, gamesWon);
+    async updateGamesWon(@Param('userId') userId: string, @Body() body) {
+        await this.userService.updateGamesWon(userId, body.gamesWon);
     }
 
     @Post('/userStats/gamesPlayed/:userId')
-    async updateGamesPlayed(@Param('userId') userId: string, @Body() gamesPlayed: number) {
+    async updateGamesPlayed(@Param('userId') userId: string, @Body() body) {
+        console.log(body);
         console.log('arrived in controller');
-        await this.userService.updateGamesPlayed(userId, gamesPlayed);
+        await this.userService.updateGamesPlayed(userId, body.gamesPlayed);
     }
 
     @Post('/userStats/totalPoints/:userId')
-    async updateTotalPoints(@Param('userId') userId: string, @Body() totalPoints: number) {
-        await this.userService.updateTotalPoints(userId, totalPoints);
+    async updateTotalPoints(@Param('userId') userId: string, @Body() body) {
+        await this.userService.updateTotalPoints(userId, body.totalPoints);
     }
     @Post('/users/xpPoints/:userId')
-    async updateXpPoints(@Param('userId') userId: string, @Body() xpPoints: number) {
-        await this.userService.updateXpPoints(userId, xpPoints);
+    async updateXpPoints(@Param('userId') userId: string, @Body() body) {
+        await this.userService.updateXpPoints(userId, body.xpPoints);
     }
 }
