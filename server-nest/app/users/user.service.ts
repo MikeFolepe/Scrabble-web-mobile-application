@@ -3,9 +3,12 @@
 import { ConnectionDocument } from '@app/model/connection-schema';
 import { FriendDocument } from '@app/model/friend.schema';
 import { GameDocument } from '@app/model/game-schema';
+import { NotificationDocument } from '@app/model/notification-schema';
 import { UserStatsDocument } from '@app/model/user-stats.schema';
 import { UserDocument } from '@app/model/user.schema';
 import { PreferenceService } from '@app/Preference/preference.service';
+import { Friend } from '@common/friend';
+import { Notification } from '@common/notification';
 import { User } from '@common/user';
 import { GameDB, UserStatsDB } from '@common/user-stats';
 import { Injectable } from '@nestjs/common';
@@ -24,6 +27,7 @@ export class UserService {
         @InjectModel('UserStats') private readonly userStatsModel: Model<UserStatsDocument>,
         @InjectModel('Game') private readonly gameModel: Model<GameDocument>,
         @InjectModel('Connection') private readonly connectionModel: Model<ConnectionDocument>,
+        @InjectModel('Notification') private readonly notificationModel: Model<NotificationDocument>,
         private preferenceService: PreferenceService,
     ) {
         this.activeUsers = [];
@@ -65,6 +69,8 @@ export class UserService {
             friends: user.friends,
             socketId: '',
             isObserver: false,
+            notifications: user.notifications,
+            invitations: user.invitations,
         }));
     }
 
@@ -210,5 +216,36 @@ export class UserService {
             .join('');
 
         return password;
+    }
+
+    async addInvitation(pseudonym: string, invitation: Friend): Promise<Friend> {
+        const newInvitation = new this.friendModel({
+            avatar: invitation.avatar,
+            pseudonym: invitation.pseudonym,
+            xpPoints: invitation.xpPoints,
+        });
+        const user = await this.userModel.findOne({ pseudonym });
+        user.invitations.push(newInvitation)
+        await user.save()
+        const invitationAdded = new Friend(newInvitation.pseudonym, newInvitation.avatar, newInvitation.xpPoints);
+        invitationAdded._id = newInvitation._id;
+        return invitationAdded;
+    }
+
+    async addNotification(pseudonym: string, notification: Notification): Promise<Notification> {
+        const newNotif = new this.notificationModel({
+            type: notification.type,
+            sender: notification.sender,
+            description: notification.description,
+            title: notification.title,
+            date: notification.date,
+            time: notification.date,
+        });
+        const user = await this.userModel.findOne({ pseudonym });
+        user.notifications.push(newNotif);
+        await user.save();
+        const notifAdded = new Notification(newNotif.type, newNotif.sender, newNotif.description);
+        notifAdded._id = newNotif._id;
+        return notifAdded;
     }
 }

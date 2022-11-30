@@ -28,20 +28,19 @@ export class GameHandlerGateway implements OnGatewayConnection {
     // TODO: set a socket id in player class to easily find the player
 
     @SubscribeMessage('sendFriendRequest')
-    sendFriendRequest(@ConnectedSocket() socket, @MessageBody() sender: User, @MessageBody() receiver: User) {
+    async sendFriendRequest(@ConnectedSocket() socket, @MessageBody() sender: User, @MessageBody() receiver: User) {
         let activeReceiver: User;
         console.log(receiver[1].pseudonym);
         for (const user of this.userService.activeUsers) {
             if (user.pseudonym === receiver[1].pseudonym) activeReceiver = user;
         }
-
+        let notifToAdd = new Notification(NotifType.Friend, sender[0].pseudonym, "Cliquez pour être redirigé vers la page d'invitations");
+        notifToAdd = await this.userService.addNotification(receiver.pseudonym, notifToAdd)
+        const invitationAdded = await this.userService.addInvitation(receiver.pseudonym, new Friend(sender[0].pseudonym, sender[0].avatar, sender[0].xpPoints))
         if (activeReceiver !== undefined) {
-            const notifToSend = new Notification(NotifType.Friend, sender[0].pseudonym, "Cliquez pour être redirigé vers la page d'invitations");
-            socket.to(activeReceiver.socketId).emit('receiveNotification', notifToSend);
-            socket.to(activeReceiver.socketId).emit('receiveFriendRequest', sender[0]);
+            socket.to(activeReceiver.socketId).emit('receiveNotification', notifToAdd);
+            socket.to(activeReceiver.socketId).emit('receiveFriendRequest', invitationAdded);
         }
-        // IF NOT IN ACTIVE USERS JUST ADD TO DB AND DOENZO
-        // GET SOCKET ID IN ACTIVE USERS
     }
 
     @SubscribeMessage('sendEmail')

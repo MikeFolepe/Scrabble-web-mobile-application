@@ -120,4 +120,9 @@ export class UserController {
     async updateXpPoints(@Param('userId') userId: string, @Req() req) {
         await this.userService.updateXpPoints(userId, req.body.xpPoints);
     }
+
+    @Post('/addInvitation/:userId')
+    async addInvitation(@Req() req, @Res() res: Response) {
+        await this.userService.addInvitation(req.params.userId, req.body.invitation);
+    }
 }

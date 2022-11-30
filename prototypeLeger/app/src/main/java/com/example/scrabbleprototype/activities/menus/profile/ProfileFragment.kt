@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
@@ -23,6 +24,7 @@ import com.example.scrabbleprototype.objects.CurrentRoom
 import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.objects.Themes
 import com.example.scrabbleprototype.objects.Users
+import com.example.scrabbleprototype.viewModel.InvitationViewModel
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.client.*
@@ -52,6 +54,7 @@ class ProfileFragment : Fragment(), CoroutineScope {
     private lateinit var userAdapter: UserAdapter
     private lateinit var invitationAdapter: FriendInvitationAdapter
 
+    private val invitationViewModel: InvitationViewModel by activityViewModels()
     private lateinit var binding: FragmentProfileBinding
     private var client = HttpClient() {
         install(ContentNegotiation) {}
@@ -64,8 +67,8 @@ class ProfileFragment : Fragment(), CoroutineScope {
         super.onCreate(savedInstanceState)
 
         for(i in 0 until 12) {
-            user.friendsList.add(Friend("ami #" + i, (R.color.blue).toString(), 250 + i))
-            user.invitations.add(User("", "", "", "", false, ""))
+            user.friends.add(Friend("ami #" + i, (R.color.blue).toString(), 250 + i))
+            user.invitations.add(Friend("", "", 11))
         }
     }
 
@@ -134,7 +137,7 @@ class ProfileFragment : Fragment(), CoroutineScope {
     private fun receiveFriendRequest() {
         SocketHandler.socket.on("receiveFriendRequest") { response ->
             Log.d("receive request", "RECEIVED")
-            val sender = jacksonObjectMapper().readValue(response[0].toString(), User::class.java)
+            val sender = jacksonObjectMapper().readValue(response[0].toString(), Friend::class.java)
             user.invitations.add(sender)
             activity?.runOnUiThread { invitationAdapter.updateData(user.invitations) }
         }
