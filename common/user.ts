@@ -1,23 +1,25 @@
+import { Friend } from '@common/friend';
+
 export class User {
+    _id: string;
     pseudonym: string;
-    ipAddress: string;
-    socketId?: string;
-    isObserver: boolean;
     avatar: string;
-    password?: string;
+    password: string;
     email: string;
-    _id?: string
+    socketId?: string;
+    isObserver?: boolean;
+    xpPoints: number;
+    friends: Friend[];
 
     //ce qui est oblige : avatar, pseudonym, password, email
 
-    constructor(avatar: string, pseudonym: string, password: string, email: string, isObserver: boolean = false, socketId?: string) {
+    constructor(avatar: string, pseudonym: string, password: string, email: string) {
         this.avatar = avatar;
         this.pseudonym = pseudonym;
         this.password = password;
         this.email = email;
-        this.socketId = socketId;
-        this.isObserver = isObserver;
+        this.isObserver = false;
+        this.xpPoints = 0;
+        this.friends = [];
     }
-
-
 }

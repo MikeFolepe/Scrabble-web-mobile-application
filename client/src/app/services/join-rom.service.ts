@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginatorIntl, PageEvent } from '@angular/material/paginator';
@@ -113,7 +114,12 @@ export class JoinRomService {
                 this.clientSocketService.socket.emit('newRoomObserver', this.authService.currentUser, room.id);
                 return;
             }
-            this.clientSocketService.socket.emit('newRoomCustomer', this.authService.currentUser.pseudonym, room.id);
+            this.clientSocketService.socket.emit(
+                'newRoomCustomer',
+                this.authService.currentUser.pseudonym,
+                room.id,
+                this.authService.currentUser._id,
+            );
             return;
         }
 
@@ -128,7 +134,12 @@ export class JoinRomService {
                     if (isObserver) {
                         this.clientSocketService.socket.emit('newRoomObserver', this.authService.currentUser, room.id);
                     } else {
-                        this.clientSocketService.socket.emit('newRoomCustomer', this.authService.currentUser.pseudonym, room.id);
+                        this.clientSocketService.socket.emit(
+                            'newRoomCustomer',
+                            this.authService.currentUser.pseudonym,
+                            room.id,
+                            this.authService.currentUser._id,
+                        );
                     }
                 } else {
                     this.displayErrorMessage(ErrorMessage.BadGamePassword);
@@ -145,7 +156,7 @@ export class JoinRomService {
 
     receiveRandomPlacement(): void {
         this.clientSocketService.socket.on('receiveCustomerOfRandomPlacement', (customerName: string, roomId: string) => {
-            this.clientSocketService.socket.emit('newRoomCustomer', customerName, roomId);
+            this.clientSocketService.socket.emit('newRoomCustomer', customerName, roomId, this.authService.currentUser._id);
         });
     }
 
@@ -174,7 +185,12 @@ export class JoinRomService {
     private receiveJoinDecision(): void {
         this.clientSocketService.socket.on('receiveJoinDecision', (decision: boolean, roomId: string) => {
             if (decision) {
-                this.clientSocketService.socket.emit('newRoomCustomer', this.authService.currentUser.pseudonym, roomId);
+                this.clientSocketService.socket.emit(
+                    'newRoomCustomer',
+                    this.authService.currentUser.pseudonym,
+                    roomId,
+                    this.authService.currentUser._id,
+                );
                 return;
             }
             this.displayErrorMessage(ErrorMessage.JoinDisapproval);

@@ -54,6 +54,9 @@
     <string name="horizontal">Horizontalement</string>
     <string name="vertical">Verticalement</string>
 
+    <string name="endgame_dialog_title">Fin de partie</string>
+    <string name="leave_endgame">Quitter</string>
+
     //Waiting room
     <string name="startGame">Démarrer</string>
     <string name="players_waiting_list">Liste des joueurs</string>

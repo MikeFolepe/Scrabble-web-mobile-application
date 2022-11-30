@@ -4,11 +4,13 @@ import android.content.*
 import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
+import android.view.ContextThemeWrapper
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -86,6 +88,7 @@ class GameButtonsFragment : Fragment(), EndTurnCallback {
         receiveNewPlayer()
         setupSkipButton()
         setupPlayButton()
+        setupLeaveButton()
         return binding.root
     }
 
@@ -139,6 +142,25 @@ class GameButtonsFragment : Fragment(), EndTurnCallback {
         placementViewModel.currentPlacementLength.observe(viewLifecycleOwner, placementObserver)
 
         binding.playTurnButton.setOnClickListener { placeWord() }
+    }
+
+    private fun setupLeaveButton() {
+        binding.giveUpButton.setOnClickListener {
+            val builder = AlertDialog.Builder(ContextThemeWrapper(requireContext(), ThemeManager.getTheme()))
+            builder.setMessage("Voulez-vous quitter cette partie ?")
+                .setCancelable(false)
+                .setPositiveButton("Confirmer") { dialog, id ->
+                    if(Users.currentUser.isObserver) socket.emit("sendObserverLeave", CurrentRoom.myRoom.id)
+                    else socket.emit("sendGiveUp", Users.currentUser.pseudonym, CurrentRoom.myRoom.id)
+                    dialog.dismiss()
+                }
+                .setNegativeButton("Annuler") { dialog, id ->
+                    dialog.dismiss()
+                }
+            val alert: AlertDialog = builder.create()
+            alert.setTitle("Confirmation d'abandon")
+            alert.show()
+        }
     }
 
     private fun placeWord() {

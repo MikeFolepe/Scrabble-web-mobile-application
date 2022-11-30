@@ -97,7 +97,7 @@ class ProfileFragment : Fragment(), CoroutineScope {
     private fun setupFriendsList() {
         val friendsListView = binding.friendsList
         friendsListView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        val friendsListAdapter = FriendsListAdapter(user.friendsList)
+        val friendsListAdapter = FriendsListAdapter(user.friends)
         friendsListView.adapter = friendsListAdapter
     }
 
