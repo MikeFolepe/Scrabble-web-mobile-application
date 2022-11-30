@@ -42,8 +42,8 @@ export class MainPageComponent {
         public chatRoomService: ChatRoomService,
     ) {
         this.selectedGameTypeIndex = 0;
-        this.gameType = ['Scrabble classique'];
-        this.gameModes = ['Jouer une partie en solo', 'Créer une partie multijoueur', 'Joindre une partie multijoueur'];
+        // this.gameType = ['Scrabble classique'];
+        this.gameModes = ['Créer une partie multijoueur', 'Joindre une partie multijoueur'];
         this.chatRoomService.getChatRooms();
         this.selectedChatRooms = [];
         this.chatRoomForm = false;
