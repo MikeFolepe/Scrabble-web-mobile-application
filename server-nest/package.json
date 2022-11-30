@@ -19,6 +19,7 @@
         "test:e2e": "jest --config ./e2e/jest-e2e.json"
     },
     "dependencies": {
+        "@nativescript/email": "^2.0.5",
         "@nestjs/common": "^9.0.0",
         "@nestjs/config": "^2.2.0",
         "@nestjs/core": "^9.0.0",

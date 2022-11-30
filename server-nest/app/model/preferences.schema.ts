@@ -4,8 +4,13 @@ import * as mongoose from 'mongoose';
 
 @Schema()
 export class Preference extends mongoose.Document {
+<<<<<<< HEAD
     @Prop({ type: mongoose.Types.ObjectId, required: true, ref: User.name })
     user: mongoose.Types.ObjectId;
+=======
+    @Prop({ type: String, required: true, ref: User.name })
+    user: string;
+>>>>>>> origin/develop
 
     @Prop({ type: String, required: true, default: 'Default' })
     appTheme: string;

@@ -48,6 +48,11 @@
     <string name="dictionary_cost">20 XP</string>
     <string name="placements_list_cost">Acheter pour 75 XP</string>
     <string name="dictionary_verif_left">Il vous reste %1d utilisation(s)</string>
+    <string name="possible_word_points">%1d Points</string>
+    <string name="possible_words_title">Liste des meilleurs placements</string>
+    <string name="possible_word_orientation">Orientation : 1%s</string>
+    <string name="horizontal">Horizontalement</string>
+    <string name="vertical">Verticalement</string>
 
     //Waiting room
     <string name="startGame">Démarrer</string>

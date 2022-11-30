@@ -119,6 +119,7 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
                 if (response.status == HttpStatusCode.OK) {
                     val userReceived: User = response.body()
                     users.currentUser = userReceived
+                    Log.d("log in", users.currentUser._id)
                     join(serverIp)
 
                 } else if (response.status == HttpStatusCode.NotModified) usernameInput.error = "Cet utilisateur est déjà connecté"

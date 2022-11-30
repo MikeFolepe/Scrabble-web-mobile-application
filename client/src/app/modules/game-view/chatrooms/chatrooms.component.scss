@@ -67,6 +67,14 @@
     align-items:center;
 }
 
+.systemText {
+    color : rgb(179, 179, 179);
+    //center the text
+    text-align: center;
+    //disable shadow
+    text-shadow: none;
+}
+
 .sendMessage {
 
     position: absolute;
