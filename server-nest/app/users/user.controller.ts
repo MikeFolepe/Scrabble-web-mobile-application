@@ -1,7 +1,7 @@
 import { User } from '@common/user';
 import { GameDB, UserStatsDB } from '@common/user-stats';
 import * as emailS from '@nativescript/email';
-import { Body, Controller, Get, HttpStatus, Param, Post, Put, Req, Res } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Param, Post, Req, Res } from '@nestjs/common';
 import * as sgMail from '@sendgrid/mail';
 import { Response } from 'express';
 import { UserService } from './user.service';
@@ -108,7 +108,7 @@ export class UserController {
     @Post('/userStats/gamesPlayed/:userId')
     async updateGamesPlayed(@Param('userId') userId: string, @Req() req, @Body() gamesPlayed: number) {
         console.log('arrived in controller');
-        await this.userService.updateGamesPlayed(userId, gamesPlayed);
+        await this.userService.updateGamesPlayed(userId, req.body.gamesPlayed);
     }
 
     @Post('/userStats/totalPoints/:userId')

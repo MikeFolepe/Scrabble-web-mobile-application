@@ -7,10 +7,11 @@ import { PlayerAI } from '@app/game/models/player-ai.model';
 import { Player } from '@app/game/models/player.model';
 import { UserService } from '@app/users/user.service';
 import { ChatRoomMessage } from '@common/chatRoomMessage';
-import { DELAY_BEFORE_PLAYING, ONE_SECOND_DELAY, THREE_SECONDS_DELAY } from '@common/constants';
+import { DELAY_BEFORE_PLAYING, EASEL_SIZE, INVALID_INDEX, ONE_SECOND_DELAY, THREE_SECONDS_DELAY } from '@common/constants';
 import { Friend } from '@common/friend';
 import { GameSettings } from '@common/game-settings';
 import { User } from '@common/user';
+import { GameDB } from '@common/user-stats';
 import { Logger } from '@nestjs/common';
 import { ConnectedSocket, MessageBody, OnGatewayConnection, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
@@ -205,11 +206,9 @@ export class GameHandlerGateway implements OnGatewayConnection {
     @SubscribeMessage('sendGiveUp')
     sendGiveUp(@ConnectedSocket() socket, @MessageBody() playerName: string, @MessageBody() roomId: string) {
         const room = this.roomManagerService.find(roomId[1]);
-        console.log('here', playerName[0]);
         const index = room.playerService.players.findIndex((curPlayer) => curPlayer.name === playerName[0]);
-        console.log(room.playerService.players);
-        console.log(index);
-        this.leaveGame(socket, room, index);
+        const user = this.userService.activeUsers.find((curUser) => curUser.pseudonym === playerName[0]);
+        this.leaveGame(socket, room, index, user._id);
     }
 
     @SubscribeMessage('sendRoomMessage')
@@ -238,7 +237,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
         @MessageBody() player: string,
         @MessageBody() isDragActivated = false,
     ) {
-        if (word[1].length === 7) socket.emit('playAudio');
+        if (word[1].length === EASEL_SIZE) socket.emit('playAudio');
         const room = this.roomManagerService.find(roomId[6]);
         const validationResult = await room.wordValidation.validateAllWordsOnBoard(JSON.parse(board[5]), isEaselSize[4], isRow[3]);
         const playerReceived = JSON.parse(player[7]);
@@ -258,17 +257,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
             socket.emit('receiveFail', JSON.parse(position[0]), JSON.parse(orientation[2]), word[1], isDragActivated[9]);
         }
     }
-    /*
-    @SubscribeMessage('sendStartingCase')
-    sendStartingCase(@ConnectedSocket() socket, @MessageBody() startPosition: Vec2, @MessageBody() roomId: string) {
-        socket.to(roomId[1]).emit('receiveStartingCase', startPosition[0]);
-    }
 
-    @SubscribeMessage('sendEraseStartingCase')
-    sendEraseStartingCase(@ConnectedSocket() socket, @MessageBody() roomId: string) {
-        this.server.in(roomId).emit('eraseStartingCase');
-    }
-*/
     @SubscribeMessage(ChatEvents.UpdateUserSocket)
     updateUserSocket(@ConnectedSocket() socket, @MessageBody() user: User) {
         const currentUser = this.userService.activeUsers.find((curUser) => curUser.pseudonym === user.pseudonym);
@@ -320,82 +309,30 @@ export class GameHandlerGateway implements OnGatewayConnection {
         const allPossibilities = await room.aiForBestActions.getPossibilities(room.aiForBestActions.strategy.getEasel(playerReceived.letterTable));
         socket.emit('receiveBest', JSON.stringify(allPossibilities));
     }
-    // onEndGameByGiveUp(socket: Socket): void {
-    //     socket.on('sendEndGameByGiveUp', (isGiveUp: boolean, roomId: string) => {
-    //         socket
-    //             .to(roomId)
-    //             .emit(
-    //                 'receiveEndGameByGiveUp',
-    //                 isGiveUp,
-    //                 this.roomManagerService.getWinnerName(roomId, this.roomManagerService.findLooserIndex(socket.id)),
-    //             );
-    //         this.server.emit('roomConfiguration', this.roomManagerService.getRoomsToSend());
-    //         this.server.socketsLeave(roomId);
-    //     });
-    // }
-
-    // sendWinnerName(socket: Socket, roomId: string): void {
-    //     setTimeout(() => {
-    //         socket
-    //             .to(roomId)
-    //             .emit(
-    //                 'receiveEndGameByGiveUp',
-    //                 true,
-    //                 this.roomManagerService.getWinnerName(roomId, this.roomManagerService.findLooserIndex(socket.id)),
-    //             );
-    //         socket.to(roomId).emit('receiveGameConverservernMessage', 'Attention la partie est sur le point de se faire convertir en partie Solo.');
-    //         socket.leave(roomId);
-    //     }, DELAY_OF_DISCONNECT);
-    // }
 
     handleConnection(socket: Socket) {
         socket.emit(ChatEvents.SocketId, socket.id);
         this.logger.log(`Connexion par l'utilisateur avec id : ${socket.id}`);
-
-        // socket.on('sendEndGame', (isEndGame: boolean, letterTable: Letter[], roomId: string) => {
-        //     socket.to(roomId).emit('receiveEndGame', isEndGame, letterTable);
-        //     this.server.in(roomId).emit('stopTimer');
-        // });
     }
 
     async handleDisconnect(socket: Socket) {
         const room = this.roomManagerService.find(this.roomManagerService.findRoomIdOf(socket.id));
-        const index = this.userService.activeUsers.findIndex((curUser) => curUser.socketId === socket.id);
-        const user = this.userService.activeUsers.find((cuUser) => cuUser.socketId === socket.id);
-        await this.userService.addLogout(user._id);
-        let pseudonym;
-        if (index !== -1) {
-            pseudonym = this.userService.activeUsers[index].pseudonym;
-        }
-        this.userService.activeUsers.splice(index, 1);
+        const userIndex = this.userService.activeUsers.findIndex((curUser) => curUser.socketId === socket.id);
+        await this.userService.addLogout(this.userService.activeUsers[userIndex]._id);
 
+        if (room !== undefined) {
+            let pseudonym;
+            if (userIndex !== INVALID_INDEX) {
+                pseudonym = this.userService.activeUsers[userIndex].pseudonym;
+            }
+            const indexPlayer = room.playerService.players.findIndex((player) => player.name === pseudonym);
+            await this.leaveGame(socket, room, indexPlayer, this.userService.activeUsers[userIndex]._id);
+        }
         this.logger.log(`Déconnexion par l'utilisateur avec id : ${socket.id}`);
-        if (room === undefined) {
-            return;
-        }
-        const indexPlayer = room.playerService.players.findIndex((player) => player.name === pseudonym);
-        this.leaveGame(socket, room, indexPlayer);
-
-        // if (room === undefined) return;
-        // room.skipTurnService.stopTimer();
-        // if (room.state === State.Waiting) {
-        //     this.roomManagerService.deleteRoom(roomId);
-        //     this.server.emit('roomConfiguration', this.roomManagerService.getRoomsToSend());
-        //     return;
-        // }
-        // if (room.state === State.Playing) {
-        //     room.state = State.Finish;
-        //     // Emit the event
-        //     // this.sendWinnerName(socket, roomId);
-        //     return;
-        // }
-        // // so after all if the state is finish, delete the room
-        // this.roomManagerService.deleteRoom(roomId);
-        // this.server.emit('roomConfiguration', this.roomManagerService.getRoomsToSend());
-        // this.server.socketsLeave(roomId);
+        this.userService.activeUsers.splice(userIndex, 1);
     }
 
-    private leaveGame(socket: Socket, room: ServerRoom, indexPlayer: number = 0) {
+    private async leaveGame(socket: Socket, room: ServerRoom, indexPlayer: number = 0, userId: string = '') {
         const observer = room.observers.find((observerCur) => observerCur.socketId === socket.id);
         if (observer) {
             console.log('observer');
@@ -441,6 +378,9 @@ export class GameHandlerGateway implements OnGatewayConnection {
                 // this.server.socketsLeave(room.id);
                 room.endGameService.isEndGameByGiveUp = true;
             } else if (room.aiPlayersNumber < 2) {
+                const game = new GameDB(room.endGameService.gameStartDate, room.endGameService.gameStartTime, '');
+                await this.userService.addGame(game, userId);
+                await this.userService.updateTotalPoints(userId, room.playerService.players[indexPlayer].score);
                 socket.emit('leave');
                 socket.to(room.id).emit('leaveNotification', room.playerService.players[indexPlayer].name + ' a quitté la partie');
                 room.playerService.players[indexPlayer] = new Player(
