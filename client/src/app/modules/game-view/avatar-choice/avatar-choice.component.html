@@ -5,18 +5,18 @@
 
 </div>
 <div>
-    <img class = "avatar" src="assets/avatars/blonde-girl.png" alt="blonde-girl" (click)="this.avatarChoice.close(true); this.authService.chosenAvatar = 'assets/avatars/blonde-girl.png' ">
-    <img class = "avatar" src="assets/avatars/blonde-guy.png" alt="blonde-guy" (click)="this.avatarChoice.close(true); this.authService.chosenAvatar = 'assets/avatars/blonde-guy.png' "> 
-    <img class = "avatar" src="assets/avatars/brunette-girl.png" alt="brunette-girl" (click)="this.avatarChoice.close(true); this.authService.chosenAvatar = 'assets/avatars/brunette-girl.png' "> 
-    <img class = "avatar" src="assets/avatars/music-guy.png" alt="music-guy" (click)="this.avatarChoice.close(true); this.authService.chosenAvatar = 'assets/avatars/music-guy.png' ">
-    <img class = "avatar" src="assets/avatars/earrings-girl.png" alt="earrings-girl" (click)="this.avatarChoice.close(true); this.authService.chosenAvatar = 'assets/avatars/earrings-girl.png' ">  
+    <img class = "avatar" src="{{this.blondeGirl}}" alt="blonde-girl" (click)="this.avatarChoice.close(true); this.authService.chosenAvatar = this.blondeGirl ">
+    <img class = "avatar" src="{{this.blondeGuy}}" alt="blonde-guy" (click)="this.avatarChoice.close(true); this.authService.chosenAvatar = this.blondeGuy "> 
+    <img class = "avatar" src="{{this.brunetteGirl}}" alt="brunette-girl" (click)="this.avatarChoice.close(true); this.authService.chosenAvatar = this.brunetteGirl "> 
+    <img class = "avatar" src="{{this.musicGuy}}" alt="music-guy" (click)="this.avatarChoice.close(true); this.authService.chosenAvatar = this.musicGuy ">
+    <img class = "avatar" src="{{this.earringsGirl}}" alt="earrings-girl" (click)="this.avatarChoice.close(true); this.authService.chosenAvatar = this.earringsGirl ">  
 </div>
 <div>
-    <img class = "avatar" src="assets/avatars/ginger-girl.png" alt="ginger-girl" (click)="this.avatarChoice.close(true); this.authService.chosenAvatar = 'assets/avatars/ginger-girl.png' ">
-    <img class = "avatar" src="assets/avatars/hat-girl.png" alt="hat-girl" (click)="this.avatarChoice.close(true); this.authService.chosenAvatar = 'assets/avatars/hat-girl.png' ">
-    <img class = "avatar" src="assets/avatars/doggo.png" alt="doggo" (click)="this.avatarChoice.close(true); this.authService.chosenAvatar = 'assets/avatars/doggo.png' "> 
-    <img class = "avatar" src="assets/avatars/mustache-guy.png" alt="mustache-guy" (click)="this.avatarChoice.close(true); this.authService.chosenAvatar = 'assets/avatars/mustache-guy.png' ">
-    <img class = "avatar" src="assets/avatars/orange-guy.png" alt="orange-guy" (click)="this.avatarChoice.close(true); this.authService.chosenAvatar = 'assets/avatars/orange-guy.png' ">
+    <img class = "avatar" src="{{this.gingerGirl}}" alt="ginger-girl" (click)="this.avatarChoice.close(true); this.authService.chosenAvatar = this.gingerGirl ">
+    <img class = "avatar" src="{{this.hatGirl}}" alt="hat-girl" (click)="this.avatarChoice.close(true); this.authService.chosenAvatar = this.hatGirl ">
+    <img class = "avatar" src="{{this.doggo}}" alt="doggo" (click)="this.avatarChoice.close(true); this.authService.chosenAvatar = this.doggo "> 
+    <img class = "avatar" src="{{this.mustacheGuy}}" alt="mustache-guy" (click)="this.avatarChoice.close(true); this.authService.chosenAvatar = this.mustacheGuy ">
+    <img class = "avatar" src="{{this.orangeGuy}}" alt="orange-guy" (click)="this.avatarChoice.close(true); this.authService.chosenAvatar = this.orangeGuy ">
 </div>
 
 <!-- <div mat-dialog-actions> -->

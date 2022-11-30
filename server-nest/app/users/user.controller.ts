@@ -55,10 +55,11 @@ export class UserController {
         const sgMail = require('@sendgrid/mail');
         sgMail.setApiKey('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');
         const msg = {
-            to: email,
-            from: 'log3900.110.22@gmail.com',
-            subject: 'Mot de passe oublié - Scrabble',
-            text: `Bonjour, voici votre mot de passe : ${password}`,
+          to: email, 
+          from: 'log3900.110.22@gmail.com', 
+          subject: 'Mot de passe oublié - Scrabble', 
+          text: `- SRABBLE 110 - \n\n Utilisateur : ${pseudonym}. \n\n Bonjour, voici votre mot de passe : ${password}`,
+          
         };
         sgMail.send(msg);
         return true;
