@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.model.AvatarAdapter
 import com.example.scrabbleprototype.model.User
+import environments.Environment
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
@@ -41,6 +42,7 @@ import kotlin.coroutines.CoroutineContext
 class RegisterActivity : AppCompatActivity(), CoroutineScope {
 
     var user = User("", "", "", "", false, null)
+    private var serverUrl = Environment.serverUrl
     lateinit var myavatar : ImageView
     lateinit var avatarButton : Button
     val avatarSrcImages = arrayListOf(R.drawable.blonde_girl, R.drawable.blonde_guy, R.drawable.brunette_girl, R.drawable.doggo, R.drawable.earrings_girl, R.drawable.ginger_girl, R.drawable.hat_girl, R.drawable.music_guy, R.drawable.mustache_guy, R.drawable.orange_guy, R.drawable.t_l_chargement)
@@ -240,7 +242,7 @@ class RegisterActivity : AppCompatActivity(), CoroutineScope {
     suspend fun checkPseudonym(user: User): HttpResponse? {
         var response: HttpResponse?
         try {
-            response = client.get(resources.getString(R.string.http)+user.ipAddress+ "/api/user/checkPseudonym/"+user.pseudonym){
+            response = client.get("$serverUrl/api/user/checkPseudonym/"+user.pseudonym){
                 contentType(ContentType.Application.Json)
             }
         }  catch(e: Exception) {
@@ -253,7 +255,7 @@ class RegisterActivity : AppCompatActivity(), CoroutineScope {
     suspend fun postRegistration(user: User): HttpResponse? {
         var response: HttpResponse?
         try{
-            response = client.post(resources.getString(R.string.http) + user.ipAddress + "/api/user/users") {
+            response = client.post("$serverUrl/api/user/users") {
                 contentType(ContentType.Application.Json)
                 setBody(user)
             }

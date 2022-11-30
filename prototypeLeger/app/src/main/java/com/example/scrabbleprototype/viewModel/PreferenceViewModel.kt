@@ -3,6 +3,9 @@ package com.example.scrabbleprototype.viewModel
 import android.graphics.BitmapFactory
 import android.util.Base64
 import android.util.Log
+import android.widget.Toast
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.scrabbleprototype.R
@@ -30,7 +33,7 @@ import java.lang.Exception
 
 class PreferenceViewModel: ViewModel() {
 
-    private var serverUrl = "http://192.168.0.31:3000"
+    private var serverUrl = Environment.serverUrl
     private var client: HttpClient = HttpClient() {
         install(ContentNegotiation) {
             jackson()
@@ -187,13 +190,21 @@ class PreferenceViewModel: ViewModel() {
         }
     }
 
-    fun saveAvatar(currentUser : User) {
+    fun saveProfile(currentUser : User): LiveData<Boolean> {
+        val result = MutableLiveData<Boolean>()
         viewModelScope.launch {
             var response = changeAvatar(currentUser)
-            if(response != null) {
-                Users.currentUser = response.body()
+            if (response != null) {
+                if(response.status == HttpStatusCode.OK) {
+                    Users.currentUser = response.body()
+                    result.postValue(true)
+                }
+                else if(response.status == HttpStatusCode.Found) {
+                    result.postValue(false)
+                }
             }
         }
+        return result
     }
 
     private suspend fun postAppTheme(appThemeName: String): HttpResponse? = withContext(Dispatchers.Default) {
@@ -277,7 +288,7 @@ class PreferenceViewModel: ViewModel() {
     private suspend fun changeAvatar(currentUser : User): HttpResponse? = withContext(Dispatchers.Default)  {
         var response: HttpResponse?
         try{
-            response = client.post("$serverUrl/api/user/modifyAvatar") {
+            response = client.post("$serverUrl/api/user/updateUser") {
                 contentType(ContentType.Application.Json)
                 setBody(currentUser)
             }

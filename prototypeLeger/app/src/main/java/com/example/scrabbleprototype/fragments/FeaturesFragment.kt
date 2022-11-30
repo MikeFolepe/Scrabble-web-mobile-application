@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
-import android.os.Environment
 import android.os.IBinder
 import android.view.ContextThemeWrapper
 import androidx.fragment.app.Fragment
@@ -14,24 +13,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.databinding.FragmentFeaturesBinding
-import com.example.scrabbleprototype.databinding.FragmentLetterRackBinding
 import com.example.scrabbleprototype.model.*
 import com.example.scrabbleprototype.objects.*
-import com.example.scrabbleprototype.services.EndTurnCallback
 import com.example.scrabbleprototype.services.PlaceService
 import com.example.scrabbleprototype.services.SkipTurnService
-import com.example.scrabbleprototype.services.SwapLetterService
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import environments.Environment
 import io.ktor.client.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
@@ -55,6 +49,7 @@ class FeaturesFragment : Fragment(), CoroutineScope {
     private lateinit var possibleWordsDialog: Dialog
     private lateinit var possibleWordsAdapter: PossibleWordsAdapter
     val user = Users.currentUser
+    private var serverUrl = Environment.serverUrl
 
     private lateinit var skipTurnService: SkipTurnService
     private var skipTurnBound: Boolean = false
@@ -198,7 +193,7 @@ class FeaturesFragment : Fragment(), CoroutineScope {
     private suspend fun isWordInDictionary(word: String): Boolean {
         var response: HttpResponse?
         try{
-            response = client.get(resources.getString(R.string.http) + user.ipAddress+  "/api/game/dictionaryVerif/" + word + "/" + CurrentRoom.myRoom.gameSettings.dictionary) {}
+            response = client.get("$serverUrl/api/game/dictionaryVerif/" + word + "/" + CurrentRoom.myRoom.gameSettings.dictionary) {}
         } catch(e: Exception) {
             response = null
         }

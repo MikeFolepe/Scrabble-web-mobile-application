@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import { User } from '@common/user';
 import * as email from '@nativescript/email';
 import { Body, Controller, Get, HttpStatus, Logger, Post, Req, Res } from '@nestjs/common';
@@ -76,11 +77,18 @@ export class UserController {
         return accounts;
     }
 
-    @Post('/modifyAvatar')
-    async modifyAvatarInDb(@Body() user: User, @Res() response: Response) {
-        const pseudonym = user.pseudonym;
-        const avatar = user.avatar;
-        await this.userService.modifyAvatar(pseudonym, avatar).then((newUser: User) => {
+    @Post('/updateUser')
+    async updateUserInDb(@Body() user: User, @Res() response: Response) {
+        console.log('boo', user);
+        const userFound = await this.userService.getSingleUser(user.pseudonym);
+        if (userFound) {
+            console.log('userfound');
+            if (userFound._id !== user._id) {
+                console.log('userfound');
+                response.status(HttpStatus.FOUND).send();
+            }
+        }
+        await this.userService.updateUser(user).then((newUser: User) => {
             response.status(HttpStatus.OK).send(newUser);
         });
     }

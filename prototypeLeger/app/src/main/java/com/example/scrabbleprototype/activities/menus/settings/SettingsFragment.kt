@@ -144,7 +144,6 @@ class SettingsFragment : Fragment(), CoroutineScope {
 
                     }
                 }
-                preferenceViewModel.saveAvatar(user.currentUser)
                 }
         }
         }
@@ -204,7 +203,6 @@ class SettingsFragment : Fragment(), CoroutineScope {
             val bundle = data?.extras
             val bitmapImage = bundle?.get("data") as Bitmap
             binding.avatar.setImageBitmap(bitmapImage)
-            user.avatarBmp = bitmapImage
             encodeImageToBase64(bitmapImage)
             Log.d("nouveau", bitmapImage.toString())
         }
@@ -331,12 +329,22 @@ class SettingsFragment : Fragment(), CoroutineScope {
     private fun setupSaveButton() {
         binding.saveEditsBtn.setOnClickListener {
             user.currentUser.pseudonym = binding.profilePseudonym.text.toString()
-            user.currentUser.email = binding.profileEmail.text.toString()
-            val split = user.currentUser.avatar.split(",")
-            val imageBytes = android.util.Base64.decode(split[1], android.util.Base64.NO_WRAP)
-            val image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-            user.avatarBmp = image
-            Toast.makeText(requireContext(), "Les changements ont été sauvegardés", Toast.LENGTH_LONG).show()
+            Log.d("inputuser", user.currentUser.pseudonym)
+            preferenceViewModel.saveProfile(user.currentUser).observe(viewLifecycleOwner, androidx.lifecycle.Observer { saved ->
+                if(saved) {
+                    binding.profilePseudonym.setText(user.currentUser.pseudonym)
+                    val split = user.currentUser.avatar.split(",")
+                    val imageBytes = android.util.Base64.decode(split[1], android.util.Base64.NO_WRAP)
+                    val image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+                    user.avatarBmp = image
+                    Toast.makeText(requireContext(), "Les changements ont été sauvegardés", Toast.LENGTH_LONG).show()
+                }
+                else {
+                    binding.profilePseudonym.setText(user.currentUser.pseudonym)
+                    Toast.makeText(requireContext(), "Ce pseudonyme existe, les changements n'ont pas été effectués", Toast.LENGTH_LONG).show()
+                }
+            })
+
         }
     }
 

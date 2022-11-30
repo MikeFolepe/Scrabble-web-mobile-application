@@ -29,6 +29,7 @@ import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.objects.Users
 import com.example.scrabbleprototype.viewModel.PreferenceViewModel
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import environments.Environment
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
@@ -48,6 +49,7 @@ import kotlin.coroutines.CoroutineContext
 
 
 class ConnectionActivity : AppCompatActivity(), CoroutineScope {
+    private var serverUrl = Environment.serverUrl
     val users = Users
     lateinit var client: HttpClient
     lateinit var socket: Socket
@@ -135,7 +137,7 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
     private suspend fun sendEmailToUser( pseudonym: String): HttpResponse? {
         var response: HttpResponse?
         try {
-            response = client.get(resources.getString(R.string.http)+users.currentUser.ipAddress+ "/api/user/sendEmailToUser/" + pseudonym){
+            response = client.get("$serverUrl/api/user/sendEmailToUser/" + pseudonym){
                 contentType(ContentType.Application.Json)
             }
         }  catch(e: Exception) {
@@ -147,7 +149,7 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
     private suspend fun getEmail(pseudonym: String): HttpResponse? {
         var response: HttpResponse?
         try {
-            response = client.get(resources.getString(R.string.http)+users.currentUser.ipAddress+ "/api/user/getEmail/" + pseudonym){
+            response = client.get("$serverUrl/api/user/getEmail/" + pseudonym){
                 contentType(ContentType.Application.Json)
             }
         }  catch(e: Exception) {
@@ -187,7 +189,7 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
                             val image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
                             users.currentUser = newUser
                             users.avatarBmp = image
-                            joinChat(user)
+                            joinChat()
                         }
                         else if (response.status == HttpStatusCode.NotModified) pseudonymInput.error = "Cet utilisateur est déjà connecté"
                     }
@@ -204,7 +206,7 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
     suspend fun findUserInDb(user: User ,pseudonym: String, password: String): HttpResponse? {
         var response: HttpResponse?
         try{
-            response = client.get(resources.getString(R.string.http) + user.ipAddress+ "/api/user/findUserInDb/"+pseudonym+"/"+password) {
+            response = client.get("$serverUrl/api/user/findUserInDb/"+pseudonym+"/"+password) {
                 contentType(ContentType.Application.Json)
             }
         } catch(e: Exception) {
@@ -216,7 +218,7 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
     suspend fun postAuthentication(user: User): HttpResponse? {
         var response: HttpResponse?
         try{
-            response = client.post(resources.getString(R.string.http) + user.ipAddress + "/api/auth/connect") {
+            response = client.post("$serverUrl/api/auth/connect") {
                 contentType(ContentType.Application.Json)
                 setBody(user)
             }
@@ -227,10 +229,10 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
     }
 
 
-    fun joinChat(user: User) {
+    fun joinChat() {
         val intent = Intent(this, MainMenuActivity::class.java)
 
-        SocketHandler.setPlayerSocket("http://" + user.ipAddress)
+        SocketHandler.setPlayerSocket(serverUrl)
         SocketHandler.establishConnection()
         socket = SocketHandler.getPlayerSocket()
 

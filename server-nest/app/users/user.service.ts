@@ -1,7 +1,8 @@
+/* eslint-disable no-underscore-dangle */
 // import user for common
 import { PreferenceService } from '@app/Preference/preference.service';
 import { User } from '@common/user';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
@@ -48,19 +49,18 @@ export class UserService {
 
     async getSingleUser(pseudonym: string): Promise<User> {
         const user = await this.userModel.findOne({ pseudonym });
-
         if (!user) return;
         const userToSend = new User(user.avatar, user.pseudonym, user.password, user.email, false, '');
         userToSend._id = user._id;
         return userToSend;
     }
 
-    async modifyAvatar(pseudonym: string, avatar: string): Promise<User> {
-        await this.userModel.findOneAndUpdate({ pseudonym }, { avatar });
-        const user = await this.getSingleUser(pseudonym);
-        Logger.log(user);
+    async updateUser(user: User): Promise<User> {
+        await this.userModel.findByIdAndUpdate({ _id: user._id }, { pseudonym: user.pseudonym, avatar: user.avatar });
+        const userDB = await this.getSingleUser(user.pseudonym);
+        console.log(userDB);
         console.log('ici');
-        return user;
+        return userDB;
     }
 
     async getUserEmail(email: string): Promise<User> {
