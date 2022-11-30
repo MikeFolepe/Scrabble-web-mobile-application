@@ -6,6 +6,7 @@ import { PlaceLetterService } from '@app/game/services/place-letter/place-letter
 import { PlayerService } from '@app/game/services/player/player.service';
 import { SkipTurnService } from '@app/game/services/skip-turn-service/skip-turn-service';
 import { WordValidationService } from '@app/game/services/word-validation/word-validation.service';
+import { bot } from '@common/defaultAvatars';
 import { GameSettings } from '@common/game-settings';
 import { User } from '@common/user';
 import { AI_NAMES } from './aiNames';
@@ -58,7 +59,15 @@ export class ServerRoom {
         this.aiTurn = 0;
         this.initializeAiPlayers();
         // eslint-disable-next-line prettier/prettier, max-len
-        this.aiForBestActions = new PlayerAI('BOT', this.letter.getRandomLetters(), this.playerService.players[0], this.gameSettings, this.placeLetter, this.letter, this.wordValidation);
+        this.aiForBestActions = new PlayerAI(
+            'BOT',
+            this.letter.getRandomLetters(),
+            this.playerService.players[0],
+            this.gameSettings,
+            this.placeLetter,
+            this.letter,
+            this.wordValidation,
+        );
     }
 
     createAi(player: Player) {
@@ -68,7 +77,7 @@ export class ServerRoom {
     initializeAiPlayers(): void {
         for (let i = 0; i < DEFAULT_AI_PLAYERS_NB; i++) {
             this.playerService.players.push(
-                new Player(AI_NAMES[this.playerService.players.length - 1], this.letter.getRandomLetters(), 0, false, false, true),
+                new Player(AI_NAMES[this.playerService.players.length - 1], this.letter.getRandomLetters(), 0, false, false, true, bot),
             );
         }
     }

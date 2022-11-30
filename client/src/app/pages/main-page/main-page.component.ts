@@ -42,8 +42,8 @@ export class MainPageComponent {
         public chatRoomService: ChatRoomService,
     ) {
         this.selectedGameTypeIndex = 0;
-        this.gameType = ['Scrabble classique'];
-        this.gameModes = ['Jouer une partie en solo', 'Créer une partie multijoueur', 'Joindre une partie multijoueur'];
+        // this.gameType = ['Scrabble classique'];
+        this.gameModes = ['Créer une partie multijoueur', 'Joindre une partie multijoueur'];
         this.chatRoomService.getChatRooms();
         this.selectedChatRooms = [];
         this.chatRoomForm = false;
@@ -55,16 +55,11 @@ export class MainPageComponent {
         // Update game type and game mode, then route
         switch (this.selectedGameMode) {
             case this.gameModes[0]: {
-                this.gameSettingsService.isSoloMode = true;
-                this.router.navigate(['solo-game-ai']);
-                break;
-            }
-            case this.gameModes[1]: {
                 this.gameSettingsService.isSoloMode = false;
                 this.router.navigate(['multiplayer-mode']);
                 break;
             }
-            case this.gameModes[2]: {
+            case this.gameModes[1]: {
                 this.gameSettingsService.isSoloMode = false;
                 this.router.navigate(['join-room']);
                 break;

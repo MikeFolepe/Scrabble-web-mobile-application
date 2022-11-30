@@ -9,9 +9,9 @@
     <div id="players-list">
         <p id="reserve-info">Nombres de lettres dans la réserve : {{ letterService.reserveSize }}</p>
         <div *ngFor="let player of playerService.players" [ngClass]="{ 'player-turn': player.isTurn }">
-            <img src="{{ player.avatar }}" class="avatar" alt="Avatar" />
             <p>
                 <span *ngIf="player.isTurn">></span>
+                <img src="{{ player.avatar }}" class="avatar" alt="Avatar" />
                 Nom : {{ player.name }}
             </p>
 
