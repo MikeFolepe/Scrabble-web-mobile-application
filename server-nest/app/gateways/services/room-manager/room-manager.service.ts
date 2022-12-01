@@ -182,13 +182,31 @@ export class RoomManagerService {
         const roomsToSend: Room[] = [];
         for (const room of this.rooms) {
             roomsToSend.push(
-                new Room(room.id, room.gameSettings, room.state, room.socketIds, room.aiPlayersNumber, room.humanPlayersNumber, room.observers),
+                new Room(
+                    room.id,
+                    room.gameSettings,
+                    room.state,
+                    room.socketIds,
+                    room.aiPlayersNumber,
+                    room.humanPlayersNumber,
+                    room.observers,
+                    room.roomMessages,
+                ),
             );
         }
         return roomsToSend;
     }
 
     getRoomToSend(room: ServerRoom): Room {
-        return new Room(room.id, room.gameSettings, room.state, room.socketIds, room.aiPlayersNumber, room.humanPlayersNumber, room.observers);
+        return new Room(
+            room.id,
+            room.gameSettings,
+            room.state,
+            room.socketIds,
+            room.aiPlayersNumber,
+            room.humanPlayersNumber,
+            room.observers,
+            room.roomMessages,
+        );
     }
 }

@@ -220,7 +220,8 @@ export class GameHandlerGateway implements OnGatewayConnection {
             new Date().getMinutes().toString().padStart(2, '0') +
             ':' +
             new Date().getSeconds().toString().padStart(2, '0');
-
+        const room = this.roomManagerService.find(roomId[1]);
+        room.roomMessages.push(message);
         this.server.to(roomId[1]).emit('receiveRoomMessage', message[0]);
     }
 

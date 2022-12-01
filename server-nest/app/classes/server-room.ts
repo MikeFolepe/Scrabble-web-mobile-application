@@ -6,6 +6,7 @@ import { PlaceLetterService } from '@app/game/services/place-letter/place-letter
 import { PlayerService } from '@app/game/services/player/player.service';
 import { SkipTurnService } from '@app/game/services/skip-turn-service/skip-turn-service';
 import { WordValidationService } from '@app/game/services/word-validation/word-validation.service';
+import { ChatRoomMessage } from '@common/chatRoomMessage';
 import { bot } from '@common/defaultAvatars';
 import { GameSettings } from '@common/game-settings';
 import { User } from '@common/user';
@@ -37,6 +38,7 @@ export class ServerRoom {
     ais: PlayerAI[];
     aiTurn: number;
     aiForBestActions: PlayerAI;
+    roomMessages: ChatRoomMessage[];
     constructor(roomId: string, socketId: string, gameSettings: GameSettings, state: State = State.Waiting) {
         this.aiPlayersNumber = DEFAULT_AI_PLAYERS_NB;
         this.humanPlayersNumber = DEFAULT_HUMAN_PLAYERS_NB;
@@ -58,6 +60,7 @@ export class ServerRoom {
         this.ais = [];
         this.aiTurn = 0;
         this.initializeAiPlayers();
+        this.roomMessages = [];
         // eslint-disable-next-line prettier/prettier, max-len
         this.aiForBestActions = new PlayerAI(
             'BOT',

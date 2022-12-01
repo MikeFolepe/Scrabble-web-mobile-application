@@ -1,34 +1,35 @@
 import { Injectable } from '@angular/core';
-import { TWO_SECOND_DELAY } from '@app/classes/constants';
 import { MessageType } from '@app/classes/enum';
 import { ChatRoomMessage } from '@common/chatRoomMessage';
 import { AuthService } from './auth.service';
 import { ClientSocketService } from './client-socket.service';
-import { PlayerService } from './player.service';
 
 @Injectable({
     providedIn: 'root',
 })
 export class SendMessageService {
-    message: string = '';
     messageType: MessageType;
-    private displayMessage: () => void;
+    listTypes: MessageType[];
 
-    constructor(private clientSocketService: ClientSocketService, private playerService: PlayerService, private authService: AuthService) {
+    constructor(public clientSocketService: ClientSocketService, private authService: AuthService) {
         this.receiveMessageFromOpponent();
         // To display message in real time in chat box
         this.receiveConversionMessage();
+        this.listTypes = [];
     }
 
     // displayMessage() will call the method from chatBoxComponent to display the message
-    displayBound(fn: () => void) {
-        this.displayMessage = fn;
-    }
 
     displayMessageByType(message: string, messageType: MessageType): void {
         this.messageType = messageType;
-        const messageObject = new ChatRoomMessage(message, '', this.authService.currentUser.pseudonym);
-        if (this.messageType === MessageType.Player) this.sendMessageToOpponent(messageObject);
+        const messageObject = new ChatRoomMessage(message, this.authService.currentUser.avatar, this.authService.currentUser.pseudonym);
+        if (this.messageType === MessageType.Player) {
+            this.sendMessageToOpponent(messageObject);
+            this.listTypes.push(messageType);
+        } else if (this.messageType === MessageType.Error && message.length) {
+            this.listTypes.push(this.messageType);
+            this.clientSocketService.currentRoom.roomMessages.push(messageObject);
+        }
 
         // this.displayMessage();
     }
@@ -51,31 +52,10 @@ export class SendMessageService {
             this.displayMessageByType(message, MessageType.System);
         });
     }
-    sendOpponentMessage(opponentMessage: string): void {
-        this.messageType = MessageType.Opponent;
-        this.message = opponentMessage;
-        this.displayMessage();
-    }
 
     receiveMessageFromOpponent(): void {
         this.clientSocketService.socket.on('receiveRoomMessage', (opponentMessage: ChatRoomMessage) => {
-            const messageString = opponentMessage.pseudonym + ' [' + opponentMessage.time + ']' + ' : ' + opponentMessage.text;
-            if (opponentMessage.pseudonym === this.authService.currentUser.pseudonym) {
-                this.messageType = MessageType.Player;
-                this.message = messageString;
-                this.displayMessage();
-            } else this.sendOpponentMessage(messageString);
+            this.clientSocketService.currentRoom.roomMessages.push(opponentMessage);
         });
-    }
-
-    displayFinalMessage(indexPlayer: number): void {
-        setTimeout(() => {
-            let endGameEasel = '';
-            this.displayMessageByType('Fin de partie - lettres restantes', MessageType.System);
-            for (const letter of this.playerService.opponents[indexPlayer].letterTable) {
-                endGameEasel += letter.value;
-            }
-            this.displayMessageByType(this.playerService.opponents[indexPlayer].name + ' : ' + endGameEasel, MessageType.System);
-        }, TWO_SECOND_DELAY);
     }
 }
