@@ -115,6 +115,10 @@ export const BONUS_POSITIONS: Map<string, string> = new Map<string, string>([
     ['O15', 'tripleWord'],
 ]);
 
+export enum NumberOfPlayer {
+    OneVone,
+    OneVthree,
+}
 export const DEFAULT_GAME_SETTINGS = {
     creatorName: '',
     startingPlayer: StartingPlayer.Player1,
@@ -124,6 +128,7 @@ export const DEFAULT_GAME_SETTINGS = {
     dictionary: '',
     type: RoomType.public,
     password: '',
+    gameType: NumberOfPlayer.OneVthree,
 };
 
 export const RESERVE: Letter[] = [

@@ -1,3 +1,4 @@
+import { DEFAULT_AI_PLAYERS_NB, DEFAULT_HUMAN_PLAYERS_NB, DEFAULT_SOLO_AI_PLAYERS_NB } from '@app/classes/constants';
 import { PlayerAI } from '@app/game/models/player-ai.model';
 import { Player } from '@app/game/models/player.model';
 import { LetterService } from '@app/game/services/letter/letter.service';
@@ -5,10 +6,9 @@ import { PlaceLetterService } from '@app/game/services/place-letter/place-letter
 import { PlayerService } from '@app/game/services/player/player.service';
 import { SkipTurnService } from '@app/game/services/skip-turn-service/skip-turn-service';
 import { WordValidationService } from '@app/game/services/word-validation/word-validation.service';
-import { GameSettings } from '@common/game-settings';
+import { GameSettings, NumberOfPlayer } from '@common/game-settings';
 import { User } from '@common/user';
 import { AI_NAMES } from './aiNames';
-import { DEFAULT_AI_PLAYERS_NB, DEFAULT_HUMAN_PLAYERS_NB } from './constants';
 
 export enum State {
     Playing,
@@ -61,7 +61,8 @@ export class ServerRoom {
     }
 
     initializeAiPlayers(): void {
-        for (let i = 0; i < DEFAULT_AI_PLAYERS_NB; i++) {
+        const defaultAiNumber = this.gameSettings.myGameType === NumberOfPlayer.OneVthree ? DEFAULT_AI_PLAYERS_NB : DEFAULT_SOLO_AI_PLAYERS_NB;
+        for (let i = 0; i < defaultAiNumber; i++) {
             this.playerService.players.push(
                 new Player(AI_NAMES[this.playerService.players.length - 1], this.letter.getRandomLetters(), 0, false, false, true),
             );

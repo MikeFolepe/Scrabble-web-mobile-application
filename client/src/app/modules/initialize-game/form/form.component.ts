@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { DEFAULT_DICTIONARY_INDEX } from '@app/classes/constants';
+import { DEFAULT_DICTIONARY_INDEX, NumberOfPlayer } from '@app/classes/constants';
 import { AddChatRoomComponent } from '@app/modules/game-view/add-chat-room/add-chat-room.component';
 import { ChangeChatRoomComponent } from '@app/modules/game-view/change-chat-room/change-chat-room.component';
 import { JoinChatRoomsComponent } from '@app/modules/game-view/join-chat-rooms/join-chat-rooms.component';
@@ -30,7 +30,9 @@ export class FormComponent implements OnInit, OnDestroy {
     fileName: string;
     channels: string[] = [];
     channel: string;
-
+    gameTypes: string[];
+    gameTypeInput: NumberOfPlayer;
+    gameTypeMessage: string;
     constructor(
         private clientSocket: ClientSocketService,
         public gameSettingsService: GameSettingsService,
@@ -45,6 +47,10 @@ export class FormComponent implements OnInit, OnDestroy {
         public dialog: MatDialog,
     ) {
         this.gameSettingsService.ngOnDestroy();
+        this.gameTypes = [];
+        this.gameTypes.push('Partie à deux');
+        this.gameTypes.push('Partie à quatre');
+        this.gameTypeMessage = 'Type de partie';
     }
 
     async ngOnInit(): Promise<void> {
@@ -66,6 +72,11 @@ export class FormComponent implements OnInit, OnDestroy {
         await this.selectGameDictionary(this.selectedDictionary);
         if (this.isDictionaryDeleted) return;
         this.snapshotSettings();
+    }
+
+    selectGameType(gameType: number) {
+        this.gameTypeInput = gameType === 0 ? NumberOfPlayer.OneVone : NumberOfPlayer.OneVthree;
+        this.gameSettingsService.gameSettings.myGameType = this.gameTypeInput;
     }
 
     async selectGameDictionary(dictionary: Dictionary): Promise<void> {
@@ -115,6 +126,7 @@ export class FormComponent implements OnInit, OnDestroy {
             this.getLevel(),
             this.fileName,
             type,
+            this.gameTypeInput,
         );
         this.handleGameType(type);
     }
