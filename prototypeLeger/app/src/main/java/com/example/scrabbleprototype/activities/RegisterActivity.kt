@@ -1,12 +1,11 @@
 package com.example.scrabbleprototype.activities
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.model.User
 import io.ktor.client.*
@@ -17,8 +16,6 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.*
-import java.lang.Exception
-import java.util.regex.Pattern
 import kotlin.coroutines.CoroutineContext
 
 class RegisterActivity : AppCompatActivity(), CoroutineScope {

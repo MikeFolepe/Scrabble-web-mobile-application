@@ -12,11 +12,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
+import com.example.scrabbleprototype.fragments.ChannelButtonsFragment
 import com.example.scrabbleprototype.model.*
 import com.example.scrabbleprototype.objects.CurrentRoom
 import com.example.scrabbleprototype.objects.Players
 import com.example.scrabbleprototype.objects.ThemeManager
-import com.example.scrabbleprototype.objects.Users
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import kotlinx.serialization.encodeToString
@@ -39,13 +39,24 @@ class WaitingRoomActivity : AppCompatActivity() {
         receiveNewOpponent()
         goToGameView()
         setupStartGameButton()
-        setUpCancelButton()
+        setupCancelButton()
         setupRoomId()
         setupPlayersWaiting()
         receiveNewRequest()
         leaveToHome()
         onReplaceHuman()
         // Players.currentPlayerPosition = Players.opponents.size
+
+        if(savedInstanceState == null) {
+            setupFragments()
+        }
+    }
+
+    private fun setupFragments() {
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
+        fragmentTransaction.add(R.id.waiting_room_chatroom_buttons, ChannelButtonsFragment())
+        fragmentTransaction.addToBackStack(null)
+        fragmentTransaction.commit()
     }
 
     private fun setupStartGameButton() {
@@ -67,7 +78,7 @@ class WaitingRoomActivity : AppCompatActivity() {
         roomIdText.text = "Salle de jeu : " + CurrentRoom.myRoom.id
     }
 
-    private fun setUpCancelButton(){
+    private fun setupCancelButton(){
         val cancelGameButton = findViewById<Button>(R.id.back_button)
 
         if(currentPlayer.isCreator){
@@ -85,7 +96,7 @@ class WaitingRoomActivity : AppCompatActivity() {
         }
     }
 
-    /*fun setUpGameTypeLabel() {
+    /*fun setupGameTypeLabel() {
         val typeText = findViewById<TextView>(R.id.room_type)
         if(currentRoom.gameSettings.password == "") {
             typeText.text = "PUBLIC"

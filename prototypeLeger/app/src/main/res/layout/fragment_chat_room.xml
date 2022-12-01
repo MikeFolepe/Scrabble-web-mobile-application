@@ -7,7 +7,6 @@
     tools:context=".fragments.ChatRoomFragment">
 
     <LinearLayout
-        android:id="@+id/channel_chat"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/chatbox_border"

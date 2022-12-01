@@ -53,7 +53,7 @@ class ChannelButtonsFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if(savedInstanceState == null) {
-            setUpFragments()
+            setupFragments()
         }
         receiveChatRooms()
         receiveNewChatRoom()
@@ -87,9 +87,9 @@ class ChannelButtonsFragment : Fragment() {
         }
     }
 
-    private fun setUpFragments() {
+    private fun setupFragments() {
         val fragmentTransaction = childFragmentManager.beginTransaction() ?: return
-        fragmentTransaction.add(R.id.channel_chat, ChatRoomFragment())
+        fragmentTransaction.add(R.id.chat_block, ChatRoomFragment())
         fragmentTransaction.addToBackStack(null)
         fragmentTransaction.commit()
     }
@@ -227,7 +227,7 @@ class ChannelButtonsFragment : Fragment() {
 
     private fun recreateChatFragment() {
         val supportFragmentManager = childFragmentManager
-        val fragment = supportFragmentManager.findFragmentById(R.id.channel_chat) ?: return
+        val fragment = supportFragmentManager.findFragmentById(R.id.chat_block) ?: return
         supportFragmentManager.beginTransaction().detach(fragment).commit()
         supportFragmentManager.executePendingTransactions()
         supportFragmentManager.beginTransaction().attach(fragment).commit()

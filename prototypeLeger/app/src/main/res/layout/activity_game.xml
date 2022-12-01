@@ -1,63 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/game_layout"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".activities.GameActivity"
-    android:background="?attr/backgroundColor">
-
-    <LinearLayout
+    android:layout_height="match_parent">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/game_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal">
+        tools:context=".activities.GameActivity"
+        android:background="?attr/backgroundColor">
 
         <LinearLayout
-            android:layout_width="325dp"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:layout_margin="10dp">
-            <FrameLayout
-                android:id="@+id/info_pannel_frame"
-                android:layout_width="match_parent"
-                android:layout_height="500dp"
-                android:layout_marginBottom="15dp"/>
-            <FrameLayout
-                android:id="@+id/game_buttons_frame"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+            android:orientation="horizontal">
 
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="500dp"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:layout_margin="10dp">
-            <FrameLayout
-                android:id="@+id/board_frame"
-                android:layout_width="match_parent"
-                android:layout_height="500dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="15dp"/>
-            <FrameLayout
-                android:id="@+id/letter_rack_frame"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"/>
-
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="325dp"
-            android:layout_height="500dp"
-            android:orientation="vertical"
-            android:layout_margin="10dp">
-            <FrameLayout
-                android:id="@+id/chatbox_frame"
-                android:layout_width="match_parent"
+            <LinearLayout
+                android:layout_width="325dp"
                 android:layout_height="match_parent"
-                />
+                android:orientation="vertical"
+                android:layout_margin="10dp">
+                <FrameLayout
+                    android:id="@+id/info_pannel_frame"
+                    android:layout_width="match_parent"
+                    android:layout_height="500dp"
+                    android:layout_marginBottom="15dp"/>
+                <FrameLayout
+                    android:id="@+id/game_buttons_frame"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
 
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="500dp"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_margin="10dp">
+                <FrameLayout
+                    android:id="@+id/board_frame"
+                    android:layout_width="match_parent"
+                    android:layout_height="500dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="15dp"/>
+                <FrameLayout
+                    android:id="@+id/letter_rack_frame"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"/>
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="325dp"
+                android:layout_height="500dp"
+                android:orientation="vertical"
+                android:layout_margin="10dp">
+                <FrameLayout
+                    android:id="@+id/chatbox_frame"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    />
+            </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <FrameLayout
+        android:id="@+id/game_chatroom_buttons"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"/>
+</RelativeLayout>

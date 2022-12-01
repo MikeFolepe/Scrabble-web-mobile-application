@@ -1,27 +1,19 @@
 package com.example.scrabbleprototype.activities
 
 import android.content.Context
-import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.AttributeSet
-import android.util.Log
 import android.view.*
-import android.widget.Button
-import android.widget.FrameLayout
 import android.widget.PopupWindow
 import android.widget.Toast
-import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.navigation.NavigationView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import androidx.drawerlayout.widget.DrawerLayout
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
@@ -32,6 +24,7 @@ import com.example.scrabbleprototype.model.Notification
 import com.example.scrabbleprototype.model.NotificationAdapter
 import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.objects.Users
+import com.google.android.material.navigation.NavigationView
 
 class MainMenuActivity : AppCompatActivity() {
 
@@ -49,11 +42,11 @@ class MainMenuActivity : AppCompatActivity() {
         setupDrawer()
 
         if(savedInstanceState == null) {
-            setUpFragments()
+            setupFragments()
         }
     }
 
-    private fun setUpFragments() {
+    private fun setupFragments() {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction.add(R.id.channel_buttons, ChannelButtonsFragment())
         fragmentTransaction.addToBackStack(null)
