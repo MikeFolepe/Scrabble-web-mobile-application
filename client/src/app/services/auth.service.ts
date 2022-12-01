@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import { HttpErrorResponse, HttpResponse, HttpStatusCode } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -11,6 +12,7 @@ import { environment } from 'src/environments/environment';
 import { ClientSocketService } from './client-socket.service';
 import { CommunicationService } from './communication.service';
 import { ErrorHandlerService } from './error-handler.service';
+import { UserService } from './user.service';
 @Injectable({
     providedIn: 'root',
 })
@@ -26,6 +28,7 @@ export class AuthService {
         private communicationService: CommunicationService,
         public errorHandler: ErrorHandlerService,
         public snackBar: MatSnackBar,
+        public userService: UserService,
     ) {
         this.chosenAvatar = '';
         this.serverUrl = environment.serverUrl;
@@ -36,18 +39,16 @@ export class AuthService {
             (response: HttpResponse<User>) => {
                 if (response.status === HttpStatusCode.Ok) {
                     this.currentUser = response.body as User;
+                    this.setSocketConnection();
+                    this.setMainChatRoom();
                     const sanitized = response.body?.avatar as string;
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     this.currentUser.avatar = (this.sanitizer.bypassSecurityTrustResourceUrl(sanitized) as any).changingThisBreaksApplicationSecurity;
-                    console.log(this.currentUser.avatar);
-                    this.clientSocketService.socket = io(this.serverUrl);
-                    this.clientSocketService.socket.connect();
-                    this.clientSocketService.socket.emit(ChatEvents.JoinRoom);
-                    this.clientSocketService.socket.emit(ChatEvents.GetMessages);
                     this.receiveUserSocket();
+                    this.addLogin();
+                    this.userService.getUserStats(this.currentUser._id);
                     this.clientSocketService.socket.emit('joinMainRoom', this.currentUser);
-                    localStorage.setItem('ACCESS_TOKEN', 'access_token');
-                    this.router.navigate(['/home']);
+                    this.setAccess();
                 } else if (response.status === HttpStatusCode.NotModified) {
                     this.displayMessage('Cet utilisateur est déjà connecté');
                 }
@@ -62,10 +63,30 @@ export class AuthService {
     isLoggedIn() {
         return true;
     }
+
     logout() {
         this.clientSocketService.socket.disconnect();
         this.router.navigate(['/auth']);
         localStorage.removeItem('ACCESS_TOKEN');
+    }
+
+    private setSocketConnection() {
+        this.clientSocketService.socket = io(this.serverUrl);
+        this.clientSocketService.socket.connect();
+    }
+
+    private addLogin(): void {
+        this.communicationService.addLogin(this.currentUser._id).subscribe();
+    }
+
+    private setMainChatRoom() {
+        this.clientSocketService.socket.emit(ChatEvents.JoinRoom);
+        this.clientSocketService.socket.emit(ChatEvents.GetMessages);
+    }
+
+    private setAccess() {
+        localStorage.setItem('ACCESS_TOKEN', 'access_token');
+        this.router.navigate(['/home']);
     }
 
     private displayMessage(message: string): void {
