@@ -41,7 +41,7 @@ import kotlin.coroutines.CoroutineContext
 
 class RegisterActivity : AppCompatActivity(), CoroutineScope {
 
-    var user = User("", "", "", "", false, null)
+    var user = User("", "", "", "")
     private var serverUrl = Environment.serverUrl
     lateinit var myavatar : ImageView
     lateinit var avatarButton : Button

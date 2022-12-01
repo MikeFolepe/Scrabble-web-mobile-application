@@ -16,8 +16,6 @@ import { Model } from 'mongoose';
 export class UserService {
     activeUsers: User[];
 
-    // private users: User[] = [];
-
     constructor(
         @InjectModel('User') private readonly userModel: Model<UserDocument>,
         @InjectModel('Friend') private readonly friendModel: Model<FriendDocument>,
@@ -62,8 +60,6 @@ export class UserService {
             email: user.email,
             xpPoints: user.xpPoints,
             friends: user.friends,
-            socketId: '',
-            isObserver: false,
         }));
     }
 
@@ -74,7 +70,6 @@ export class UserService {
         userToSend._id = user._id;
         userToSend.xpPoints = user.xpPoints;
         userToSend.friends = user.friends;
-        userToSend.socketId = '';
         console.log(userToSend);
         return userToSend;
     }
@@ -143,7 +138,6 @@ export class UserService {
         const userStat = await this.userStatsModel.findOne({ userId }).exec();
         const lastTab = userStat.logouts;
         lastTab.push(newLogout);
-
         await this.userStatsModel.updateOne({ userId }, { logouts: lastTab });
     }
 

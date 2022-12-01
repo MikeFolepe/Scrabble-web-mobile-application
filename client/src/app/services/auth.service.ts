@@ -39,11 +39,11 @@ export class AuthService {
             (response: HttpResponse<User>) => {
                 if (response.status === HttpStatusCode.Ok) {
                     this.currentUser = response.body as User;
+                    this.setSocketConnection();
+                    this.setMainChatRoom();
                     const sanitized = response.body?.avatar as string;
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     this.currentUser.avatar = (this.sanitizer.bypassSecurityTrustResourceUrl(sanitized) as any).changingThisBreaksApplicationSecurity;
-                    this.setSocketConnection();
-                    this.setMainChatRoom();
                     this.receiveUserSocket();
                     this.addLogin();
                     this.userService.getUserStats(this.currentUser._id);

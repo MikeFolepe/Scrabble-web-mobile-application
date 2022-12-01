@@ -8,6 +8,7 @@ import { Player } from '@app/game/models/player.model';
 import { UserService } from '@app/users/user.service';
 import { ChatRoomMessage } from '@common/chatRoomMessage';
 import { DELAY_BEFORE_PLAYING, EASEL_SIZE, INVALID_INDEX, ONE_SECOND_DELAY, THREE_SECONDS_DELAY } from '@common/constants';
+import { bot } from '@common/defaultAvatars';
 import { Friend } from '@common/friend';
 import { GameSettings } from '@common/game-settings';
 import { User } from '@common/user';
@@ -220,7 +221,8 @@ export class GameHandlerGateway implements OnGatewayConnection {
             new Date().getMinutes().toString().padStart(2, '0') +
             ':' +
             new Date().getSeconds().toString().padStart(2, '0');
-
+        const room = this.roomManagerService.find(roomId[1]);
+        room.roomMessages.push(message);
         this.server.to(roomId[1]).emit('receiveRoomMessage', message[0]);
     }
 
@@ -359,6 +361,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
                 false,
                 false,
                 true,
+                bot,
             );
             room.aiPlayersNumber++;
             room.humanPlayersNumber--;
@@ -390,6 +393,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
                     room.playerService.players[indexPlayer].isTurn,
                     false,
                     true,
+                    bot,
                 );
                 room.aiPlayersNumber++;
                 room.humanPlayersNumber--;

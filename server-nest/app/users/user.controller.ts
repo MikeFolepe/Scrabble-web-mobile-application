@@ -23,7 +23,6 @@ export class UserController {
     async findUserInDb(@Req() req) {
         const pseudonym = req.params.pseudonym;
         const password = req.params.password;
-        Logger.log({ password, pseudonym });
         const userFound = await this.userService.getSingleUser(pseudonym);
         if (!userFound) return false;
         const decryptedPassword = await this.userService.decryptPassword(pseudonym);
@@ -36,16 +35,13 @@ export class UserController {
     @Get('/checkPseudonym/:pseudonym')
     async checkPseudonym(@Req() req) {
         const pseudonym = req.params.pseudonym;
-        Logger.log(pseudonym);
         const userFound = await this.userService.getSingleUser(pseudonym);
-        Logger.log(userFound);
         return Boolean(userFound);
     }
 
     @Get('getEmail/:pseudonym')
     async checkPseudonymForPassword(@Req() req) {
         const pseudonym = req.params.pseudonym;
-        Logger.log(pseudonym);
         const userFound = await this.userService.getSingleUser(pseudonym);
         if (!userFound) return;
         return userFound.email;
@@ -54,7 +50,6 @@ export class UserController {
     @Get('sendEmailToUser/:pseudonym')
     async sendEmailToUser(@Req() req) {
         const pseudonym = req.params.pseudonym;
-        Logger.log(pseudonym);
         const userFound = await this.userService.getSingleUser(pseudonym);
         if (!userFound) return false;
         const email = userFound.email;
