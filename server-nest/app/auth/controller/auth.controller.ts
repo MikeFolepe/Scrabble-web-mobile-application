@@ -19,11 +19,12 @@ export class AuthController {
         await this.authService
             .login(user)
             .then((newUser: User) => {
+                console.log(newUser);
                 if (newUser === undefined) response.sendStatus(HttpStatus.NOT_MODIFIED);
                 else response.status(HttpStatus.OK).send(newUser);
             })
             .catch((error: Error) => {
-                console.log("yepppp");
+                console.log('yepppp');
                 response.status(HttpStatus.NOT_FOUND).send('An error occurred while trying to connect to the server' + error.message);
             });
     }

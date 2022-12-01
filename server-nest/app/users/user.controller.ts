@@ -1,6 +1,8 @@
+/* eslint-disable no-underscore-dangle */
 import { User } from '@common/user';
 import * as email from '@nativescript/email';
-import { Body, Controller, Get, Post, Req } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Logger, Post, Req, Res } from '@nestjs/common';
+import { Response } from 'express';
 import { UserService } from './user.service';
 @Controller('user')
 export class UserController {
@@ -20,6 +22,7 @@ export class UserController {
     async findUserInDb(@Req() req) {
         const pseudonym = req.params.pseudonym;
         const password = req.params.password;
+        Logger.log({ password, pseudonym });
         const userFound = await this.userService.getSingleUser(pseudonym);
         if (!userFound) return false;
         const decryptedPassword = await this.userService.decryptPassword(pseudonym);
@@ -32,13 +35,16 @@ export class UserController {
     @Get('/checkPseudonym/:pseudonym')
     async checkPseudonym(@Req() req) {
         const pseudonym = req.params.pseudonym;
+        Logger.log(pseudonym);
         const userFound = await this.userService.getSingleUser(pseudonym);
+        Logger.log(userFound);
         return Boolean(userFound);
     }
 
     @Get('getEmail/:pseudonym')
     async checkPseudonymForPassword(@Req() req) {
         const pseudonym = req.params.pseudonym;
+        Logger.log(pseudonym);
         const userFound = await this.userService.getSingleUser(pseudonym);
         if (!userFound) return;
         return userFound.email;
@@ -47,6 +53,7 @@ export class UserController {
     @Get('sendEmailToUser/:pseudonym')
     async sendEmailToUser(@Req() req) {
         const pseudonym = req.params.pseudonym;
+        Logger.log(pseudonym);
         const userFound = await this.userService.getSingleUser(pseudonym);
         if (!userFound) return false;
         const email = userFound.email;
@@ -69,5 +76,21 @@ export class UserController {
     async getAllUsers() {
         const accounts = await this.userService.getUsers();
         return accounts;
+    }
+
+    @Post('/updateUser')
+    async updateUserInDb(@Body() user: User, @Res() response: Response) {
+        console.log('boo', user);
+        const userFound = await this.userService.getSingleUser(user.pseudonym);
+        if (userFound) {
+            console.log('userfound');
+            if (userFound._id !== user._id) {
+                console.log('userfound');
+                response.status(HttpStatus.FOUND).send();
+            }
+        }
+        await this.userService.updateUser(user).then((newUser: User) => {
+            response.status(HttpStatus.OK).send(newUser);
+        });
     }
 }
