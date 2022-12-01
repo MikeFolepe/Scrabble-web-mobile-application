@@ -4,7 +4,6 @@ import { MessageType } from '@app/classes/enum';
 import { AuthService } from '@app/services/auth.service';
 import { BoardHandlerService } from '@app/services/board-handler.service';
 import { ClientSocketService } from '@app/services/client-socket.service';
-import { EndGameService } from '@app/services/end-game.service';
 import { LetterService } from '@app/services/letter.service';
 import { ManipulateService } from '@app/services/manipulate.service';
 import { PlayerService } from '@app/services/player.service';
@@ -36,7 +35,6 @@ export class LetterEaselComponent {
         private sendMessageService: SendMessageService,
         private manipulateService: ManipulateService,
         private skipTurnService: SkipTurnService,
-        private endGameService: EndGameService,
     ) {
         this.word = '';
         this.display = false;

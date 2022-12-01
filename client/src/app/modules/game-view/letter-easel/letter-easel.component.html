@@ -45,7 +45,7 @@
     <br />
     <div class="wordWrapper">
         <input class="word" [(ngModel)]="word"> 
-        <button class="wordButton" [disabled]="authService.currentUser.isObserver || this.maxButtonCall === 0" mat-raised-button color="primary" [disabled]="!this.playerService.currentPlayer.isTurn" (click)="checkWord()">20 XP</button>
+        <button class="wordButton" [disabled]="authService.currentUser.isObserver || this.maxButtonCall === 0 || this.word.length === 0" mat-raised-button color="primary" [disabled]="!this.playerService.currentPlayer.isTurn" (click)="checkWord()">20 XP</button>
         <span *ngIf="isCorrect && display" class="correct">Ce mot existe</span>
         <span *ngIf="!isCorrect && display" class="notCorrect">Ce mot n'existe pas </span>
     </div>
