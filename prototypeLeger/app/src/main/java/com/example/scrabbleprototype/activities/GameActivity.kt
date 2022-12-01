@@ -59,17 +59,18 @@ class GameActivity : AppCompatActivity() {
         receiveEndGame()
         leave()
         if(savedInstanceState == null) {
-            setUpFragments()
+            setupFragments()
         }
     }
 
-    private fun setUpFragments() {
+    private fun setupFragments() {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction.add(R.id.letter_rack_frame, LetterRackFragment())
         fragmentTransaction.add(R.id.game_buttons_frame, GameButtonsFragment())
         fragmentTransaction.add(R.id.chatbox_frame, ChatFragment())
         fragmentTransaction.add(R.id.info_pannel_frame, InformationPannelFragment())
         fragmentTransaction.add(R.id.board_frame, BoardFragment())
+        fragmentTransaction.add(R.id.game_chatroom_buttons, ChannelButtonsFragment())
         fragmentTransaction.add(R.id.features_frame, FeaturesFragment())
         fragmentTransaction.addToBackStack(null)
         fragmentTransaction.commit()

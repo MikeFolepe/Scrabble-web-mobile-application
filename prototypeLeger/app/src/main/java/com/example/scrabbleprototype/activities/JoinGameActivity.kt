@@ -4,18 +4,17 @@ import android.app.ActivityManager
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
+import com.example.scrabbleprototype.fragments.ChannelButtonsFragment
 import com.example.scrabbleprototype.model.*
 import com.example.scrabbleprototype.objects.CurrentRoom
 import com.example.scrabbleprototype.objects.Players
@@ -37,7 +36,6 @@ class JoinGameActivity : AppCompatActivity() {
     val currentUser = Users.currentUser
     lateinit var passwordDialog: Dialog
 
-    @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         ThemeManager.setActivityTheme(this)
         super.onCreate(savedInstanceState)
@@ -52,6 +50,17 @@ class JoinGameActivity : AppCompatActivity() {
         sendObserverToGame()
         // handleDeletedGame()
         handleObservableRoomsAvailability()
+
+        if(savedInstanceState == null) {
+            setupFragments()
+        }
+    }
+
+    private fun setupFragments() {
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
+        fragmentTransaction.add(R.id.join_game_chatroom_buttons, ChannelButtonsFragment())
+        fragmentTransaction.addToBackStack(null)
+        fragmentTransaction.commit()
     }
 
     private fun setupGameList() {
@@ -73,7 +82,7 @@ class JoinGameActivity : AppCompatActivity() {
         handleRoomUnavailability()
     }
 
-    private fun setUpPasswordJoinDialog(currentRoom: Room, isObserver: Boolean) {
+    private fun setupPasswordJoinDialog(currentRoom: Room, isObserver: Boolean) {
         passwordDialog = Dialog(this)
         passwordDialog.setContentView(R.layout.public_game_pwd)
         val validateButton = passwordDialog.findViewById<Button>(R.id.validate_button)
@@ -124,7 +133,7 @@ class JoinGameActivity : AppCompatActivity() {
             return
         }
 
-        this.setUpPasswordJoinDialog(currentRoom,isObserver)
+        this.setupPasswordJoinDialog(currentRoom,isObserver)
 
         passwordDialog.show()
 
