@@ -48,6 +48,7 @@ import kotlin.coroutines.CoroutineContext
 
 
 class ConnectionActivity : AppCompatActivity(), CoroutineScope {
+    private var serverUrl = Environment.serverUrl
     val users = Users
     lateinit var client: HttpClient
     lateinit var socket: Socket
@@ -135,7 +136,7 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
     private suspend fun sendEmailToUser( pseudonym: String): HttpResponse? {
         var response: HttpResponse?
         try {
-            response = client.get(resources.getString(R.string.http)+users.currentUser.ipAddress+ "/api/user/sendEmailToUser/" + pseudonym){
+            response = client.get("$serverUrl/api/user/sendEmailToUser/" + pseudonym){
                 contentType(ContentType.Application.Json)
             }
         }  catch(e: Exception) {
@@ -147,7 +148,11 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
     private suspend fun getEmail(pseudonym: String): HttpResponse? {
         var response: HttpResponse?
         try {
+<<<<<<< HEAD
             response = client.get(resources.getString(R.string.http)+users.currentUser.ipAddress+ "/api/user/getEmail/" + pseudonym){
+=======
+            response = client.get("$serverUrl/api/user/getEmail/" + pseudonym){
+>>>>>>> develop
                 contentType(ContentType.Application.Json)
             }
         }  catch(e: Exception) {
@@ -181,6 +186,7 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
                     val response = postAuthentication(user)
                     if(response != null) {
                         if (response.status == HttpStatusCode.OK) {
+<<<<<<< HEAD
                             Log.d("newUser", response.body())
                             var newUser =  mapper.readValue(response.body() as String, User::class.java)
                             val split = newUser.avatar.split(",")
@@ -193,11 +199,24 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
                             users.avatarBmp = image
                             Log.d("newUser", users.currentUser.toString())
                             joinChat(user)
+=======
+                            var newUser =  mapper.readValue(response.body() as String, User::class.java)
+                            val split = newUser.avatar.split(",")
+                            val imageBytes = Base64.decode(split[1], Base64.NO_WRAP)
+                            val image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+                            users.currentUser = newUser
+                            users.avatarBmp = image
+                            joinChat()
+>>>>>>> develop
                         }
                         else if (response.status == HttpStatusCode.NotModified) pseudonymInput.error = "Cet utilisateur est déjà connecté"
                     }
                     } else {
+<<<<<<< HEAD
                     ///Toast.makeText(this, "Aucun compte touvé. Veuillez créer un compte.", Toast.LENGTH_SHORT).show()
+=======
+                    Toast.makeText(this@ConnectionActivity, "Aucun compte touvé. Veuillez créer un compte.", Toast.LENGTH_SHORT).show()
+>>>>>>> develop
                 }
                 }
 
@@ -209,7 +228,11 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
     suspend fun findUserInDb(user: User ,pseudonym: String, password: String): HttpResponse? {
         var response: HttpResponse?
         try{
+<<<<<<< HEAD
             response = client.get(resources.getString(R.string.http) + user.ipAddress+ "/api/user/findUserInDb/"+pseudonym+"/"+password) {
+=======
+            response = client.get("$serverUrl/api/user/findUserInDb/"+pseudonym+"/"+password) {
+>>>>>>> develop
                 contentType(ContentType.Application.Json)
             }
         } catch(e: Exception) {
@@ -221,7 +244,11 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
     suspend fun postAuthentication(user: User): HttpResponse? {
         var response: HttpResponse?
         try{
+<<<<<<< HEAD
             response = client.post(resources.getString(R.string.http) + user.ipAddress + "/api/auth/connect") {
+=======
+            response = client.post("$serverUrl/api/auth/connect") {
+>>>>>>> develop
                 contentType(ContentType.Application.Json)
                 setBody(user)
             }
@@ -232,10 +259,17 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
     }
 
 
+<<<<<<< HEAD
     fun joinChat(user: User) {
         val intent = Intent(this, MainMenuActivity::class.java)
 
         SocketHandler.setPlayerSocket("http://" + user.ipAddress)
+=======
+    fun joinChat() {
+        val intent = Intent(this, MainMenuActivity::class.java)
+
+        SocketHandler.setPlayerSocket(serverUrl)
+>>>>>>> develop
         SocketHandler.establishConnection()
         socket = SocketHandler.getPlayerSocket()
 

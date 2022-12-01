@@ -77,10 +77,14 @@ class ProfileFragment : Fragment() {
         val friendsListView = binding.friendsList
         friendsListView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
 <<<<<<< HEAD
+<<<<<<< HEAD
         val friendsListAdapter = FriendsListAdapter(user.currentUser.friendsList)
 =======
         val friendsListAdapter = FriendsListAdapter(user.friends)
 >>>>>>> mobile-endgame
+=======
+        val friendsListAdapter = FriendsListAdapter(user.currentUser.friendsList)
+>>>>>>> develop
         friendsListView.adapter = friendsListAdapter
     }
 
@@ -97,10 +101,14 @@ class ProfileFragment : Fragment() {
 
         activeUsersAdapter.onUserClick = { position ->
 <<<<<<< HEAD
+<<<<<<< HEAD
             user.currentUser.friendsList.add(activeUsers[position])
 =======
             user.friends.add(activeUsers[position])
 >>>>>>> mobile-endgame
+=======
+            user.currentUser.friendsList.add(activeUsers[position])
+>>>>>>> develop
             // TODO send invitation
             Toast.makeText(addFriendDialog.context, "Une invitation d'ami a été envoyée à " + activeUsers[position].pseudonym, Toast.LENGTH_LONG).show()
             Timer().schedule(timerTask {

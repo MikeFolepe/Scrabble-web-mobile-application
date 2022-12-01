@@ -18,6 +18,7 @@ import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.objects.Users
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import environments.Environment
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
@@ -36,6 +37,7 @@ import kotlin.coroutines.CoroutineContext
 
 
 class CreateGameActivity : AppCompatActivity(), CoroutineScope {
+    private var serverUrl = Environment.serverUrl
     private var job: Job = Job()
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main + job
@@ -104,7 +106,7 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
     suspend fun getDictionaries(): HttpResponse? {
         var response: HttpResponse?
         try {
-            response = client.get(Users.currentUser.ipAddress + "/api/admin/dictionaries") {
+            response = client.get("$serverUrl/api/admin/dictionaries") {
                 contentType(ContentType.Application.Json)
             }
         } catch (err: Exception) {
