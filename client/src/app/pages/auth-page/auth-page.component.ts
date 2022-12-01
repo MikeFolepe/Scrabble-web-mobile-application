@@ -106,11 +106,10 @@ export class AuthPageComponent implements OnInit {
             this.signUpError = 'Les mots de passe ne correspondent pas';
             return;
         }
-        
-        this.signUpError = '';
-        
 
-        const user = new User(this.avatarValue, this.pseudonymValue, this.passwordValue, this.emailValue, false, '');
+        this.signUpError = '';
+
+        const user = new User(this.avatarValue, this.pseudonymValue, this.passwordValue, this.emailValue);
         this.userService.addUserToDatabase(user);
         this.pseudonymValue = '';
         this.passwordValue = '';

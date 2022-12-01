@@ -1,7 +1,8 @@
 <app-background></app-background>
+<app-user-menu-nav></app-user-menu-nav>
 <div></div>
 <div class="userProfile">
-    <img src="{{this.authService.currentUser.avatar}}" class="avatar" alt="Avatar"/>
+    <img src="{{ this.authService.currentUser.avatar }}" class="avatar" alt="Avatar" />
 </div>
 <div class="justified">
     <img id="logo-scrabble" src="https://bit.ly/3m206ss" class="not-selectionnable" alt="Logo Scrabble" />
@@ -24,9 +25,7 @@
         Effacer mon choix
     </button>
     <br />
-    <div class="justified">
-        <button class="button" mat-raised-button color="primary" (click)="openBestScoresDialog()">Meilleurs scores</button>
-    </div>
+
 </div>
 
 <div class="chatRooms-buttons">

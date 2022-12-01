@@ -68,6 +68,7 @@ export const AI_EXPERTS: AiPlayer[] = [
     },
 ];
 export const DEFAULT_AI_PLAYERS_NB = 3;
+export const DEFAULT_SOLO_AI_PLAYERS_NB = 1;
 export const DEFAULT_HUMAN_PLAYERS_NB = 1;
 export const DEFAULT_WIDTH = 750;
 export const DEFAULT_HEIGHT = 750;

@@ -1,7 +1,19 @@
+/* eslint-disable @typescript-eslint/no-shadow */
 import { Component, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { AuthService } from '@app/services/auth.service';
-import { blondeGirl, blondeGuy, brunetteGirl, doggo, earringsGirl, gingerGirl, hatGirl, musicGuy, mustacheGuy, orangeGuy } from '@common/defaultAvatars';
+import {
+    blondeGirl,
+    blondeGuy,
+    brunetteGirl,
+    doggo,
+    earringsGirl,
+    gingerGirl,
+    hatGirl,
+    musicGuy,
+    mustacheGuy,
+    orangeGuy,
+} from '@common/defaultAvatars';
 
 @Component({
     selector: 'app-avatar-choice',
@@ -36,14 +48,16 @@ export class AvatarChoiceComponent implements OnInit {
     selectedFile: File;
     ngOnInit(): void {}
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onFileSelected(event: any) {
-        if(event.target.files) {
-            var reader = new FileReader();
+        if (event.target.files) {
+            const reader = new FileReader();
             reader.readAsDataURL(event.target.files[0]);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             reader.onload = (event: any) => {
                 console.log(event.target.result);
                 this.authService.chosenAvatar = event.target.result;
-            }
+            };
         }
     }
 }

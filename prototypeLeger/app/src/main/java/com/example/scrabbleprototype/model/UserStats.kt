@@ -18,12 +18,15 @@ class UserStats {
 
     @JvmName("getUserAveragePoints")
     fun getAveragePoints(): Int {
-        return totalPoints / gamesPlayed
+        return if (gamesPlayed == 0) totalPoints
+        else totalPoints / gamesPlayed
     }
 
     @JvmName("getUserAverageTime")
     fun getAverageTime(): String {
-        val averageTimeMS = totalTimeMS / gamesPlayed
+        var averageTimeMS = if(gamesPlayed == 0) totalTimeMS
+        else totalTimeMS / gamesPlayed
+
         val hour = (averageTimeMS / (1000 * 60 * 60)) % 24
         val minute = (averageTimeMS / (1000 * 60)) % 60
         val second = (averageTimeMS / 1000) % 60

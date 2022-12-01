@@ -9,6 +9,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
+import com.example.scrabbleprototype.objects.Users
 
 
 class GameHistoryAdapter(private var games: ArrayList<Game>) :
@@ -42,7 +43,7 @@ class GameHistoryAdapter(private var games: ArrayList<Game>) :
         viewHolder.id.text = (position + 1).toString()
         viewHolder.date.text = games[position].startDate
         viewHolder.time.text = games[position].startTime
-        if(games[position].isWinner()) {
+        if(games[position].winnerName == Users.currentUser.pseudonym) {
             viewHolder.result.text = viewHolder.result.context.getString(R.string.game_victory)
             viewHolder.result.setTextColor(ContextCompat.getColor(viewHolder.result.context, R.color.lime_green))
         }

@@ -4,10 +4,8 @@ import { Router } from '@angular/router';
 import { AddChatRoomComponent } from '@app/modules/game-view/add-chat-room/add-chat-room.component';
 import { ChangeChatRoomComponent } from '@app/modules/game-view/change-chat-room/change-chat-room.component';
 import { JoinChatRoomsComponent } from '@app/modules/game-view/join-chat-rooms/join-chat-rooms.component';
-import { BestScoresComponent } from '@app/pages/best-scores/best-scores.component';
 import { AuthService } from '@app/services/auth.service';
 import { ChatRoomService } from '@app/services/chat-room.service';
-import { EndGameService } from '@app/services/end-game.service';
 import { GameSettingsService } from '@app/services/game-settings.service';
 import { GiveUpHandlerService } from '@app/services/give-up-handler.service';
 import { LetterService } from '@app/services/letter.service';
@@ -42,7 +40,6 @@ export class MainPageComponent {
         private letterService: LetterService,
         private placeLetterService: PlaceLetterService,
         private giveUpHandlerService: GiveUpHandlerService,
-        private endGameService: EndGameService,
         public chatRoomService: ChatRoomService,
     ) {
         this.selectedGameTypeIndex = 0;
@@ -59,16 +56,11 @@ export class MainPageComponent {
         // Update game type and game mode, then route
         switch (this.selectedGameMode) {
             case this.gameModes[0]: {
-                this.gameSettingsService.isSoloMode = true;
-                this.router.navigate(['solo-game-ai']);
-                break;
-            }
-            case this.gameModes[1]: {
                 this.gameSettingsService.isSoloMode = false;
                 this.router.navigate(['multiplayer-mode']);
                 break;
             }
-            case this.gameModes[2]: {
+            case this.gameModes[1]: {
                 this.gameSettingsService.isSoloMode = false;
                 this.router.navigate(['join-room']);
                 break;
@@ -78,10 +70,6 @@ export class MainPageComponent {
 
     openChatRoomForm(): void {
         this.chatRoomForm = true;
-    }
-
-    openBestScoresDialog(): void {
-        this.bestScoresDialog.open(BestScoresComponent, { disableClose: true });
     }
 
     openChangeChatRoomDialog(): void {
@@ -98,7 +86,6 @@ export class MainPageComponent {
 
     resetServices() {
         this.giveUpHandlerService.isGivenUp = false;
-        this.endGameService.actionsLog = [];
         this.letterService.ngOnDestroy();
         this.placeLetterService.ngOnDestroy();
         this.gameSettingsService.ngOnDestroy();

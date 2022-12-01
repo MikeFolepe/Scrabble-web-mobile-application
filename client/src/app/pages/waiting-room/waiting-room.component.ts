@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
@@ -8,9 +9,11 @@ import { AddChatRoomComponent } from '@app/modules/game-view/add-chat-room/add-c
 import { ChangeChatRoomComponent } from '@app/modules/game-view/change-chat-room/change-chat-room.component';
 import { JoinChatRoomsComponent } from '@app/modules/game-view/join-chat-rooms/join-chat-rooms.component';
 import { JoiningConfirmationDialogComponent } from '@app/modules/initialize-game/joining-confirmation-dialog/joining-confirmation-dialog.component';
+import { AuthService } from '@app/services/auth.service';
 import { ClientSocketService } from '@app/services/client-socket.service';
-import { GameSettingsService } from '@app/services/game-settings.service';
+import { CommunicationService } from '@app/services/communication.service';
 import { PlayerService } from '@app/services/player.service';
+import { UserService } from '@app/services/user.service';
 import { ERROR_MESSAGE_DELAY } from '@common/constants';
 
 @Component({
@@ -29,10 +32,12 @@ export class WaitingRoomComponent implements OnInit {
         public changeChatRoomDialog: MatDialog,
         public addChatRoomDialog: MatDialog,
         private router: Router,
-        private gameSettingsService: GameSettingsService,
         private clientSocket: ClientSocketService,
         public playerService: PlayerService,
         private dialog: MatDialog,
+        private communicationService: CommunicationService,
+        private userService: UserService,
+        private authService: AuthService,
     ) {
         this.status = '';
         this.errorMessage = '';
@@ -43,6 +48,7 @@ export class WaitingRoomComponent implements OnInit {
         // this.playAnimation();
         this.acceptNewPlayer();
         this.leaveToHome();
+        this.routeToGameView();
     }
 
     playAnimation(): void {
@@ -95,7 +101,6 @@ export class WaitingRoomComponent implements OnInit {
             }, ERROR_MESSAGE_DELAY);
         });
     }
-
     startGame(): void {
         console.log('start exec', this.clientSocket.currentRoom);
         if (this.clientSocket.currentRoom.humanPlayersNumber < 2) {
@@ -106,10 +111,12 @@ export class WaitingRoomComponent implements OnInit {
     }
 
     routeToGameView(): void {
-        this.gameSettingsService.isSoloMode = true;
-        this.gameSettingsService.isRedirectedFromMultiplayerGame = true;
-        this.deleteGame();
-        this.router.navigate(['solo-game-ai']);
+        this.clientSocket.socket.on('goToGameView', () => {
+            console.log('played');
+            this.userService.userStats.gamesPlayed++;
+            this.communicationService.updateGamesPlayed(this.authService.currentUser._id, this.userService.userStats.gamesPlayed).subscribe();
+            this.router.navigate(['game']);
+        });
     }
 
     openChangeChatRoomDialog(): void {

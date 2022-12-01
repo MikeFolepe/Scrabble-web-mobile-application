@@ -23,7 +23,7 @@ export class GameController {
     getDictionaryVerif(@Req() req, @Res() response) {
         const word = req.params.word;
         this.wordValidationService = new WordValidationService(req.params.dictionary);
-        if (this.wordValidationService.isWordInDictionary(word)) response.sendStatus(HttpStatus.OK);
-        else response.sendStatus(HttpStatus.NOT_FOUND);
+        if (this.wordValidationService.isWordInDictionary(word)) response.status(HttpStatus.OK).send();
+        else response.status(HttpStatus.CONTINUE).send();
     }
 }
