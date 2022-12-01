@@ -1,7 +1,7 @@
 // import user for common
-import { Preference } from 'app/model/preferences.schema';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { Preference } from 'app/model/preferences.schema';
 import { Model } from 'mongoose';
 
 @Injectable()
@@ -19,16 +19,19 @@ export class PreferenceService {
 
     async getAppTheme(userId: string): Promise<string> {
         const preference: Preference = await this.preferenceModel.findOne({ user: userId }).exec();
+        Logger.log(preference.appTheme);
         return preference.appTheme;
     }
 
     async getBoardTheme(userId: string): Promise<string> {
         const preference: Preference = await this.preferenceModel.findOne({ user: userId }).exec();
+        Logger.log(preference.currentBoardTheme);
         return preference.currentBoardTheme;
     }
 
     async getChatTheme(userId: string): Promise<string> {
         const preference: Preference = await this.preferenceModel.findOne({ user: userId }).exec();
+        Logger.log(preference.currentChatTheme);
         return preference.currentChatTheme;
     }
 
@@ -39,11 +42,13 @@ export class PreferenceService {
 
     async getBoards(userId: string): Promise<string[]> {
         const preference: Preference = await this.preferenceModel.findOne({ user: userId }).exec();
+        Logger.log(preference.boughtBoards);
         return preference.boughtBoards;
     }
 
     async getChats(userId: string): Promise<string[]> {
         const preference: Preference = await this.preferenceModel.findOne({ user: userId }).exec();
+        Logger.log(preference.boughtChats);
         return preference.boughtChats;
     }
 

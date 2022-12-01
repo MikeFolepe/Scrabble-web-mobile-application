@@ -111,6 +111,7 @@ export class AuthPageComponent implements OnInit {
         
 
         const user = new User(this.avatarValue, this.pseudonymValue, this.passwordValue, this.emailValue, false, '');
+        console.log(user);
         this.userService.addUserToDatabase(user);
         this.pseudonymValue = '';
         this.passwordValue = '';
