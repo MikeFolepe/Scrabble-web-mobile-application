@@ -10,6 +10,7 @@ import { ClientSocketService } from './client-socket.service';
 export class SendMessageService {
     messageType: MessageType;
     listTypes: MessageType[];
+    private scrollDown: () => void;
 
     constructor(public clientSocketService: ClientSocketService, private authService: AuthService) {
         this.receiveMessageFromOpponent();
@@ -31,6 +32,8 @@ export class SendMessageService {
             this.clientSocketService.currentRoom.roomMessages.push(messageObject);
         }
 
+        this.scrollDown();
+
         // this.displayMessage();
     }
 
@@ -51,6 +54,10 @@ export class SendMessageService {
         this.clientSocketService.socket.on('receiveGameConversionMessage', (message: string) => {
             this.displayMessageByType(message, MessageType.System);
         });
+    }
+
+    displayBound(fn: () => void) {
+        this.scrollDown = fn;
     }
 
     receiveMessageFromOpponent(): void {

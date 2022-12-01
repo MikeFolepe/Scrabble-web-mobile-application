@@ -37,6 +37,7 @@ export class ChatboxComponent implements OnInit {
 
     ngOnInit(): void {
         this.initializeChatHeight();
+        this.sendMessageService.displayBound(this.scrollToBottom.bind(this));
     }
 
     handleKeyEvent(event: KeyboardEvent): void {
@@ -70,7 +71,7 @@ export class ChatboxComponent implements OnInit {
         setTimeout(() => {
             // Timeout is used to update the scroll after the last element added
             this.myScrollContainer.nativeElement.scrollTop = this.myScrollContainer.nativeElement.scrollHeight;
-        }, 1);
+        }, 50);
     }
 
     initializeChatHeight(): void {
