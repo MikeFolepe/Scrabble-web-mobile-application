@@ -1,18 +1,15 @@
 package com.example.scrabbleprototype.fragments
 
 import android.content.Context
-import android.content.res.Resources.Theme
 import android.graphics.drawable.AnimationDrawable
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AbsListView
-import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.ListView
+import android.widget.*
 import androidx.fragment.app.Fragment
+import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.model.ChatAdapter
 import com.example.scrabbleprototype.model.ChatRoomMessage
 import com.example.scrabbleprototype.model.SocketHandler

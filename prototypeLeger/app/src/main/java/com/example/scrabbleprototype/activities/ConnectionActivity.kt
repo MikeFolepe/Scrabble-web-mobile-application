@@ -5,27 +5,19 @@ import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.style.UnderlineSpan
 import android.util.Base64
-import android.util.Log
 import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
-import android.widget.Toast
+import android.widget.*
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.fragment.app.activityViewModels
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.model.SocketHandler
 import com.example.scrabbleprototype.model.User
-import com.example.scrabbleprototype.objects.Players
 import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.objects.Users
 import com.example.scrabbleprototype.viewModel.PreferenceViewModel
@@ -43,14 +35,12 @@ import kotlinx.coroutines.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONObject
-import java.lang.Exception
 import java.util.*
 import kotlin.concurrent.timerTask
 import kotlin.coroutines.CoroutineContext
 
 
 class ConnectionActivity : AppCompatActivity(), CoroutineScope {
-    private var serverUrl = Environment.serverUrl
     val users = Users
     lateinit var client: HttpClient
     lateinit var socket: Socket
