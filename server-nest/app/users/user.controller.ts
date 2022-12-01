@@ -23,7 +23,6 @@ export class UserController {
     async findUserInDb(@Req() req) {
         const pseudonym = req.params.pseudonym;
         const password = req.params.password;
-        Logger.log({ password, pseudonym });
         const userFound = await this.userService.getSingleUser(pseudonym);
         if (!userFound) return false;
         const decryptedPassword = await this.userService.decryptPassword(pseudonym);
@@ -36,16 +35,13 @@ export class UserController {
     @Get('/checkPseudonym/:pseudonym')
     async checkPseudonym(@Req() req) {
         const pseudonym = req.params.pseudonym;
-        Logger.log(pseudonym);
         const userFound = await this.userService.getSingleUser(pseudonym);
-        Logger.log(userFound);
         return Boolean(userFound);
     }
 
     @Get('getEmail/:pseudonym')
     async checkPseudonymForPassword(@Req() req) {
         const pseudonym = req.params.pseudonym;
-        Logger.log(pseudonym);
         const userFound = await this.userService.getSingleUser(pseudonym);
         if (!userFound) return;
         return userFound.email;
@@ -54,7 +50,6 @@ export class UserController {
     @Get('sendEmailToUser/:pseudonym')
     async sendEmailToUser(@Req() req) {
         const pseudonym = req.params.pseudonym;
-        Logger.log(pseudonym);
         const userFound = await this.userService.getSingleUser(pseudonym);
         if (!userFound) return false;
         const email = userFound.email;
@@ -62,11 +57,10 @@ export class UserController {
 
         sgMail.setApiKey('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');
         const msg = {
-          to: email,
-          from: 'log3900.110.22@gmail.com',
-          subject: 'Mot de passe oublié - Scrabble',
-          text: `- SRABBLE 110 - \n\n Utilisateur : ${pseudonym}. \n\n Bonjour, voici votre mot de passe : ${password}`,
-
+            to: email,
+            from: 'log3900.110.22@gmail.com',
+            subject: 'Mot de passe oublié - Scrabble',
+            text: `- SRABBLE 110 - \n\n Utilisateur : ${pseudonym}. \n\n Bonjour, voici votre mot de passe : ${password}`,
         };
         sgMail.send(msg);
         return true;
