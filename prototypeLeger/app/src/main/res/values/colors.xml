@@ -26,6 +26,8 @@
     <color name="white_gray">#fafafa</color>
     <color name="light_gray">#e1e1e1</color>
     <color name="gold">#fcd21c</color>
+    <color name="silver">#cdcdcd</color>
+    <color name="bronze">#b9722d</color>
 
     <color name="darker_gray">#191A19</color>
     <color name="container_gray">#323432</color>

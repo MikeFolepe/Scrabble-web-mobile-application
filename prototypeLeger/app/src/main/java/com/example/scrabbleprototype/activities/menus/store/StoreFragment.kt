@@ -1,6 +1,7 @@
 package com.example.scrabbleprototype.activities.menus.store
 
 import android.os.Bundle
+import android.view.ContextThemeWrapper
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -17,6 +18,7 @@ import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.objects.Themes
 import com.example.scrabbleprototype.objects.Users
 import com.example.scrabbleprototype.viewModel.PreferenceViewModel
+import com.example.scrabbleprototype.viewModel.StatsViewmodel
 
 class StoreFragment : Fragment() {
 
@@ -24,12 +26,11 @@ class StoreFragment : Fragment() {
     private val user = Users.currentUser
 
     private val preferenceViewModel: PreferenceViewModel by activityViewModels()
-    private lateinit var builder: AlertDialog.Builder
+    private val statsViewModel: StatsViewmodel by activityViewModels()
     private lateinit var binding: FragmentStoreBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        builder = AlertDialog.Builder(requireContext())
     }
 
     override fun onCreateView(
@@ -44,8 +45,6 @@ class StoreFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        user.xpPoints = 1000
         setupXp()
         setupBoardItems()
         setupChatItems()
@@ -88,6 +87,7 @@ class StoreFragment : Fragment() {
         }
 
         user.xpPoints -= itemToBuy.price
+        statsViewModel.saveXp()
         setupXp()
         userItems.add(itemToBuy)
         if(isBoard) preferenceViewModel.saveBoughtBoard(itemToBuy)
@@ -96,6 +96,7 @@ class StoreFragment : Fragment() {
     }
 
     private fun showConfirmPurchaseDialog(item: Item, userItems: ArrayList<Item>, isBoard: Boolean) {
+        val builder = AlertDialog.Builder(ContextThemeWrapper(requireContext(), ThemeManager.getTheme()))
         builder.setMessage("Veuillez confirmer l'achat du thème  : " + item.name)
             .setCancelable(false)
             .setPositiveButton("Confirmer") { dialog, id ->

@@ -140,8 +140,9 @@ export class UserService {
             startTime: game.startTime,
             winnerName: game.winnerName,
         });
-
+        console.log(userId);
         const userStat = await this.userStatsModel.findOne({ userId }).exec();
+        console.log(userStat);
         const lastTab = userStat.games;
         lastTab.push(newGame);
 
@@ -169,7 +170,9 @@ export class UserService {
 
     async updateTimesPlayed(totalTimeMs: number, userIds: string[]): Promise<void> {
         for (const userId of userIds) {
+            console.log(userId);
             const userStats = await this.userStatsModel.findOne({ userId });
+            console.log(userStats);
 
             const newTime = userStats.totalTimeMs + totalTimeMs;
             await this.userStatsModel.updateOne({ userId }, { totalTimeMs: newTime });

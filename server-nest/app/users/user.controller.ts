@@ -1,6 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 import { User } from '@common/user';
-import { GameDB, UserStatsDB } from '@common/user-stats';
+import { UserStatsDB } from '@common/user-stats';
 import * as emailS from '@nativescript/email';
 import { Body, Controller, Get, HttpStatus, Param, Post, Req, Res } from '@nestjs/common';
 import * as sgMail from '@sendgrid/mail';
@@ -96,29 +96,29 @@ export class UserController {
     }
 
     @Post('/userStats/game/:userId')
-    async addGame(@Param('userId') userId: string, @Body() game: GameDB) {
-        await this.userService.addGame(game, userId);
+    async addGame(@Param('userId') userId: string, @Req() req) {
+        console.log(req.body);
+        await this.userService.addGame(req.body, userId);
     }
 
     @Post('/userStats/gamesWon/:userId')
-    async updateGamesWon(@Param('userId') userId: string, @Body() body) {
-        await this.userService.updateGamesWon(userId, body.gamesWon);
+    async updateGamesWon(@Param('userId') userId: string, @Req() req) {
+        await this.userService.updateGamesWon(userId, req.body.gamesWon);
     }
 
     @Post('/userStats/gamesPlayed/:userId')
-    async updateGamesPlayed(@Param('userId') userId: string, @Body() body) {
-        console.log(body);
+    async updateGamesPlayed(@Param('userId') userId: string, @Req() req, @Body() gamesPlayed: number) {
         console.log('arrived in controller');
-        await this.userService.updateGamesPlayed(userId, body.gamesPlayed);
+        await this.userService.updateGamesPlayed(userId, req.body.gamesPlayed);
     }
 
     @Post('/userStats/totalPoints/:userId')
-    async updateTotalPoints(@Param('userId') userId: string, @Body() body) {
-        await this.userService.updateTotalPoints(userId, body.totalPoints);
+    async updateTotalPoints(@Param('userId') userId: string, @Req() req) {
+        await this.userService.updateTotalPoints(userId, req.body.totalPoints);
     }
     @Post('/users/xpPoints/:userId')
-    async updateXpPoints(@Param('userId') userId: string, @Body() body) {
-        await this.userService.updateXpPoints(userId, body.xpPoints);
+    async updateXpPoints(@Param('userId') userId: string, @Req() req) {
+        await this.userService.updateXpPoints(userId, req.body.xpPoints);
     }
 
     @Post('/updateUser')
