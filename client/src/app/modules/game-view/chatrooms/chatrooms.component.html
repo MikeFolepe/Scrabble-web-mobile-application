@@ -1,32 +1,34 @@
-<popout-window class = "dimensions">
-    <div *ngIf="this.isOpen === false" class="closedChat" (click)="openChat()">
-        <div class="textClosedChat">
-            <h2>Cliquez pour ouvrir le chat</h2>
+<popout-window [wrapperRetainSizeOnPopout]="true">
+    <div class="dimension">
+        <div *ngIf="this.isOpen === false" class="closedChat" (click)="openChat()">
+            <div class="textClosedChat">
+                <h2>Cliquez pour ouvrir le chat</h2>
+            </div>
         </div>
-    </div>
-    <div *ngIf="this.isOpen === true" class="chatRoom">
-        <div>
-            <div *ngIf="chatRoomInSelectedRooms()">
-                <h2 class="title">{{ this.chatRoomService.chatRooms[this.chatRoomIndexService.chatRoomIndex].chatRoomName }}</h2>
+        <div *ngIf="this.isOpen === true" class="chatRoom">
+            <div>
+                <div *ngIf="chatRoomInSelectedRooms()">
+                    <h2 class="title">{{ this.chatRoomService.chatRooms[this.chatRoomIndexService.chatRoomIndex].chatRoomName }}</h2>
 
-                <div class="conversation" #scrollMe>
-                    <div class="text" *ngFor="let message of this.chatRoomService.chatRooms[this.chatRoomIndexService.chatRoomIndex].messages">
-                        <div *ngIf="message.text === 'a rejoint le canal de communication' || message.text === 'a quitté le canal de communication'; else elseBlock">
-                            <p class="systemText">{{message.pseudonym}} {{message.text}}</p>
+                    <div class="conversation" #scrollMe>
+                        <div class="text" *ngFor="let message of this.chatRoomService.chatRooms[this.chatRoomIndexService.chatRoomIndex].messages">
+                            <div *ngIf="message.text === 'a rejoint le canal de communication' || message.text === 'a quitté le canal de communication'; else elseBlock">
+                                <p class="systemText">{{message.pseudonym}} {{message.text}}</p>
+                            </div>
+                            <ng-template #elseBlock><img src="{{message.avatar}}" class="avatar" alt="Avatar"/><p> {{ message.pseudonym }}: {{ message.text }}</p></ng-template>
                         </div>
-                        <ng-template #elseBlock><img src="{{message.avatar}}" class="avatar" alt="Avatar"/><p> {{ message.pseudonym }}: {{ message.text }}</p></ng-template>
+                    </div>
+
+                    <button mat-button class="closeButton" (click)="closeChat()"><mat-icon>clear</mat-icon></button>
+
+                    <div class="sendMessage">
+                        <input placeholder="Cliquez pour envoyer un message" [(ngModel)]="currentMessage" (keypress)="handleKeyEvent($event)" />
+                        <button mat-button class="sendButton" (click)="sendMessage()" [disabled]="!currentMessage">Envoyer</button>
                     </div>
                 </div>
-
-                <button mat-button class="closeButton" (click)="closeChat()"><mat-icon>clear</mat-icon></button>
-
-                <div class="sendMessage">
-                    <input placeholder="Cliquez pour envoyer un message" [(ngModel)]="currentMessage" (keypress)="handleKeyEvent($event)" />
-                    <button mat-button class="sendButton" (click)="sendMessage()" [disabled]="!currentMessage">Envoyer</button>
+                <div *ngIf="!chatRoomInSelectedRooms()">
+                    <h2 class="title">Aucun canal de discussion sélectionné</h2>
                 </div>
-            </div>
-            <div *ngIf="!chatRoomInSelectedRooms()">
-                <h2 class="title">Aucun canal de discussion sélectionné</h2>
             </div>
         </div>
     </div>
