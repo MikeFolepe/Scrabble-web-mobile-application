@@ -1,0 +1,13 @@
+<div class="card">
+    <div class="display">
+        <div id="list-display" *ngFor="let player of playerService.players; let i = index; let last = last">
+            <p>
+                <span *ngIf="player.isCreator" class="creator"> Createur :</span>
+                <img src="{{ player.avatar }}" class="avatar" alt="Avatar" />
+                {{ player.name }}
+            </p>
+            <hr style="color: black; width: 90%; height: 1px; background-color: black" />
+        </div>
+    </div>
+    <button class="button" id="playButton" mat-raised-button color="primary" (click)="closeDialog()">Fermer</button>
+</div>

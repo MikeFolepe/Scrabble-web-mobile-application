@@ -12,21 +12,13 @@
     <form id="main-form-box" *ngIf="this.form">
         <fieldset>
             <legend id="main-form-name">Paramètres de la partie</legend>
-            <fieldset *ngIf="!gameSettingsService.isRedirectedFromMultiplayerGame" class="form-section" id="player-name-box" disabled>
+            <fieldset *ngIf="gameSettingsService.isSoloMode" class="form-section">
                 <legend>Informations du joueur</legend>
                 <app-player-name-field [formGroup]="form" [parentForm]="form"></app-player-name-field>
             </fieldset>
             <fieldset *ngIf="!gameSettingsService.isRedirectedFromMultiplayerGame" class="form-section">
                 <legend>Durée</legend>
                 <app-timer-field [formGroup]="form" [parentForm]="form"></app-timer-field>
-            </fieldset>
-            <fieldset class="form-section">
-                <legend>Protection de la partie</legend>
-                <app-visibility-field [formGroup]="form" [parentForm]="form"></app-visibility-field>
-            </fieldset>
-            <fieldset *ngIf="gameSettingsService.isSoloMode" class="form-section">
-                <legend>Niveau du joueur virtuel</legend>
-                <app-level-field [formGroup]="form" [parentForm]="form"></app-level-field>
             </fieldset>
             <fieldset class="form-section">
                 <legend>Dictionnaire</legend>
@@ -44,6 +36,14 @@
                 </mat-form-field>
                 <div *ngIf="selectedDictionary">{{ selectedDictionary.description }}.</div>
             </fieldset>
+            <fieldset class="form-section">
+                <legend>Protection de la partie</legend>
+                <app-visibility-field [formGroup]="form" [parentForm]="form"></app-visibility-field>
+            </fieldset>
+            <fieldset *ngIf="gameSettingsService.isSoloMode" class="form-section">
+                <legend>Niveau du joueur virtuel</legend>
+                <app-level-field [formGroup]="form" [parentForm]="form"></app-level-field>
+            </fieldset>
         </fieldset>
     </form>
     <div class="buttons">
@@ -51,9 +51,7 @@
         <button
             mat-raised-button
             *ngIf="this.form"
-            
             (click)="initializeGame()"
-            
             id="submit-button"
             color="primary"
             [disabled]="!form.valid || isDictionaryDeleted"
@@ -66,9 +64,14 @@
     </mat-hint>
 </div>
 <div class="chatRooms-buttons">
-    <button mat-mini-fab class="addButton tooltip" (click)="openAddChatRoomDialog()"><span class="tooltiptext">Ajouter</span><mat-icon>add</mat-icon></button>
-    <button mat-mini-fab class="allRoomsButton tooltip" (click)="openJoinChatRoomDialog()"><span class="tooltiptext">Rejoindre</span><mat-icon>search</mat-icon></button>
-    <button mat-mini-fab class="joinedRoomsButton tooltip" (click)="openChangeChatRoomDialog()"><span class="tooltiptext">Changer</span><mat-icon>view_headline</mat-icon></button>
+    <button mat-mini-fab class="addButton tooltip" (click)="openAddChatRoomDialog()">
+        <span class="tooltiptext">Ajouter</span><mat-icon>add</mat-icon>
+    </button>
+    <button mat-mini-fab class="allRoomsButton tooltip" (click)="openJoinChatRoomDialog()">
+        <span class="tooltiptext">Rejoindre</span><mat-icon>search</mat-icon>
+    </button>
+    <button mat-mini-fab class="joinedRoomsButton tooltip" (click)="openChangeChatRoomDialog()">
+        <span class="tooltiptext">Changer</span><mat-icon>view_headline</mat-icon>
+    </button>
 </div>
-<app-chatrooms class = "chatRooms"></app-chatrooms>
-
+<app-chatrooms class="chatRooms"></app-chatrooms>

@@ -129,7 +129,15 @@
                     android:hint="@string/dictionary"
                     />
             </LinearLayout>
-
+            <TextView
+                android:id="@+id/description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:textColor="?android:textColor"
+                android:textSize="13sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -209,7 +217,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:background="?attr/buttonBarPositiveButtonStyle"
+                android:background="@color/navy_blue"
                 android:text="@string/Continue"
                 android:padding="5dp"
                 android:textColor="?android:textColorSecondary" />

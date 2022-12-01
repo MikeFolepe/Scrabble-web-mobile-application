@@ -70,15 +70,12 @@ export class UserService {
         userToSend._id = user._id;
         userToSend.xpPoints = user.xpPoints;
         userToSend.friends = user.friends;
-        console.log(userToSend);
         return userToSend;
     }
 
     async updateUser(user: User): Promise<User> {
         await this.userModel.findByIdAndUpdate({ _id: user._id }, { pseudonym: user.pseudonym, avatar: user.avatar });
         const userDB = await this.getSingleUser(user.pseudonym);
-        console.log(userDB);
-        console.log('ici');
         return userDB;
     }
 

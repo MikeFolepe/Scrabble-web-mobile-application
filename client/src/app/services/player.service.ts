@@ -160,6 +160,7 @@ export class PlayerService {
 
     private getPlayers(): void {
         this.clientSocketService.socket.on('roomPlayers', (players) => {
+            console.log('players');
             this.players = players;
         });
     }

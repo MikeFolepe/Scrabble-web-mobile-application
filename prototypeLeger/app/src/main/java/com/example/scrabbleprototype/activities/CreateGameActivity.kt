@@ -39,6 +39,7 @@ import kotlin.coroutines.CoroutineContext
 class CreateGameActivity : AppCompatActivity(), CoroutineScope {
     private var serverUrl = Environment.serverUrl
     private var job: Job = Job()
+    lateinit var dicoDescription : TextView
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main + job
 
@@ -67,6 +68,7 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
                 json()
             }
         }
+        dicoDescription = findViewById(R.id.description)
         receiveMyPlayer()
         setUpButtons()
         currRoom()
@@ -159,6 +161,7 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
                 id: Long
             ) {
                 gameSetting.dictionary = dictionaries.find { it.title == dictionariesTitle[position] }!!.fileName
+                dicoDescription.text = dictionaries.find { it.title == dictionariesTitle[position] }!!.description
                 Log.d("dico", gameSetting.dictionary)
             }
 
