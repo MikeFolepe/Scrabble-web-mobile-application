@@ -119,6 +119,7 @@ export enum NumberOfPlayer {
     OneVone,
     OneVthree,
 }
+export const GAME_TYPES = ['Partie à deux', 'Partie à quatre'];
 export const DEFAULT_GAME_SETTINGS = {
     creatorName: '',
     startingPlayer: StartingPlayer.Player1,

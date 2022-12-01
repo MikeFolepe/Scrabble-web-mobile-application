@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { DEFAULT_DICTIONARY_INDEX, NumberOfPlayer } from '@app/classes/constants';
+import { DEFAULT_DICTIONARY_INDEX, GAME_TYPES, NumberOfPlayer } from '@app/classes/constants';
 import { AddChatRoomComponent } from '@app/modules/game-view/add-chat-room/add-chat-room.component';
 import { ChangeChatRoomComponent } from '@app/modules/game-view/change-chat-room/change-chat-room.component';
 import { JoinChatRoomsComponent } from '@app/modules/game-view/join-chat-rooms/join-chat-rooms.component';
@@ -47,10 +47,7 @@ export class FormComponent implements OnInit, OnDestroy {
         public dialog: MatDialog,
     ) {
         this.gameSettingsService.ngOnDestroy();
-        this.gameTypes = [];
-        this.gameTypes.push('Partie à deux');
-        this.gameTypes.push('Partie à quatre');
-        this.gameTypeMessage = 'Type de partie';
+        this.gameTypes = GAME_TYPES;
     }
 
     async ngOnInit(): Promise<void> {
