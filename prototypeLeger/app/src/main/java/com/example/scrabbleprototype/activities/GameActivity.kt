@@ -56,6 +56,7 @@ class GameActivity : AppCompatActivity() {
         switchAiTurn()
         receiveReserve()
         receiveEndGame()
+        receiveNewAi()
         leave()
         if(savedInstanceState == null) {
             setUpFragments()
@@ -126,6 +127,14 @@ class GameActivity : AppCompatActivity() {
                 endGameAdapter.updateData(playersSorted)
                 endGameDialog.show()
             }
+        }
+    }
+
+    private fun receiveNewAi() {
+        socket.on("newPlayerAi") { response ->
+            val newAi = mapper.readValue(response[0].toString(), Player::class.java)
+            val indexToReplace = response[1] as Int
+            Players.players[indexToReplace] = newAi
         }
     }
 
