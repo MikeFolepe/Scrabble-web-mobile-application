@@ -32,7 +32,6 @@ class HomeFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?): View {
-        val homeViewModel = ViewModelProvider(this)[HomeViewModel::class.java]
 
         val inflaterWithTheme = ThemeManager.setFragmentTheme(layoutInflater, requireContext())
         _binding = FragmentHomeBinding.inflate(inflaterWithTheme)

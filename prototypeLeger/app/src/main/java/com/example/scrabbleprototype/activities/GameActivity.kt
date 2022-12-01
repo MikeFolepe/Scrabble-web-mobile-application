@@ -34,6 +34,7 @@ import kotlin.concurrent.timerTask
 class GameActivity : AppCompatActivity() {
     private lateinit var endGameDialog: Dialog
     private lateinit var endGameAdapter: EndGameAdapter
+    private var isGameFinished = false
 
     private val statsViewModel: StatsViewmodel by viewModels()
     private val socket = SocketHandler.getPlayerSocket()
@@ -56,7 +57,6 @@ class GameActivity : AppCompatActivity() {
         switchAiTurn()
         receiveReserve()
         receiveEndGame()
-        receiveNewAi()
         leave()
         if(savedInstanceState == null) {
             setUpFragments()
@@ -87,8 +87,10 @@ class GameActivity : AppCompatActivity() {
 
         val leaveButton = endGameDialog.findViewById<Button>(R.id.leave_endgame_button)
         leaveButton.setOnClickListener {
-            startActivity(Intent(this, MainMenuActivity::class.java))
+            resetGameData()
             endGameDialog.dismiss()
+            startActivity(Intent(this, MainMenuActivity::class.java))
+            finish()
         }
     }
 
@@ -106,7 +108,10 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun receiveEndGame() {
-        socket.on("receiveEndGame") { response ->
+        socket.once("receiveEndGame") { response ->
+            if(isFinishing) return@once
+            if(isGameFinished) return@once
+            isGameFinished = true
             val winnerName = response[0] as String
             val startDate = response[1] as String
             val startTime = response[2] as String
@@ -120,7 +125,6 @@ class GameActivity : AppCompatActivity() {
                 Users.userStats.gamesWon += 1
                 statsViewModel.updateGamesWon(Users.userStats.gamesWon)
             }
-
             val playersSorted = ArrayList(Players.players.sortedByDescending { it.score })
             updateXp(playersSorted)
             runOnUiThread {
@@ -130,19 +134,24 @@ class GameActivity : AppCompatActivity() {
         }
     }
 
-    private fun receiveNewAi() {
-        socket.on("newPlayerAi") { response ->
-            val newAi = mapper.readValue(response[0].toString(), Player::class.java)
-            val indexToReplace = response[1] as Int
-            Players.players[indexToReplace] = newAi
+    private fun leave() {
+        socket.once("leave") {
+            if(isFinishing) return@once
+            Users.currentUser.isObserver = false
+            resetGameData()
+            runOnUiThread {
+                startActivity(Intent(this, MainMenuActivity::class.java))
+                finish()
+            }
         }
     }
 
-    private fun leave() {
-        socket.on("leave") {
-            Users.currentUser.isObserver = false
-            runOnUiThread { startActivity(Intent(this, MainMenuActivity::class.java)) }
-        }
+    private fun resetGameData() {
+        Board.cases = arrayListOf()
+        LetterRack.letters = arrayListOf()
+        Players.currentPlayer = Player()
+        Players.opponents = arrayListOf()
+        Players.players = arrayListOf()
     }
 
     private fun updateXp(players: ArrayList<Player>) {

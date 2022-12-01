@@ -12,7 +12,7 @@ import { Friend } from '@common/friend';
 import { GameSettings } from '@common/game-settings';
 import { User } from '@common/user';
 import { GameDB } from '@common/user-stats';
-import { Logger } from '@nestjs/common';
+import { ConsoleLogger, Logger } from '@nestjs/common';
 import { ConnectedSocket, MessageBody, OnGatewayConnection, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { RoomManagerService } from '../services/room-manager/room-manager.service';

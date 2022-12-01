@@ -101,11 +101,11 @@ class GameButtonsFragment : Fragment(), EndTurnCallback {
 
     override fun onStop() {
         super.onStop()
-        activityContext.unbindService(connection)
         skipTurnBound = false
         placeBound = false
         swapBound = false
         skipTurnService.setEndTurnCallback(null)
+        activityContext.unbindService(connection)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
