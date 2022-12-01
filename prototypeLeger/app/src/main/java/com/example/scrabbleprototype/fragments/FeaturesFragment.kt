@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
+import android.os.Environment
 import android.os.IBinder
 import android.view.ContextThemeWrapper
 import androidx.fragment.app.Fragment
@@ -21,6 +22,10 @@ import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.databinding.FragmentFeaturesBinding
 import com.example.scrabbleprototype.model.*
 import com.example.scrabbleprototype.objects.*
+import com.example.scrabbleprototype.services.EndTurnCallback
+import com.example.scrabbleprototype.services.PlaceService
+import com.example.scrabbleprototype.services.SkipTurnService
+import com.example.scrabbleprototype.services.SwapLetterService
 import com.example.scrabbleprototype.services.PlaceService
 import com.example.scrabbleprototype.services.SkipTurnService
 import com.fasterxml.jackson.core.type.TypeReference
@@ -50,6 +55,11 @@ class FeaturesFragment : Fragment(), CoroutineScope {
     private lateinit var possibleWordsAdapter: PossibleWordsAdapter
     val user = Users.currentUser
     private var serverUrl = Environment.serverUrl
+
+    private lateinit var skipTurnService: SkipTurnService
+    private var skipTurnBound: Boolean = false
+    private lateinit var placeService: PlaceService
+    private var placeBound: Boolean = false
 
     private lateinit var skipTurnService: SkipTurnService
     private var skipTurnBound: Boolean = false

@@ -241,7 +241,7 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
         //gameSetting.dictionary = dictionaries.find { it.title == dicoFileName }!!.fileName
         gameSetting.dictionary = dictionaries[0].fileName
         Log.d("game" , gameSetting.password)
-        socket.emit("createRoom", JSONObject(Json.encodeToString(gameSetting)))
+        socket.emit("createRoom", JSONObject(Json.encodeToString(gameSetting)), Users.currentUser._id)
     }
 
 

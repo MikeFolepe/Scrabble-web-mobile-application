@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Player } from '@app/models/player.model';
-import { INVALID_INDEX, RESERVE, WHITE_LETTER_INDEX } from '@common/constants';
+import { ERROR_MESSAGE_DELAY, INVALID_INDEX, RESERVE, WHITE_LETTER_INDEX } from '@common/constants';
 import { Letter } from '@common/letter';
 import { Room } from '@common/room';
 import { AuthService } from './auth.service';
+
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ClientSocketService } from './client-socket.service';
 
 @Injectable({
@@ -18,7 +20,7 @@ export class PlayerService {
     letterForDrag: Letter[];
     isFirstPlacement: boolean;
 
-    constructor(private clientSocketService: ClientSocketService, private authService: AuthService) {
+    constructor(private clientSocketService: ClientSocketService, private authService: AuthService, private snackBar: MatSnackBar) {
         this.currentPlayer = new Player('', []);
         this.letterForDrag = [];
         this.fontSize = 14;
@@ -31,6 +33,8 @@ export class PlayerService {
         this.clientSocketService.initialize();
         this.onReplaceAi();
         this.isFirstPlacement = true;
+        this.onReplaceHuman();
+        this.onLeaveNotif();
     }
 
     clearPlayers(): void {
@@ -64,6 +68,19 @@ export class PlayerService {
             this.players[indexAiToReplace] = player;
             if (this.authService.currentUser.pseudonym === player.name) {
                 this.currentPlayer = player;
+            }
+        });
+    }
+
+    onLeaveNotif(): void {
+        this.clientSocketService.socket.on('leaveNotification', (message) => {
+            if (message !== '') {
+                this.snackBar.open(message, 'OK', {
+                    duration: ERROR_MESSAGE_DELAY,
+                    horizontalPosition: 'center',
+                    verticalPosition: 'bottom',
+                    panelClass: ['snackBarStyle'],
+                });
             }
         });
     }
@@ -123,6 +140,7 @@ export class PlayerService {
     private getMyPlayer(): void {
         this.clientSocketService.socket.on('MyPlayer', (player: Player) => {
             this.currentPlayer = player;
+            console.log(this.currentPlayer);
         });
     }
 

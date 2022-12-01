@@ -3,7 +3,7 @@ import { EASEL_SIZE } from '@app/classes/constants';
 import { MessageType } from '@app/classes/enum';
 import { AuthService } from '@app/services/auth.service';
 import { BoardHandlerService } from '@app/services/board-handler.service';
-import { EndGameService } from '@app/services/end-game.service';
+import { ClientSocketService } from '@app/services/client-socket.service';
 import { LetterService } from '@app/services/letter.service';
 import { ManipulateService } from '@app/services/manipulate.service';
 import { PlayerService } from '@app/services/player.service';
@@ -19,8 +19,11 @@ import { Letter } from '@common/letter';
 })
 export class LetterEaselComponent {
     @ViewChild('easel') easel: ElementRef;
-
+    word: string;
     indexOfLetterToSwap: number[];
+    display: boolean;
+    isCorrect: boolean;
+    maxButtonCall: number;
 
     constructor(
         public boardHandlerService: BoardHandlerService,
@@ -28,15 +31,23 @@ export class LetterEaselComponent {
         public authService: AuthService,
         private letterService: LetterService,
         private swapLetterService: SwapLetterService,
+        private clientSocket: ClientSocketService,
         private sendMessageService: SendMessageService,
         private manipulateService: ManipulateService,
         private skipTurnService: SkipTurnService,
-        private endGameService: EndGameService,
-    ) {}
+    ) {
+        this.word = '';
+        this.display = false;
+        this.isCorrect = false;
+        this.receiveChecking();
+        this.maxButtonCall = 2;
+    }
 
     @HostListener('document:click', ['$event'])
     @HostListener('document:contextmenu', ['$event'])
     clickEvent(event: MouseEvent): void {
+        this.display = false;
+        this.word = '';
         if (this.easel.nativeElement.contains(event.target)) return;
         // Disable all easel selections made when a click occurs outside the easel
         for (const letterEasel of this.playerService.currentPlayer.letterTable) {
@@ -103,9 +114,8 @@ export class LetterEaselComponent {
         }
         this.swapLetterService.swap(this.indexOfLetterToSwap);
         // Display the respective message into the chatBox and pass the turn
-        const message = this.playerService.currentPlayer + ' : !échanger ' + lettersToSwap;
+        const message = this.playerService.currentPlayer.name + ' a échanger ' + lettersToSwap;
         this.sendMessageService.displayMessageByType(message, MessageType.Player);
-        this.endGameService.addActionsLog('echanger');
         this.skipTurnService.switchTurn();
     }
 
@@ -114,6 +124,22 @@ export class LetterEaselComponent {
             letter.isSelectedForSwap = false;
             letter.isSelectedForManipulation = false;
         }
+    }
+
+    checkWord() {
+        this.maxButtonCall--;
+        this.clientSocket.socket.emit('checkingWord', this.word, this.clientSocket.currentRoom.id);
+    }
+    receiveChecking() {
+        this.clientSocket.socket.on('receiveChecking', (isCorrect) => {
+            if (isCorrect) {
+                this.display = true;
+                this.isCorrect = true;
+            } else {
+                this.display = true;
+                this.isCorrect = false;
+            }
+        });
     }
 
     isSwapButtonActive(): boolean {

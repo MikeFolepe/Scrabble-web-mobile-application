@@ -23,10 +23,6 @@ export class PlayerService {
         this.players.push(user);
     }
 
-    clearPlayers(): void {
-        this.players = [];
-    }
-
     getEasel(indexPlayer: number): Letter[] {
         return this.players[indexPlayer].letterTable;
     }

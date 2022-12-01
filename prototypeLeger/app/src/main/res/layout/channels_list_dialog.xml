@@ -26,8 +26,8 @@
             android:id="@+id/search_chatrooms"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:queryHint="Veuillez entrer le nom du canal recherché"
-            android:textColor="@color/black"/>
+            app:queryHint="Veuillez entrer le nom du canal recherché"
+            android:textColor="?android:textColor"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/all_chatrooms"

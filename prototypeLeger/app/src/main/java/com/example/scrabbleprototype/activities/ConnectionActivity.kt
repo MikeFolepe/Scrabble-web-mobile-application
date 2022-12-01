@@ -61,7 +61,7 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
         ThemeManager.setActivityTheme(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_connection)
-        users.currentUser = User("", "", "", "", false, null)
+        users.currentUser = User("", "", "", "")
         val connectionButton = findViewById<Button>(R.id.connection_button)
         connectionButton.setOnClickListener {
             launch {
@@ -166,8 +166,8 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
 
         //TO DO mettre une erreur pour si le serveur est down
         //validate username and ip
-            val user = User("", pseudonym, password, "", false, null)
-            val response = findUserInDb(user, pseudonym, password)
+            val user = User("", pseudonym, password, "")
+            val response = findUserInDb(pseudonym, password)
             if(response != null) {
                 val decision: String = response.body()
                 if (decision == "true") {
@@ -194,7 +194,7 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
 
 
 /// penser a retirer user ici car il sert que pour l'adresse ip qui est hardcoder bad practice
-    suspend fun findUserInDb(user: User ,pseudonym: String, password: String): HttpResponse? {
+    suspend fun findUserInDb(pseudonym: String, password: String): HttpResponse? {
         var response: HttpResponse?
         try{
             response = client.get("$serverUrl/api/user/findUserInDb/"+pseudonym+"/"+password) {

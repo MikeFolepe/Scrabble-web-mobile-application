@@ -1,43 +1,71 @@
+/* eslint-disable no-underscore-dangle */
+import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { UserStats } from '@app/classes/user-stats';
 import { User } from '@common/user';
+import { UserStatsDB } from '@common/user-stats';
 import { AdministratorService } from './administrator.service';
 import { CommunicationService } from './communication.service';
+import { ErrorHandlerService } from './error-handler.service';
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root',
 })
 export class UserService {
+    users: User[];
+    userStats: UserStats;
+    constructor(
+        private communicationService: CommunicationService,
+        private administratorService: AdministratorService,
+        public errorHandler: ErrorHandlerService,
+    ) {}
 
-  constructor(private communicationService: CommunicationService, private administratorService: AdministratorService) { 
-  }
+    addUserToDatabase(user: User): void {
+        this.addUser(user);
+    }
 
-  addUserToDatabase(user: User) : void {
-    this.addUser(user);   
-  }
+    getUserStats(userId: string): void {
+        this.communicationService.getUserStats(userId).subscribe(
+            (userStat: UserStatsDB) => {
+                this.userStats = new UserStats(userStat);
+                console.log(this.userStats);
+            },
+            (error: HttpErrorResponse) => this.errorHandler.handleRequestError(error),
+        );
+    }
 
-  async findUserInDb(pseudonym: string, password: string) : Promise<boolean> {
-    return this.communicationService.findUserInDb(pseudonym, password);
-  }
+    getUsers(): void {
+        this.communicationService.getUsers().subscribe(
+            (users: User[]) => {
+                this.users = users;
+            },
+            (error: HttpErrorResponse) => this.errorHandler.handleRequestError(error),
+        );
+    }
 
-  async checkIfPseudonymExists(pseudonym: string) : Promise<boolean> {
-      return this.communicationService.checkPseudonym(pseudonym);
-  }
+    async findUserInDb(pseudonym: string, password: string): Promise<boolean> {
+        return this.communicationService.findUserInDb(pseudonym, password);
+    }
 
-  async getEmail(pseudonym : string) : Promise<string> {
-    return this.communicationService.getEmail(pseudonym);
-  }
+    async checkIfPseudonymExists(pseudonym: string): Promise<boolean> {
+        return this.communicationService.checkPseudonym(pseudonym);
+    }
 
-  async sendEmailToUser(pseudonym : string) : Promise<boolean> {
-    return this.communicationService.sendEmailToUser(pseudonym);
-  }
+    async getEmail(pseudonym: string): Promise<string> {
+        return this.communicationService.getEmail(pseudonym);
+    }
 
-  async getDecryptedPassword(pseudonym : string) : Promise<string> {
-    return this.communicationService.getDecryptedPassword(pseudonym);
-  }
+    async sendEmailToUser(pseudonym: string): Promise<boolean> {
+        return this.communicationService.sendEmailToUser(pseudonym);
+    }
 
-  private addUser(user: User) : void {
-    this.communicationService.addNewUserToDB(user).subscribe(() => {
-        this.administratorService.displayMessage('Utilisateur ajouté');
-    });
-  }
+    async getDecryptedPassword(pseudonym: string): Promise<string> {
+        return this.communicationService.getDecryptedPassword(pseudonym);
+    }
+
+    private addUser(user: User): void {
+        this.communicationService.addNewUserToDB(user).subscribe(() => {
+            this.administratorService.displayMessage('Utilisateur ajouté');
+        });
+    }
 }

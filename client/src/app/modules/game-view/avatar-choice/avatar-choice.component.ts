@@ -2,7 +2,18 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { AuthService } from '@app/services/auth.service';
-import { blondeGirl, blondeGuy, brunetteGirl, doggo, earringsGirl, gingerGirl, hatGirl, musicGuy, mustacheGuy, orangeGuy } from '@common/defaultAvatars';
+import {
+    blondeGirl,
+    blondeGuy,
+    brunetteGirl,
+    doggo,
+    earringsGirl,
+    gingerGirl,
+    hatGirl,
+    musicGuy,
+    mustacheGuy,
+    orangeGuy,
+} from '@common/defaultAvatars';
 
 @Component({
     selector: 'app-avatar-choice',

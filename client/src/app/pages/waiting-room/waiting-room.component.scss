@@ -10,8 +10,8 @@
 }
 
 .waiting-players-container {
-    width: 600px;
-    height: 300px;
+    width: 650px;
+    height: 350px;
     background-color: #00804d;
     color: white;
     align-items: center;
@@ -123,4 +123,12 @@ mat-icon {
     margin-right: auto;
     border-radius: 10px;
     margin-top: 100px;
+}
+
+.avatar {
+    height : 40px;
+    width : 40px;
+    border-radius : 100%;
+    margin-right:5px;
+    margin-bottom: -5px;
 }
