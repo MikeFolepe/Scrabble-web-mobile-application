@@ -116,9 +116,8 @@ export class LetterEaselComponent {
         }
         this.swapLetterService.swap(this.indexOfLetterToSwap);
         // Display the respective message into the chatBox and pass the turn
-        const message = this.playerService.currentPlayer + ' : !échanger ' + lettersToSwap;
+        const message = this.playerService.currentPlayer.name + ' a échanger ' + lettersToSwap;
         this.sendMessageService.displayMessageByType(message, MessageType.Player);
-        this.endGameService.addActionsLog('echanger');
         this.skipTurnService.switchTurn();
     }
 

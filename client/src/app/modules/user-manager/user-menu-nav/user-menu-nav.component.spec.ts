@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PrototypeChatBoxComponent } from './prototype-chat-box.component';
+import { UserMenuNavComponent } from './user-menu-nav.component';
 
-describe('PrototypeChatBoxComponent', () => {
-    let component: PrototypeChatBoxComponent;
-    let fixture: ComponentFixture<PrototypeChatBoxComponent>;
+describe('UserMenuNavComponent', () => {
+    let component: UserMenuNavComponent;
+    let fixture: ComponentFixture<UserMenuNavComponent>;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [PrototypeChatBoxComponent],
+            declarations: [UserMenuNavComponent],
         }).compileComponents();
     });
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(PrototypeChatBoxComponent);
+        fixture = TestBed.createComponent(UserMenuNavComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });

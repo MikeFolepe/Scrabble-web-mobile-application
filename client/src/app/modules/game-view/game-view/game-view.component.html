@@ -17,7 +17,7 @@
                     mat-raised-button
                     color="primary"
                     id="regular-button-1"
-                    [disabled]="!playerService.currentPlayer.isTurn || this.skipTurnService.shouldNotBeDisplayed"
+                    [disabled]="!playerService.currentPlayer.isTurn || this.skipTurnService.shouldNotBeDisplayed || this.endGameService.isEndGame"
                     (click)="this.chatBoxService.sendPlayerMessage('!passer')"
                 >
                     Passer son tour
@@ -26,29 +26,23 @@
                     mat-raised-button
                     color="primary"
                     id="regular-button-1"
-                    [disabled]="!playerService.currentPlayer.isTurn || this.skipTurnService.shouldNotBeDisplayed || (this.playerService.currentPlayer.letterTable.length !== 7)"
+                    [disabled]="!playerService.currentPlayer.isTurn || this.skipTurnService.shouldNotBeDisplayed || (this.playerService.currentPlayer.letterTable.length !== 7 || this.endGameService.isEndGame)"
                     (click)="openBestActionsDialog()"
                 >
                     Meilleurs coups
                 </button>
-                <div *ngIf="gameSettingsService.isSoloMode">
-                    <button mat-raised-button color="warn" id="regular-button-2" (click)="leaveGame()" routerLink="/home">
-                        {{ endGameService.isEndGame ? 'Quitter' : 'Abandonner' }}
-                    </button>
-                </div>
-                <div *ngIf="!endGameService.isEndGame && !gameSettingsService.isSoloMode && !giveUpHandlerService.isGivenUp">
+                <div
+                    *ngIf="
+                        !endGameService.isEndGame &&
+                        !gameSettingsService.isSoloMode &&
+                        !giveUpHandlerService.isGivenUp &&
+                        !authService.currentUser.isObserver
+                    "
+                >
                     <button mat-raised-button color="warn" id="regular-button-3" (click)="confirmGiveUpGame()">Abandonner</button>
                 </div>
-                <div *ngIf="endGameService.isEndGame && !gameSettingsService.isSoloMode && !giveUpHandlerService.isGivenUp">
-                    <button
-                        mat-raised-button
-                        color="warn"
-                        id="regular-button-4"
-                        (click)="this.clientSocketService.socket.emit('deleteGame', this.clientSocketService.currentRoom.id); leaveGame()"
-                        routerLink="/home"
-                    >
-                        Quitter
-                    </button>
+                <div *ngIf="authService.currentUser.isObserver">
+                    <button mat-raised-button color="warn" id="regular-button-3" (click)="confirmLeaveByObserver()">Quitter</button>
                 </div>
                 <audio controls
                 #audio

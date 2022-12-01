@@ -1,0 +1,25 @@
+<app-background></app-background>
+<app-user-menu-nav></app-user-menu-nav>
+<div class="userProfile">
+    <h1>Profil</h1>
+    <hr style="color: black; width: 100%; height: 1px; background-color: black" />
+
+    <mat-card class="userCard">
+        <img id="avatar" src="{{ this.authService.currentUser.avatar }}" alt="avatar" />
+        <mat-card-title>{{ this.authService.currentUser.pseudonym }}</mat-card-title>
+    </mat-card>
+
+    <h1>Liste d'amis</h1>
+    <hr style="color: black; width: 50%; height: 1px; background-color: black; left: 0; position: absolute; margin-top: -10px" />
+
+    <div class="friendList">
+        <div *ngFor="let friend of authService.currentUser.friends">
+            <mat-card class ="friend">
+                <img src="{{ friend.avatar }}" class="avatar" alt="Avatar" />
+                <p>{{ friend.pseudonym }} XP: {{ friend.xpPoints }}</p>
+            </mat-card>
+        </div>
+    </div>
+
+    <button mat-raised-button color="primary" (click)="inviteUser()">Ajouter un ami</button>
+</div>

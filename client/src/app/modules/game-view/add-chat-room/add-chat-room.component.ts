@@ -23,9 +23,6 @@ export class AddChatRoomComponent {
 
     createChatRoom() {
         this.clientSocketService.socket.emit('createChatRoom', this.authService.currentUser, this.chatRoomName);
-        this.clientSocketService.socket.emit('sendEmail', "test", "allooooo");
-        
-
     }
 
     validChatRoomName() {

@@ -1,0 +1,12 @@
+
+<h1 mat-dialog-title>Liste d'utilisateurs</h1>
+<div mat-dialog-content *ngFor="let user of userService.users">
+    <mat-card>{{ user.pseudonym }}</mat-card>
+</div>
+<br />
+<br />
+<br />
+<div mat-dialog-actions>
+    <button mat-button mat-dialog-close (click)="this.userListDialog.close()" color="warn">Fermer</button>
+</div>
+

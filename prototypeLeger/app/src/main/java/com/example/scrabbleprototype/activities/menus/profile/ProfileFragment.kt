@@ -28,7 +28,7 @@ import kotlin.concurrent.timerTask
 
 class ProfileFragment : Fragment() {
 
-    private val user = Users.currentUser
+    private val user = Users
     private lateinit var addFriendDialog: Dialog
     private var activeUsers = arrayListOf<Friend>()
 
@@ -37,7 +37,7 @@ class ProfileFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        for(i in 0 until 12) user.friendsList.add(Friend("ami #" + i, (R.color.blue).toString(), 250 + i))
+        for(i in 0 until 12) user.currentUser.friends.add(Friend("ami #" + i, (R.color.blue).toString(), 250 + i))
     }
 
     override fun onCreateView(
@@ -64,18 +64,19 @@ class ProfileFragment : Fragment() {
             activeUsers = jacksonObjectMapper().readValue(response[0].toString(), object: TypeReference<ArrayList<Friend>>() {})
             Log.d("activeusers", "received")
         }
-        SocketHandler.socket.emit("sendActiveUsers", user.pseudonym)
+        SocketHandler.socket.emit("sendActiveUsers", user.currentUser.pseudonym)
     }
 
     private fun setupUserInfo() {
-        binding.userPseudonym.text = user.pseudonym
-        binding.userXp.text = getString(R.string.user_xp, user.xpPoints)
+        binding.userPseudonym.text = user.currentUser.pseudonym
+        binding.userXp.text = getString(R.string.user_xp, user.currentUser.xpPoints)
+        binding.userAvatar.setImageBitmap(user.avatarBmp)
     }
 
     private fun setupFriendsList() {
         val friendsListView = binding.friendsList
         friendsListView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        val friendsListAdapter = FriendsListAdapter(user.friendsList)
+        val friendsListAdapter = FriendsListAdapter(user.currentUser.friends)
         friendsListView.adapter = friendsListAdapter
     }
 
@@ -91,7 +92,7 @@ class ProfileFragment : Fragment() {
         Log.d("activeusers", "setuped")
 
         activeUsersAdapter.onUserClick = { position ->
-            user.friendsList.add(activeUsers[position])
+            user.currentUser.friends.add(activeUsers[position])
             // TODO send invitation
             Toast.makeText(addFriendDialog.context, "Une invitation d'ami a été envoyée à " + activeUsers[position].pseudonym, Toast.LENGTH_LONG).show()
             Timer().schedule(timerTask {

@@ -16,7 +16,6 @@
             <h2 [style.font-size.px]="playerService.fontSize * 2">{{ letter.value }}</h2>
             <p [style.font-size.px]="playerService.fontSize">{{ letter.points }}</p>
         </div>
-
     </div>
 </div>
 <div id="easel" class="easel-container" tabindex="0" #easel *ngIf="authService.currentUser.isObserver">
@@ -37,7 +36,9 @@
     </div>
 </div>
 <div>
-    <button [disabled]="authService.currentUser.isObserver" mat-raised-button color="primary" [disabled]="!isSwapButtonActive()" (click)="swap()">Échanger</button>
+    <button [disabled]="authService.currentUser.isObserver" mat-raised-button color="primary" [disabled]="!isSwapButtonActive()" (click)="swap()">
+        Échanger
+    </button>
     <br />
     <button [disabled]="authService.currentUser.isObserver" mat-raised-button color="primary" [disabled]="!isCancelButtonActive()" (click)="cancelSelection()">Annuler</button>
     <br />

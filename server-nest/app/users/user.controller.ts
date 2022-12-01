@@ -1,10 +1,14 @@
+/* eslint-disable no-underscore-dangle */
 import { User } from '@common/user';
-import * as email from '@nativescript/email';
-import { Body, Controller, Get, Post, Req } from '@nestjs/common';
+import { UserStatsDB } from '@common/user-stats';
+import * as emailS from '@nativescript/email';
+import { Body, Controller, Get, HttpStatus, Param, Post, Req, Res } from '@nestjs/common';
+import * as sgMail from '@sendgrid/mail';
+import { Response } from 'express';
 import { UserService } from './user.service';
 @Controller('user')
 export class UserController {
-    composeOptions: email.ComposeOptions;
+    composeOptions: emailS.ComposeOptions;
 
     constructor(private readonly userService: UserService) {}
 
@@ -12,7 +16,6 @@ export class UserController {
     async addUser(@Body() user: User) {
         const password = this.userService.encryptPassword(user.password); // await bcrypt.hash(user.password, salt);
         await this.userService.insertUser(user.avatar, user.pseudonym, password, user.email);
-        return { ...user };
     }
 
     // check if the password is correct.
@@ -52,21 +55,85 @@ export class UserController {
         const email = userFound.email;
         const password = await this.userService.decryptPassword(pseudonym);
 
-        const sgMail = require('@sendgrid/mail');
         sgMail.setApiKey('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');
         const msg = {
             to: email,
             from: 'log3900.110.22@gmail.com',
             subject: 'Mot de passe oublié - Scrabble',
-            text: `Bonjour, voici votre mot de passe : ${password}`,
+            text: `- SRABBLE 110 - \n\n Utilisateur : ${pseudonym}. \n\n Bonjour, voici votre mot de passe : ${password}`,
         };
         sgMail.send(msg);
         return true;
     }
 
     @Get('/users')
-    async getAllUsers() {
-        const accounts = await this.userService.getUsers();
-        return accounts;
+    async getAllUsers(@Res() response: Response) {
+        await this.userService
+            .getUsers()
+            .then((users: User[]) => {
+                response.status(HttpStatus.OK).send(users);
+            })
+            .catch((error: Error) => {
+                response.status(HttpStatus.NOT_FOUND).send('An error occurred while trying to get the users' + error.message);
+            });
+    }
+
+    @Get('/userStats/:userId')
+    async getUserStats(@Param('userId') userId: string, @Res() response: Response) {
+        await this.userService
+            .getUserStats(userId)
+            .then((usersStats: UserStatsDB) => {
+                response.status(HttpStatus.OK).send(usersStats);
+            })
+            .catch((error: Error) => {
+                response.status(HttpStatus.NOT_FOUND).send('An error occurred while trying to get the stats' + error.message);
+            });
+    }
+
+    @Post('/userStats/login/:userId')
+    async addLogin(@Param('userId') userId: string) {
+        await this.userService.addLogin(userId);
+    }
+
+    @Post('/userStats/game/:userId')
+    async addGame(@Param('userId') userId: string, @Req() req) {
+        console.log(req.body);
+        await this.userService.addGame(req.body, userId);
+    }
+
+    @Post('/userStats/gamesWon/:userId')
+    async updateGamesWon(@Param('userId') userId: string, @Req() req) {
+        await this.userService.updateGamesWon(userId, req.body.gamesWon);
+    }
+
+    @Post('/userStats/gamesPlayed/:userId')
+    async updateGamesPlayed(@Param('userId') userId: string, @Req() req, @Body() gamesPlayed: number) {
+        console.log('arrived in controller');
+        await this.userService.updateGamesPlayed(userId, req.body.gamesPlayed);
+    }
+
+    @Post('/userStats/totalPoints/:userId')
+    async updateTotalPoints(@Param('userId') userId: string, @Req() req) {
+        await this.userService.updateTotalPoints(userId, req.body.totalPoints);
+    }
+    @Post('/users/xpPoints/:userId')
+    async updateXpPoints(@Param('userId') userId: string, @Req() req) {
+        await this.userService.updateXpPoints(userId, req.body.xpPoints);
+    }
+
+    @Post('/updateUser')
+    async updateUserInDb(@Body() user: User, @Res() response: Response) {
+        console.log('boo', user);
+        const userFound = await this.userService.getSingleUser(user.pseudonym);
+        if (userFound) {
+            console.log('userfound');
+            if (userFound._id !== user._id) {
+                console.log('userfound');
+                response.status(HttpStatus.FOUND).send();
+            }
+        }
+        await this.userService.updateUser(user).then((newUser: User) => {
+            response.status(HttpStatus.OK).send(newUser);
+        });
     }
 }
