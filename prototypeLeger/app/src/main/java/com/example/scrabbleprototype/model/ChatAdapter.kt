@@ -42,6 +42,8 @@ class ChatAdapter(context: Context, @LayoutRes private val layoutResource: Int, 
         val messageUser = view.findViewById<TextView>(R.id.message_user)
         val messageTime = view.findViewById<TextView>(R.id.message_time)
         val message = view.findViewById<TextView>(R.id.message)
+        //imageview.setmageBitMap(_messages[position].getBitMap)
+
 
         messageUser.text = _messages[position].pseudonym
         messageTime.text = _messages[position].time
