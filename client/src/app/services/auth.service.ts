@@ -2,6 +2,7 @@
 import { HttpErrorResponse, HttpResponse, HttpStatusCode } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { ERROR_MESSAGE_DELAY } from '@app/classes/constants';
 import { ChatEvents } from '@common/chat.gateway.events';
@@ -18,9 +19,11 @@ import { UserService } from './user.service';
 export class AuthService {
     currentUser: User;
     serverUrl: string;
+    // srcData: SafeResourceUrl;
     chosenAvatar: string;
     constructor(
         private clientSocketService: ClientSocketService,
+        private sanitizer: DomSanitizer,
         private router: Router,
         private communicationService: CommunicationService,
         public errorHandler: ErrorHandlerService,
@@ -31,7 +34,6 @@ export class AuthService {
         this.serverUrl = environment.serverUrl;
         this.communicationService.baseUrl = this.serverUrl + '/api';
     }
-
     signIn(userData: User) {
         this.communicationService.connectUser(userData).subscribe(
             (response: HttpResponse<User>) => {
@@ -39,6 +41,9 @@ export class AuthService {
                     this.currentUser = response.body as User;
                     this.setSocketConnection();
                     this.setMainChatRoom();
+                    const sanitized = response.body?.avatar as string;
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    this.currentUser.avatar = (this.sanitizer.bypassSecurityTrustResourceUrl(sanitized) as any).changingThisBreaksApplicationSecurity;
                     this.receiveUserSocket();
                     this.addLogin();
                     this.userService.getUserStats(this.currentUser._id);
