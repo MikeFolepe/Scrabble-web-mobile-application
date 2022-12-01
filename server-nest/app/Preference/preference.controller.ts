@@ -1,6 +1,6 @@
 import { Controller, Get, HttpStatus, Post, Req, Res } from '@nestjs/common';
-import { PreferenceService } from './preference.service';
 import { Response } from 'express';
+import { PreferenceService } from './preference.service';
 
 @Controller('user/preference')
 export class PreferenceController {
