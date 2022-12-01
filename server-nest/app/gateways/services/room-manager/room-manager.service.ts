@@ -1,12 +1,12 @@
+import { OUT_BOUND_INDEX_OF_SOCKET } from '@app/classes/constants';
 import { ServerRoom, State } from '@app/classes/server-room';
 import { Player } from '@app/game/models/player.model';
 import { UserService } from '@app/users/user.service';
 import { MAX_LENGTH_OBSERVERS } from '@common/constants';
-import { GameSettings } from '@common/game-settings';
+import { GameSettings, NumberOfPlayer } from '@common/game-settings';
 import { Room } from '@common/room';
 import { User } from '@common/user';
 import { Injectable } from '@nestjs/common';
-import { OUT_BOUND_INDEX_OF_SOCKET } from '../../../classes/constants';
 @Injectable()
 export class RoomManagerService {
     rooms: ServerRoom[];
@@ -39,6 +39,7 @@ export class RoomManagerService {
     addCustomer(customerName: string, roomId: string): boolean {
         const room = this.find(roomId);
         if (room === undefined) return false;
+        if (room.gameSettings.gameType === NumberOfPlayer.OneVone && room.humanPlayersNumber === 2) return false;
         if (room.humanPlayersNumber === 4) return false;
         if (room.aiPlayersNumber !== 0) {
             // eslint-disable-next-line @typescript-eslint/prefer-for-of
