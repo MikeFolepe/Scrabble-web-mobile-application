@@ -30,6 +30,7 @@
     "@nestjs/cli": "^9.1.3",
     "@types/socket.io-client": "^3.0.0",
     "ajv": "^8.8.0",
+    "angular-opinionated-popout-window": "^1.0.10",
     "chai": "^4.3.4",
     "express-fileupload": "^1.2.1",
     "file-saver": "^2.0.5",

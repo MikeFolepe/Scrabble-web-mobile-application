@@ -15,6 +15,7 @@ export class ChatroomsComponent implements OnInit {
 
     currentMessage: string;
     isOpen: boolean;
+    title : string;
 
     constructor(
         public chatRoomIndexService: ChatRoomIndexService,
@@ -23,6 +24,7 @@ export class ChatroomsComponent implements OnInit {
         private authService: AuthService,
     ) {
         // this.chatRoomService.getChatRooms();
+        this.title = "Boite de Communication";
         this.currentMessage = '';
         this.scrollToBottom();
         this.isOpen = false;

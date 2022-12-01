@@ -12,6 +12,20 @@ p {
 
 .test {background-color: red;}
 
+.testButton {
+    //put it on the left middle corner
+    position: absolute;
+    left: 0;
+    top: 50%;
+}
+
+.testButton1 {
+    //put it on the left middle corner
+    position: absolute;
+    left: 0;
+    top: 40%;
+}
+
 .hovertext {
     position: relative;
     border-bottom: 1px dotted grey;
@@ -146,7 +160,6 @@ p {
 }
 
 .chatRooms {
-    //put the chatrooms at the botton left of the page
     position: absolute;
     bottom: 10px;
     right: 10px;
