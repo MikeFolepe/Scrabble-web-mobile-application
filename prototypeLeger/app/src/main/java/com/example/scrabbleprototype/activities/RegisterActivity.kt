@@ -242,11 +242,7 @@ class RegisterActivity : AppCompatActivity(), CoroutineScope {
     suspend fun checkPseudonym(user: User): HttpResponse? {
         var response: HttpResponse?
         try {
-<<<<<<< HEAD
-            response = client.get(resources.getString(R.string.http)+user.ipAddress+ "/api/user/checkPseudonym/"+user.pseudonym){
-=======
             response = client.get("$serverUrl/api/user/checkPseudonym/"+user.pseudonym){
->>>>>>> develop
                 contentType(ContentType.Application.Json)
             }
         }  catch(e: Exception) {
@@ -259,11 +255,7 @@ class RegisterActivity : AppCompatActivity(), CoroutineScope {
     suspend fun postRegistration(user: User): HttpResponse? {
         var response: HttpResponse?
         try{
-<<<<<<< HEAD
-            response = client.post(resources.getString(R.string.http) + user.ipAddress + "/api/user/users") {
-=======
             response = client.post("$serverUrl/api/user/users") {
->>>>>>> develop
                 contentType(ContentType.Application.Json)
                 setBody(user)
             }

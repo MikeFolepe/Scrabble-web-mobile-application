@@ -2,7 +2,7 @@
 import { User } from '@common/user';
 import { UserStatsDB } from '@common/user-stats';
 import * as emailS from '@nativescript/email';
-import { Body, Controller, Get, HttpStatus, Param, Post, Req, Res } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Logger, Param, Post, Req, Res } from '@nestjs/common';
 import * as sgMail from '@sendgrid/mail';
 import { Response } from 'express';
 import { UserService } from './user.service';

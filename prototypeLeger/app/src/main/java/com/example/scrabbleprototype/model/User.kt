@@ -10,7 +10,7 @@ class User(var avatar: String, var pseudonym: String,var password: String, var e
     @JsonIgnore
     var xpPoints: Int = 99999
     @JsonIgnore
-    val friendsList = arrayListOf<Friend>()
+    val friends = arrayListOf<Friend>()
 
     var _id: String = ""
 }

@@ -87,14 +87,6 @@ export class UserService {
         return userDB;
     }
 
-    async getUserEmail(email: string): Promise<User> {
-        const user = await this.userModel.findOne({ email });
-
-        if (!user) return;
-        const userToSend = new User(user.avatar, user.pseudonym, user.password, user.email, user.isObserver, user.socketId);
-        return userToSend;
-    }
-
     async getUserStats(userId: string): Promise<UserStatsDB> {
         const statsFromDB = await this.userStatsModel.findOne({ userId }).exec();
         const userStats: UserStatsDB = {

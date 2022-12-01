@@ -55,16 +55,11 @@ export class MainPageComponent {
         // Update game type and game mode, then route
         switch (this.selectedGameMode) {
             case this.gameModes[0]: {
-                this.gameSettingsService.isSoloMode = true;
-                this.router.navigate(['solo-game-ai']);
-                break;
-            }
-            case this.gameModes[1]: {
                 this.gameSettingsService.isSoloMode = false;
                 this.router.navigate(['multiplayer-mode']);
                 break;
             }
-            case this.gameModes[2]: {
+            case this.gameModes[1]: {
                 this.gameSettingsService.isSoloMode = false;
                 this.router.navigate(['join-room']);
                 break;
