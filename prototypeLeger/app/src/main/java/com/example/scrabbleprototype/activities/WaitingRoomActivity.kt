@@ -24,6 +24,9 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONObject
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.concurrent.timerTask
 
 class WaitingRoomActivity : AppCompatActivity() {
 
@@ -45,7 +48,9 @@ class WaitingRoomActivity : AppCompatActivity() {
         setupRoomId()
         setupPlayersWaiting()
         receiveNewRequest()
+        leave()
         leaveToHome()
+        leaveNotification()
         onReplaceHuman()
         // Players.currentPlayerPosition = Players.opponents.size
     }
@@ -81,7 +86,7 @@ class WaitingRoomActivity : AppCompatActivity() {
         }else{
             cancelGameButton.text = "Quitter la partie"
             cancelGameButton.setOnClickListener {
-                socket.emit("leaveGame", currentPlayer.name, currentRoom.id)
+                socket.emit("sendLeaveGame", currentPlayer.name, currentRoom.id)
                 Players.currentPlayer = Player()
             }
         }
@@ -152,6 +157,24 @@ class WaitingRoomActivity : AppCompatActivity() {
                 }
 
             }
+    }
+
+    private fun leave() {
+        socket.on("leave") {
+            runOnUiThread { startActivity(Intent(this, MainMenuActivity::class.java)) }
+        }
+    }
+
+    private fun leaveNotification() {
+        socket.on("leaveNotification") { response ->
+            val notification = response[0] as String
+            runOnUiThread {
+                findViewById<TextView>(R.id.leave_notification).text = notification
+                Timer().schedule(timerTask {
+                    findViewById<TextView>(R.id.leave_notification).text = ""
+                }, 4000)
+            }
+        }
     }
 
     private fun leaveToHome() {

@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
@@ -142,7 +143,7 @@ export class FormComponent implements OnInit, OnDestroy {
     }
 
     private goToWaiting(): void {
-        this.clientSocket.socket.emit('createRoom', this.gameSettingsService.gameSettings);
+        this.clientSocket.socket.emit('createRoom', this.gameSettingsService.gameSettings, this.authService.currentUser._id);
         const nextUrl = 'waiting-room';
         this.router.navigate([nextUrl]);
     }
