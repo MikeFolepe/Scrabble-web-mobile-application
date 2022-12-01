@@ -1,6 +1,7 @@
 package com.example.scrabbleprototype.activities.menus.home
 
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.drawable.AnimationDrawable
 import android.graphics.drawable.TransitionDrawable
 import android.os.Bundle
@@ -21,7 +22,7 @@ import com.example.scrabbleprototype.viewModel.PreferenceViewModel
 
 class HomeFragment : Fragment() {
 
-    private val user = Users.currentUser
+    private val user = Users
 
     private val preferenceViewModel: PreferenceViewModel by activityViewModels()
     private var _binding: FragmentHomeBinding? = null
@@ -48,7 +49,8 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupUserInfo() {
-        binding.userInfoName.text = user.pseudonym
+        binding.userInfoName.text = user.currentUser.pseudonym
+        binding.userProfile.setImageBitmap(user.avatarBmp)
     }
 
     private fun setupButtons() {

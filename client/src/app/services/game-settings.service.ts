@@ -10,10 +10,10 @@ export class GameSettingsService implements OnDestroy {
     gameDictionary: string[];
     isRedirectedFromMultiplayerGame: boolean;
     constructor() {
-        this.gameSettings = DEFAULT_GAME_SETTINGS;
+        this.gameSettings = DEFAULT_GAME_SETTINGS as GameSettings;
     }
 
     ngOnDestroy(): void {
-        this.gameSettings = DEFAULT_GAME_SETTINGS;
+        this.gameSettings = DEFAULT_GAME_SETTINGS as GameSettings;
     }
 }

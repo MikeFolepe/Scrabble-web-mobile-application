@@ -16,8 +16,6 @@ import { Model } from 'mongoose';
 export class UserService {
     activeUsers: User[];
 
-    // private users: User[] = [];
-
     constructor(
         @InjectModel('User') private readonly userModel: Model<UserDocument>,
         @InjectModel('Friend') private readonly friendModel: Model<FriendDocument>,
@@ -62,8 +60,6 @@ export class UserService {
             email: user.email,
             xpPoints: user.xpPoints,
             friends: user.friends,
-            socketId: '',
-            isObserver: false,
         }));
     }
 
@@ -74,7 +70,7 @@ export class UserService {
         userToSend._id = user._id;
         userToSend.xpPoints = user.xpPoints;
         userToSend.friends = user.friends;
-        userToSend.socketId = '';
+        console.log(userToSend);
         return userToSend;
     }
 
@@ -178,6 +174,22 @@ export class UserService {
             const newTime = userStats.totalTimeMs + totalTimeMs;
             await this.userStatsModel.updateOne({ userId }, { totalTimeMs: newTime });
         }
+    }
+
+    async updateUser(user: User): Promise<User> {
+        await this.userModel.findByIdAndUpdate({ _id: user._id }, { pseudonym: user.pseudonym, avatar: user.avatar });
+        const userDB = await this.getSingleUser(user.pseudonym);
+        console.log(userDB);
+        console.log('ici');
+        return userDB;
+    }
+
+    async getUserEmail(email: string): Promise<User> {
+        const user = await this.userModel.findOne({ email });
+
+        if (!user) return;
+        const userToSend = new User(user.avatar, user.pseudonym, user.password, user.email);
+        return userToSend;
     }
 
     encryptPassword(password: string): string {

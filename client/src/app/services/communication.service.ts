@@ -92,6 +92,11 @@ export class CommunicationService {
         return this.http.post<AiPlayerDB>(`${this.baseUrl}/admin/aiPlayers`, { aiPlayer, aiType });
     }
 
+    checkingWord(word: string, dictionary: string): Observable<HttpResponse<void>> {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return this.http.get<void>(`${this.baseUrl}/game/dictionaryVerif/${word}/${dictionary}`, { observe: 'response' });
+    }
+
     deleteAiPlayer(id: string, aiType: AiType): Observable<AiPlayerDB[]> {
         return this.http.delete<AiPlayerDB[]>(`${this.baseUrl}/admin/` + (aiType === AiType.expert ? `aiExperts/${id}` : `aiBeginners/${id}`));
     }

@@ -8,11 +8,12 @@ import { Player } from '@app/game/models/player.model';
 import { UserService } from '@app/users/user.service';
 import { ChatRoomMessage } from '@common/chatRoomMessage';
 import { DELAY_BEFORE_PLAYING, EASEL_SIZE, INVALID_INDEX, ONE_SECOND_DELAY, THREE_SECONDS_DELAY } from '@common/constants';
+import { bot } from '@common/defaultAvatars';
 import { Friend } from '@common/friend';
 import { GameSettings } from '@common/game-settings';
 import { User } from '@common/user';
 import { GameDB } from '@common/user-stats';
-import { ConsoleLogger, Logger } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { ConnectedSocket, MessageBody, OnGatewayConnection, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { RoomManagerService } from '../services/room-manager/room-manager.service';
@@ -190,13 +191,6 @@ export class GameHandlerGateway implements OnGatewayConnection {
         this.leaveGame(socket, room, index);
     }
 
-    @SubscribeMessage('sendLeaveGame')
-    sendLeaveGame(@ConnectedSocket() socket, @MessageBody() playerName: string, @MessageBody() roomId: string) {
-        const room = this.roomManagerService.find(roomId[1]);
-        const index = room.playerService.players.findIndex((curPlayer) => curPlayer.name === playerName[0]);
-        this.leaveGame(socket, room, index);
-    }
-
     @SubscribeMessage('sendObserverLeave')
     sendObserverLeave(@ConnectedSocket() socket, @MessageBody() roomId: string) {
         const room = this.roomManagerService.find(roomId);
@@ -220,7 +214,8 @@ export class GameHandlerGateway implements OnGatewayConnection {
             new Date().getMinutes().toString().padStart(2, '0') +
             ':' +
             new Date().getSeconds().toString().padStart(2, '0');
-
+        const room = this.roomManagerService.find(roomId[1]);
+        room.roomMessages.push(message);
         this.server.to(roomId[1]).emit('receiveRoomMessage', message[0]);
     }
 
@@ -249,6 +244,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
             }
             room.placeLetter.handleValidPlacement(validationResult, index);
             room.placeLetter.scrabbleBoard = JSON.parse(board[5]);
+            if (word.length === 7) socket.emit('playAudio');
             socket.emit('receiveSuccess');
             socket.to(roomId[6]).emit('receivePlacement', board[5], position[0], orientation[2], word[1]);
             this.server.to(roomId[6]).emit('updatePlayer', room.playerService.players[index]);
@@ -263,6 +259,22 @@ export class GameHandlerGateway implements OnGatewayConnection {
         const currentUser = this.userService.activeUsers.find((curUser) => curUser.pseudonym === user.pseudonym);
         if (currentUser) {
             currentUser.socketId = user.socketId;
+        }
+    }
+
+    @SubscribeMessage('sendLeaveGame')
+    sendLeaveGame(@ConnectedSocket() socket, @MessageBody() playerName: string, @MessageBody() roomId: string) {
+        const room = this.roomManagerService.find(roomId[1]);
+        const index = room.playerService.players.findIndex((curPlayer) => curPlayer.name === playerName[0]);
+        this.leaveGame(socket, room, index);
+    }
+
+    @SubscribeMessage('checkingWord')
+    checkingWord(@ConnectedSocket() socket, @MessageBody() word: string, @MessageBody() roomId: string) {
+        const room = this.roomManagerService.find(roomId[1]);
+        if (room.wordValidation.isWordInDictionary(word[0])) socket.emit('receiveChecking', true);
+        else {
+            socket.emit('receiveChecking', false);
         }
     }
 
@@ -359,6 +371,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
                 false,
                 false,
                 true,
+                bot,
             );
             room.aiPlayersNumber++;
             room.humanPlayersNumber--;
@@ -390,6 +403,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
                     room.playerService.players[indexPlayer].isTurn,
                     false,
                     true,
+                    bot,
                 );
                 room.aiPlayersNumber++;
                 room.humanPlayersNumber--;

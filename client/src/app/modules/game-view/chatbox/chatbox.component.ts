@@ -15,23 +15,17 @@ export class ChatboxComponent implements OnInit {
     @ViewChild('scrollMe') private myScrollContainer: ElementRef;
 
     message: string;
-    listMessages: string[];
-    listTypes: MessageType[];
 
     // Used to access MessageType enum in the HTML
     htmlTypeMessage = MessageType;
 
-    private messageType: MessageType;
-
     constructor(
         private chatBoxService: ChatboxService,
-        private sendMessageService: SendMessageService,
+        public sendMessageService: SendMessageService,
         public endGameService: EndGameService,
         private boardHandlerService: BoardHandlerService,
     ) {
         this.message = '';
-        this.listMessages = [];
-        this.listTypes = [];
     }
 
     // Disable the current placement on the board when a click occurs in the chatbox
@@ -43,7 +37,7 @@ export class ChatboxComponent implements OnInit {
 
     ngOnInit(): void {
         this.initializeChatHeight();
-        this.sendMessageService.displayBound(this.displayMessageByType.bind(this));
+        this.sendMessageService.displayBound(this.scrollToBottom.bind(this));
     }
 
     handleKeyEvent(event: KeyboardEvent): void {
@@ -55,29 +49,29 @@ export class ChatboxComponent implements OnInit {
         }
     }
 
-    displayMessageByType(): void {
-        if (this.sendMessageService.messageType === MessageType.Error && this.message.length) {
-            this.listTypes.push(this.sendMessageService.messageType);
-            this.listMessages.push(this.message);
-        }
-        console.log('display message');
-        this.listTypes.push(this.sendMessageService.messageType);
-        this.listMessages.push(this.sendMessageService.message);
-        // Clear input
-        this.scrollToBottom();
-    }
+    // displayMessageByType(): void {
+    //     if (this.sendMessageService.messageType === MessageType.Error && this.message.length) {
+    //         this.listTypes.push(this.sendMessageService.messageType);
+    //         this.listMessages.push(this.message);
+    //     }
+    //     console.log('display message');
+    //     this.listTypes.push(this.sendMessageService.messageType);
+    //     this.listMessages.push(this.sendMessageService.message);
+    //     // Clear input
+    //     this.scrollToBottom();
+    // }
 
-    sendSystemMessage(systemMessage: string): void {
-        this.messageType = MessageType.System;
-        this.listTypes.push(this.messageType);
-        this.listMessages.push(systemMessage);
-    }
+    // sendSystemMessage(systemMessage: string): void {
+    //     this.messageType = MessageType.System;
+    //     this.listTypes.push(this.messageType);
+    //     this.listMessages.push(systemMessage);
+    // }
 
     scrollToBottom(): void {
         setTimeout(() => {
             // Timeout is used to update the scroll after the last element added
             this.myScrollContainer.nativeElement.scrollTop = this.myScrollContainer.nativeElement.scrollHeight;
-        }, 1);
+        }, 50);
     }
 
     initializeChatHeight(): void {

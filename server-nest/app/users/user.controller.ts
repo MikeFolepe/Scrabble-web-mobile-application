@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import { User } from '@common/user';
 import { UserStatsDB } from '@common/user-stats';
 import * as emailS from '@nativescript/email';
@@ -56,11 +57,10 @@ export class UserController {
 
         sgMail.setApiKey('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');
         const msg = {
-          to: email, 
-          from: 'log3900.110.22@gmail.com', 
-          subject: 'Mot de passe oublié - Scrabble', 
-          text: `- SRABBLE 110 - \n\n Utilisateur : ${pseudonym}. \n\n Bonjour, voici votre mot de passe : ${password}`,
-          
+            to: email,
+            from: 'log3900.110.22@gmail.com',
+            subject: 'Mot de passe oublié - Scrabble',
+            text: `- SRABBLE 110 - \n\n Utilisateur : ${pseudonym}. \n\n Bonjour, voici votre mot de passe : ${password}`,
         };
         sgMail.send(msg);
         return true;
@@ -118,5 +118,21 @@ export class UserController {
     @Post('/users/xpPoints/:userId')
     async updateXpPoints(@Param('userId') userId: string, @Req() req) {
         await this.userService.updateXpPoints(userId, req.body.xpPoints);
+    }
+
+    @Post('/updateUser')
+    async updateUserInDb(@Body() user: User, @Res() response: Response) {
+        console.log('boo', user);
+        const userFound = await this.userService.getSingleUser(user.pseudonym);
+        if (userFound) {
+            console.log('userfound');
+            if (userFound._id !== user._id) {
+                console.log('userfound');
+                response.status(HttpStatus.FOUND).send();
+            }
+        }
+        await this.userService.updateUser(user).then((newUser: User) => {
+            response.status(HttpStatus.OK).send(newUser);
+        });
     }
 }

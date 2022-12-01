@@ -24,6 +24,7 @@ export class ClientSocketService {
                 roomFromServer.aiPlayersNumber,
                 roomFromServer.humanPlayersNumber,
                 roomFromServer.observers,
+                roomFromServer.roomMessages,
             );
         });
     }

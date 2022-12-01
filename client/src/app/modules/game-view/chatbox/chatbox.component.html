@@ -10,15 +10,15 @@
     <div class="display" #scrollMe>
         <p
             id="list-display"
-            *ngFor="let message of listMessages; let i = index; let last = last"
+            *ngFor="let message of sendMessageService.clientSocketService.currentRoom.roomMessages; let i = index; let last = last"
             [ngClass]="{
-                playerStyle: listTypes[i] === htmlTypeMessage.Player,
-                opponentStyle: listTypes[i] === htmlTypeMessage.Opponent,
-                systemStyle: listTypes[i] === htmlTypeMessage.System,
-                errorStyle: listTypes[i] === htmlTypeMessage.Error
+                playerStyle: sendMessageService.listTypes[i] === htmlTypeMessage.Player,
+                systemStyle: sendMessageService.listTypes[i] === htmlTypeMessage.System,
+                errorStyle: sendMessageService.listTypes[i] === htmlTypeMessage.Error
             }"
         >
-            > {{ message }}
+            <img src="{{ message.avatar }}" class="avatar" alt="Avatar" /> {{ message.pseudonym }} : {{ message.text }}
+            <span id="time">{{ message.time }}</span>
         </p>
     </div>
 
