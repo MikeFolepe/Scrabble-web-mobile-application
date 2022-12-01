@@ -191,13 +191,6 @@ export class GameHandlerGateway implements OnGatewayConnection {
         this.leaveGame(socket, room, index);
     }
 
-    @SubscribeMessage('sendLeaveGame')
-    sendLeaveGame(@ConnectedSocket() socket, @MessageBody() playerName: string, @MessageBody() roomId: string) {
-        const room = this.roomManagerService.find(roomId[1]);
-        const index = room.playerService.players.findIndex((curPlayer) => curPlayer.name === playerName[0]);
-        this.leaveGame(socket, room, index);
-    }
-
     @SubscribeMessage('sendObserverLeave')
     sendObserverLeave(@ConnectedSocket() socket, @MessageBody() roomId: string) {
         const room = this.roomManagerService.find(roomId);
@@ -251,6 +244,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
             }
             room.placeLetter.handleValidPlacement(validationResult, index);
             room.placeLetter.scrabbleBoard = JSON.parse(board[5]);
+            if (word.length === 7) socket.emit('playAudio');
             socket.emit('receiveSuccess');
             socket.to(roomId[6]).emit('receivePlacement', board[5], position[0], orientation[2], word[1]);
             this.server.to(roomId[6]).emit('updatePlayer', room.playerService.players[index]);
@@ -265,6 +259,22 @@ export class GameHandlerGateway implements OnGatewayConnection {
         const currentUser = this.userService.activeUsers.find((curUser) => curUser.pseudonym === user.pseudonym);
         if (currentUser) {
             currentUser.socketId = user.socketId;
+        }
+    }
+
+    @SubscribeMessage('sendLeaveGame')
+    sendLeaveGame(@ConnectedSocket() socket, @MessageBody() playerName: string, @MessageBody() roomId: string) {
+        const room = this.roomManagerService.find(roomId[1]);
+        const index = room.playerService.players.findIndex((curPlayer) => curPlayer.name === playerName[0]);
+        this.leaveGame(socket, index, room);
+    }
+
+    @SubscribeMessage('checkingWord')
+    checkingWord(@ConnectedSocket() socket, @MessageBody() word: string, @MessageBody() roomId: string) {
+        const room = this.roomManagerService.find(roomId[1]);
+        if (room.wordValidation.isWordInDictionary(word[0])) socket.emit('receiveChecking', true);
+        else {
+            socket.emit('receiveChecking', false);
         }
     }
 
