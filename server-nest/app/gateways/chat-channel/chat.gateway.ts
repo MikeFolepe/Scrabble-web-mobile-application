@@ -3,8 +3,8 @@ import { User } from '@common/user';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { ChatRoomService } from '../services/chat-room/chat-room.service';
-import { ChatEvents } from './../../../../common/chat.gateway.events';
+import { ChatRoomService } from '@app/gateways/services/chat-room/chat-room.service';
+import { ChatEvents } from '@common/chat.gateway.events';
 @WebSocketGateway({ cors: true })
 @Injectable()
 export class ChatGateway {
@@ -23,7 +23,6 @@ export class ChatGateway {
 
         this.chatRoomService.addCustomer(creator[0], roomId);
         socket.join(roomId);
-
         this.server.emit('newChatRoom', this.chatRoomService.createRoom(roomId, creator[0], chatRoomName[1]));
     }
 
@@ -84,17 +83,4 @@ export class ChatGateway {
     broadcastAll(socket: Socket, message: string) {
         this.server.emit(ChatEvents.MassMessage, `${socket.id} : ${message}`);
     }
-
-    // @SubscribeMessage(ChatEvents.RoomMessage)
-    // roomMessage(socket: Socket, message: Message) {
-    //     Logger.log(message);
-    //     const messageObject = new Message(message.message, message.messageUser);
-    //     const messageString = JSON.stringify(messageObject);
-    //     this.messages.push(messageString);
-    // }
-
-    // @SubscribeMessage(ChatEvents.GetMessages)
-    // getMessages(socket: Socket) {
-    //     socket.emit(ChatEvents.GetMessages, this.messages);
-    // }
 }
