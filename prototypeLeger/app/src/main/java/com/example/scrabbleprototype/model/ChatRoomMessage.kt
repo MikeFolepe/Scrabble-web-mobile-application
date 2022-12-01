@@ -1,5 +1,7 @@
 package com.example.scrabbleprototype.model
 
+import android.graphics.Bitmap
+import com.fasterxml.jackson.annotation.JsonIgnore
 import java.util.*
 import kotlinx.serialization.Serializable
 import java.text.SimpleDateFormat

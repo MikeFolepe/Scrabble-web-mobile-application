@@ -48,10 +48,10 @@ class PlayersAdapter(private var players: ArrayList<Player>) :
         val playerScore = viewHolder.player.findViewById<TextView>(R.id.player_score)
         playerScore.text = players[position].score.toString()
 
-        setUpReplace(viewHolder, position)
+        setupReplace(viewHolder, position)
     }
 
-    private fun setUpReplace(viewHolder:ViewHolder,  position: Int){
+    private fun setupReplace(viewHolder:ViewHolder,  position: Int){
         val replaceButton = viewHolder.player.findViewById<Button>(R.id.button_replace)
 
         if(Users.currentUser.isObserver && players[position].isAi){
