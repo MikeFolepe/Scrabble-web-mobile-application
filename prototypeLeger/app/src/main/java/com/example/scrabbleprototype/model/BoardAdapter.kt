@@ -1,5 +1,6 @@
  package com.example.scrabbleprototype.model
 
+import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipDescription
 import android.os.Build
@@ -18,11 +19,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.objects.LetterRack
 import com.example.scrabbleprototype.objects.Players
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
-class BoardAdapter(private var board: ArrayList<Letter>) :
+ class BoardAdapter(private var board: ArrayList<Letter>) :
     RecyclerView.Adapter<BoardAdapter.ViewHolder>() {
 
-    var onCaseClicked: ((position: Int) -> Unit)? = null
     var onPlacement: ((letterRackPosition: Int, boardPosition: Int, draggedFromRack: Boolean) -> Unit)? = null
     var bonusInit = false
 
@@ -37,10 +40,7 @@ class BoardAdapter(private var board: ArrayList<Letter>) :
         init {
             // Define click listener for the ViewHolder's View.
             case = view.findViewById(R.id.board_case)
-            view.setOnClickListener {
-                onCaseClicked?.invoke(layoutPosition)
-            }
-            setupDragListener(view)
+            setupDragListener(view.findViewById(R.id.letter_layer))
         }
 
         private fun setupDragListener(view: View) {
@@ -60,7 +60,7 @@ class BoardAdapter(private var board: ArrayList<Letter>) :
                     }
                     DragEvent.ACTION_DROP -> {
                         if(!Players.currentPlayer.getTurn()) return@setOnDragListener false
-
+                        if(board[layoutPosition].value != "") return@setOnDragListener false
                         val letterTouched = e.clipData.getItemAt(0)
                         val letterQuantity: Int = e.clipData.getItemAt(1).text.toString().toInt()
                         val letterScore: Int = e.clipData.getItemAt(2).text.toString().toInt()
@@ -69,10 +69,14 @@ class BoardAdapter(private var board: ArrayList<Letter>) :
                         val dragData = letterTouched.text // La data de la lettre qui a été dragged
 
                         // Add letter dropped to board
-                        board[bindingAdapterPosition] = Letter(dragData.first().toString().lowercase(), letterQuantity, letterScore, false, false)
-                        notifyItemChanged(bindingAdapterPosition)
-                        // Remove letter dragged of letterRack
-                        onPlacement?.invoke(dragStartPosition, bindingAdapterPosition, draggedFromRack)
+                        board[layoutPosition] = Letter(dragData.first().toString().lowercase(), letterQuantity, letterScore, false, false)
+
+                        setLetterView(v, layoutPosition)
+                        Log.d("dragdrop", "setremove done")
+                        notifyItemChanged(layoutPosition)
+
+                        // Remove letter dragged
+                        onPlacement?.invoke(dragStartPosition, layoutPosition, draggedFromRack)
                         true
                     }
                     DragEvent.ACTION_DRAG_ENDED -> {
@@ -91,6 +95,20 @@ class BoardAdapter(private var board: ArrayList<Letter>) :
                 }
             }
         }
+        fun setLetterView(v: View, case: Int) {
+            itemView.findViewById<TextView>(R.id.bonus_layer).setBackgroundResource(0)
+            itemView.findViewById<TextView>(R.id.bonus_layer).text = ""
+            v.findViewById<LinearLayout>(R.id.letter_layer).background = ContextCompat.getDrawable(v.context, R.drawable.tan)
+            v.findViewById<TextView>(R.id.letter).text = board[case].value.uppercase()
+            v.findViewById<TextView>(R.id.letter_score).text = board[case].points.toString()
+        }
+
+        fun removeLetterView(v: View, case: Int) {
+            setupBonus(itemView.findViewById(R.id.bonus_layer), case)
+            v.findViewById<LinearLayout>(R.id.letter_layer).setBackgroundResource(0)
+            v.findViewById<TextView>(R.id.letter_score).text = ""
+            v.findViewById<TextView>(R.id.letter).text = ""
+        }
     }
 
     // Create new views (invoked by the layout manager)
@@ -104,30 +122,16 @@ class BoardAdapter(private var board: ArrayList<Letter>) :
 
     // Replace the contents of a view (invoked by the layout manager)
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-
         setupTouchListener(viewHolder)
-        // Get element from your dataset at this position and replace the
-        // contents of the view with that element
-        val letterLayer =  viewHolder.case.findViewById<LinearLayout>(R.id.letter_layer)
-        val bonusLayer = viewHolder.case.findViewById<TextView>(R.id.bonus_layer)
 
-        if(board[position].value == "")  {
-            setupBonus(bonusLayer, position, viewHolder)
-            letterLayer.setBackgroundResource(0)
-            letterLayer.findViewById<TextView>(R.id.letter_score).text = ""
-            letterLayer.findViewById<TextView>(R.id.letter).text = ""
-        } else {
-            bonusLayer.setBackgroundResource(0)
-            bonusLayer.text = ""
-            letterLayer.background = ContextCompat.getDrawable(viewHolder.case.context, R.drawable.tan)
-            letterLayer.findViewById<TextView>(R.id.letter).text = board[position].value.uppercase()
-            letterLayer.findViewById<TextView>(R.id.letter_score).text = board[position].points.toString()
-        }
+        if(board[position].value == "") viewHolder.removeLetterView(viewHolder.case, position)
+        else viewHolder.setLetterView(viewHolder.case, position)
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun setupTouchListener(viewHolder: ViewHolder) {
-        viewHolder.case.findViewById<LinearLayout>(R.id.letter_layer).setOnLongClickListener { v ->
-            if(board[viewHolder.layoutPosition].isValidated || board[viewHolder.layoutPosition].isEmpty()) return@setOnLongClickListener false
+        viewHolder.case.findViewById<LinearLayout>(R.id.letter_layer).setOnTouchListener { v, _ ->
+            if(board[viewHolder.layoutPosition].isValidated || board[viewHolder.layoutPosition].isEmpty()) return@setOnTouchListener false
             Log.d("boardDrag", "touching")
             val letterTouched = ClipData.Item(board[viewHolder.layoutPosition].value)
             val letterQuantity = ClipData.Item(board[viewHolder.layoutPosition].quantity.toString())
@@ -163,28 +167,33 @@ class BoardAdapter(private var board: ArrayList<Letter>) :
         this.notifyDataSetChanged()
     }
 
-    fun setupBonus(bonusLayer: TextView, position: Int, viewHolder: ViewHolder) {
-        if(position == Constants.BOARD_CENTER) bonusLayer.background = ContextCompat.getDrawable(viewHolder.case.context, R.drawable.ic_baseline_star_24)
-
+    fun setupBonus(bonusLayer: TextView, position: Int) {
         when(Constants.BONUS_POSITIONS[position]) {
             "doubleLetter" -> {
                 bonusLayer.text = "Lettre\nx2"
-                bonusLayer.background = ContextCompat.getDrawable(viewHolder.case.context, R.color.light_cyan)
+                bonusLayer.background = ContextCompat.getDrawable(bonusLayer.context, R.color.light_cyan)
             }
             "doubleWord" -> {
                 bonusLayer.text = "Mot\nx2"
-                bonusLayer.background = ContextCompat.getDrawable(viewHolder.case.context, R.color.light_red)
+                bonusLayer.background = ContextCompat.getDrawable(bonusLayer.context, R.color.light_red)
             }
             "tripleLetter" -> {
                 bonusLayer.text = "Lettre\nx3"
-                bonusLayer.background = ContextCompat.getDrawable(viewHolder.case.context, R.color.teal)
+                bonusLayer.background = ContextCompat.getDrawable(bonusLayer.context, R.color.teal)
             }
             "tripleWord" -> {
                 bonusLayer.text = "Mot\nx3"
-                bonusLayer.background = ContextCompat.getDrawable(viewHolder.case.context, R.color.red)
+                bonusLayer.background = ContextCompat.getDrawable(bonusLayer.context, R.color.red)
+            }
+            "center" -> {
+                bonusLayer.text = ""
+                bonusLayer.background = ContextCompat.getDrawable(bonusLayer.context, R.drawable.ic_baseline_star_24)
+            }
+            else -> {
+                bonusLayer.text = ""
+                bonusLayer.setBackgroundResource(0)
             }
         }
         if(position == Constants.LAST_BOARD_POSITION) bonusInit = true
     }
-
 }

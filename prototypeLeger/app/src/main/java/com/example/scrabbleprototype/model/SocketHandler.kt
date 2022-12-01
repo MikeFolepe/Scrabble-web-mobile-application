@@ -16,7 +16,7 @@ object SocketHandler {
         try {
 // "http://10.0.2.2:3000" --> emulator http://10.0.2.2:3000
 //  physical phone/tablet --> ip address plus :3000
-            socket = IO.socket(Environment.serverUrl)
+            socket = IO.socket(serverIp)
         } catch (e: URISyntaxException) {
 
         }

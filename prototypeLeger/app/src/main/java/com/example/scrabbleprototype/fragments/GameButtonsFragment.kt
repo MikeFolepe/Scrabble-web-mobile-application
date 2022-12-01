@@ -1,9 +1,6 @@
 package com.example.scrabbleprototype.fragments
 
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
+import android.content.*
 import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
@@ -14,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.databinding.FragmentGameButtonsBinding
@@ -46,6 +44,15 @@ class GameButtonsFragment : Fragment(), EndTurnCallback {
     private var _binding: FragmentGameButtonsBinding? = null
     private val binding get() = _binding!!
 
+    private val onPlacingBestWord = object: BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if(intent?.action == "handleInvalidPlacement") {
+                Log.d("broadcast", "gooood")
+                handleInvalidPlacement()
+            }
+        }
+    }
+
     private val connection = object: ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             if(service is SkipTurnService.LocalBinder) {
@@ -67,10 +74,6 @@ class GameButtonsFragment : Fragment(), EndTurnCallback {
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -89,6 +92,8 @@ class GameButtonsFragment : Fragment(), EndTurnCallback {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         activityContext = context
+        val broadcastManager = LocalBroadcastManager.getInstance(requireContext())
+        broadcastManager.registerReceiver(onPlacingBestWord, IntentFilter("handleInvalidPlacement"))
     }
 
     override fun onStop() {
@@ -116,6 +121,7 @@ class GameButtonsFragment : Fragment(), EndTurnCallback {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(onPlacingBestWord)
     }
 
     private fun setupSkipButton() {
@@ -148,6 +154,7 @@ class GameButtonsFragment : Fragment(), EndTurnCallback {
 
     override fun handleInvalidPlacement() {
         if(placementViewModel.currentPlacement.isEmpty()) return
+        Log.d("inva", "going through")
         val letterRackAdapter = activity?.findViewById<RecyclerView>(R.id.letter_rack)?.adapter
         val boardAdapter = activity?.findViewById<RecyclerView>(R.id.board)?.adapter
 
@@ -164,6 +171,7 @@ class GameButtonsFragment : Fragment(), EndTurnCallback {
             placementViewModel.clearPlacement()
             Toast.makeText(activityContext, "Le placement est invalide", Toast.LENGTH_LONG).show()
         }
+        Log.d("invalid", LetterRack.letters.size.toString())
     }
 
     private fun receivePlacementSuccess() {

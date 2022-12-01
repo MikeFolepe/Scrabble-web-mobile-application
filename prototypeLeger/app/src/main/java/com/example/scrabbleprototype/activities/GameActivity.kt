@@ -49,6 +49,7 @@ class GameActivity : AppCompatActivity() {
         fragmentTransaction.add(R.id.info_pannel_frame, InformationPannelFragment())
         fragmentTransaction.add(R.id.board_frame, BoardFragment())
         fragmentTransaction.add(R.id.game_chatroom_buttons, ChannelButtonsFragment())
+        fragmentTransaction.add(R.id.features_frame, FeaturesFragment())
         fragmentTransaction.addToBackStack(null)
         fragmentTransaction.commit()
     }

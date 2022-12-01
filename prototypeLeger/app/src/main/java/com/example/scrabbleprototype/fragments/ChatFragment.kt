@@ -1,6 +1,8 @@
 package com.example.scrabbleprototype.fragments
 
 import android.content.Context
+import android.content.res.Resources.Theme
+import android.graphics.drawable.AnimationDrawable
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -57,12 +59,24 @@ class ChatFragment: Fragment() {
                 addMessage(Json.decodeFromString(ChatRoomMessage.serializer(), messageArray.get(i).toString()), view)
             }
         }
+        setupChatTheme(view)
         setupChatBox(view)
     }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         activityContext = context
+    }
+
+    private fun setupChatTheme(view: View) {
+        val chatLayout = view.findViewById<LinearLayout>(R.id.chat_layout)
+        chatLayout.setBackgroundResource(ThemeManager.getChatTheme())
+        if(ThemeManager.currentChatTheme == ThemeManager.GRADIENT) {
+            val animatedBackground: AnimationDrawable = chatLayout.background as AnimationDrawable
+            animatedBackground.setEnterFadeDuration(4000)
+            animatedBackground.setExitFadeDuration(4000)
+            animatedBackground.start()
+        }
     }
 
     private fun setupChatBox(view: View) {

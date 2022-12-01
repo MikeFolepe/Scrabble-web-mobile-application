@@ -18,14 +18,21 @@ import com.google.android.material.appbar.AppBarLayout
 
 object ThemeManager {
     private var currentTheme: Int = 0
+    var currentBoardTheme: String = "Par défaut"
+    var currentChatTheme: String = "Par défaut"
+
     val THEME_DEFAULT = 0
     val THEME_DARK = 1
     val THEME_BLUE = 2
     val THEME_ORANGE = 3
 
-    fun changeToTheme(theme: Int, activity: Activity?) {
+    val DEFAULT = "Par défaut"
+    val GRADIENT = "Gradients animés"
+    val TARTAN = "Tartan"
+    val GALAXY = "Galaxie"
+
+    fun changeToTheme(theme: Int) {
         currentTheme = theme
-        activity?.window?.statusBarColor = ContextCompat.getColor(activity!!.baseContext, R.color.orange)
     }
 
     fun setActivityTheme(activity: Activity) {
@@ -44,5 +51,24 @@ object ThemeManager {
             THEME_ORANGE -> return R.style.Theme_ScrabblePrototype_Orange
         }
         return R.style.Theme_ScrabblePrototype
+    }
+
+    fun getBoardTheme(): Int {
+        when(currentBoardTheme) {
+            DEFAULT -> return R.drawable.board_border
+            GRADIENT -> return R.drawable.gradient_animation
+            TARTAN -> return R.drawable.tartan
+            GALAXY -> return R.drawable.galaxy
+        }
+        return R.drawable.board_border
+    }
+
+    fun getChatTheme(): Int {
+        when(currentChatTheme) {
+            DEFAULT -> return R.drawable.chatbox_border
+            GRADIENT -> return R.drawable.gradient_animation
+            GALAXY -> return R.drawable.galaxy
+        }
+        return R.drawable.chatbox_border
     }
 }

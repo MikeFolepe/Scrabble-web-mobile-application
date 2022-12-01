@@ -3,15 +3,21 @@ package com.example.scrabbleprototype.services
 import android.app.Service
 import android.content.Intent
 import android.os.Binder
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.util.Log
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.model.*
 import com.example.scrabbleprototype.objects.Board
 import com.example.scrabbleprototype.objects.CurrentRoom
+import com.example.scrabbleprototype.objects.LetterRack
 import com.example.scrabbleprototype.objects.Players
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import java.util.*
+import kotlin.concurrent.timerTask
 
 class PlaceService : Service() {
     var isFirstPlacement: Boolean = true
@@ -21,7 +27,6 @@ class PlaceService : Service() {
     private var startPosition: Int = 0
 
     private val socket = SocketHandler.getPlayerSocket()
-
     private val binder = LocalBinder()
 
     inner class LocalBinder: Binder() {
@@ -150,6 +155,53 @@ class PlaceService : Service() {
             boardView.adapter?.notifyItemChanged(currentPosition)
             currentPosition += spaceBetweenEachLetter
         }
+    }
+
+    fun placeBestWord(placement: PossibleWords, boardView: RecyclerView) {
+        LocalBroadcastManager.getInstance(this).sendBroadcast(Intent("handleInvalidPlacement"))
+
+        val startPosition = Vec2(placement.startIndex, placement.line)
+        var currentPosition = get1DPosition(startPosition.y, startPosition.x)
+        var spaceBetweenEachLetter = 1
+        if(placement.orientation == Orientation.Vertical) spaceBetweenEachLetter = 15
+
+        Timer().schedule(timerTask {
+            Handler(Looper.getMainLooper()).post {
+                for (letter in placement.word) {
+                    if (!board[currentPosition].isEmpty()) {
+                        currentPosition += spaceBetweenEachLetter
+                        continue
+                    }
+                    // TODO Lettre blanche => index est de -1
+                    LetterRack.letters.removeAt(LetterRack.letters.indexOfFirst { it.value == letter.uppercase() })
+                    val letterFound = Constants.RESERVE.find { it.value == letter.uppercase() }
+                        ?: return@post
+                    val letterToPlace = Letter(
+                        letterFound.value.lowercase(),
+                        letterFound.quantity,
+                        letterFound.points,
+                        false,
+                        false
+                    )
+                    letterToPlace.isValidated = true
+                    board[currentPosition] = letterToPlace
+
+                    boardView.adapter?.notifyItemChanged(currentPosition)
+                    currentPosition += spaceBetweenEachLetter
+                }
+                Players.currentPlayer.letterTable = LetterRack.letters
+
+                socket.emit(
+                    "validatePlacement", Json.encodeToString(startPosition),
+                    placement.word.lowercase(),
+                    Json.encodeToString(placement.orientation.ordinal),
+                    false, false,
+                    Json.encodeToString(get2DBoard()),
+                    CurrentRoom.myRoom.id,
+                    Json.encodeToString(Players.currentPlayer)
+                )
+            }
+        }, 200)
     }
 
     private fun isBoardFilledAt(position: Int): Boolean {

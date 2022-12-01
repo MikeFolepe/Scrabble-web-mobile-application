@@ -1,23 +1,35 @@
 package com.example.scrabbleprototype.activities
 
 import android.annotation.SuppressLint
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.style.UnderlineSpan
+import android.util.Base64
+import android.util.Log
 import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.activityViewModels
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.model.SocketHandler
 import com.example.scrabbleprototype.model.User
+import com.example.scrabbleprototype.objects.Players
 import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.objects.Users
+import com.example.scrabbleprototype.viewModel.PreferenceViewModel
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import environments.Environment.serverUrl
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -31,14 +43,20 @@ import kotlinx.coroutines.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONObject
+import java.lang.Exception
+import java.util.*
+import kotlin.concurrent.timerTask
 import kotlin.coroutines.CoroutineContext
 
 
 class ConnectionActivity : AppCompatActivity(), CoroutineScope {
+    private var serverUrl = Environment.serverUrl
     val users = Users
     lateinit var client: HttpClient
     lateinit var socket: Socket
+    private val mapper = jacksonObjectMapper()
 
+    private val preferenceViewModel: PreferenceViewModel by viewModels()
     private var job: Job = Job()
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main + job
@@ -53,10 +71,17 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
         ThemeManager.setActivityTheme(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_connection)
-
+        users.currentUser = User("", "", "", "", false, null)
         val connectionButton = findViewById<Button>(R.id.connection_button)
         connectionButton.setOnClickListener {
-            onConnection()
+            launch {
+                onConnection()
+            }
+        }
+
+        val retrievePassword = findViewById<TextView>(R.id.password_forgot)
+        retrievePassword.setOnClickListener {
+            forgotPassword()
         }
 
         client = HttpClient() {
@@ -81,39 +106,120 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
         if(this.currentFocus?.windowToken != null) imm.hideSoftInputFromWindow(this.currentFocus!!.windowToken, 0)
     }
 
-    fun onConnection() {
-        val usernameInput = findViewById<EditText>(R.id.username)
-        val signInPasswordInput = findViewById<EditText>(R.id.signIn_password)
-        val username = usernameInput.text.toString()
-        val serverError = "Le serveur est déconnecté"
+    private fun forgotPassword() {
+        var passwordDialog = Dialog(this)
+        passwordDialog.setContentView(R.layout.forgot_password)
+        passwordDialog.show()
+        val closeDialog = passwordDialog.findViewById<ImageView>(R.id.close)
+        closeDialog.setOnClickListener {
+            passwordDialog.hide()
+        }
+        val validateButton = passwordDialog.findViewById<Button>(R.id.validate_button)
 
-        if(username.isEmpty())  {
-            usernameInput.error = "Le pseudonyme ne peut pas être vide"
+        validateButton.setOnClickListener {
+            var pseudonymInput = passwordDialog.findViewById<EditText>(R.id.pseudonym)
+            var checkPseudonym = pseudonymInput.text.toString()
+            launch {
+                val response = getEmail(checkPseudonym)
+                if(response != null) {
+                    val emailfound: String = response.body()
+                    if(emailfound != "false") {
+                        sendEmailToUser(checkPseudonym)
+                    }
+                    else {
+
+                        Toast.makeText(this@ConnectionActivity, "Ce pseudonyme n'existe pas.", Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+        }
+    }
+
+    private suspend fun sendEmailToUser( pseudonym: String): HttpResponse? {
+        var response: HttpResponse?
+        try {
+            response = client.get("$serverUrl/api/user/sendEmailToUser/" + pseudonym){
+                contentType(ContentType.Application.Json)
+            }
+        }  catch(e: Exception) {
+            response = null
+        }
+        return response
+    }
+
+    private suspend fun getEmail(pseudonym: String): HttpResponse? {
+        var response: HttpResponse?
+        try {
+            response = client.get("$serverUrl/api/user/getEmail/" + pseudonym){
+                contentType(ContentType.Application.Json)
+            }
+        }  catch(e: Exception) {
+            response = null
+        }
+        return response
+    }
+    suspend fun onConnection() {
+        val pseudonymInput = findViewById<EditText>(R.id.username);
+        val pseudonym = pseudonymInput.text.toString()
+        val passwordInput = findViewById<EditText>(R.id.password)
+        val password = passwordInput.text.toString()
+
+        if(pseudonym.isEmpty())  {
+            pseudonymInput.error = "Le pseudonyme ne peut pas être vide"
+            return
+        }
+        if(passwordInput.text.isEmpty()) {
+            passwordInput.error = "Le mot de passe ne peut pas être vide"
             return
         }
 
+
+        //TO DO mettre une erreur pour si le serveur est down
         //validate username and ip
-       launch {
-            val user = User("", username, "", "", false, serverUrl)
-
-            val response = postAuthentication(user)
+            val user = User("", pseudonym, password, "", false, null)
+            val response = findUserInDb(user, pseudonym, password)
             if(response != null) {
-                if (response.status == HttpStatusCode.OK) {
-                    val userReceived: User = response.body()
-                    users.currentUser = userReceived
-                    join(serverUrl)
+                val decision: String = response.body()
+                if (decision == "true") {
+                    val response = postAuthentication(user)
+                    if(response != null) {
+                        if (response.status == HttpStatusCode.OK) {
+                            var newUser =  mapper.readValue(response.body() as String, User::class.java)
+                            val split = newUser.avatar.split(",")
+                            val imageBytes = Base64.decode(split[1], Base64.NO_WRAP)
+                            val image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+                            users.currentUser = newUser
+                            users.avatarBmp = image
+                            joinChat()
+                        }
+                        else if (response.status == HttpStatusCode.NotModified) pseudonymInput.error = "Cet utilisateur est déjà connecté"
+                    }
+                    } else {
+                    Toast.makeText(this@ConnectionActivity, "Aucun compte touvé. Veuillez créer un compte.", Toast.LENGTH_SHORT).show()
+                }
+                }
 
-                } else if (response.status == HttpStatusCode.NotModified) usernameInput.error = "Cet utilisateur est déjà connecté"
-                else if (response.status == HttpStatusCode.NotFound) signInPasswordInput.error = serverError
-                else signInPasswordInput.error = serverError
-            } else signInPasswordInput.error = "réponse nulle du serveur"
+    }
+
+
+
+/// penser a retirer user ici car il sert que pour l'adresse ip qui est hardcoder bad practice
+    suspend fun findUserInDb(user: User ,pseudonym: String, password: String): HttpResponse? {
+        var response: HttpResponse?
+        try{
+            response = client.get("$serverUrl/api/user/findUserInDb/"+pseudonym+"/"+password) {
+                contentType(ContentType.Application.Json)
+            }
+        } catch(e: Exception) {
+            response = null
         }
+        return response
     }
 
     suspend fun postAuthentication(user: User): HttpResponse? {
         var response: HttpResponse?
         try{
-            response = client.post(user.ipAddress + "/api/auth/connect") {
+            response = client.post("$serverUrl/api/auth/connect") {
                 contentType(ContentType.Application.Json)
                 setBody(user)
             }
@@ -123,7 +229,8 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
         return response
     }
 
-    fun join(serverUrl: String) {
+
+    fun joinChat() {
         val intent = Intent(this, MainMenuActivity::class.java)
 
         SocketHandler.setPlayerSocket(serverUrl)
@@ -135,10 +242,14 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
             users.currentUser.socketId = response[0].toString()
             socket.emit("updateUserSocket", JSONObject(Json.encodeToString(users.currentUser)))
         }
-        startActivity(intent)
+        preferenceViewModel.getPreferences()
+        //LOAD while we do requests
+        Timer().schedule(timerTask {
+            startActivity(intent)
+        }, 250)
     }
 
-    fun createAccount(){
+    fun createAccount() {
         val textAccount = findViewById<TextView>(R.id.create_account)
         val mString = "Pas de compte? Créez-en un."
         val mSpannableString = SpannableString(mString)

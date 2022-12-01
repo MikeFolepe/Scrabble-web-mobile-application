@@ -24,6 +24,11 @@ export class WordValidationService {
         }
     }
 
+    isWordInDictionary(word: string): boolean {
+        if (this.dictionary.includes(word.toLocaleLowerCase())) return true;
+        return false;
+    }
+
     isValidInDictionary(): boolean {
         for (const word of this.newPlayedWords.keys()) {
             if (word.length < 2) return false;
