@@ -82,9 +82,18 @@ export class RoomManagerService {
         room.socketIds.push(socketId);
     }
 
+    setUser(room: ServerRoom, userId: string): void {
+        room.userIds.push(userId);
+    }
+
     removeSocket(room: ServerRoom, socketId: string): void {
         const index = room.socketIds.findIndex((socketIdIn) => socketIdIn === socketId);
         room.socketIds.splice(index, 1);
+    }
+
+    removeObserver(room: ServerRoom, socketId: string): void {
+        const index = room.observers.findIndex((observer) => observer.socketId === socketId);
+        room.observers.splice(index, 1);
     }
 
     getGameSettings(roomId: string): GameSettings {
@@ -94,7 +103,11 @@ export class RoomManagerService {
 
     deleteRoom(roomId: string): void {
         this.rooms.forEach((room, roomIndex) => {
-            if (room.id === roomId) this.rooms.splice(roomIndex, 1);
+            if (room.id === roomId) {
+                this.rooms[roomIndex].userIds = [];
+                this.rooms[roomIndex] = {} as ServerRoom;
+                this.rooms.splice(roomIndex, 1);
+            }
         });
     }
 
@@ -102,6 +115,11 @@ export class RoomManagerService {
         for (const room of this.rooms) {
             for (const socketId of room.socketIds) {
                 if (socketId === socketIdToCompare) return room.id;
+            }
+        }
+        for (const room of this.rooms) {
+            for (const observer of room.observers) {
+                if (observer.socketId === socketIdToCompare) return room.id;
             }
         }
         return '';

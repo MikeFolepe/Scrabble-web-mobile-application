@@ -48,9 +48,15 @@
                 Remplacer
             </button>
             <hr />
+
+            <button
+                *ngIf="this.authService.currentUser.isObserver && player.isAi && !player.isTurn"
+                mat-raised-button
+                color="primary"
+                (click)="playerService.replaceAi(player)"
+            >
+                Remplacer
+            </button>
         </div>
-    </div>
-    <div *ngIf="endGameService.isEndGame">
-        La partie est terminée. Félicitations à {{ this.endGameService.getWinnerName() }} qui est le vainqueur!!
     </div>
 </div>

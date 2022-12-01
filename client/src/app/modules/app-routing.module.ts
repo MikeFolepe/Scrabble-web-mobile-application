@@ -10,6 +10,7 @@ import { WaitingRoomComponent } from '@app/pages/waiting-room/waiting-room.compo
 import { AuthGuard } from '@app/services/auth.guard';
 import { GameViewComponent } from './game-view/game-view/game-view.component';
 import { FormComponent } from './initialize-game/form/form.component';
+import { UserProfileComponent } from './user-manager/user-profile/user-profile.component';
 
 const routes: Routes = [
     // { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -25,6 +26,7 @@ const routes: Routes = [
     { path: 'game', component: GameViewComponent },
     { path: 'page-not-found', component: PageNotFoundComponent },
     { path: 'admin', component: AdminPageComponent },
+    { path: 'profile', component: UserProfileComponent },
     { path: '**', redirectTo: '/page-not-found', pathMatch: 'full' },
 ];
 

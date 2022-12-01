@@ -3,7 +3,6 @@ import { EASEL_SIZE } from '@app/classes/constants';
 import { MessageType } from '@app/classes/enum';
 import { AuthService } from '@app/services/auth.service';
 import { BoardHandlerService } from '@app/services/board-handler.service';
-import { EndGameService } from '@app/services/end-game.service';
 import { LetterService } from '@app/services/letter.service';
 import { ManipulateService } from '@app/services/manipulate.service';
 import { PlayerService } from '@app/services/player.service';
@@ -31,7 +30,6 @@ export class LetterEaselComponent {
         private sendMessageService: SendMessageService,
         private manipulateService: ManipulateService,
         private skipTurnService: SkipTurnService,
-        private endGameService: EndGameService,
     ) {}
 
     @HostListener('document:click', ['$event'])
@@ -105,7 +103,6 @@ export class LetterEaselComponent {
         // Display the respective message into the chatBox and pass the turn
         const message = this.playerService.currentPlayer + ' : !échanger ' + lettersToSwap;
         this.sendMessageService.displayMessageByType(message, MessageType.Player);
-        this.endGameService.addActionsLog('echanger');
         this.skipTurnService.switchTurn();
     }
 

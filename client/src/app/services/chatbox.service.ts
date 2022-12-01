@@ -98,7 +98,6 @@ export class ChatboxService {
 
     private executeSkipTurn(): void {
         if (this.playerService.currentPlayer.isTurn) {
-            this.endGameService.addActionsLog('passer');
             this.sendMessageService.displayMessageByType(this.message, this.messageType);
             this.skipTurnService.switchTurn();
         } else {
