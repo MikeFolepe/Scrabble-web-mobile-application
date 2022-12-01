@@ -380,8 +380,6 @@ export class PlaceLetterStrategy {
         const regex2 = new RegExp('[,]{1,}', 'g');
 
         for (let line = 0; line < BOARD_COLUMNS; line++) {
-            console.log('ORIENTATION BUG');
-            console.log(orientation);
             let pattern = this.board[orientation][line]
                 .toString()
                 .replace(regex1, '')

@@ -9,6 +9,7 @@ import kotlinx.serialization.Serializable
 class Player: BaseObservable() {
     var name: String = ""
     var letterTable = arrayListOf<Letter>()
+    var avatar =""
     var score: Int = 0
     var isCreator: Boolean = false
     private var isTurn = false

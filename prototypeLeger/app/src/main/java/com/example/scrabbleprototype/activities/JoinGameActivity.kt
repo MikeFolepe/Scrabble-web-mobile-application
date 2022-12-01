@@ -90,7 +90,7 @@ class JoinGameActivity : AppCompatActivity() {
                     socket.emit("newRoomObserver", JSONObject(Json.encodeToString(Users.currentUser)), currentRoom.id)
 
                 } else {
-                    socket.emit("newRoomCustomer", Users.currentUser.pseudonym, currentRoom.id)
+                    socket.emit("newRoomCustomer", Users.currentUser.pseudonym, currentRoom.id, Users.currentUser._id)
                 }
 
             } else {
@@ -117,7 +117,7 @@ class JoinGameActivity : AppCompatActivity() {
                 SocketHandler.roomId = rooms[position].id
                 return
             }
-            socket.emit("newRoomCustomer", Users.currentUser.pseudonym, rooms[position].id)
+            socket.emit("newRoomCustomer", Users.currentUser.pseudonym, rooms[position].id, Users.currentUser._id)
             SocketHandler.roomId = rooms[position].id
             return
         }

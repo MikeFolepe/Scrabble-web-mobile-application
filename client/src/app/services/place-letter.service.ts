@@ -7,7 +7,6 @@ import { GridService } from '@app/services/grid.service';
 import { PlayerService } from '@app/services/player.service';
 import { Vec2 } from '@common/vec2';
 import { ClientSocketService } from './client-socket.service';
-import { EndGameService } from './end-game.service';
 import { PlacementsHandlerService } from './placements-handler.service';
 import { SendMessageService } from './send-message.service';
 import { SkipTurnService } from './skip-turn.service';
@@ -37,7 +36,6 @@ export class PlaceLetterService implements OnDestroy {
         private sendMessageService: SendMessageService,
         private skipTurnService: SkipTurnService,
         private clientSocketService: ClientSocketService,
-        private endGameService: EndGameService,
         private placementsService: PlacementsHandlerService,
     ) {
         this.isFirstRound = true;
@@ -127,9 +125,8 @@ export class PlaceLetterService implements OnDestroy {
             }
             if (!this.placeLetter(currentPosition, wordNoAccents[i], orientation, i, true)) {
                 // If the placement of one letter is invalid, we erase all letters placed
-                console.log('invalide placement en placant');
                 this.handleInvalidPlacement(position, orientation, wordNoAccents);
-                // this.sendMessageService.displayMessageByType('ERREUR : Le placement est invalide', MessageType.Error);
+                this.sendMessageService.displayMessageByType('ERREUR : Le placement est invalide', MessageType.Error);
                 return;
             }
             this.placementsService.goToNextPosition(currentPosition, orientation);
@@ -147,7 +144,6 @@ export class PlaceLetterService implements OnDestroy {
         if (this.numLettersUsedFromEasel === EASEL_SIZE) this.isEaselSize = true;
         // Placing the first word
         if (this.playerService.isFirstPlacement) {
-            console.log('firssssst');
             if (this.placementsService.isFirstWordValid(position, orientation, word)) {
                 this.clientSocketService.socket.emit(
                     'validatePlacement',
@@ -215,13 +211,9 @@ export class PlaceLetterService implements OnDestroy {
 
     handleValidPlacement(): void {
         this.displayValid();
-        // this.playerService.addScore(finalResult.score, indexPlayer);
-        // this.playerService.updateScrabbleBoard(this.scrabbleBoard);
-        // this.playerService.refillEasel(indexPlayer);
         this.isFirstRound = false;
         this.playerService.letterForDrag = [];
         this.dragWord = [];
-        // this.sendMessageService.displayMessageByType('ERREUR : Le placement est invalide', MessageType.Error);
         return;
     }
 
@@ -361,8 +353,6 @@ export class PlaceLetterService implements OnDestroy {
 
     private receiveSuccess() {
         this.clientSocketService.socket.on('receiveSuccess', () => {
-            this.endGameService.addActionsLog('placerSucces');
-            this.clientSocketService.socket.emit('sendActions', this.endGameService.actionsLog, this.clientSocketService.currentRoom.id);
             this.handleValidPlacement();
             this.skipTurnService.switchTurn();
         });
@@ -370,8 +360,6 @@ export class PlaceLetterService implements OnDestroy {
 
     private receiveFailure() {
         this.clientSocketService.socket.on('receiveFail', (position: Vec2, orientation: Orientation, word: string, isDragActivated = false) => {
-            this.endGameService.addActionsLog('placerEchec');
-            this.clientSocketService.socket.emit('sendActions', this.endGameService.actionsLog, this.clientSocketService.currentRoom.id);
             this.handleInvalidPlacement(position, orientation, word, isDragActivated);
             this.sendMessageService.displayMessageByType('ERREUR : Un ou des mots formés sont invalides', MessageType.Error);
             console.log('faillllllllllll');

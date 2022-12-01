@@ -1,0 +1,13 @@
+<div id="mySidenav" class="sidenav">
+    <header><img id="logo-scrabble" src="https://bit.ly/3m206ss" class="not-selectionnable" alt="Logo Scrabble" /></header>
+    <p class="closebtn" (click)="closeNav()">&times;</p>
+    <p (click)="closeNav()" routerLink="/home">Menu principal</p>
+    <hr />
+    <p routerLink="/profile">Profil</p>
+    <hr />
+    <p href="#">Paramètres et personnalisation</p>
+    <p routerLink="/statistics">Statistiques et historique</p>
+    <p href="#">Contact</p>
+</div>
+
+<span *ngIf="!isNavOpen" class="openbtn" (click)="openNav()">&#9776; open</span>

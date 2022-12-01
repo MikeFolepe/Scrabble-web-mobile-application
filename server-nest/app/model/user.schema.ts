@@ -1,20 +1,35 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose from 'mongoose';
+import { ApiProperty } from '@nestjs/swagger';
+import { Document } from 'mongoose';
+import { Friend } from './friend.schema';
+
+export type UserDocument = User & Document;
 
 @Schema()
-export class User extends mongoose.Document {
-    @Prop({ required: true })
-    avatar: string;
-
-    @Prop({ required: true })
+export class User {
+    @ApiProperty()
+    @Prop({ type: String, required: true })
     pseudonym: string;
 
-    @Prop({ required: true })
+    @ApiProperty()
+    @Prop({ type: String, required: true })
+    avatar: string;
+
+    @ApiProperty()
+    @Prop({ type: String, required: true })
     email: string;
 
-    @Prop({ required: true })
+    @ApiProperty()
+    @Prop({ type: String, required: true })
     password: string;
+
+    @ApiProperty()
+    @Prop({ type: Number, required: true, default: 0 })
+    xpPoints: number;
+
+    @ApiProperty()
+    @Prop({ required: true, default: [] })
+    friends: [Friend];
 }
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
-export const UserSchema = SchemaFactory.createForClass(User);
+export const USER_SCHEMA = SchemaFactory.createForClass(User);
