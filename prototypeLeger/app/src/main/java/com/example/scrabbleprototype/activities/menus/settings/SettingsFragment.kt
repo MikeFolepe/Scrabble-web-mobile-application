@@ -335,6 +335,7 @@ class SettingsFragment : Fragment(), CoroutineScope {
             user.currentUser.pseudonym = binding.profilePseudonym.text.toString()
             Log.d("inputuser", user.currentUser._id)
             if(oldPseudonym == user.currentUser.pseudonym) {
+                Log.d("no", "changes")
                 pseudonymChanged = false
             }
             preferenceViewModel.saveProfile(user.currentUser,pseudonymChanged).observe(viewLifecycleOwner, androidx.lifecycle.Observer { saved ->
