@@ -1,0 +1,81 @@
+<div class="userProfile">
+    <app-background></app-background>
+    <app-user-menu-nav></app-user-menu-nav>
+    <h1 id="title">Statisques</h1>
+    <hr />
+
+    <div class="stats">
+        <div class="stats1">
+            <p>
+                Nombre de parties jouées <span id="statValue">{{ userService.userStats.gamesPlayed }}</span>
+            </p>
+            <p>
+                Moyenne de points par parties <span id="statValue">{{ userService.userStats.getAveragePoints() }}</span>
+            </p>
+        </div>
+
+        <div class="stats2">
+            <p>
+                Nombre de parties gagnées <span id="statValue">{{ userService.userStats.gamesWon }}</span>
+            </p>
+            <p>
+                Temps moyen consacré par parties <span id="statValue">{{ userService.userStats.getAverageTime() }}</span>
+            </p>
+        </div>
+    </div>
+
+    <h1>Historique de connexions</h1>
+    <hr />
+
+    <div class="log-connexion">
+        <div id="log-label">Connexions</div>
+        <div id="log-label" class="line-break">Déconnexions</div>
+        <div class="connexion" #scrollMe>
+            <div *ngFor="let login of userService.userStats.logins; let i = index" class="logins">
+                <p></p>
+                <p>Connecté le</p>
+                <p>
+                    {{ login.date }}
+                </p>
+                <p>À</p>
+                <p>
+                    {{ login.time }}
+                </p>
+            </div>
+        </div>
+
+        <div class="deconnexion" #scrollMe>
+            <div *ngFor="let logout of userService.userStats.logouts; let i = index" class="logouts">
+                <p></p>
+                <p>Deconnecté le</p>
+                <p>
+                    {{ logout.date }}
+                </p>
+                <p>À</p>
+                <p>
+                    {{ logout.time }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <h1>Historique de parties jouées</h1>
+    <hr />
+
+    <div class="history" #scrollMe>
+        <div *ngFor="let game of userService.userStats.games; let i = index" class="logouts">
+            <p></p>
+            <p>Partie jouée le</p>
+            <p>
+                {{ game.startDate }}
+            </p>
+            <p>À</p>
+            <p>
+                {{ game.startTime }}
+            </p>
+
+            <p *ngIf="game.isWinner(authService.currentUser.pseudonym)" style="color: green">Victoire</p>
+            <p *ngIf="!game.isWinner(authService.currentUser.pseudonym)" style="color: red">Défaite</p>
+        </div>
+    </div>
+</div>

@@ -7,6 +7,7 @@
     <mat-card class="userCard">
         <img id="avatar" src="{{ this.authService.currentUser.avatar }}" alt="avatar" />
         <mat-card-title>{{ this.authService.currentUser.pseudonym }}</mat-card-title>
+        <mat-card-title>XP: {{ this.authService.currentUser.xpPoints }}</mat-card-title>
     </mat-card>
 
     <h1>Liste d'amis</h1>
