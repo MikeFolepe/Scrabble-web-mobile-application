@@ -100,9 +100,11 @@ class ChatRoomFragment: Fragment() {
             Timer().schedule(timerTask {
                 currentChatRoom = chatRooms.find { it.chatRoomName == currentChatRoom?.chatRoomName }
                 activity?.runOnUiThread {
-                    if(currentChatRoom == null || chatAdapter == null) return@runOnUiThread
-                    if (currentChatRoom?.messages?.last()?.pseudonym != currentUser.pseudonym) {
-                        playNotificationSound(activityContext)
+                    if (currentChatRoom == null || chatAdapter == null) return@runOnUiThread
+                    if (currentChatRoom?.messages?.isEmpty() != true) {
+                        if (currentChatRoom?.messages?.last()?.pseudonym != currentUser.pseudonym) {
+                            playNotificationSound(activityContext)
+                        }
                     }
                     chatAdapter?.updateData(currentChatRoom!!.messages)
                 }
