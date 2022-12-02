@@ -7,6 +7,7 @@ import { DEFAULT_DICTIONARY_INDEX, GAME_TYPES, NumberOfPlayer } from '@app/class
 import { AddChatRoomComponent } from '@app/modules/game-view/add-chat-room/add-chat-room.component';
 import { ChangeChatRoomComponent } from '@app/modules/game-view/change-chat-room/change-chat-room.component';
 import { JoinChatRoomsComponent } from '@app/modules/game-view/join-chat-rooms/join-chat-rooms.component';
+import { PasswordGameDialogComponent } from '@app/modules/initialize-game/password-game-dialog/password-game-dialog.component';
 import { AdministratorService } from '@app/services/administrator.service';
 import { AuthService } from '@app/services/auth.service';
 import { ChannelHandlerService } from '@app/services/channel-handler.service';
@@ -16,7 +17,6 @@ import { GameSettingsService } from '@app/services/game-settings.service';
 import { AiType } from '@common/ai-name';
 import { Dictionary } from '@common/dictionary';
 import { GameSettings, RoomType, StartingPlayer } from '@common/game-settings';
-import { PasswordGameDialogComponent } from '@app/modules/initialize-game/password-game-dialog/password-game-dialog.component';
 
 @Component({
     selector: 'app-form',
@@ -153,6 +153,7 @@ export class FormComponent implements OnInit, OnDestroy {
     }
 
     private goToWaiting(): void {
+        console.log('game', this.gameSettingsService.gameSettings);
         this.clientSocket.socket.emit('createRoom', this.gameSettingsService.gameSettings, this.authService.currentUser._id);
         const nextUrl = 'waiting-room';
         this.router.navigate([nextUrl]);

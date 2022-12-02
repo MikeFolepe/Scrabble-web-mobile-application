@@ -15,7 +15,7 @@
 
     <div class="friendList">
         <div *ngFor="let friend of authService.currentUser.friends">
-            <mat-card class ="friend">
+            <mat-card class="friend">
                 <img src="{{ friend.avatar }}" class="avatar" alt="Avatar" />
                 <p>{{ friend.pseudonym }} XP: {{ friend.xpPoints }}</p>
             </mat-card>

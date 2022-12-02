@@ -54,6 +54,12 @@ export class GameHandlerGateway implements OnGatewayConnection {
         socket.emit('goToWaiting');
     }
 
+    @SubscribeMessage('previewPlayers')
+    previewPlayers(@ConnectedSocket() socket, @MessageBody() roomId: string) {
+        const room = this.roomManagerService.find(roomId);
+        this.server.to(socket.id).emit('previewRoomPlayers', room.playerService.players);
+    }
+
     @SubscribeMessage('newRoomObserver')
     addNewRoomObserver(@ConnectedSocket() socket, @MessageBody() observer: User, @MessageBody() roomId: string) {
         const room = this.roomManagerService.find(roomId[1]);
