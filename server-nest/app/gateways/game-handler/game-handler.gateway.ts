@@ -11,7 +11,7 @@ import { DELAY_BEFORE_PLAYING, EASEL_SIZE, INVALID_INDEX, ONE_SECOND_DELAY, THRE
 import { bot } from '@common/defaultAvatars';
 import { Friend } from '@common/friend';
 import { GameSettings } from '@common/game-settings';
-import { Notification, NotifType } from '@common/notification';
+import { Notification } from '@common/notification';
 import { User } from '@common/user';
 import { GameDB } from '@common/user-stats';
 import { Logger } from '@nestjs/common';
@@ -35,16 +35,36 @@ export class GameHandlerGateway implements OnGatewayConnection {
         for (const user of this.userService.activeUsers) {
             if (user.pseudonym === receiver[1].pseudonym) activeReceiver = user;
         }
-        let notifToAdd = new Notification(NotifType.Friend, sender[0].pseudonym, "Cliquez pour être redirigé vers la page d'invitations");
-        notifToAdd = await this.userService.addNotification(receiver.pseudonym, notifToAdd)
+        let notifToAdd = new Notification(0, sender[0].pseudonym, "Cliquez pour être redirigé vers la page d'invitations");
+        notifToAdd = await this.userService.addNotification(receiver[1].pseudonym, notifToAdd);
         const invitationAdded = await this.userService.addInvitation(
-            receiver.pseudonym,
+            receiver[1].pseudonym,
             new Friend(sender[0].pseudonym, sender[0].avatar, sender[0].xpPoints),
         );
         if (activeReceiver !== undefined) {
             socket.to(activeReceiver.socketId).emit('receiveNotification', notifToAdd);
             socket.to(activeReceiver.socketId).emit('receiveFriendRequest', invitationAdded);
         }
+    }
+
+    @SubscribeMessage('acceptFriendRequest')
+    async acceptFriendRequest(@ConnectedSocket() socket, @MessageBody() receiver: Friend, @MessageBody() sender: Friend) {
+        this.userService.acceptInvite(receiver[0], sender[1]);
+
+        let activeSender: User;
+        for (const user of this.userService.activeUsers) {
+            if (user.pseudonym === sender[1].pseudonym) activeSender = user;
+        }
+        if (activeSender !== undefined) {
+            socket.to(activeSender.socketId).emit('addFriend', receiver[0]);
+        }
+        socket.emit('removeFriendNotification', sender[1].pseudonym);
+    }
+
+    @SubscribeMessage('declineFriendRequest')
+    async declineFriendRequest(@ConnectedSocket() socket, @MessageBody() receiverpseudonym: string, @MessageBody() senderPseudonym: string) {
+        this.userService.declineInvite(receiverpseudonym[0], senderPseudonym[1]);
+        socket.emit('removeFriendNotification', senderPseudonym[1]);
     }
 
     @SubscribeMessage('sendEmail')

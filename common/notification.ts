@@ -1,27 +1,26 @@
 
-export enum NotifType {
-    Friend,
-    Game,
-    Message,
-}
 
 export class Notification {
-    type: NotifType;
+    type: number;
     sender: string;
     description: string;
     title: string;
     date: string;
     time: string;
-    _id?: string;
 
-    constructor(type: NotifType, sender: string, description: string) {
+    constructor(type: number, sender: string, description: string) {
         this.type = type;
         this.sender = sender;
         this.description = description;
         switch(type) {
-            case NotifType.Friend: this.title = "Invitation d'ami";
-            case NotifType.Game: this.title = "Invitation à une partie";
-            case NotifType.Message: this.title = "Nouveau message";
+            case 0: {
+                this.title = "Invitation d'ami";
+                break;
+            }
+            case 1: {
+                this.title = "Nouveau message";
+                break;
+            }
         }
         this.date = new Date().getFullYear().toString(),
         (new Date().getMonth() + 1).toString().padStart(2, '0'),

@@ -186,24 +186,6 @@ class WaitingRoomActivity : AppCompatActivity() {
         }
     }
 
-    private fun leave() {
-        socket.on("leave") {
-            runOnUiThread { startActivity(Intent(this, MainMenuActivity::class.java)) }
-        }
-    }
-
-    private fun leaveNotification() {
-        socket.on("leaveNotification") { response ->
-            val notification = response[0] as String
-            runOnUiThread {
-                findViewById<TextView>(R.id.leave_notification).text = notification
-                Timer().schedule(timerTask {
-                    findViewById<TextView>(R.id.leave_notification).text = ""
-                }, 4000)
-            }
-        }
-    }
-
     private fun leaveToHome() {
         socket.on("leaveToHome") {
             runOnUiThread{

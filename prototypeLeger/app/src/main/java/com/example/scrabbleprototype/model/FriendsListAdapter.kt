@@ -39,7 +39,7 @@ class FriendsListAdapter(private var friends: ArrayList<Friend>) :
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
         if(friends[position].avatar == "") viewHolder.avatar.setImageResource(R.color.blue)
-        else viewHolder.avatar.setImageResource(friends[position].avatar.toInt())
+        else viewHolder.avatar.setImageBitmap(friends[position].getAvatarBitmap())
         viewHolder.pseudonym.text = friends[position].pseudonym
         viewHolder.xp.text = viewHolder.xp.context.getString(R.string.user_xp, friends[position].xpPoints)
     }

@@ -1,6 +1,7 @@
 package com.example.scrabbleprototype.viewModel
 
 import android.util.Log
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.scrabbleprototype.model.*
@@ -26,6 +27,9 @@ import java.lang.Exception
 
 class InvitationViewModel: ViewModel() {
 
+    var isProfilInit = MutableLiveData(false)
+    var areNotifsInit = MutableLiveData(false)
+
     private var serverUrl = Environment.serverUrl
     private var client: HttpClient = HttpClient() {
         install(ContentNegotiation) {
@@ -33,24 +37,60 @@ class InvitationViewModel: ViewModel() {
         }
     }
 
-    fun addInvitation(invitation: Friend) {
+    fun getFriendsAndInvites() {
+        isProfilInit.value = false
         viewModelScope.launch {
-            val response = postInvitation(invitation)
-            if(response != null) Log.d("addInvitation", response.body())
+            getFriends()
+            getInvitations()
         }
     }
 
-    private suspend fun postInvitation(invitation: Friend) = withContext(Dispatchers.Default) {
+    fun updateNotifications() {
+        areNotifsInit.value = false
+        viewModelScope.launch {
+            getNotifications()
+        }
+    }
+
+    private suspend fun getFriends() = withContext(Dispatchers.Default) {
         var response: HttpResponse?
         try{
-            response = client.post("$serverUrl/api/user/addInvitation/" + Users.currentUser._id) {
-                contentType(ContentType.Application.Json)
-                setBody(invitation)
-            }
+            response = client.get("$serverUrl/api/user/friends/" + Users.currentUser._id) {}
         } catch(e: Exception) {
             response = null
         }
-        return@withContext response
+        if(response != null) {
+            Log.d("getFriends", response.body())
+            Users.currentUser.friends = response.body()
+        }
+    }
+
+    private suspend fun getInvitations() = withContext(Dispatchers.Default) {
+        var response: HttpResponse?
+        try{
+            response = client.get("$serverUrl/api/user/invitations/" + Users.currentUser._id) {}
+        } catch(e: Exception) {
+            response = null
+        }
+        if(response != null) {
+            Log.d("getInvites", response.body())
+            Users.currentUser.invitations = response.body()
+            isProfilInit.postValue(true)
+        }
+    }
+
+    private suspend fun getNotifications() = withContext(Dispatchers.Default) {
+        var response: HttpResponse?
+        try{
+            response = client.get("$serverUrl/api/user/notifications/" + Users.currentUser._id) {}
+        } catch(e: Exception) {
+            response = null
+        }
+        if(response != null) {
+            Log.d("getNotifs", response.body())
+            Users.currentUser.notifications = response.body()
+            areNotifsInit.postValue(true)
+        }
     }
 }
 

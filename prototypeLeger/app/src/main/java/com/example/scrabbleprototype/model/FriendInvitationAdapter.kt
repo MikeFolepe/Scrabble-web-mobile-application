@@ -15,6 +15,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 class FriendInvitationAdapter(private var invitations: ArrayList<Friend>) :
     RecyclerView.Adapter<FriendInvitationAdapter.ViewHolder>() {
 
+    var onAccept: ((position: Int) -> Unit)? = null
+    var onDecline: ((position: Int) -> Unit)? = null
     /**
      * Provide a reference to the type of views that you are using
      * (custom ViewHolder).
@@ -22,16 +24,15 @@ class FriendInvitationAdapter(private var invitations: ArrayList<Friend>) :
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val avatar = view.findViewById<ImageView>(R.id.friend_avatar)
         val pseudonym = view.findViewById<TextView>(R.id.friend_pseudonym)
-        val xp = view.findViewById<TextView>(R.id.friend_xp)
         val acceptButton = view.findViewById<FloatingActionButton>(R.id.invitation_accept)
         val declineButton = view.findViewById<FloatingActionButton>(R.id.invitation_decline)
 
         init {
             acceptButton.setOnClickListener {
-
+                onAccept?.invoke(layoutPosition)
             }
             declineButton.setOnClickListener {
-
+                onDecline?.invoke(layoutPosition)
             }
         }
     }

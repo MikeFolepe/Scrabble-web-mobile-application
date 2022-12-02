@@ -1,4 +1,6 @@
 /* eslint-disable no-underscore-dangle */
+import { Friend } from '@common/friend';
+import { Notification } from '@common/notification';
 import { User } from '@common/user';
 import { UserStatsDB } from '@common/user-stats';
 import * as emailS from '@nativescript/email';
@@ -139,5 +141,41 @@ export class UserController {
         await this.userService.updateUser(user).then((newUser: User) => {
             response.status(HttpStatus.OK).send(newUser);
         });
+    }
+
+    @Get('/friends/:userId')
+    async getUserFriends(@Param('userId') userId: string, @Res() response: Response) {
+        await this.userService
+            .getFriends(userId)
+            .then((userFriends: Friend[]) => {
+                response.status(HttpStatus.OK).send(userFriends);
+            })
+            .catch((error: Error) => {
+                response.status(HttpStatus.NOT_FOUND).send('An error occurred while trying to get the stats' + error.message);
+            });
+    }
+
+    @Get('/invitations/:userId')
+    async getUserInvitations(@Param('userId') userId: string, @Res() response: Response) {
+        await this.userService
+            .getInvitations(userId)
+            .then((userInvitations: Friend[]) => {
+                response.status(HttpStatus.OK).send(userInvitations);
+            })
+            .catch((error: Error) => {
+                response.status(HttpStatus.NOT_FOUND).send('An error occurred while trying to get the stats' + error.message);
+            });
+    }
+
+    @Get('/notifications/:userId')
+    async getUserNotifications(@Param('userId') userId: string, @Res() response: Response) {
+        await this.userService
+            .getNotifications(userId)
+            .then((userNotifs: Notification[]) => {
+                response.status(HttpStatus.OK).send(userNotifs);
+            })
+            .catch((error: Error) => {
+                response.status(HttpStatus.NOT_FOUND).send('An error occurred while trying to get the stats' + error.message);
+            });
     }
 }

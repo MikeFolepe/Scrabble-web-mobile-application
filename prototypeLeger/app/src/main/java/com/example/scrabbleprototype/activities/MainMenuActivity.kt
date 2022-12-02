@@ -7,8 +7,12 @@ import android.os.Bundle
 import android.view.*
 import android.widget.PopupWindow
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
@@ -19,12 +23,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.databinding.ActivityMainMenuBinding
 import com.example.scrabbleprototype.fragments.ChannelButtonsFragment
-import com.example.scrabbleprototype.model.NotifType
 import com.example.scrabbleprototype.model.Notification
 import com.example.scrabbleprototype.model.NotificationAdapter
 import com.example.scrabbleprototype.model.SocketHandler
 import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.objects.Users
+import com.example.scrabbleprototype.viewModel.InvitationViewModel
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.google.android.material.navigation.NavigationView
 
@@ -32,6 +36,7 @@ class MainMenuActivity : AppCompatActivity() {
 
     private lateinit var notifAdapter: NotificationAdapter
 
+    private val invitationViewModel: InvitationViewModel by viewModels()
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainMenuBinding
 
@@ -39,13 +44,15 @@ class MainMenuActivity : AppCompatActivity() {
         ThemeManager.setActivityTheme(this)
         super.onCreate(savedInstanceState)
 
-        Users.currentUser.notifications.add(Notification(NotifType.Friend, "hey", "notification d'invitation d'ami de test"))
-        Users.currentUser.notifications.add(Notification(NotifType.Game, "hey", "notification d'invitation à une partie de test"))
-        Users.currentUser.notifications.add(Notification(NotifType.Message, "hey", "notification d'un nouveau message dans un canal de discussion de test"))
+        invitationViewModel.updateNotifications()
+        val notifObserver = Observer<Boolean> { areNotifsInit ->
+            if(areNotifsInit) setupNotifications()
+        }
+        invitationViewModel.areNotifsInit.observe(this, notifObserver)
 
         setupDrawer()
-        setupNotifications()
         receiveNotification()
+        removeNotification()
 
         if(savedInstanceState == null) {
             setupFragments()
@@ -110,7 +117,7 @@ class MainMenuActivity : AppCompatActivity() {
         notificationsView.adapter = notifAdapter
 
         notifAdapter.onNotifClick = { position ->
-            if(Users.currentUser.notifications[position].type == NotifType.Friend) {
+            if(Users.currentUser.notifications[position].type == 0) {
                 val navController = findNavController(R.id.nav_host_fragment_content_main_menu)
                 navController.popBackStack()
                 navController.navigate(R.id.nav_profile)
@@ -131,6 +138,14 @@ class MainMenuActivity : AppCompatActivity() {
         SocketHandler.socket.on("receiveNotification") { response ->
             val newNotif = jacksonObjectMapper().readValue(response[0].toString(), Notification::class.java)
             Users.currentUser.notifications.add(newNotif)
+            runOnUiThread { notifAdapter.updateData(Users.currentUser.notifications) }
+        }
+    }
+
+    private fun removeNotification() {
+        SocketHandler.socket.on("removeFriendNotification") { response ->
+            val senderPseudonym = response[0] as String
+            Users.currentUser.notifications.removeAll { it.sender == senderPseudonym }
             runOnUiThread { notifAdapter.updateData(Users.currentUser.notifications) }
         }
     }

@@ -5,27 +5,17 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 @Serializable
-enum class NotifType {
-    Friend,
-    Game,
-    Message,
-}
-
-@Serializable
-class Notification(var type: NotifType, var sender: String, var description: String) {
-    var title: String
+class Notification(var type: Int, var sender: String, var description: String) {
+    var title: String = ""
     var date: String = getDateStamp()
     var time: String = getTimeStamp()
 
     init {
         when(type) {
-            NotifType.Friend -> {
+            0 -> {
                 title = "Invitation d'ami"
             }
-            NotifType.Game -> {
-                title = "Invitation à une partie"
-            }
-            NotifType.Message -> {
+            1 -> {
                 title = "Nouveau message"
             }
         }

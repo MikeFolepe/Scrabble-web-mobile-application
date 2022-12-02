@@ -45,6 +45,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.concurrent.timerTask
 import kotlin.coroutines.CoroutineContext
+import androidx.lifecycle.Observer
 
 class ProfileFragment : Fragment(), CoroutineScope {
 
@@ -53,6 +54,7 @@ class ProfileFragment : Fragment(), CoroutineScope {
     private var users = arrayListOf<User>()
     private lateinit var userAdapter: UserAdapter
     private lateinit var invitationAdapter: FriendInvitationAdapter
+    private lateinit var friendsListAdapter: FriendsListAdapter
 
     private val invitationViewModel: InvitationViewModel by activityViewModels()
     private lateinit var binding: FragmentProfileBinding
@@ -63,19 +65,18 @@ class ProfileFragment : Fragment(), CoroutineScope {
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Default + job
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        for(i in 0 until 12) {
-            user.currentUser.friends.add(Friend("ami #" + i, (R.color.blue).toString(), 250 + i))
-            user.currentUser.invitations.add(Friend("", "", 11))
-        }
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        invitationViewModel.getFriendsAndInvites()
+        val profileObserver = Observer<Boolean> { isProfilInit ->
+            if(isProfilInit) {
+                setupFriendsList()
+                setupInvitations()
+            }
+        }
+        invitationViewModel.isProfilInit.observe(viewLifecycleOwner, profileObserver)
         // Inflate the layout for this fragment
         val inflaterWithTheme = ThemeManager.setFragmentTheme(layoutInflater, requireContext())
         binding = FragmentProfileBinding.inflate(inflaterWithTheme)
@@ -84,8 +85,6 @@ class ProfileFragment : Fragment(), CoroutineScope {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setupUserInfo()
-        setupFriendsList()
-        setupInvitations()
         setupAddFriendButton()
         receiveFriendRequest()
 
@@ -101,7 +100,7 @@ class ProfileFragment : Fragment(), CoroutineScope {
     private fun setupFriendsList() {
         val friendsListView = binding.friendsList
         friendsListView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        val friendsListAdapter = FriendsListAdapter(user.currentUser.friends)
+        friendsListAdapter = FriendsListAdapter(user.currentUser.friends)
         friendsListView.adapter = friendsListAdapter
     }
 
@@ -110,6 +109,13 @@ class ProfileFragment : Fragment(), CoroutineScope {
         invitationsView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         invitationAdapter = FriendInvitationAdapter(user.currentUser.invitations)
         invitationsView.adapter = invitationAdapter
+
+        invitationAdapter.onAccept = { position ->
+            acceptInvite(position)
+        }
+        invitationAdapter.onDecline = { position ->
+            declineInvite(position)
+        }
     }
 
     private fun setupAddFriendDialog() {
@@ -122,11 +128,17 @@ class ProfileFragment : Fragment(), CoroutineScope {
         usersView.adapter = userAdapter
 
         userAdapter.onUserClick = { position ->
-            SocketHandler.socket.emit("sendFriendRequest", JSONObject(Json.encodeToString(user)), JSONObject(Json.encodeToString(users[position])))
-            Toast.makeText(addFriendDialog.context, "Une invitation d'ami a été envoyée à " + users[position].pseudonym, Toast.LENGTH_LONG).show()
-            Timer().schedule(timerTask {
-                addFriendDialog.dismiss()
-            }, 200)
+            if(users[position].invitations.any { it.pseudonym == Users.currentUser.pseudonym }) {
+                Toast.makeText(addFriendDialog.context, "Cet utilisateur détient déjà une invitation de votre part en attente", Toast.LENGTH_LONG).show()
+            } else if(Users.currentUser.invitations.any { it.pseudonym == users[position].pseudonym }){
+                Toast.makeText(addFriendDialog.context, "Vous avez déjà une invitation en attente de cet utilisateur", Toast.LENGTH_LONG).show()
+            } else {
+                SocketHandler.socket.emit("sendFriendRequest", JSONObject(Json.encodeToString(Users.currentUser)), JSONObject(Json.encodeToString(users[position])))
+                Toast.makeText(addFriendDialog.context, "Une invitation d'ami a été envoyée à " + users[position].pseudonym, Toast.LENGTH_LONG).show()
+                Timer().schedule(timerTask {
+                    addFriendDialog.dismiss()
+                }, 200)
+            }
         }
 
         val dismissButton = addFriendDialog.findViewById<Button>(R.id.dismiss_dialog_button)
@@ -153,6 +165,23 @@ class ProfileFragment : Fragment(), CoroutineScope {
         }
     }
 
+    private fun acceptInvite(position: Int) {
+        val currentUserAsFriend = Friend(Users.currentUser.pseudonym, Users.currentUser.avatar, Users.currentUser.xpPoints)
+        SocketHandler.socket.emit("acceptFriendRequest", JSONObject(Json.encodeToString(currentUserAsFriend)),
+                                  JSONObject(Json.encodeToString(Users.currentUser.invitations[position])))
+        Users.currentUser.friends.add(Users.currentUser.invitations[position])
+        Users.currentUser.invitations.removeAt(position)
+
+        invitationAdapter.updateData(Users.currentUser.invitations)
+        friendsListAdapter.updateData(Users.currentUser.friends)
+    }
+
+    private fun declineInvite(position: Int) {
+        SocketHandler.socket.emit("declineFriendRequest", Users.currentUser.pseudonym, Users.currentUser.invitations[position].pseudonym)
+        Users.currentUser.invitations.removeAt(position)
+        invitationAdapter.updateData(Users.currentUser.invitations)
+    }
+
     private suspend fun getAllUsers() {
         var response: HttpResponse?
         try{
@@ -163,6 +192,9 @@ class ProfileFragment : Fragment(), CoroutineScope {
         if(response != null) {
             users = jacksonObjectMapper().readValue(response.body() as String, object : TypeReference<ArrayList<User>>() {})
             users.removeAll { it.pseudonym == Users.currentUser.pseudonym }
+            for(friend in Users.currentUser.friends) {
+                users.removeAll { it.pseudonym == friend.pseudonym }
+            }
             activity?.runOnUiThread {
                 userAdapter.updateData(users)
             }

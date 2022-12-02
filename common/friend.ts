@@ -1,5 +1,4 @@
 export class Friend {
-    _id?: string;
     pseudonym: string;
     avatar: string;
     xpPoints: number;
