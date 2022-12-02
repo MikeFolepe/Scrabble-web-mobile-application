@@ -1,4 +1,5 @@
 import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 import { AdminPageComponent } from '@app/pages/admin-page/admin-page.component';
 import { AuthPageComponent } from '@app/pages/auth-page/auth-page.component';
@@ -35,6 +36,6 @@ const routes: Routes = [
 
 @NgModule({
     imports: [RouterModule.forRoot(routes, { useHash: true })],
-    exports: [RouterModule],
+    exports: [RouterModule, FormsModule],
 })
 export class AppRoutingModule {}
