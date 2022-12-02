@@ -128,8 +128,13 @@ h2 {
     margin-left: 60vw;
 }
 
-.close-button {
-    font-size: 24px;
-    padding: 0.2em;
-
+mat-dialog-actions {
+    padding: 8px 0;
+    display: flex;
+    flex-wrap: wrap;
+    min-height: 52px;
+    align-items: center;
+    box-sizing: content-box;
+    margin-bottom: -24px;
+    justify-content: center;
 }

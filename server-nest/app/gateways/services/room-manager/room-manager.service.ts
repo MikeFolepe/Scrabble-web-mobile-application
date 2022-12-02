@@ -47,7 +47,6 @@ export class RoomManagerService {
                 if (room.playerService.players[i].isAi) {
                     const user = this.userService.activeUsers.find((curUser) => curUser.pseudonym === customerName);
                     const humanPlayer = new Player(customerName, room.playerService.players[i].letterTable);
-                    console.log(user);
                     humanPlayer.avatar = user.avatar;
                     room.playerService.players[i] = humanPlayer;
                     room.aiPlayersNumber--;
