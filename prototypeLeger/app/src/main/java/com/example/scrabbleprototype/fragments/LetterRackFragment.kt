@@ -86,11 +86,11 @@ class LetterRackFragment : Fragment(), ObserverRackCallback, CancelSwapCallback 
 
     override fun onStop() {
         super.onStop()
-        activityContext.unbindService(connection)
         skipTurnBound = false
         swapLetterBound = false
         skipTurnService.setObserverRackCallback(null)
         skipTurnService.setCancelSwapCallback(null)
+        activityContext.unbindService(connection)
     }
 
     override fun onAttach(context: Context) {

@@ -70,7 +70,7 @@ class WaitingRoomActivity : AppCompatActivity() {
             startGameButton.setVisibility(View.INVISIBLE)
         }
         startGameButton.setOnClickListener {
-            if((CurrentRoom.myRoom.humanPlayersNumber + CurrentRoom.myRoom.aiPlayersNumber) < Constants.MAX_PLAYERS || !Players.currentPlayer.isCreator) {
+            if(CurrentRoom.myRoom.humanPlayersNumber < 2 || !Players.currentPlayer.isCreator) {
                 Toast.makeText(this, "La partie ne peut pas être commencée", Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             }
@@ -123,16 +123,16 @@ class WaitingRoomActivity : AppCompatActivity() {
     }
 
     private fun receiveNewOpponent() {
-        socket.on("Opponent") { response ->
+        socket.once("Opponent") { response ->
             val newOpponent = mapper.readValue(response[0].toString(), Player::class.java)
             val index = response[1] as Int
-            Players.opponents[index]= newOpponent
+            Players.opponents[index] = newOpponent
             runOnUiThread {
                 playersWaiting.add(newOpponent)
                 playersWaitingAdapter.notifyItemChanged(playersWaiting.size - 1)
             }
         }
-        socket.on("roomPlayers") { response ->
+        socket.once("roomPlayers") { response ->
             Players.players = mapper.readValue(response[0].toString(), object: TypeReference<ArrayList<Player>>() {})
             runOnUiThread {
                 playersWaitingAdapter.updateData(Players.players)
@@ -199,6 +199,7 @@ class WaitingRoomActivity : AppCompatActivity() {
     private fun goToGameView() {
         socket.on("goToGameView") {
             startActivity(Intent(this, GameActivity::class.java))
+            finish()
         }
     }
 
