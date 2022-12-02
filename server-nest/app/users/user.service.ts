@@ -216,14 +216,6 @@ export class UserService {
         return userDB;
     }
 
-    async getUserEmail(email: string): Promise<User> {
-        const user = await this.userModel.findOne({ email });
-
-        if (!user) return;
-        const userToSend = new User(user.avatar, user.pseudonym, user.password, user.email);
-        return userToSend;
-    }
-
     encryptPassword(password: string): string {
         const encryptedPassword = password
             .split('')

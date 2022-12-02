@@ -15,7 +15,6 @@ export class AuthService {
             return userFromDB;
         }
         this.userService.addUser(userFromDB);
-        console.log(userFromDB);
         return userFromDB;
     }
 }

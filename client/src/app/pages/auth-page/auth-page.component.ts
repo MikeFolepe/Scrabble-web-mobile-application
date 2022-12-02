@@ -33,7 +33,7 @@ export class AuthPageComponent implements OnInit {
         public userService: UserService,
         public authService: AuthService,
         private formBuilder: FormBuilder,
-        public passwordForgottenDialog : MatDialog,
+        public passwordForgottenDialog: MatDialog,
         public avatarChoiceDialog: MatDialog,
     ) {}
 
@@ -92,11 +92,10 @@ export class AuthPageComponent implements OnInit {
         }
         this.signUpError = '';
 
-
-        //verification de la bonne ecriture de l'addresse courriel
+        // verification de la bonne ecriture de l'addresse courriel
         const regex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
         if (!this.emailValue.match(regex)) {
-            this.signUpError = 'L\'adresse courriel entrée n\'est pas valide';
+            this.signUpError = "L'adresse courriel entrée n'est pas valide";
             return;
         }
 
@@ -120,7 +119,7 @@ export class AuthPageComponent implements OnInit {
     }
 
     openPasswordForgottenDialog() {
-        this.passwordForgottenDialog.open(PasswordForgottenComponent, {disableClose : true});
+        this.passwordForgottenDialog.open(PasswordForgottenComponent, { disableClose: true });
     }
 
     invalidPassword() {

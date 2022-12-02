@@ -25,7 +25,7 @@
     <string name="player_info">Informations du joueur</string>
     <string name="duration">Durée</string>
     <string name="dictionary">Dictionnaire</string>
-    <string name="party_type">Type de partie</string>
+    <string name="party_type">Protection de la partie</string>
     <string name="minute">Minute(s)</string>
     <string name="seconde">Seconde(s)</string>
     <string name="everyone">Public</string>

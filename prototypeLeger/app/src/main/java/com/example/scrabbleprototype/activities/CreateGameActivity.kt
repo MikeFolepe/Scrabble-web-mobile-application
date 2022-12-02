@@ -36,6 +36,7 @@ import kotlin.coroutines.CoroutineContext
 class CreateGameActivity : AppCompatActivity(), CoroutineScope {
     private var serverUrl = Environment.serverUrl
     private var job: Job = Job()
+    lateinit var dicoDescription : TextView
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main + job
 
@@ -45,8 +46,9 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
     }
     var currentRoom = CurrentRoom;
     var gameSetting: GameSettings = GameSettings(Users.currentUser.pseudonym, StartingPlayer.Player1, "00", "00",
-                                    AiType.beginner, "", RoomType.public.ordinal, NumberOfPlayer.OneVthree)
+                                    AiType.beginner, "", RoomType.public.ordinal, NumberOfPlayer.OneVthree.ordinal)
     val minutes = arrayListOf("00", "01", "02", "03")
+    val gameType = arrayListOf("Partie à deux", "Partie à quatre")
     val seconds = arrayListOf("00", "30")
     var dictionaries = listOf<Dictionary>()
     var dictionariesTitle =  arrayListOf<String>()
@@ -65,6 +67,8 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
                 json()
             }
         }
+        gameSetting.type = RoomType.public.ordinal
+        dicoDescription = findViewById(R.id.description)
         receiveMyPlayer()
         setupButtons()
         currRoom()
@@ -76,24 +80,30 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
     }
 
     suspend fun setupSpinners() {
-        val minutesSpinner = findViewById<Spinner>(R.id.spinner_minutes)
-        val secondsSpinner = findViewById<Spinner>(R.id.spinner_secondes)
-        val dicoSpinner = findViewById<Spinner>(R.id.spinner_dictionary)
+        var minutesSpinner = findViewById<Spinner>(R.id.spinner_minutes)
+        var secondsSpinner = findViewById<Spinner>(R.id.spinner_secondes)
+        var dicoSpinner = findViewById<Spinner>(R.id.spinner_dictionary)
+        var gameTypeSpinner = findViewById<Spinner>(R.id.spinner_game_type)
 
+        val gameTypeAdapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, gameType )
+        gameTypeSpinner.adapter = gameTypeAdapter
+        gameTypeSpinner.setSelection(0)
         minutesSpinner.adapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, minutes)
         secondsSpinner.adapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, seconds)
         handleMinutesSelection(minutesSpinner)
+        handleGameTypeSelection(gameTypeSpinner)
         handleSecondesSelection(secondsSpinner)
         minutesSpinner.setSelection(1)
-
-            val response = async{ getDictionaries()}
-            val dico = response.await()
-            if(dico != null) {
-                val stringBody: String = dico.body();
-                val mapper = jacksonObjectMapper()
-                dictionaries = mapper.readValue(stringBody, object: TypeReference<List<Dictionary>>() {})
-                for (i in 0 until dictionaries.size) {
-                       dictionariesTitle.add(dictionaries[i].title)
+        secondsSpinner.setSelection(0)
+        gameTypeSpinner.setSelection(1) 
+        val response = async{ getDictionaries()}
+        val dico = response.await()
+        if(dico != null) {
+            val stringBody: String = dico.body();
+            val mapper = jacksonObjectMapper()
+            dictionaries = mapper.readValue(stringBody, object: TypeReference<List<Dictionary>>() {})
+            for (i in 0 until dictionaries.size) {
+                dictionariesTitle.add(dictionaries[i].title)
                 }
             }
             Log.d("dico", dictionariesTitle.toString())
@@ -167,7 +177,30 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
                 id: Long
             ) {
                 gameSetting.dictionary = dictionaries.find { it.title == dictionariesTitle[position] }!!.fileName
+                dicoDescription.text = dictionaries.find { it.title == dictionariesTitle[position] }!!.description
                 Log.d("dico", gameSetting.dictionary)
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+            }
+
+        }
+    }
+    private fun handleGameTypeSelection(gameSpinner: Spinner) {
+        gameSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                if (gameType[position] == "Partie à deux") {
+                    Log.d("2", gameType[position])
+                    gameSetting.gameType = NumberOfPlayer.OneVone.ordinal
+                } else {
+                    Log.d("4", gameType[position])
+                    gameSetting.gameType = NumberOfPlayer.OneVthree.ordinal
+                }
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -189,44 +222,6 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
             val radio: RadioButton = findViewById(checkedId)
             if (radio.text == "Public") {
                 gameSetting.type = RoomType.public.ordinal
-                val builder = AlertDialog.Builder(this)
-                builder.setMessage("Voulez vous protégez la partie en ajoutant un mot de passe");
-                // Set Alert Title
-                builder.setTitle("Mot de passe partie publique");
-
-                // Set Cancelable false for when the user clicks on the outside the Dialog Box then it will remain show
-                builder.setCancelable(false);
-                builder.setPositiveButton("Yes",
-                    DialogInterface.OnClickListener { dialog: DialogInterface, which: Int ->
-                        // When the user click yes button then app will close
-                        var pwdDialog = Dialog(this)
-                        pwdDialog.setContentView(R.layout.public_game_pwd)
-                        pwdDialog.show()
-                        val validateButton = pwdDialog.findViewById<Button>(R.id.validate_button)
-                        validateButton.setOnClickListener {
-                            Log.d("button", "accept")
-                            val passwordInput = pwdDialog.findViewById<EditText>(R.id.popup_window_text);
-                            this.gameSetting.password = passwordInput.text.toString()
-                            pwdDialog.hide()
-                            dialog.cancel()
-                            Toast.makeText(this, "Le mot de passe a été configuré. Appuyez sur Continuer", Toast.LENGTH_LONG).show()
-                        }
-                        val backButton = pwdDialog.findViewById<Button>(R.id.back_button)
-                        backButton.setOnClickListener {
-                            pwdDialog.hide()
-                        }
-                    })
-                // Set the Negative button with No name Lambda OnClickListener method is use of DialogInterface interface.
-                builder.setNegativeButton("No",
-                    DialogInterface.OnClickListener { dialog: DialogInterface, which: Int ->
-                        // If user click no then dialog box is canceled.
-                        dialog.cancel()
-                    } as DialogInterface.OnClickListener)
-                // Create the Alert dialog
-
-                val alertDialog = builder.create()
-                // Show the Alert Dialog box
-                alertDialog.show()
             } else {
                 gameSetting.type = RoomType.private.ordinal
             }
@@ -237,8 +232,53 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
     private fun createGame (gameSetting: GameSettings) {
         //gameSetting.dictionary = dictionaries.find { it.title == dicoFileName }!!.fileName
         gameSetting.dictionary = dictionaries[0].fileName
+        if(gameSetting.type ==RoomType.public.ordinal ) {
+        val builder = AlertDialog.Builder(this)
+        builder.setMessage("Voulez vous protégez la partie en ajoutant un mot de passe");
+        // Set Alert Title
+        builder.setTitle("Mot de passe partie publique");
+
+        // Set Cancelable false for when the user clicks on the outside the Dialog Box then it will remain show
+        builder.setCancelable(false);
+        builder.setPositiveButton("Yes",
+            DialogInterface.OnClickListener { dialog: DialogInterface, which: Int ->
+                // When the user click yes button then app will close
+                var pwdDialog = Dialog(this)
+                pwdDialog.setContentView(R.layout.public_game_pwd)
+                pwdDialog.show()
+                val validateButton = pwdDialog.findViewById<Button>(R.id.validate_button)
+                validateButton.setOnClickListener {
+                    Log.d("button", "accept")
+                    val passwordInput = pwdDialog.findViewById<EditText>(R.id.popup_window_text);
+                    this.gameSetting.password = passwordInput.text.toString()
+                    pwdDialog.hide()
+                    dialog.cancel()
+                    Toast.makeText(
+                        this,
+                        "Le mot de passe a été configuré. Appuyez sur Continuer",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    socket.emit("createRoom", JSONObject(Json.encodeToString(gameSetting)), Users.currentUser._id)
+                }
+                val backButton = pwdDialog.findViewById<Button>(R.id.back_button)
+                backButton.setOnClickListener {
+                    pwdDialog.hide()
+                }
+            })
+        // Set the Negative button with No name Lambda OnClickListener method is use of DialogInterface interface.
+        builder.setNegativeButton("No",
+            DialogInterface.OnClickListener { dialog: DialogInterface, which: Int ->
+                // If user click no then dialog box is canceled.
+                socket.emit("createRoom", JSONObject(Json.encodeToString(gameSetting)), Users.currentUser._id)
+                dialog.cancel()
+            } as DialogInterface.OnClickListener)
+        // Create the Alert dialog
+
+        val alertDialog = builder.create()
+        // Show the Alert Dialog box
+        alertDialog.show()
+    }
         Log.d("game" , gameSetting.password)
-        socket.emit("createRoom", JSONObject(Json.encodeToString(gameSetting)), Users.currentUser._id)
     }
 
 
