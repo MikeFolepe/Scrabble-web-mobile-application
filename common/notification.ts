@@ -12,7 +12,7 @@ export class Notification {
     title: string;
     date: string;
     time: string;
-    _id: string;
+    _id?: string;
 
     constructor(type: NotifType, sender: string, description: string) {
         this.type = type;
