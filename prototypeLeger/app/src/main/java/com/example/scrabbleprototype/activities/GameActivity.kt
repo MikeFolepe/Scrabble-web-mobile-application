@@ -156,12 +156,21 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun updateXp(players: ArrayList<Player>) {
-        when(players.indexOfFirst { it.name == Users.currentUser.pseudonym }) {
-            0 -> Users.currentUser.xpPoints += 75
-            1 -> Users.currentUser.xpPoints += 40
-            2 -> Users.currentUser.xpPoints += 25
-            3 -> Users.currentUser.xpPoints += 10
+
+        if(CurrentRoom.myRoom.gameSettings.gameType == NumberOfPlayer.OneVone){
+            when(players.indexOfFirst { it.name == Users.currentUser.pseudonym }) {
+                0 -> Users.currentUser.xpPoints += 50
+                1 -> Users.currentUser.xpPoints += 10
+            }
+        }else {
+            when(players.indexOfFirst { it.name == Users.currentUser.pseudonym }) {
+                0 -> Users.currentUser.xpPoints += 75
+                1 -> Users.currentUser.xpPoints += 40
+                2 -> Users.currentUser.xpPoints += 25
+                3 -> Users.currentUser.xpPoints += 10
+            }
         }
+
         statsViewModel.saveXp()
     }
 
