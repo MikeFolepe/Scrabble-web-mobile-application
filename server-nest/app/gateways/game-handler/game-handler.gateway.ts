@@ -8,6 +8,7 @@ import { Player } from '@app/game/models/player.model';
 import { UserService } from '@app/users/user.service';
 import { ChatRoomMessage } from '@common/chatRoomMessage';
 import { DELAY_BEFORE_PLAYING, EASEL_SIZE, INVALID_INDEX, ONE_SECOND_DELAY, THREE_SECONDS_DELAY } from '@common/constants';
+import { bot } from '@common/defaultAvatars';
 import { Friend } from '@common/friend';
 import { GameSettings } from '@common/game-settings';
 import { Notification, NotifType } from '@common/notification';
@@ -36,7 +37,10 @@ export class GameHandlerGateway implements OnGatewayConnection {
         }
         let notifToAdd = new Notification(NotifType.Friend, sender[0].pseudonym, "Cliquez pour être redirigé vers la page d'invitations");
         notifToAdd = await this.userService.addNotification(receiver.pseudonym, notifToAdd)
-        const invitationAdded = await this.userService.addInvitation(receiver.pseudonym, new Friend(sender[0].pseudonym, sender[0].avatar, sender[0].xpPoints))
+        const invitationAdded = await this.userService.addInvitation(
+            receiver.pseudonym,
+            new Friend(sender[0].pseudonym, sender[0].avatar, sender[0].xpPoints),
+        );
         if (activeReceiver !== undefined) {
             socket.to(activeReceiver.socketId).emit('receiveNotification', notifToAdd);
             socket.to(activeReceiver.socketId).emit('receiveFriendRequest', invitationAdded);
@@ -221,13 +225,6 @@ export class GameHandlerGateway implements OnGatewayConnection {
         this.leaveGame(socket, room, index);
     }
 
-    @SubscribeMessage('sendLeaveGame')
-    sendLeaveGame(@ConnectedSocket() socket, @MessageBody() playerName: string, @MessageBody() roomId: string) {
-        const room = this.roomManagerService.find(roomId[1]);
-        const index = room.playerService.players.findIndex((curPlayer) => curPlayer.name === playerName[0]);
-        this.leaveGame(socket, room, index);
-    }
-
     @SubscribeMessage('sendObserverLeave')
     sendObserverLeave(@ConnectedSocket() socket, @MessageBody() roomId: string) {
         const room = this.roomManagerService.find(roomId);
@@ -251,7 +248,8 @@ export class GameHandlerGateway implements OnGatewayConnection {
             new Date().getMinutes().toString().padStart(2, '0') +
             ':' +
             new Date().getSeconds().toString().padStart(2, '0');
-
+        const room = this.roomManagerService.find(roomId[1]);
+        room.roomMessages.push(message);
         this.server.to(roomId[1]).emit('receiveRoomMessage', message[0]);
     }
 
@@ -280,6 +278,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
             }
             room.placeLetter.handleValidPlacement(validationResult, index);
             room.placeLetter.scrabbleBoard = JSON.parse(board[5]);
+            if (word.length === 7) socket.emit('playAudio');
             socket.emit('receiveSuccess');
             socket.to(roomId[6]).emit('receivePlacement', board[5], position[0], orientation[2], word[1]);
             this.server.to(roomId[6]).emit('updatePlayer', room.playerService.players[index]);
@@ -294,6 +293,22 @@ export class GameHandlerGateway implements OnGatewayConnection {
         const currentUser = this.userService.activeUsers.find((curUser) => curUser.pseudonym === user.pseudonym);
         if (currentUser) {
             currentUser.socketId = user.socketId;
+        }
+    }
+
+    @SubscribeMessage('sendLeaveGame')
+    sendLeaveGame(@ConnectedSocket() socket, @MessageBody() playerName: string, @MessageBody() roomId: string) {
+        const room = this.roomManagerService.find(roomId[1]);
+        const index = room.playerService.players.findIndex((curPlayer) => curPlayer.name === playerName[0]);
+        this.leaveGame(socket, room, index);
+    }
+
+    @SubscribeMessage('checkingWord')
+    checkingWord(@ConnectedSocket() socket, @MessageBody() word: string, @MessageBody() roomId: string) {
+        const room = this.roomManagerService.find(roomId[1]);
+        if (room.wordValidation.isWordInDictionary(word[0])) socket.emit('receiveChecking', true);
+        else {
+            socket.emit('receiveChecking', false);
         }
     }
 
@@ -390,6 +405,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
                 false,
                 false,
                 true,
+                bot,
             );
             room.aiPlayersNumber++;
             room.humanPlayersNumber--;
@@ -421,6 +437,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
                     room.playerService.players[indexPlayer].isTurn,
                     false,
                     true,
+                    bot,
                 );
                 room.aiPlayersNumber++;
                 room.humanPlayersNumber--;

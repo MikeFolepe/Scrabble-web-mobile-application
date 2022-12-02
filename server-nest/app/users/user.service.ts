@@ -19,8 +19,6 @@ import { Model } from 'mongoose';
 export class UserService {
     activeUsers: User[];
 
-    // private users: User[] = [];
-
     constructor(
         @InjectModel('User') private readonly userModel: Model<UserDocument>,
         @InjectModel('Friend') private readonly friendModel: Model<FriendDocument>,
@@ -67,8 +65,6 @@ export class UserService {
             email: user.email,
             xpPoints: user.xpPoints,
             friends: user.friends,
-            socketId: '',
-            isObserver: false,
             notifications: user.notifications,
             invitations: user.invitations,
         }));
@@ -81,7 +77,6 @@ export class UserService {
         userToSend._id = user._id;
         userToSend.xpPoints = user.xpPoints;
         userToSend.friends = user.friends;
-        userToSend.socketId = '';
         console.log(userToSend);
         return userToSend;
     }
@@ -98,7 +93,6 @@ export class UserService {
             logouts: statsFromDB.logouts,
             games: statsFromDB.games,
         };
-        console.log(userStats);
         return userStats;
     }
 
@@ -154,7 +148,6 @@ export class UserService {
         });
         console.log(userId);
         const userStat = await this.userStatsModel.findOne({ userId }).exec();
-        console.log(userStat);
         const lastTab = userStat.games;
         lastTab.push(newGame);
 
@@ -184,11 +177,26 @@ export class UserService {
         for (const userId of userIds) {
             console.log(userId);
             const userStats = await this.userStatsModel.findOne({ userId });
-            console.log(userStats);
 
             const newTime = userStats.totalTimeMs + totalTimeMs;
             await this.userStatsModel.updateOne({ userId }, { totalTimeMs: newTime });
         }
+    }
+
+    async updateUser(user: User): Promise<User> {
+        await this.userModel.findByIdAndUpdate({ _id: user._id }, { pseudonym: user.pseudonym, avatar: user.avatar });
+        const userDB = await this.getSingleUser(user.pseudonym);
+        console.log(userDB);
+        console.log('ici');
+        return userDB;
+    }
+
+    async getUserEmail(email: string): Promise<User> {
+        const user = await this.userModel.findOne({ email });
+
+        if (!user) return;
+        const userToSend = new User(user.avatar, user.pseudonym, user.password, user.email);
+        return userToSend;
     }
 
     encryptPassword(password: string): string {
@@ -225,8 +233,8 @@ export class UserService {
             xpPoints: invitation.xpPoints,
         });
         const user = await this.userModel.findOne({ pseudonym });
-        user.invitations.push(newInvitation)
-        await user.save()
+        user.invitations.push(newInvitation);
+        await user.save();
         const invitationAdded = new Friend(newInvitation.pseudonym, newInvitation.avatar, newInvitation.xpPoints);
         invitationAdded._id = newInvitation._id;
         return invitationAdded;

@@ -1,7 +1,5 @@
 package com.example.scrabbleprototype.model
 
-import android.util.Log
-import environments.Environment
 import io.socket.client.IO
 import io.socket.client.Socket
 import java.net.URISyntaxException
@@ -12,11 +10,11 @@ object SocketHandler {
     var roomId: String = ""
 
     @Synchronized
-    fun setPlayerSocket(serverIp: String) {
+    fun setPlayerSocket(serverUrl: String) {
         try {
 // "http://10.0.2.2:3000" --> emulator http://10.0.2.2:3000
 //  physical phone/tablet --> ip address plus :3000
-            socket = IO.socket(Environment.serverUrl)
+            socket = IO.socket(serverUrl)
         } catch (e: URISyntaxException) {
 
         }
@@ -36,4 +34,5 @@ object SocketHandler {
     fun closeConnection() {
         socket.disconnect()
     }
+
 }

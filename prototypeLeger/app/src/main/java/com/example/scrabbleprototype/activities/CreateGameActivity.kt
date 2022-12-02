@@ -10,14 +10,15 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.scrabbleprototype.R
+import com.example.scrabbleprototype.fragments.ChannelButtonsFragment
 import com.example.scrabbleprototype.model.*
-import com.example.scrabbleprototype.model.Dictionary
 import com.example.scrabbleprototype.objects.CurrentRoom
 import com.example.scrabbleprototype.objects.Players
 import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.objects.Users
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import environments.Environment
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
@@ -29,13 +30,11 @@ import kotlinx.coroutines.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONObject
-import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.concurrent.timerTask
 import kotlin.coroutines.CoroutineContext
 
 
 class CreateGameActivity : AppCompatActivity(), CoroutineScope {
+    private var serverUrl = Environment.serverUrl
     private var job: Job = Job()
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main + job
@@ -44,9 +43,9 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
         super.onDestroy()
         job.cancel()
     }
-    var dicoFileName= ""
     var currentRoom = CurrentRoom;
-    var gameSetting: GameSettings = GameSettings(Users.currentUser.pseudonym, StartingPlayer.Player1, "00", "00", AiType.beginner, "", RoomType.public.ordinal)
+    var gameSetting: GameSettings = GameSettings(Users.currentUser.pseudonym, StartingPlayer.Player1, "00", "00",
+                                    AiType.beginner, "", RoomType.public.ordinal, NumberOfPlayer.OneVthree)
     val minutes = arrayListOf("00", "01", "02", "03")
     val seconds = arrayListOf("00", "30")
     var dictionaries = listOf<Dictionary>()
@@ -59,7 +58,7 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
     override fun onCreate(savedInstanceState: Bundle?) {
         ThemeManager.setActivityTheme(this)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_create_game_2)
+        setContentView(R.layout.activity_create_game)
 
         client = HttpClient() {
             install(ContentNegotiation) {
@@ -67,10 +66,13 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
             }
         }
         receiveMyPlayer()
-        setUpButtons()
+        setupButtons()
         currRoom()
         receiveAis()
         launch { setupSpinners() }
+        if(savedInstanceState == null) {
+            setupFragments()
+        }
     }
 
     suspend fun setupSpinners() {
@@ -105,13 +107,20 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
     suspend fun getDictionaries(): HttpResponse? {
         var response: HttpResponse?
         try {
-            response = client.get(Users.currentUser.ipAddress + "/api/admin/dictionaries") {
+            response = client.get("$serverUrl/api/admin/dictionaries") {
                 contentType(ContentType.Application.Json)
             }
         } catch (err: Exception) {
            response = null
         }
         return response
+    }
+
+    private fun setupFragments() {
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
+        fragmentTransaction.add(R.id.create_game_chatroom_buttons, ChannelButtonsFragment())
+        fragmentTransaction.addToBackStack(null)
+        fragmentTransaction.commit()
     }
 
     private fun handleMinutesSelection(minutesSpinner: Spinner) {
@@ -167,7 +176,7 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
         }
     }
 
-    private fun setUpButtons() {
+    private fun setupButtons() {
         val continueGameButton = findViewById<Button>(R.id.continue_button)
         continueGameButton.setOnClickListener {
             createGame(this.gameSetting)

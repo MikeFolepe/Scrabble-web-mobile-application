@@ -1,21 +1,24 @@
+import { OUT_BOUND_INDEX_OF_SOCKET } from '@app/classes/constants';
 import { ServerRoom, State } from '@app/classes/server-room';
 import { Player } from '@app/game/models/player.model';
+import { UserService } from '@app/users/user.service';
 import { MAX_LENGTH_OBSERVERS } from '@common/constants';
-import { GameSettings } from '@common/game-settings';
+import { GameSettings, NumberOfPlayer } from '@common/game-settings';
 import { Room } from '@common/room';
 import { User } from '@common/user';
 import { Injectable } from '@nestjs/common';
-import { OUT_BOUND_INDEX_OF_SOCKET } from '../../../classes/constants';
 @Injectable()
 export class RoomManagerService {
     rooms: ServerRoom[];
 
-    constructor() {
+    constructor(private userService: UserService) {
         this.rooms = [];
     }
 
     createRoom(socketId: string, roomId: string, gameSettings: GameSettings): ServerRoom {
         const newRoom = new ServerRoom(roomId, socketId, gameSettings);
+        const user = this.userService.activeUsers.find((curUser) => curUser.pseudonym === gameSettings.creatorName);
+        newRoom.playerService.players[0].avatar = user.avatar;
         this.rooms.push(newRoom);
         return newRoom;
     }
@@ -36,12 +39,16 @@ export class RoomManagerService {
     addCustomer(customerName: string, roomId: string): boolean {
         const room = this.find(roomId);
         if (room === undefined) return false;
+        if (room.gameSettings.gameType === NumberOfPlayer.OneVone && room.humanPlayersNumber === 2) return false;
         if (room.humanPlayersNumber === 4) return false;
         if (room.aiPlayersNumber !== 0) {
             // eslint-disable-next-line @typescript-eslint/prefer-for-of
             for (let i = 0; i < room.playerService.players.length; i++) {
                 if (room.playerService.players[i].isAi) {
+                    const user = this.userService.activeUsers.find((curUser) => curUser.pseudonym === customerName);
                     const humanPlayer = new Player(customerName, room.playerService.players[i].letterTable);
+                    console.log(user);
+                    humanPlayer.avatar = user.avatar;
                     room.playerService.players[i] = humanPlayer;
                     room.aiPlayersNumber--;
                     room.humanPlayersNumber++;
@@ -177,13 +184,31 @@ export class RoomManagerService {
         const roomsToSend: Room[] = [];
         for (const room of this.rooms) {
             roomsToSend.push(
-                new Room(room.id, room.gameSettings, room.state, room.socketIds, room.aiPlayersNumber, room.humanPlayersNumber, room.observers),
+                new Room(
+                    room.id,
+                    room.gameSettings,
+                    room.state,
+                    room.socketIds,
+                    room.aiPlayersNumber,
+                    room.humanPlayersNumber,
+                    room.observers,
+                    room.roomMessages,
+                ),
             );
         }
         return roomsToSend;
     }
 
     getRoomToSend(room: ServerRoom): Room {
-        return new Room(room.id, room.gameSettings, room.state, room.socketIds, room.aiPlayersNumber, room.humanPlayersNumber, room.observers);
+        return new Room(
+            room.id,
+            room.gameSettings,
+            room.state,
+            room.socketIds,
+            room.aiPlayersNumber,
+            room.humanPlayersNumber,
+            room.observers,
+            room.roomMessages,
+        );
     }
 }

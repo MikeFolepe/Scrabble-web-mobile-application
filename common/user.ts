@@ -22,6 +22,7 @@ export class User {
         this.password = password;
         this.email = email;
         this.isObserver = false;
+        this.socketId = '';
         this.xpPoints = 0;
         this.friends = [];
         this.notifications = [];

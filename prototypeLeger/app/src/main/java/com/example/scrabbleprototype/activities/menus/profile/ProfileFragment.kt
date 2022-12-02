@@ -48,7 +48,7 @@ import kotlin.coroutines.CoroutineContext
 
 class ProfileFragment : Fragment(), CoroutineScope {
 
-    private val user = Users.currentUser
+    private val user = Users
     private lateinit var addFriendDialog: Dialog
     private var users = arrayListOf<User>()
     private lateinit var userAdapter: UserAdapter
@@ -67,8 +67,8 @@ class ProfileFragment : Fragment(), CoroutineScope {
         super.onCreate(savedInstanceState)
 
         for(i in 0 until 12) {
-            user.friends.add(Friend("ami #" + i, (R.color.blue).toString(), 250 + i))
-            user.invitations.add(Friend("", "", 11))
+            user.currentUser.friends.add(Friend("ami #" + i, (R.color.blue).toString(), 250 + i))
+            user.currentUser.invitations.add(Friend("", "", 11))
         }
     }
 
@@ -93,21 +93,22 @@ class ProfileFragment : Fragment(), CoroutineScope {
     }
 
     private fun setupUserInfo() {
-        binding.userPseudonym.text = user.pseudonym
-        binding.userXp.text = getString(R.string.user_xp, user.xpPoints)
+        binding.userPseudonym.text = user.currentUser.pseudonym
+        binding.userXp.text = getString(R.string.user_xp, user.currentUser.xpPoints)
+        binding.userAvatar.setImageBitmap(user.avatarBmp)
     }
 
     private fun setupFriendsList() {
         val friendsListView = binding.friendsList
         friendsListView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        val friendsListAdapter = FriendsListAdapter(user.friends)
+        val friendsListAdapter = FriendsListAdapter(user.currentUser.friends)
         friendsListView.adapter = friendsListAdapter
     }
 
     private fun setupInvitations() {
         val invitationsView = binding.invitationsList
         invitationsView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        invitationAdapter = FriendInvitationAdapter(user.invitations)
+        invitationAdapter = FriendInvitationAdapter(user.currentUser.invitations)
         invitationsView.adapter = invitationAdapter
     }
 
@@ -138,8 +139,8 @@ class ProfileFragment : Fragment(), CoroutineScope {
         SocketHandler.socket.on("receiveFriendRequest") { response ->
             Log.d("receive request", "RECEIVED")
             val sender = jacksonObjectMapper().readValue(response[0].toString(), Friend::class.java)
-            user.invitations.add(sender)
-            activity?.runOnUiThread { invitationAdapter.updateData(user.invitations) }
+            user.currentUser.invitations.add(sender)
+            activity?.runOnUiThread { invitationAdapter.updateData(user.currentUser.invitations) }
         }
     }
 

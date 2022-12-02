@@ -125,9 +125,8 @@ export class PlaceLetterService implements OnDestroy {
             }
             if (!this.placeLetter(currentPosition, wordNoAccents[i], orientation, i, true)) {
                 // If the placement of one letter is invalid, we erase all letters placed
-                console.log('invalide placement en placant');
                 this.handleInvalidPlacement(position, orientation, wordNoAccents);
-                // this.sendMessageService.displayMessageByType('ERREUR : Le placement est invalide', MessageType.Error);
+                this.sendMessageService.displayMessageByType('ERREUR : Le placement est invalide', MessageType.Error);
                 return;
             }
             this.placementsService.goToNextPosition(currentPosition, orientation);
@@ -145,7 +144,6 @@ export class PlaceLetterService implements OnDestroy {
         if (this.numLettersUsedFromEasel === EASEL_SIZE) this.isEaselSize = true;
         // Placing the first word
         if (this.playerService.isFirstPlacement) {
-            console.log('firssssst');
             if (this.placementsService.isFirstWordValid(position, orientation, word)) {
                 this.clientSocketService.socket.emit(
                     'validatePlacement',
@@ -213,13 +211,9 @@ export class PlaceLetterService implements OnDestroy {
 
     handleValidPlacement(): void {
         this.displayValid();
-        // this.playerService.addScore(finalResult.score, indexPlayer);
-        // this.playerService.updateScrabbleBoard(this.scrabbleBoard);
-        // this.playerService.refillEasel(indexPlayer);
         this.isFirstRound = false;
         this.playerService.letterForDrag = [];
         this.dragWord = [];
-        // this.sendMessageService.displayMessageByType('ERREUR : Le placement est invalide', MessageType.Error);
         return;
     }
 

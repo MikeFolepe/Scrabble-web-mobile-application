@@ -77,6 +77,7 @@ export class GameViewComponent {
             if (!decision) return;
             // if decision is true the EndGame occurred
             console.log('here', this.authService.currentUser.pseudonym);
+            this.skipTurnService.switchTurn();
             this.clientSocketService.socket.emit('sendGiveUp', this.authService.currentUser.pseudonym, this.clientSocketService.currentRoom.id);
         });
     }

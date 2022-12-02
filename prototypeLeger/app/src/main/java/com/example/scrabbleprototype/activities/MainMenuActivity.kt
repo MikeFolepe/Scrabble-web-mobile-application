@@ -1,32 +1,24 @@
 package com.example.scrabbleprototype.activities
 
 import android.content.Context
-import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.AttributeSet
-import android.util.Log
 import android.view.*
-import android.widget.Button
-import android.widget.FrameLayout
 import android.widget.PopupWindow
 import android.widget.Toast
-import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.navigation.NavigationView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import androidx.drawerlayout.widget.DrawerLayout
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isVisible
-import androidx.navigation.NavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.databinding.ActivityMainMenuBinding
+import com.example.scrabbleprototype.fragments.ChannelButtonsFragment
 import com.example.scrabbleprototype.model.NotifType
 import com.example.scrabbleprototype.model.Notification
 import com.example.scrabbleprototype.model.NotificationAdapter
@@ -34,6 +26,7 @@ import com.example.scrabbleprototype.model.SocketHandler
 import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.objects.Users
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.google.android.material.navigation.NavigationView
 
 class MainMenuActivity : AppCompatActivity() {
 
@@ -53,6 +46,17 @@ class MainMenuActivity : AppCompatActivity() {
         setupDrawer()
         setupNotifications()
         receiveNotification()
+
+        if(savedInstanceState == null) {
+            setupFragments()
+        }
+    }
+
+    private fun setupFragments() {
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
+        fragmentTransaction.add(R.id.channel_buttons, ChannelButtonsFragment())
+        fragmentTransaction.addToBackStack(null)
+        fragmentTransaction.commit()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import { Document } from 'mongoose';
 import { Friend } from './friend.schema';
-import { Notification } from './notification-schema'
+import { Notification } from './notification-schema';
 
 export type UserDocument = User & Document;
 
@@ -34,11 +34,11 @@ export class User {
 
     @ApiProperty()
     @Prop({ required: true, default: [] })
-    notifications: [Notification]
+    notifications: [Notification];
 
     @ApiProperty()
-    @Prop({ required: true, default: []})
-    invitations: [Friend]
+    @Prop({ required: true, default: [] })
+    invitations: [Friend];
 }
 
 export const USER_SCHEMA = SchemaFactory.createForClass(User);

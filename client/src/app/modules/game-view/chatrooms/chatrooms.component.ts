@@ -6,7 +6,7 @@ import { ChatRoomService } from '@app/services/chat-room.service';
 import { ClientSocketService } from '@app/services/client-socket.service';
 
 @Component({
-    selector: 'app-chatrooms', 
+    selector: 'app-chatrooms',
     templateUrl: './chatrooms.component.html',
     styleUrls: ['./chatrooms.component.scss'],
 })
@@ -22,7 +22,6 @@ export class ChatroomsComponent implements OnInit {
         private clientSocketService: ClientSocketService,
         private authService: AuthService,
     ) {
-        // this.chatRoomService.getChatRooms();
         this.currentMessage = '';
         this.scrollToBottom();
         this.isOpen = false;
@@ -69,7 +68,6 @@ export class ChatroomsComponent implements OnInit {
     }
 
     handleKeyEvent(event: KeyboardEvent) {
-        
         if (this.currentMessage && event.key === 'Enter') {
             event.preventDefault();
             this.sendMessage();

@@ -18,7 +18,7 @@ import { UserService } from './user.service';
             { name: 'UserStats', schema: USER_STATS_SCHEMA },
             { name: 'Connection', schema: CONNECTION_SCHEMA },
             { name: 'Game', schema: GAME_SCHEMA },
-            { name: 'Notification', schema: NOTIFICATION_SCHEMA},
+            { name: 'Notification', schema: NOTIFICATION_SCHEMA },
         ]),
         PreferenceModule,
     ],

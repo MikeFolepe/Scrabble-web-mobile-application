@@ -37,10 +37,10 @@
             android:background="@drawable/white_background">
 
             <ImageView
+                android:id="@+id/user_avatar"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:layout_marginTop="20dp"
-                android:src="@color/light_blue"/>
+                android:layout_marginTop="20dp"/>
             <TextView
                 android:id="@+id/user_pseudonym"
                 android:layout_width="wrap_content"

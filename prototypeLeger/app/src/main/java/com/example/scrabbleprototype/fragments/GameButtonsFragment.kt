@@ -101,11 +101,11 @@ class GameButtonsFragment : Fragment(), EndTurnCallback {
 
     override fun onStop() {
         super.onStop()
-        activityContext.unbindService(connection)
         skipTurnBound = false
         placeBound = false
         swapBound = false
         skipTurnService.setEndTurnCallback(null)
+        activityContext.unbindService(connection)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -151,7 +151,10 @@ class GameButtonsFragment : Fragment(), EndTurnCallback {
                 .setCancelable(false)
                 .setPositiveButton("Confirmer") { dialog, id ->
                     if(Users.currentUser.isObserver) socket.emit("sendObserverLeave", CurrentRoom.myRoom.id)
-                    else socket.emit("sendGiveUp", Users.currentUser.pseudonym, CurrentRoom.myRoom.id)
+                    else {
+                        skipTurnService.switchTimer()
+                        socket.emit("sendGiveUp", Users.currentUser.pseudonym, CurrentRoom.myRoom.id)
+                    }
                     dialog.dismiss()
                 }
                 .setNegativeButton("Annuler") { dialog, id ->

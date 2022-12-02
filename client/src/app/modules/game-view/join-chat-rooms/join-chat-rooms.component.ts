@@ -40,13 +40,11 @@ export class JoinChatRoomsComponent {
     }
 
     deleteChatRoom(index: number) {
-
         this.chatRoomService.chatRooms.splice(index, 1);
         this.clientSocketService.socket.emit('deleteChatRoom', index);
     }
 
     alreadyInRoom(chatRoom: ChatRoom): boolean {
-
         if (this.chatRoomService.chatRooms[0].chatRoomName === chatRoom.chatRoomName) {
             return true;
         }

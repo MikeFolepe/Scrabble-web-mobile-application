@@ -1,134 +1,137 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="?attr/backgroundColor"
-    tools:context=".activities.WaitingRoomActivity">
+    android:layout_height="match_parent">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" >
+        android:layout_height="match_parent"
+        android:background="?attr/backgroundColor"
+        tools:context=".activities.WaitingRoomActivity">
 
-        <TextView
-            android:layout_width="wrap_content"
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Jeu du Scrabble - Équipe 107"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             android:textColor="?android:textColor"
             android:textSize="30sp"
-            android:layout_gravity="center"
-            android:id="@+id/toolbar_title" />
+            android:layout_gravity="center" >
 
-    </androidx.appcompat.widget.Toolbar>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Jeu du Scrabble - Équipe 107"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/toolbar"
+                android:textColor="?android:textColor"
+                android:textSize="40sp"
+                android:layout_gravity="center" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:textColor="?android:textColor"
-        android:textSize="30sp"
-        android:layout_margin="20dp"
-        android:id="@+id/roomId" />
+        </androidx.appcompat.widget.Toolbar>
 
-    <LinearLayout
-        android:id="@+id/players_waiting_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginTop="15dp"
-        app:layout_constraintTop_toBottomOf="@+id/roomId">
+        <LinearLayout
+            android:id="@+id/players_waiting_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="15dp"
+            app:layout_constraintTop_toBottomOf="@+id/toolbar">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/players_waiting_list"
+                android:textSize="24sp"
+                android:textColor="?android:textColor"
+                android:layout_marginStart="20dp"/>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/players_waiting"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                app:layout_constraintTop_toBottomOf="@+id/roomId"
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="30dp"
+                android:padding="10dp"
+                android:background="@drawable/black_border"
+                android:layout_marginTop="15dp">
+            </androidx.recyclerview.widget.RecyclerView>
+        </LinearLayout>
 
         <TextView
+            android:id="@+id/leave_notification"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/players_waiting_list"
-            android:textSize="20sp"
-            android:textColor="?android:textColor"
-            android:layout_marginStart="20dp"/>
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/players_waiting"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            app:layout_constraintTop_toBottomOf="@+id/roomId"
-            android:layout_marginStart="30dp"
-            android:layout_marginEnd="30dp"
-            android:padding="10dp"
-            android:background="@drawable/black_border"
-            android:layout_marginTop="15dp">
-        </androidx.recyclerview.widget.RecyclerView>
-    </LinearLayout>
+            android:layout_marginTop="10dp"
+            app:layout_constraintTop_toBottomOf="@id/players_waiting_container"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:textSize="18sp"
+            android:textColor="?android:textColor" />
 
-    <TextView
-        android:id="@+id/leave_notification"
+        <ProgressBar
+            android:id="@+id/progress_Bar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/leave_notification"
+            android:layout_marginTop="15dp"
+            android:indeterminate = "true"
+            android:max="100"
+            android:layout_centerInParent="true"
+            android:progress="0"
+            android:indeterminateTintMode="src_atop"
+            android:indeterminateTint="?attr/progressBarStyle"/>
+
+        <LinearLayout
+            android:id="@+id/buttons_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/progress_Bar">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/start_game_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/startGame"
+                android:background="@drawable/teal_shadow_button"
+                android:textColor="?android:textColorSecondary"
+                android:textSize="24sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/back_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/teal_shadow_button"
+                android:textColor="@color/white"
+                android:textSize="24sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <FrameLayout
+        android:id="@+id/waiting_room_chatroom_buttons"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        app:layout_constraintTop_toBottomOf="@id/players_waiting_container"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:textSize="18sp"
-        android:textColor="?android:textColor" />
-
-    <ProgressBar
-        android:id="@+id/progress_Bar"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="170dp"
-        android:layout_height="170dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/leave_notification"
-        android:layout_marginTop="15dp"
-        android:indeterminate = "true"
-        android:max="100"
-        android:layout_centerInParent="true"
-        android:progress="0"
-        android:indeterminateTintMode="src_atop"
-        android:indeterminateTint="?attr/progressBarStyle"/>
-
-    <LinearLayout
-        android:id="@+id/buttons_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:gravity="center"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/progress_Bar">
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/start_game_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/startGame"
-            android:background="@drawable/teal_shadow_button"
-            android:textColor="?android:textColorSecondary"
-            android:textSize="20sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/back_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/teal_shadow_button"
-            android:textColor="@color/white"
-            android:textSize="20sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
-
-    </LinearLayout>
-
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"/>
+</RelativeLayout>
