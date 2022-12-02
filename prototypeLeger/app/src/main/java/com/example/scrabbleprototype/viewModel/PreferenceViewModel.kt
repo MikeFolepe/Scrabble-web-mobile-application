@@ -12,6 +12,7 @@ import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.model.Item
 import com.example.scrabbleprototype.model.Language
 import com.example.scrabbleprototype.model.User
+import com.example.scrabbleprototype.objects.MyLanguage
 import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.objects.Themes
 import com.example.scrabbleprototype.objects.Users
@@ -143,6 +144,7 @@ class PreferenceViewModel: ViewModel() {
         if(response != null) {
             Log.d("getLanguage", response.body())
             Users.userPreferences.language = Language.values()[response.body<String>().toInt()]
+            MyLanguage.currentLanguage = Users.userPreferences.language
         }
     }
 

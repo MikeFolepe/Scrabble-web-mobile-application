@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ScrabblePrototype</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
+    <string name="mobile_server_ip">10.0.2.2:3000</string>
+    <string name="http">http://</string>
+    <string name="play_button">Play</string>
+    <string name="skip_turn_button">Skip turn</string>
+    <string name="give_up_button">Give up</string>
+    <string name="chatbox_hint">Enter your message here</string>
+    <string name="info_pannel">Info pannel</string>
+    <string name="swap_button">Swap</string>
+    <string name="cancel_button">Cancel</string>
+    <string name="create_game_button">Create a multiplayer game</string>
+    <string name="join_game_button">Join a multiplayer game</string>
+
+    // Create game form
+    <string name="game_settings">Game settings</string>
+    <string name="player_info">Player information</string>
+    <string name="duration">Duration</string>
+    <string name="dictionary">Dictionary</string>
+    <string name="party_type">Game type</string>
+    <string name="minute">Minute(s)</string>
+    <string name="seconde">Second(s)</string>
+    <string name="everyone">Public</string>
+    <string name="restricted">Private</string>
+    <string name="back">Back</string>
+    <string name="Continue">Continue</string>
+
+    //Game view
+    <string name="timer_display">Turn time left : </string>
+    <string name="reserve_letters">Letters in the reserve : </string>
+    <string name="player_name">Name : </string>
+    <string name="player_score">Score : </string>
+    <string name="active_player">Active player</string>
+    <string name="timer_init">00:00</string>
+    <string name="timer_format">%1$s:%2$s</string>
+    <string name="replaceAi">Replace</string>
+    <string name="placements_list">Best placements list</string>
+    <string name="dictionary_verification">Verify word in dictionary</string>
+    <string name="dictionary_verif_hint">Enter a word</string>
+    <string name="dictionary_cost">20 XP</string>
+    <string name="placements_list_cost">Buy for 75 XP</string>
+    <string name="dictionary_verif_left">You have %1d utilisation(s) left</string>
+    <string name="possible_word_points">%1d Points</string>
+    <string name="possible_words_title">Best placements list</string>
+    <string name="possible_word_orientation">Orientation : 1%s</string>
+    <string name="horizontal">horizontally</string>
+    <string name="vertical">vertically</string>
+
+    <string name="endgame_dialog_title">End of game</string>
+    <string name="leave_endgame">Leave</string>
+
+    //Waiting room
+    <string name="startGame">Start</string>
+    <string name="players_waiting_list">Player list</string>
+    <string name="title_activity_hamburger">hamburgerActivity</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+    <string name="join_game_item">Join</string>
+
+    //Main menu
+    <string name="welcome">Welcome!</string>
+    <string name="user_xp">XP : %1d</string>
+    <string name="logout">Logout</string>
+    <string name="notif_sender">From : %s</string>
+
+    //Hamburger Main menu
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+    <string name="main_menu">Main menu</string>
+    <string name="user_profile">User profile</string>
+    <string name="profile">Profile</string>
+    <string name="settings">Settings and customization</string>
+    <string name="stats">Statistics and history</string>
+    <string name="friend_list">Friends list</string>
+    <string name="store">Store</string>
+    <string name="friend_store_title">Others</string>
+    <string name="title_activity_main_menu">MainMenuActivity</string>
+
+    //Profile fragment
+    <string name="send_friend_invitation">Send a friend request</string>
+    <string name="add_friend">Add a friend</string>
+    <string name="active_users_title">Active players list</string>
+    <string name="invitations_list">Friend requests</string>
+    <string name="invitation_from">From : </string>
+
+    //Settings fragment
+    <string name="parameters">Settings</string>
+    <string name="pseudonym">Pseudonym</string>
+    <string name="avatar">Avatar</string>
+    <string name="email">Email</string>
+    <string name="connections_list">Logins and logouts list</string>
+    <string name="connections">Logins</string>
+    <string name="disconnections">Logouts</string>
+    <string name="edit_avatar_btn">Modify your avatar</string>
+    <string name="password">Password</string>
+    <string name="save_edits">Save changes</string>
+
+    <string name="personalization">Application customization</string>
+    <string name="app_theme">Application themes</string>
+    <string name="board_theme">Board themes</string>
+    <string name="chat_theme">Chatbox themes</string>
+    <string name="language">Language</string>
+
+    //Stats and history fragment
+    <string name="statistics">Statistics</string>
+    <string name="connections_history">Logins history</string>
+    <string name="games_history">Games played history</string>
+    <string name="games_played">Games played</string>
+    <string name="games_won">Games won</string>
+    <string name="average_points_per_game">Average points per game</string>
+    <string name="average_time_per_game">Average time per game</string>
+    <string name="connection_item">Login on </string>
+    <string name="logout_item">Logout on </string>
+    <string name="connection_time_title"> at </string>
+    <string name="game_history_item">Game played on </string>
+    <string name="game_victory">Victory</string>
+    <string name="game_defeat">Defeat</string>
+
+    //Items store fragment
+    <string name="store_title">Themes store</string>
+    <string name="purchase_btn">Buy for %1d XP</string>
+
+
+    //Items Dialog
+    <string name="themes_dialog_title">Choose a theme of %1s</string>
+
+    //Chat rooms
+    <string name="join_chatroom">Join</string>
+    <string name="delete_chatroom">Delete</string>
+    <string name="available_chatrooms">Available channels</string>
+    <string name="Leave">Leave</string>
+    <string name="change_chatRoom">Swap</string>
+    <string name="my_chatRooms">Channels that you are part of</string>
+    <string name="chatroom_creation">Channel creation</string>
+    <string name="chatroom_name">Channel name</string>
+
+</resources>
+

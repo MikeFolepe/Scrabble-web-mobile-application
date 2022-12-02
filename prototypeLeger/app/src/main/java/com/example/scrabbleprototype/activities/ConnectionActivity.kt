@@ -8,8 +8,10 @@ import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.style.UnderlineSpan
+import android.util.AttributeSet
 import android.util.Base64
 import android.view.MotionEvent
+import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.activity.viewModels
@@ -46,6 +48,7 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
     lateinit var client: HttpClient
     lateinit var socket: Socket
     private val mapper = jacksonObjectMapper()
+    private lateinit var progressBar: ProgressBar
 
     private val preferenceViewModel: PreferenceViewModel by viewModels()
     private val statsViewModel: StatsViewmodel by viewModels()
@@ -226,10 +229,15 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
         }
         statsViewModel.addLogin()
         preferenceViewModel.getPreferences()
+        progressBar = findViewById(R.id.connection_progress)
+        progressBar.visibility = View.VISIBLE
         //LOAD while we do requests
         Timer().schedule(timerTask {
+            runOnUiThread {
+                progressBar.visibility = View.GONE
+            }
             startActivity(intent)
-        }, 250)
+        }, 750)
     }
 
     fun createAccount() {

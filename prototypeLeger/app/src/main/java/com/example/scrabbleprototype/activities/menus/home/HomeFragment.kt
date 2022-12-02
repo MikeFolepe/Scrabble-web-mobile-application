@@ -60,8 +60,5 @@ class HomeFragment : Fragment() {
         binding.joinGamesButton.setOnClickListener {
             startActivity(Intent(activity, JoinGameActivity::class.java))
         }
-        binding.gameViewButton.setOnClickListener {
-            startActivity(Intent(activity, GameActivity::class.java))
-        }
     }
 }

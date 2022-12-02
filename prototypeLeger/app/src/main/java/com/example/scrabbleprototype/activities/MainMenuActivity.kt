@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.PopupWindow
 import android.widget.Toast
@@ -26,11 +27,13 @@ import com.example.scrabbleprototype.fragments.ChannelButtonsFragment
 import com.example.scrabbleprototype.model.Notification
 import com.example.scrabbleprototype.model.NotificationAdapter
 import com.example.scrabbleprototype.model.SocketHandler
+import com.example.scrabbleprototype.objects.MyLanguage
 import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.objects.Users
 import com.example.scrabbleprototype.viewModel.InvitationViewModel
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.google.android.material.navigation.NavigationView
+import java.util.*
 
 class MainMenuActivity : AppCompatActivity() {
 
@@ -42,6 +45,16 @@ class MainMenuActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         ThemeManager.setActivityTheme(this)
+        val config = resources.configuration
+        val lang = MyLanguage.getLanguage()
+        Log.d("lang", lang)
+        val locale = Locale(lang)
+        Locale.setDefault(locale)
+        config.setLocale(locale)
+        createConfigurationContext(config)
+        resources.updateConfiguration(config, resources.displayMetrics)
+        //this.applicationContext.resources.updateConfiguration(config, null)
+
         super.onCreate(savedInstanceState)
 
         invitationViewModel.updateNotifications()
