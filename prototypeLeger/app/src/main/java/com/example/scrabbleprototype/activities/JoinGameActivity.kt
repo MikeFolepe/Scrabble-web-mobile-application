@@ -1,6 +1,8 @@
 package com.example.scrabbleprototype.activities
 
+import android.app.ActivityManager
 import android.app.Dialog
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -24,6 +26,7 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONObject
+
 
 class JoinGameActivity : AppCompatActivity() {
 
@@ -111,7 +114,6 @@ class JoinGameActivity : AppCompatActivity() {
 
 
     private fun joinGame(position: Int, isObserver: Boolean) {
-        Log.d("room", rooms.toString())
         val currentRoom = rooms[position]
         if(currentRoom.gameSettings.type == RoomType.private.ordinal) {
             socket.emit("sendRequestToCreator", Users.currentUser.pseudonym, currentRoom.id)
@@ -154,7 +156,7 @@ class JoinGameActivity : AppCompatActivity() {
     }
 
     private fun receiveRooms(gameListAdapter: GameListAdapter) {
-        socket.on("roomConfiguration"){ response ->
+        socket.once("roomConfiguration"){ response ->
             rooms = mapper.readValue(response[0].toString(), object: TypeReference<ArrayList<Room>>() {})
             runOnUiThread {
                 gameListAdapter.updateData(rooms)
@@ -170,7 +172,7 @@ class JoinGameActivity : AppCompatActivity() {
     }
 
     private fun receivePlayers() {
-        socket.on("roomPlayers") { response ->
+        socket.once("roomPlayers") { response ->
             Log.d("roomPlayers", "join")
             Players.players = mapper.readValue(response[0].toString(), object: TypeReference<ArrayList<Player>>() {})
         }
@@ -178,7 +180,7 @@ class JoinGameActivity : AppCompatActivity() {
 
 
     private fun receiveJoinDecision() {
-        socket.on("receiveJoinDecision") { response ->
+        socket.once("receiveJoinDecision") { response ->
 
             val decision = mapper.readValue(response[0].toString(), Boolean::class.java)
             val roomId = response[1].toString()
@@ -211,7 +213,8 @@ class JoinGameActivity : AppCompatActivity() {
     }
 
     private fun routeToWaitingRoom() {
-        socket.on("goToWaiting") {
+        socket.once("goToWaiting") {
+            Log.d("routetowaiting", "going")
             startActivity(Intent(this, WaitingRoomActivity::class.java))
         }
     }
