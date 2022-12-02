@@ -145,7 +145,7 @@
     <string name="my_chatRooms">Liste des canaux dont vous faites partie</string>
     <string name="chatroom_creation">Création de canal de discussion</string>
     <string name="chatroom_name">Nom du canal de discussion</string>
-    <string name="searchHint">Veuillez entrer le nom du canal recherché</string>
+    <string name="searchHint">Veuillez entrer le nom du canal</string>
     <string name="searchTitle">nom du canal de discussion</string>
 
 </resources>
