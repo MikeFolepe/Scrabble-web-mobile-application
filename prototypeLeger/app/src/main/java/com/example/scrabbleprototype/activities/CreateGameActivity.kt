@@ -227,10 +227,6 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
     }
 
     private fun createGame (gameSetting: GameSettings) {
-        socket.on("yourRoomId") { response ->
-            val roomReceived = Room(response[0].toString(), arrayListOf(socket.id()), gameSetting, State.Waiting, 3 , 1, arrayListOf())
-            currentRoom.myRoom = roomReceived;
-        }
         //gameSetting.dictionary = dictionaries.find { it.title == dicoFileName }!!.fileName
         gameSetting.dictionary = dictionaries[0].fileName
         Log.d("game" , gameSetting.password)

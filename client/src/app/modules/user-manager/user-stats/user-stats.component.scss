@@ -1,0 +1,169 @@
+#title {
+    margin-top: 50px;
+    color: black;
+    margin-left: 50px;
+    margin-right: 0;
+}
+
+h1 {
+    margin-top: 20px;
+    color: black;
+    margin-left: 50px;
+    margin-right: 0;
+}
+
+hr {
+    color: black;
+    width: 95%;
+    height: 2px;
+    border: none;
+    background-color: black;
+    align-items: center;
+    justify-content: center;
+}
+
+.userCard {
+    display: flex;
+    flex-direction: column;
+    row-gap: 20px;
+    align-items: center;
+    justify-content: center;
+    margin-top: 40px;
+    width: 15%;
+    height: 200px;
+
+    left: 42%;
+}
+
+#avatar {
+    width: 70%;
+    height: 80%;
+}
+
+.alert {
+    width: 28em;
+    margin: 0 auto;
+    margin-top: 15em;
+    text-align: center;
+    padding-top: 1em;
+    border: 3px solid red;
+    border-radius: 1rem;
+    background-color: white;
+    padding: 0.25em;
+    font-size: 16px;
+    color: #bb0909fd;
+    box-shadow: 0 5px 10px -5px rgba(0, 0, 0, 0.5);
+}
+
+.avatar {
+    height: 50px;
+    width: 50px;
+    border-radius: 100%;
+    margin-right: 5px;
+    margin-bottom: 10px;
+}
+
+#statValue {
+    background-color: white;
+    border-radius: 6px;
+    padding: 6px;
+    width: fit-content;
+    height: fit-content;
+    margin-left: 20px;
+}
+
+.stats {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    margin-top: 30px;
+    font-size: large;
+    gap: 70px;
+}
+
+.stats1 {
+    top: auto;
+    left: 50px;
+    margin-top: 10px;
+    gap: 20px;
+}
+
+.logins {
+    top: auto;
+    left: 50px;
+    margin-top: 10px;
+    gap: 20px;
+    font-size: large;
+
+
+}
+
+.logins p {
+    display: inline-block;
+    margin-right: 60px;
+}
+
+
+.logouts {
+    top: auto;
+    left: 50px;
+    margin-top: 10px;
+    gap: 20px;
+    font-size: large;
+
+
+}
+
+.logouts p {
+    display: inline-block;
+    margin-right: 60px;
+
+}
+
+.stats p {
+    margin-bottom: 30px;
+}
+
+.stats2 {
+    top: auto;
+    margin-top: 10px;
+    align-items: center;
+    justify-content: center;
+}
+
+.log-connexion {
+    display: flex;
+    column-gap: 100px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+}
+
+.connexion,
+.deconnexion {
+    background-color: white;
+    border-radius: 6px;
+    width: 35%;
+    height: 300px;
+    overflow: auto;
+}
+
+#log-label {
+    width: 40%;
+    margin-bottom: 10px;
+    font-size: large;
+}
+
+.line-break {
+    width: 100%;
+}
+
+.history {
+    background-color: white;
+    border-radius: 6px;
+    width: 45%;
+    height: 250px;
+    margin: auto;
+    overflow: auto;
+}

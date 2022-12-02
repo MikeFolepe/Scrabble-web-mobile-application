@@ -1,25 +1,35 @@
 #paginator {
     margin-top: 2em;
     margin-bottom: 2em;
-    width: 110%;
+    width: 400px;
     margin-left: auto;
     margin-right: auto;
     text-align: center;
     background-color: #00804d;
     color: white;
-
 }
 
 #progress-bar-box {
     margin-top: 5em;
+    width: 500px;
+    height: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 10%;
+    flex-direction: column;
+    margin: 0 auto;
+}
+
+#progress-bar-box mat-card {
     width: 100%;
     height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    top: 10%;
     background-color: #00804d;
     flex-direction: column;
+    margin: 0 auto;
 }
 
 #progress-bar-box p {
@@ -43,7 +53,7 @@
 }
 
 .card {
-    width: 100%;
+    width: 400px;
     border-radius: 15px;
     margin-left: auto;
     margin-right: auto;
@@ -80,7 +90,7 @@
 .tooltip .tooltiptext {
     visibility: hidden;
     width: 120px;
-    background-color: #23501F;
+    background-color: #23501f;
     color: #fff;
     text-align: center;
     border-radius: 6px;
@@ -90,44 +100,43 @@
     bottom: 100%;
     left: 50%;
     margin-left: -60px;
-    
 }
 
 .tooltip .tooltiptext::after {
-    content: " ";
+    content: ' ';
     position: absolute;
     top: 100%; /* At the bottom of the tooltip */
     left: 50%;
     margin-left: -5px;
     border-width: 5px;
     border-style: solid;
-    border-color: #23501F transparent transparent transparent;
-  }
+    border-color: #23501f transparent transparent transparent;
+}
 
 .tooltip:hover .tooltiptext {
     visibility: visible;
-  }
+}
 
 .chatRooms-buttons {
-    position:absolute;
+    position: absolute;
     bottom: 10px;
-    right : 400px;
+    right: 400px;
 }
 
 .addButton {
     background-color: #00804d;
-    margin-right : 10px;
+    margin-right: 10px;
 }
 
 .allRoomsButton {
     background-color: #00804d;
-    margin-left : 10px;
-    margin-right : 10px;
+    margin-left: 10px;
+    margin-right: 10px;
 }
 
 .joinedRoomsButton {
     background-color: #00804d;
-    margin-left : 10px;
+    margin-left: 10px;
 }
 
 .chatRooms {

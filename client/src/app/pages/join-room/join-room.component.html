@@ -1,8 +1,11 @@
 <app-background></app-background>
-<mat-card id="progress-bar-box" *ngIf="joinRoomService.rooms.length === 0">
-    <p>En attente de création d'une partie</p>
-    <mat-spinner mode="indeterminate"></mat-spinner>
-</mat-card>
+<div id="progress-bar-box">
+    <mat-card id="progress-bar-box" *ngIf="joinRoomService.rooms.length === 0">
+        <p>En attente de création d'une partie</p>
+        <mat-spinner mode="indeterminate"></mat-spinner>
+    </mat-card>
+</div>
+
 <mat-paginator
     id="paginator"
     *ngIf="joinRoomService.rooms.length !== 0"
@@ -10,6 +13,7 @@
     [pageSize]="joinRoomService.pageSize"
     (page)="joinRoomService.onPageChange($event)"
 ></mat-paginator>
+
 <div *ngIf="!joinRoomService.shouldDisplayError">
     <div
         *ngFor="
