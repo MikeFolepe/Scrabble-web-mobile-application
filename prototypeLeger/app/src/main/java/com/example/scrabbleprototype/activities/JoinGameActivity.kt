@@ -156,7 +156,7 @@ class JoinGameActivity : AppCompatActivity() {
     }
 
     private fun receiveRooms(gameListAdapter: GameListAdapter) {
-        socket.once("roomConfiguration"){ response ->
+        socket.on("roomConfiguration"){ response ->
             rooms = mapper.readValue(response[0].toString(), object: TypeReference<ArrayList<Room>>() {})
             runOnUiThread {
                 gameListAdapter.updateData(rooms)
