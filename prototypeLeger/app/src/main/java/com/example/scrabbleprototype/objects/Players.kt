@@ -1,5 +1,8 @@
 package com.example.scrabbleprototype.objects
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.util.Base64
 import androidx.databinding.BaseObservable
 import androidx.databinding.Bindable
 import androidx.databinding.library.baseAdapters.BR
@@ -17,7 +20,6 @@ object Players: BaseObservable() {
     fun getActivePlayer(): Player {
         return players.find { it.getTurn() }!!
     }
-
     @Bindable
     fun getCurrent(): Player {
         return currentPlayer

@@ -45,7 +45,6 @@ class WaitingRoomActivity : AppCompatActivity() {
         goToGameView()
         setupStartGameButton()
         setUpCancelButton()
-        setupRoomId()
         setupPlayersWaiting()
         receiveNewRequest()
         leave()
@@ -69,10 +68,6 @@ class WaitingRoomActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupRoomId() {
-        val roomIdText = findViewById<TextView>(R.id.roomId)
-        roomIdText.text = "Salle de jeu : " + CurrentRoom.myRoom.id
-    }
 
     private fun setUpCancelButton(){
         val cancelGameButton = findViewById<Button>(R.id.back_button)

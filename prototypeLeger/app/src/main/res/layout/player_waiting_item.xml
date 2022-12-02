@@ -3,13 +3,38 @@
     android:id="@+id/player_waiting"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:layout_margin="5dp">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center"
+        android:layout_margin="5dp">
+    <TextView
+        android:id="@+id/creator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:textColor="@color/white" />
+
+    <ImageView
+        android:id="@+id/avatar"
+        android:layout_width="40dp"
+        android:layout_height="40dp"/>
 
     <TextView
         android:id="@+id/player_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="20sp"
-        android:textColor="?android:textColor" />
+        android:textColor="@color/white" />
+    </LinearLayout>
+<View
+    android:layout_margin="20dp"
+    android:layout_width="wrap_content"
+    android:layout_height="1dp"
+    android:background="@color/white"/>
+
 </LinearLayout>

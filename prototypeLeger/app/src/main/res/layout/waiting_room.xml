@@ -28,16 +28,6 @@
 
     </androidx.appcompat.widget.Toolbar>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:textColor="?android:textColor"
-        android:textSize="30sp"
-        android:layout_margin="20dp"
-        android:id="@+id/roomId" />
 
     <LinearLayout
         android:id="@+id/players_waiting_container"
@@ -45,24 +35,26 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_marginTop="15dp"
-        app:layout_constraintTop_toBottomOf="@+id/roomId">
+        app:layout_constraintTop_toBottomOf="@+id/toolbar">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/players_waiting_list"
             android:textSize="20sp"
+            android:layout_gravity="center"
             android:textColor="?android:textColor"
             android:layout_marginStart="20dp"/>
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/players_waiting"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_width="500dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
             app:layout_constraintTop_toBottomOf="@+id/roomId"
             android:layout_marginStart="30dp"
             android:layout_marginEnd="30dp"
             android:padding="10dp"
-            android:background="@drawable/black_border"
+            android:background="@drawable/waiting_card"
             android:layout_marginTop="15dp">
         </androidx.recyclerview.widget.RecyclerView>
     </LinearLayout>

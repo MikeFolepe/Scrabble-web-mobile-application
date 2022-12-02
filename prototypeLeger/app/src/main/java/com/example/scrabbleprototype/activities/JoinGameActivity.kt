@@ -47,6 +47,7 @@ class JoinGameActivity : AppCompatActivity() {
         setupGameList()
         receiveJoinDecision()
         sendObserverToGame()
+        previewRoomPlayers()
         // handleDeletedGame()
         handleObservableRoomsAvailability()
     }
@@ -66,8 +67,27 @@ class JoinGameActivity : AppCompatActivity() {
             }
             joinGame(position, Users.currentUser.isObserver)
         }
+        gameListAdapter.onPreviewRoom = { position ->
+            socket.emit("previewPlayers", rooms[position].id)
+        }
         receiveRooms(gameListAdapter)
         handleRoomUnavailability()
+    }
+
+    fun displayPlayersInRoom() {
+        var playersListDialog = Dialog(this)
+        playersListDialog.setContentView(R.layout.preview_players_room)
+        val playersWaitingView = playersListDialog.findViewById<RecyclerView>(R.id.players_waiting)
+        val verticalLayoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        playersWaitingView.layoutManager = verticalLayoutManager
+        var playersWaitingAdapter = PlayersWaitingAdapter(Players.players)
+        playersWaitingView.adapter = playersWaitingAdapter
+        playersWaitingAdapter.updateData(Players.players)
+        playersListDialog.show()
+        val closeButton = playersListDialog.findViewById<Button>(R.id.close_button)
+        closeButton.setOnClickListener {
+            playersListDialog.hide()
+        }
     }
 
     private fun setUpPasswordJoinDialog(currentRoom: Room, isObserver: Boolean) {
@@ -109,7 +129,6 @@ class JoinGameActivity : AppCompatActivity() {
             SocketHandler.roomId = rooms[position].id
             return
         }
-
         if (currentRoom.gameSettings.password == "") {
             if(isObserver){
                 Log.d("emitNewObser", "ddde")
@@ -164,6 +183,14 @@ class JoinGameActivity : AppCompatActivity() {
         socket.on("roomPlayers") { response ->
             Log.d("roomPlayers", "join")
             Players.players = mapper.readValue(response[0].toString(), object: TypeReference<ArrayList<Player>>() {})
+        }
+    }
+    private fun previewRoomPlayers() {
+        socket.on("previewRoomPlayers") { response ->
+            Players.players = mapper.readValue(response[0].toString(), object: TypeReference<ArrayList<Player>>() {})
+            runOnUiThread {
+                displayPlayersInRoom()
+            }
         }
     }
 
