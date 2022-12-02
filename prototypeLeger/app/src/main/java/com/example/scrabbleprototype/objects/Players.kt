@@ -18,7 +18,6 @@ object Players: BaseObservable() {
         Log.d("activeplayer", players.find { it.getTurn() }!!.name)
         return players.find { it.getTurn() }!!
     }
-
     @Bindable
     fun getCurrent(): Player {
         return currentPlayer

@@ -25,10 +25,19 @@
         <mat-card class="card">
             <mat-card-title>{{ room.gameSettings.creatorName }} </mat-card-title>
             <br />
+            <span>Protection : </span>
+            <span
+                [ngClass]="{
+                    red: room.gameSettings.type === 1 || room.gameSettings.password !== '',
+
+                    green: room.gameSettings.type === 0
+                }"
+                >{{ joinRoomService.computeRoomType(room) }}</span
+            >
             <mat-card-subtitle>
-                Minute : {{ room.gameSettings.timeMinute }}
+                Minutes : {{ room.gameSettings.timeMinute }}
                 <br />
-                Second : {{ room.gameSettings.timeSecond }}
+                Secondes : {{ room.gameSettings.timeSecond }}
                 <br />
                 Nombre de joueurs humains: {{ room.humanPlayersNumber }}
                 <br />
@@ -47,16 +56,10 @@
                     >{{ joinRoomService.computeRoomState(room.state) }}</span
                 >
                 <br />
-                <span>Protection : </span>
-                <span
-                    [ngClass]="{
-                        red: room.gameSettings.type === 1 || room.gameSettings.password !== '',
-
-                        green: room.gameSettings.type === 0
-                    }"
-                    >{{ joinRoomService.computeRoomType(room) }}</span
-                >
-                <button mat-button color="primary" *ngIf="room.state === 1" (click)="joinRoomService.join(room, false)">Joindre</button>
+                <div>
+                    <button mat-button color="primary" *ngIf="room.state === 1" (click)="joinRoomService.join(room, false)">Joindre</button>
+                    <button mat-button color="primary" (click)="previewPlayers(room)">Consulter</button>
+                </div>
                 <button
                     mat-button
                     color="primary"

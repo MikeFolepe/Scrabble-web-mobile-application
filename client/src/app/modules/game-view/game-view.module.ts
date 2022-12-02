@@ -12,6 +12,7 @@ import { AppMaterialModule } from '@app/modules/material.module';
 import { SharedModule } from '@app/modules/shared/shared.module';
 import { AvatarChoiceComponent } from './avatar-choice/avatar-choice.component';
 import { BestActionsDialogComponent } from './best-actions-dialog/best-actions-dialog.component';
+import { RoomPlayersDialogComponent } from './room-players-dialog/room-players-dialog.component';
 
 @NgModule({
     declarations: [
@@ -23,6 +24,7 @@ import { BestActionsDialogComponent } from './best-actions-dialog/best-actions-d
         ChatboxComponent,
         AvatarChoiceComponent,
         BestActionsDialogComponent,
+        RoomPlayersDialogComponent,
     ],
     imports: [CommonModule, AppRoutingModule, FormsModule, SharedModule, AppMaterialModule],
     exports: [GameViewComponent, BestActionsDialogComponent],

@@ -116,6 +116,7 @@ export class WaitingRoomComponent implements OnInit {
     leaveGame(): void {
         this.clientSocket.socket.emit('sendLeaveGame', this.playerService.currentPlayer.name, this.clientSocket.currentRoom.id);
         this.playerService.currentPlayer = {} as Player;
+        this.router.navigate(['join-room']);
     }
     private acceptNewPlayer(): void {
         this.clientSocket.socket.on('newRequest', (joiningUser: string, roomId: string) => {

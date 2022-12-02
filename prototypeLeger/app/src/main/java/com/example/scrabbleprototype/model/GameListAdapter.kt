@@ -24,6 +24,7 @@ class GameListAdapter(private var gameList: ArrayList<Room>) :
     RecyclerView.Adapter<GameListAdapter.ViewHolder>() {
 
     var onJoinGame: ((position: Int) -> Unit)? = null
+    var onPreviewRoom: ((position: Int) -> Unit)? = null
     val currentUser = Users.currentUser
 
     /**
@@ -40,7 +41,12 @@ class GameListAdapter(private var gameList: ArrayList<Room>) :
             joinGameButton.setOnClickListener {
                 onJoinGame?.invoke(layoutPosition)
             }
+
+            val previewButton = view.findViewById<Button>(R.id.preview_players_list)
+            previewButton.setOnClickListener {
+                onPreviewRoom?.invoke(layoutPosition)
         }
+    }
     }
 
     // Create new views (invoked by the layout manager)
@@ -60,6 +66,11 @@ class GameListAdapter(private var gameList: ArrayList<Room>) :
         viewHolder.gameRoom.findViewById<TextView>(R.id.room_name).text = gameList[position].gameSettings.creatorName
         val gameStatus = viewHolder.gameRoom.findViewById<TextView>(R.id.game_status)
         val roomType= viewHolder.gameRoom.findViewById<TextView>(R.id.room_type)
+        viewHolder.gameRoom.findViewById<TextView>(R.id.minute).text = gameList[position].gameSettings.timeMinute
+        viewHolder.gameRoom.findViewById<TextView>(R.id.seconde).text = gameList[position].gameSettings.timeSecond
+        viewHolder.gameRoom.findViewById<TextView>(R.id.humans_number).text = "0" + gameList[position].humanPlayersNumber.toString()
+        viewHolder.gameRoom.findViewById<TextView>(R.id.ai_number).text = "0" + gameList[position].aiPlayersNumber.toString()
+        viewHolder.gameRoom.findViewById<TextView>(R.id.observer_number).text = gameList[position].observers.size.toString() + "/6"
         if(gameList[position].state == State.Playing || gameList[position].state == State.Finish) {
             gameStatus.text = "Indisponible"
             gameStatus.setTextColor(ContextCompat.getColor(gameStatus.context, R.color.red))
