@@ -132,19 +132,20 @@ class SettingsFragment : Fragment(), CoroutineScope {
             val addAvatarId = resources.getIdentifier("t_l_chargement", "drawable", this.requireContext().packageName)
             avatarDialog.show()
             avatarListAdapter.onClickAvatar = { position ->
-                binding.avatar.setImageResource(avatarSrcImages[position])
 
-                //convert to base64 to coord with heavy client
-                encodeImageToBase64(binding.avatar.drawable.toBitmap())
-                avatarDialog.hide()
-                Log.d("avatarpath", avatarSrcImages[position].toString())
-                if(addAvatarId == avatarSrcImages[position]) {
-                    if(checkAndRequestPermissions()) {
+                if (addAvatarId == avatarSrcImages[position]) {
+                    if (checkAndRequestPermissions()) {
                         takeImageFromCamera()
-
                     }
+                } else {
+                    binding.avatar.setImageResource(avatarSrcImages[position])
+
+                    //convert to base64 to coord with heavy client
+                    encodeImageToBase64(binding.avatar.drawable.toBitmap())
+                    avatarDialog.hide()
+                    Log.d("avatarpath", avatarSrcImages[position].toString())
                 }
-                }
+            }
         }
         }
     fun encodeImageToBase64(bmp: Bitmap) {
@@ -158,6 +159,7 @@ class SettingsFragment : Fragment(), CoroutineScope {
     private fun takeImageFromCamera(){
         val takePicture = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         resultLauncher.launch(takePicture)
+        return
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>,
@@ -328,9 +330,14 @@ class SettingsFragment : Fragment(), CoroutineScope {
 
     private fun setupSaveButton() {
         binding.saveEditsBtn.setOnClickListener {
+            var pseudonymChanged = true
+            val oldPseudonym = user.currentUser.pseudonym
             user.currentUser.pseudonym = binding.profilePseudonym.text.toString()
-            Log.d("inputuser", user.currentUser.pseudonym)
-            preferenceViewModel.saveProfile(user.currentUser).observe(viewLifecycleOwner, androidx.lifecycle.Observer { saved ->
+            Log.d("inputuser", user.currentUser._id)
+            if(oldPseudonym == user.currentUser.pseudonym) {
+                pseudonymChanged = false
+            }
+            preferenceViewModel.saveProfile(user.currentUser,pseudonymChanged).observe(viewLifecycleOwner, androidx.lifecycle.Observer { saved ->
                 if(saved) {
                     binding.profilePseudonym.setText(user.currentUser.pseudonym)
                     val split = user.currentUser.avatar.split(",")
@@ -340,7 +347,8 @@ class SettingsFragment : Fragment(), CoroutineScope {
                     Toast.makeText(requireContext(), "Les changements ont été sauvegardés", Toast.LENGTH_LONG).show()
                 }
                 else {
-                    binding.profilePseudonym.setText(user.currentUser.pseudonym)
+                    binding.profilePseudonym.setText(oldPseudonym)
+                    user.currentUser.pseudonym = oldPseudonym
                     Toast.makeText(requireContext(), "Ce pseudonyme existe, les changements n'ont pas été effectués", Toast.LENGTH_LONG).show()
                 }
             })

@@ -120,15 +120,16 @@ export class UserController {
         await this.userService.updateXpPoints(userId, req.body.xpPoints);
     }
 
-    @Post('/updateUser')
-    async updateUserInDb(@Body() user: User, @Res() response: Response) {
-        console.log('boo', user);
-        const userFound = await this.userService.getSingleUser(user.pseudonym);
-        if (userFound) {
-            console.log('userfound');
-            if (userFound._id !== user._id) {
-                console.log('userfound');
-                response.status(HttpStatus.FOUND).send();
+    @Post('/updateUser/:pseudonymChanged')
+    async updateUserInDb(@Body() user: User, @Req() req, @Res() response: Response) {
+        console.log('boo', user._id);
+        const pseudonymChanged = req.params.pseudonymChanged;
+        if (pseudonymChanged) {
+            const userFound = await this.userService.getSingleUser(user.pseudonym);
+            if (userFound) {
+                console.log('userfound', `new ObjectId("${user._id}")`);
+                response.status(HttpStatus.FOUND).send('');
+                return;
             }
         }
         await this.userService.updateUser(user).then((newUser: User) => {
