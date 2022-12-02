@@ -6,6 +6,8 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.ImageView
+import android.widget.PopupMenu
 import android.widget.PopupWindow
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -79,12 +81,6 @@ class MainMenuActivity : AppCompatActivity() {
         fragmentTransaction.commit()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.main_menu, menu)
-        return true
-    }
-
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment_content_main_menu)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
@@ -94,6 +90,7 @@ class MainMenuActivity : AppCompatActivity() {
         val layoutWithTheme = ThemeManager.setFragmentTheme(layoutInflater, this)
         binding = ActivityMainMenuBinding.inflate(layoutWithTheme)
         setContentView(binding.root)
+        setupAvatar()
 
         val notificationButton = binding.appBarMainMenu.notificationButton
         val notificationDot = binding.appBarMainMenu.newNotificationDot
@@ -117,6 +114,20 @@ class MainMenuActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+    }
+
+    private fun setupAvatar() {
+        val avatar = binding.appBarMainMenu.avatar
+        avatar.setImageBitmap(Users.currentUser.getAvatarBitmap())
+        avatar.setOnClickListener {
+            val popupLogout = PopupMenu(this, avatar)
+            popupLogout.menuInflater.inflate(R.menu.main_menu, popupLogout.menu)
+            popupLogout.setOnMenuItemClickListener {
+                Toast.makeText(this, "Déconnexion", Toast.LENGTH_LONG).show()
+                return@setOnMenuItemClickListener true
+            }
+            popupLogout.show()
+        }
     }
 
     private fun setupNotifications(): PopupWindow {

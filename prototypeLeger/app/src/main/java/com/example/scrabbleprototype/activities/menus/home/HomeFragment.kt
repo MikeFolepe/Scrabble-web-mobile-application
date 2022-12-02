@@ -50,7 +50,6 @@ class HomeFragment : Fragment() {
 
     private fun setupUserInfo() {
         binding.userInfoName.text = user.currentUser.pseudonym
-        binding.userProfile.setImageBitmap(user.avatarBmp)
     }
 
     private fun setupButtons() {
