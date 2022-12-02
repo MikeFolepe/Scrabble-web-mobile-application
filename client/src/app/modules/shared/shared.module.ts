@@ -9,10 +9,26 @@ import { ChatroomsComponent } from '../game-view/chatrooms/chatrooms.component';
 import { JoinChatRoomsComponent } from '../game-view/join-chat-rooms/join-chat-rooms.component';
 import { PasswordForgottenComponent } from '../game-view/password-forgotten/password-forgotten.component';
 import { AppMaterialModule } from '../material.module';
+import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
-    declarations: [BackgroundComponent, AddChatRoomComponent, ChatroomsComponent, ChangeChatRoomComponent, JoinChatRoomsComponent, PasswordForgottenComponent],
+    declarations: [
+        BackgroundComponent,
+        AddChatRoomComponent,
+        ChatroomsComponent,
+        ChangeChatRoomComponent,
+        JoinChatRoomsComponent,
+        PasswordForgottenComponent,
+    ],
     imports: [CommonModule, AppMaterialModule, ReactiveFormsModule, FormsModule],
-    exports: [BackgroundComponent, AddChatRoomComponent, ChatroomsComponent, ChangeChatRoomComponent, JoinChatRoomsComponent, PasswordForgottenComponent],
+    exports: [
+        BackgroundComponent,
+        AddChatRoomComponent,
+        ChatroomsComponent,
+        ChangeChatRoomComponent,
+        JoinChatRoomsComponent,
+        PasswordForgottenComponent,
+        TranslateModule,
+    ],
 })
 export class SharedModule {}

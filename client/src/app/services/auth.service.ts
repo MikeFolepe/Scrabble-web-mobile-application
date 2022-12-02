@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-underscore-dangle */
-import { HttpErrorResponse, HttpResponse, HttpStatusCode } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpResponse, HttpStatusCode } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -7,6 +8,9 @@ import { Router } from '@angular/router';
 import { ERROR_MESSAGE_DELAY } from '@app/classes/constants';
 import { ChatEvents } from '@common/chat.gateway.events';
 import { User } from '@common/user';
+import { Language } from '@common/user-preferences';
+import { TranslateService } from '@ngx-translate/core';
+import { forkJoin } from 'rxjs';
 import { io } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
 import { ClientSocketService } from './client-socket.service';
@@ -29,6 +33,8 @@ export class AuthService {
         public errorHandler: ErrorHandlerService,
         public snackBar: MatSnackBar,
         public userService: UserService,
+        public translate: TranslateService,
+        public http: HttpClient,
     ) {
         this.chosenAvatar = '';
         this.serverUrl = environment.serverUrl;
@@ -47,8 +53,13 @@ export class AuthService {
                     this.receiveUserSocket();
                     this.addLogin();
                     this.userService.getUserStats(this.currentUser._id);
+                    this.getPreferences(this.currentUser._id);
+                    console.log(this.userService.userPreferences);
                     this.clientSocketService.socket.emit('joinMainRoom', this.currentUser);
-                    this.setAccess();
+                    setTimeout(async () => {
+                        await this.initLanguage();
+                        this.setAccess();
+                    }, 400);
                 } else if (response.status === HttpStatusCode.NotModified) {
                     this.displayMessage('Cet utilisateur est déjà connecté');
                 }
@@ -62,6 +73,33 @@ export class AuthService {
 
     isLoggedIn() {
         return true;
+    }
+
+    initLanguage() {
+        return async () =>
+            new Promise<boolean>((resolve: (res: boolean) => void) => {
+                const defaultLocale = 'en';
+                const translationsUrl = '/assets/i18n/translations';
+                const sufix = '.json';
+                console.log('here', this.userService.userPreferences.language);
+                const storageLocale = this.userService.userPreferences.language === Language.French ? 'fr' : 'en';
+                const locale = storageLocale || defaultLocale;
+
+                forkJoin([this.http.get('/assets/i18n/dev.json').pipe(), this.http.get(`${translationsUrl}/${locale}${sufix}`).pipe()]).subscribe(
+                    (response: any[]) => {
+                        const devKeys = response[0];
+                        const translatedKeys = response[1];
+
+                        this.translate.setTranslation(defaultLocale, devKeys || {});
+                        this.translate.setTranslation(locale, translatedKeys || {}, true);
+
+                        this.translate.setDefaultLang(defaultLocale);
+                        this.translate.use(locale);
+
+                        resolve(true);
+                    },
+                );
+            });
     }
 
     logout() {
@@ -103,5 +141,14 @@ export class AuthService {
             this.currentUser.socketId = socketId;
             this.clientSocketService.socket.emit(ChatEvents.UpdateUserSocket, this.currentUser);
         });
+    }
+
+    private getPreferences(userId: string) {
+        this.userService.getAppTheme(userId);
+        this.userService.getCurrentBoard(userId);
+        this.userService.getCurrentChat(userId);
+        this.userService.getBoards(userId);
+        this.userService.getChats(userId);
+        this.userService.getLanguage(userId);
     }
 }

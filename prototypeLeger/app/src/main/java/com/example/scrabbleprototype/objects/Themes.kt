@@ -15,7 +15,6 @@ object Themes {
         appThemes.add("Dark")
         appThemes.add("Blue")
         appThemes.add("Orange")
-
         boardItems.add(Item("Gradients animés", 300, R.drawable.gradient_animation))
         boardItems.add(Item("Tartan", 100, R.drawable.tartan))
         boardItems.add(Item("Galaxie", 500, R.drawable.galaxy))

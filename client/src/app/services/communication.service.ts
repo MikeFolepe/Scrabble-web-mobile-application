@@ -64,6 +64,31 @@ export class CommunicationService {
     addNewGameToStats(game: GameDB, userId: string): Observable<void> {
         return this.http.post<void>(`${this.baseUrl}/user/userStats/game/${userId}`, game);
     }
+
+    getAppTheme(userId: string): Observable<string> {
+        return this.http.get(`${this.baseUrl}/user/preference/appTheme/${userId}`, { responseType: 'text' });
+    }
+
+    getCurrentBoard(userId: string): Observable<string> {
+        return this.http.get<string>(`${this.baseUrl}/user/preference/boardTheme/${userId}`);
+    }
+
+    getCurrentChat(userId: string): Observable<string> {
+        return this.http.get<string>(`${this.baseUrl}/user/preference/chatTheme/${userId}`);
+    }
+
+    getBoards(userId: string): Observable<string[]> {
+        return this.http.get<string[]>(`${this.baseUrl}/user/preference/boards/${userId}`);
+    }
+
+    getChats(userId: string): Observable<string[]> {
+        return this.http.get<string[]>(`${this.baseUrl}/user/preference/chats/${userId}`);
+    }
+
+    getLanguage(userId: string): Observable<string> {
+        return this.http.get<string>(`${this.baseUrl}/user/preference/chats/${userId}`);
+    }
+
     async findUserInDb(pseudonym: string, password: string): Promise<boolean> {
         return this.http.get<boolean>(`${this.baseUrl}/user/findUserInDb/${pseudonym}/${password}`).toPromise();
     }

@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable no-undef */
+/* eslint-disable prefer-arrow/prefer-arrow-functions */
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -13,18 +16,21 @@ import { JoinRoomComponent } from '@app/pages/join-room/join-room.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { PageNotFoundComponent } from '@app/pages/page-not-found/page-not-found.component';
 import { WaitingRoomComponent } from '@app/pages/waiting-room/waiting-room.component';
+import { TranslateModule } from '@ngx-translate/core';
 import { ClickOutsideModule } from 'ng-click-outside';
 import { UserManagerModule } from './modules/user-manager/user-manager.module';
 import { AdminPageComponent } from './pages/admin-page/admin-page.component';
 import { EditDictionaryDialogComponent } from './pages/admin-page/edit-dictionary-dialog/edit-dictionary-dialog.component';
 import { AuthPageComponent } from './pages/auth-page/auth-page.component';
 import { RankingComponent } from './pages/ranking/ranking.component';
+
 /**
  * Main module that is used in main.ts.
  * All automatically generated components will appear in this module.
  * Please do not move this module in the module folder.
  * Otherwise Angular Cli will not know in which module to put new component
  */
+
 @NgModule({
     declarations: [
         AppComponent,
@@ -50,6 +56,7 @@ import { RankingComponent } from './pages/ranking/ranking.component';
         ClickOutsideModule,
         ReactiveFormsModule,
         UserManagerModule,
+        TranslateModule.forRoot(),
     ],
     providers: [MainPageComponent],
     bootstrap: [AppComponent],

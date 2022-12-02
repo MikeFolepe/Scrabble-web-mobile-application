@@ -7,10 +7,10 @@
 <div class="justified">
     <img id="logo-scrabble" src="https://bit.ly/3m206ss" class="not-selectionnable" alt="Logo Scrabble" />
     <mat-tab-group>
-        <mat-tab >
+        <mat-tab>
             <mat-radio-group class="radio-group" [(ngModel)]="selectedGameMode">
-                <mat-radio-button color="primary" class="radio-button" value="solo" *ngFor="let mode of gameModes" [value]="mode"
-                    >{{ mode }}
+                <mat-radio-button color="primary" class="radio-button" value="solo" *ngFor="let mode of gameModes" [value]="mode">
+                    {{ 'main.page.mode' | translate: { mode: mode } }}
                 </mat-radio-button>
             </mat-radio-group>
         </mat-tab>
@@ -22,10 +22,17 @@
         {{ selectedGameMode }}
     </p>
     <button class="button" id="resetButton" mat-raised-button [disabled]="!selectedGameMode" color="warn" (click)="this.selectedGameMode = undefined">
-        Effacer mon choix
+        {{ 'eraseChoice' | translate }}
     </button>
     <br />
 
+    <button class="button" mat-raised-button color="primary" (click)="changeLanguage('en')">
+        {{ 'main.page.section.languages.english' | translate }}
+    </button>
+
+    <button class="button" mat-raised-button color="primary" (click)="changeLanguage('fr')">
+        {{ 'main.page.section.languages.french' | translate }}
+    </button>
 </div>
 
 <div class="chatRooms-buttons">

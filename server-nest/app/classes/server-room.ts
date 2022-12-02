@@ -40,7 +40,7 @@ export class ServerRoom {
     aiForBestActions: PlayerAI;
     roomMessages: ChatRoomMessage[];
     constructor(roomId: string, socketId: string, gameSettings: GameSettings, state: State = State.Waiting) {
-        this.aiPlayersNumber = DEFAULT_AI_PLAYERS_NB;
+        this.aiPlayersNumber = this.gameSettings.gameType === NumberOfPlayer.OneVthree ? DEFAULT_AI_PLAYERS_NB : DEFAULT_SOLO_AI_PLAYERS_NB;
         this.humanPlayersNumber = DEFAULT_HUMAN_PLAYERS_NB;
         this.turnCounter = 0;
         this.id = roomId;

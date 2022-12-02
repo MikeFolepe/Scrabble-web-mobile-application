@@ -10,7 +10,9 @@ import { GameSettingsService } from '@app/services/game-settings.service';
 import { GiveUpHandlerService } from '@app/services/give-up-handler.service';
 import { LetterService } from '@app/services/letter.service';
 import { PlaceLetterService } from '@app/services/place-letter.service';
+import { UserService } from '@app/services/user.service';
 import { GameType } from '@common/game-type';
+import { Language } from '@common/user-preferences';
 
 @Component({
     selector: 'app-main-page',
@@ -40,6 +42,7 @@ export class MainPageComponent {
         private placeLetterService: PlaceLetterService,
         private giveUpHandlerService: GiveUpHandlerService,
         public chatRoomService: ChatRoomService,
+        public userService: UserService,
     ) {
         this.selectedGameTypeIndex = 0;
         // this.gameType = ['Scrabble classique'];
@@ -88,5 +91,10 @@ export class MainPageComponent {
         this.letterService.ngOnDestroy();
         this.placeLetterService.ngOnDestroy();
         this.gameSettingsService.ngOnDestroy();
+    }
+
+    changeLanguage(code: string) {
+        this.userService.userPreferences.language = code === 'en' ? Language.English : Language.French;
+        this.authService.initLanguage();
     }
 }
