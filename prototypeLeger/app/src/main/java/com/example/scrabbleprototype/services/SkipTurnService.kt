@@ -9,6 +9,7 @@ import com.example.scrabbleprototype.model.SocketHandler
 import com.example.scrabbleprototype.objects.CurrentRoom
 import com.example.scrabbleprototype.objects.Players
 import com.example.scrabbleprototype.objects.Users
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import java.util.*
 import kotlin.concurrent.timerTask
 
@@ -88,6 +89,7 @@ class SkipTurnService : Service() {
     }
 
     fun switchTimer() {
+
         Players.currentPlayer.setTurn(false)
         Timer().schedule(timerTask {
             cancelSwapCallback?.resetSwap()

@@ -2,23 +2,21 @@ package com.example.scrabbleprototype.activities
 
 import android.app.Dialog
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
-import androidx.core.content.ContextCompat.startActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
+import com.example.scrabbleprototype.fragments.ChannelButtonsFragment
 import com.example.scrabbleprototype.model.*
-import com.example.scrabbleprototype.model.SocketHandler.socket
 import com.example.scrabbleprototype.objects.CurrentRoom
 import com.example.scrabbleprototype.objects.Players
 import com.example.scrabbleprototype.objects.ThemeManager
-import com.example.scrabbleprototype.objects.Users
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import kotlinx.serialization.encodeToString
@@ -44,7 +42,7 @@ class WaitingRoomActivity : AppCompatActivity() {
         receiveNewOpponent()
         goToGameView()
         setupStartGameButton()
-        setUpCancelButton()
+        setupCancelButton()
         setupRoomId()
         setupPlayersWaiting()
         receiveNewRequest()
@@ -53,6 +51,17 @@ class WaitingRoomActivity : AppCompatActivity() {
         leaveNotification()
         onReplaceHuman()
         // Players.currentPlayerPosition = Players.opponents.size
+
+        if(savedInstanceState == null) {
+            setupFragments()
+        }
+    }
+
+    private fun setupFragments() {
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
+        fragmentTransaction.add(R.id.waiting_room_chatroom_buttons, ChannelButtonsFragment())
+        fragmentTransaction.addToBackStack(null)
+        fragmentTransaction.commit()
     }
 
     private fun setupStartGameButton() {
@@ -61,7 +70,7 @@ class WaitingRoomActivity : AppCompatActivity() {
             startGameButton.setVisibility(View.INVISIBLE)
         }
         startGameButton.setOnClickListener {
-            if((CurrentRoom.myRoom.humanPlayersNumber + CurrentRoom.myRoom.aiPlayersNumber) < Constants.MAX_PLAYERS || !Players.currentPlayer.isCreator) {
+            if(CurrentRoom.myRoom.humanPlayersNumber < 2 || !Players.currentPlayer.isCreator) {
                 Toast.makeText(this, "La partie ne peut pas être commencée", Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             }
@@ -74,7 +83,7 @@ class WaitingRoomActivity : AppCompatActivity() {
         roomIdText.text = "Salle de jeu : " + CurrentRoom.myRoom.id
     }
 
-    private fun setUpCancelButton(){
+    private fun setupCancelButton(){
         val cancelGameButton = findViewById<Button>(R.id.back_button)
 
         if(currentPlayer.isCreator){
@@ -92,7 +101,7 @@ class WaitingRoomActivity : AppCompatActivity() {
         }
     }
 
-    /*fun setUpGameTypeLabel() {
+    /*fun setupGameTypeLabel() {
         val typeText = findViewById<TextView>(R.id.room_type)
         if(currentRoom.gameSettings.password == "") {
             typeText.text = "PUBLIC"
@@ -114,16 +123,16 @@ class WaitingRoomActivity : AppCompatActivity() {
     }
 
     private fun receiveNewOpponent() {
-        socket.on("Opponent") { response ->
+        socket.once("Opponent") { response ->
             val newOpponent = mapper.readValue(response[0].toString(), Player::class.java)
             val index = response[1] as Int
-            Players.opponents[index]= newOpponent
+            Players.opponents[index] = newOpponent
             runOnUiThread {
                 playersWaiting.add(newOpponent)
                 playersWaitingAdapter.notifyItemChanged(playersWaiting.size - 1)
             }
         }
-        socket.on("roomPlayers") { response ->
+        socket.once("roomPlayers") { response ->
             Players.players = mapper.readValue(response[0].toString(), object: TypeReference<ArrayList<Player>>() {})
             runOnUiThread {
                 playersWaitingAdapter.updateData(Players.players)
@@ -132,31 +141,49 @@ class WaitingRoomActivity : AppCompatActivity() {
     }
 
     private fun receiveNewRequest() {
-            socket.on("newRequest") { response ->
-                runOnUiThread {
-                    var dialog = Dialog(this)
-                    dialog.setContentView(R.layout.player_request_game)
-                    Log.d("response", response[1].toString())
-                    val newPlayer = mapper.readValue(response[0].toString(), User::class.java) as User
-                    val roomId = response[1].toString()
-                    val message = dialog.findViewById<TextView>(R.id.popup_window_text)
-                    message.text = newPlayer.pseudonym + " souhaite rejoindre la partie"
-                    dialog.show()
-                    val acceptButton = dialog.findViewById<Button>(R.id.accept_button)
-                    acceptButton.setOnClickListener {
-                        Log.d("button", "accept")
-                        socket.emit("sendJoinResponse", true, JSONObject(
-                            Json.encodeToString(newPlayer)), roomId)
-                        dialog.hide()
-                    }
-                    val denyButton = dialog.findViewById<Button>(R.id.deny_button)
-                    denyButton.setOnClickListener {
-                        socket.emit("sendJoinResponse", false, JSONObject(Json.encodeToString(newPlayer)), roomId)
-                        dialog.hide()
-                    }
+        socket.on("newRequest") { response ->
+            runOnUiThread {
+                var dialog = Dialog(this)
+                dialog.setContentView(R.layout.player_request_game)
+                Log.d("response", response[1].toString())
+                val newPlayer = mapper.readValue(response[0].toString(), User::class.java) as User
+                val roomId = response[1].toString()
+                val message = dialog.findViewById<TextView>(R.id.popup_window_text)
+                message.text = newPlayer.pseudonym + " souhaite rejoindre la partie"
+                dialog.show()
+                val acceptButton = dialog.findViewById<Button>(R.id.accept_button)
+                acceptButton.setOnClickListener {
+                    Log.d("button", "accept")
+                    socket.emit("sendJoinResponse", true, JSONObject(
+                        Json.encodeToString(newPlayer)), roomId)
+                    dialog.hide()
                 }
-
+                val denyButton = dialog.findViewById<Button>(R.id.deny_button)
+                denyButton.setOnClickListener {
+                    socket.emit("sendJoinResponse", false, JSONObject(Json.encodeToString(newPlayer)), roomId)
+                    dialog.hide()
+                }
             }
+
+        }
+    }
+
+    private fun leave() {
+        socket.on("leave") {
+            runOnUiThread { startActivity(Intent(this, MainMenuActivity::class.java)) }
+        }
+    }
+
+    private fun leaveNotification() {
+        socket.on("leaveNotification") { response ->
+            val notification = response[0] as String
+            runOnUiThread {
+                findViewById<TextView>(R.id.leave_notification).text = notification
+                Timer().schedule(timerTask {
+                    findViewById<TextView>(R.id.leave_notification).text = ""
+                }, 4000)
+            }
+        }
     }
 
     private fun leave() {
@@ -190,6 +217,7 @@ class WaitingRoomActivity : AppCompatActivity() {
     private fun goToGameView() {
         socket.on("goToGameView") {
             startActivity(Intent(this, GameActivity::class.java))
+            finish()
         }
     }
 

@@ -24,8 +24,7 @@
         android:orientation="vertical"
         app:layout_constraintTop_toBottomOf="@id/scrabble_logo"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="20dp"
-        android:gravity="center">
+        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/create_game_button"
@@ -50,12 +49,10 @@
         android:id="@+id/game_view_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/create_join_buttons"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="20dp"
         android:text="Go to Game View"
         android:textColor="?android:textColorSecondary"
-        android:background="@drawable/teal_shadow_button"/>
+        android:background="@drawable/teal_shadow_button"
+        tools:ignore="MissingConstraints" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

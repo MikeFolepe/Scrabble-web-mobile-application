@@ -86,7 +86,6 @@ export class UserService {
             logouts: statsFromDB.logouts,
             games: statsFromDB.games,
         };
-        console.log(userStats);
         return userStats;
     }
 
@@ -142,7 +141,6 @@ export class UserService {
         });
         console.log(userId);
         const userStat = await this.userStatsModel.findOne({ userId }).exec();
-        console.log(userStat);
         const lastTab = userStat.games;
         lastTab.push(newGame);
 
@@ -172,7 +170,6 @@ export class UserService {
         for (const userId of userIds) {
             console.log(userId);
             const userStats = await this.userStatsModel.findOne({ userId });
-            console.log(userStats);
 
             const newTime = userStats.totalTimeMs + totalTimeMs;
             await this.userStatsModel.updateOne({ userId }, { totalTimeMs: newTime });

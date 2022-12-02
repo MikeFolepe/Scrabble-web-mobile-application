@@ -26,8 +26,8 @@ const routes: Routes = [
     { path: 'game', component: GameViewComponent },
     { path: 'page-not-found', component: PageNotFoundComponent },
     { path: 'admin', component: AdminPageComponent },
-    { path: 'profile', component: UserProfileComponent },
-    { path: 'statistics', component: UserStatsComponent },
+    { path: 'profile', component: UserProfileComponent, canActivate: [AuthGuard] },
+    { path: 'statistics', component: UserStatsComponent, canActivate: [AuthGuard] },
     { path: 'settings', component: UserPreferencesComponent },
 
     { path: '**', redirectTo: '/page-not-found', pathMatch: 'full' },

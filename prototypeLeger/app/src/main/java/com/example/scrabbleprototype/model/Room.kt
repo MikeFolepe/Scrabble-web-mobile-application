@@ -11,4 +11,6 @@ enum class State {
 @Serializable
 class Room(var id: String, var socketIds: ArrayList<String>, var gameSettings: GameSettings, var state: State,
            var aiPlayersNumber: Int, var humanPlayersNumber: Int, var observers: ArrayList<User>
-) {}
+) {
+    var roomMessages = arrayListOf<ChatRoomMessage>()
+}
