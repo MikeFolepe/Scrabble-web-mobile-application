@@ -335,17 +335,24 @@ export class GameHandlerGateway implements OnGatewayConnection {
         // });
     }
 
-    handleDisconnect(socket: Socket) {
-        const room = this.roomManagerService.find(this.roomManagerService.findRoomIdOf(socket.id));
-        const index = this.userService.activeUsers.findIndex((curUser) => curUser.socketId === socket.id);
-        const user = this.userService.activeUsers.find((cuUser) => cuUser.socketId === socket.id);
-        this.userService.activeUsers.splice(index, 1);
-        this.logger.log(`Déconnexion par l'utilisateur avec id : ${socket.id}`);
-        if (room === undefined) {
-            return;
-        }
-        const indexPlayer = room.playerService.players.findIndex((player) => player.name === user.pseudonym);
-        this.leaveGame(socket, indexPlayer, room);
+    // async handleDisconnect(socket: Socket) {
+    //     const room = this.roomManagerService.find(this.roomManagerService.findRoomIdOf(socket.id));
+    //     const userIndex = this.userService.activeUsers.findIndex((curUser) => curUser.socketId === socket.id);
+    //     await this.userService.addLogout(this.userService.activeUsers[userIndex]._id);
+
+    //     if (room !== undefined) {
+    //         let pseudonym;
+    //         if (userIndex !== INVALID_INDEX) {
+    //             pseudonym = this.userService.activeUsers[userIndex].pseudonym;
+    //         }
+    //         const indexPlayer = room.playerService.players.findIndex((player) => player.name === pseudonym);
+    //         await this.leaveGame(socket, room, indexPlayer, this.userService.activeUsers[userIndex]._id);
+    //     }
+    //     this.logger.log(`Déconnexion par l'utilisateur avec id : ${socket.id}`);
+    //     this.userService.activeUsers.splice(userIndex, 1);
+    // }
+
+
 
         // if (room === undefined) return;
         // room.skipTurnService.stopTimer();
@@ -364,7 +371,6 @@ export class GameHandlerGateway implements OnGatewayConnection {
         // this.roomManagerService.deleteRoom(roomId);
         // this.server.emit('roomConfiguration', this.roomManagerService.getRoomsToSend());
         // this.server.socketsLeave(roomId);
-    }
 
     private leaveGame(socket: Socket, indexPlayer: number, room: ServerRoom) {
         if (room.state === State.Waiting) {
