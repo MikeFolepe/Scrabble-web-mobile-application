@@ -9,7 +9,7 @@ import { UserService } from '@app/services/user.service';
     styleUrls: ['./user-stats.component.scss'],
 })
 export class UserStatsComponent implements OnInit {
-    constructor(public userService: UserService, private authService: AuthService) {}
+    constructor(public userService: UserService, public authService: AuthService) {}
 
     ngOnInit(): void {
         this.userService.getUserStats(this.authService.currentUser._id);

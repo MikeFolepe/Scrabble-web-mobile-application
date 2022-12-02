@@ -9,6 +9,7 @@ import { WaitingRoomComponent } from '@app/pages/waiting-room/waiting-room.compo
 import { AuthGuard } from '@app/services/auth.guard';
 import { GameViewComponent } from './game-view/game-view/game-view.component';
 import { FormComponent } from './initialize-game/form/form.component';
+import { UserPreferencesComponent } from './user-manager/user-preferences/user-preferences.component';
 import { UserProfileComponent } from './user-manager/user-profile/user-profile.component';
 import { UserStatsComponent } from './user-manager/user-stats/user-stats.component';
 
@@ -25,8 +26,10 @@ const routes: Routes = [
     { path: 'game', component: GameViewComponent },
     { path: 'page-not-found', component: PageNotFoundComponent },
     { path: 'admin', component: AdminPageComponent },
-    { path: 'profile', component: UserProfileComponent },
-    { path: 'statistics', component: UserStatsComponent },
+    { path: 'profile', component: UserProfileComponent, canActivate: [AuthGuard] },
+    { path: 'statistics', component: UserStatsComponent, canActivate: [AuthGuard] },
+    { path: 'settings', component: UserPreferencesComponent },
+
     { path: '**', redirectTo: '/page-not-found', pathMatch: 'full' },
 ];
 

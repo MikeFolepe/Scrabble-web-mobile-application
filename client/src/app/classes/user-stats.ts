@@ -48,15 +48,15 @@ export class UserStats {
     }
 
     getAveragePoints(): number {
-        return this.totalPoints / this.gamesPlayed;
+        return Math.floor(this.totalPoints / this.gamesPlayed);
     }
 
     getAverageTime(): string {
         const averageTimeMs = this.totalTimeMs / this.gamesPlayed;
 
-        const hour = (averageTimeMs / (1000 * 60 * 60)) % 24;
-        const minute = (averageTimeMs / (1000 * 60)) % 60;
-        const second = (averageTimeMs / 1000) % 60;
+        const hour = Math.floor(averageTimeMs / (1000 * 60 * 60)) % 24;
+        const minute = Math.floor(averageTimeMs / (1000 * 60)) % 60;
+        const second = Math.floor(averageTimeMs / 1000) % 60;
         if (hour === 0) {
             const minutes = minute.toString() + 'm' + second.toString() + 's';
             return minutes;
