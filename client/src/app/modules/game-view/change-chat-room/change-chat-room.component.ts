@@ -22,7 +22,6 @@ export class ChangeChatRoomComponent {
         private authService: AuthService,
         private clientSocketService: ClientSocketService,
     ) {
-        // this.chatRoomService.getChatRooms();
         this.userChatsRooms = [this.chatRoomService.chatRooms[0]];
         for (const chatRoom of this.chatRoomService.chatRooms) {
             // if the chatRoom is the main room, skip it

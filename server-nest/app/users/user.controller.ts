@@ -97,7 +97,6 @@ export class UserController {
 
     @Post('/userStats/game/:userId')
     async addGame(@Param('userId') userId: string, @Req() req) {
-        console.log(req.body);
         await this.userService.addGame(req.body, userId);
     }
 

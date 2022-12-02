@@ -56,6 +56,7 @@ class InformationPannelFragment : Fragment(), TurnUICallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         receiveNewPlayer()
+        receiveNewAi()
     }
 
     private val connection = object: ServiceConnection {
@@ -108,8 +109,8 @@ class InformationPannelFragment : Fragment(), TurnUICallback {
     override fun onStop() {
         super.onStop()
         skipTurnService.setTurnUICallback(null)
-        activityContext.unbindService(connection)
         skipTurnBound = false
+        activityContext.unbindService(connection)
     }
 
     override fun onDestroyView() {
@@ -191,5 +192,14 @@ class InformationPannelFragment : Fragment(), TurnUICallback {
 
     override fun updatePlayers() {
         activity?.runOnUiThread { playersAdapter.updateData(Players.players) }
+    }
+
+    private fun receiveNewAi() {
+        SocketHandler.socket.on("newPlayerAi") { response ->
+            val newAi = jacksonObjectMapper().readValue(response[0].toString(), Player::class.java)
+            val indexToReplace = response[1] as Int
+            Players.players[indexToReplace] = newAi
+            skipTurnService.activePlayerName = newAi.name
+        }
     }
 }

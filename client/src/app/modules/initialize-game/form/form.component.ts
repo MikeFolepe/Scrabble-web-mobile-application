@@ -16,7 +16,7 @@ import { GameSettingsService } from '@app/services/game-settings.service';
 import { AiType } from '@common/ai-name';
 import { Dictionary } from '@common/dictionary';
 import { GameSettings, RoomType, StartingPlayer } from '@common/game-settings';
-import { PasswordGameDialogComponent } from '../password-game-dialog/password-game-dialog.component';
+import { PasswordGameDialogComponent } from '@app/modules/initialize-game/password-game-dialog/password-game-dialog.component';
 
 @Component({
     selector: 'app-form',
@@ -32,7 +32,7 @@ export class FormComponent implements OnInit, OnDestroy {
     channels: string[] = [];
     channel: string;
     gameTypes: string[];
-    gameTypeInput: NumberOfPlayer;
+    gameTypeInput: NumberOfPlayer = NumberOfPlayer.OneVone;
     gameTypeMessage: string;
     constructor(
         private clientSocket: ClientSocketService,
@@ -62,6 +62,7 @@ export class FormComponent implements OnInit, OnDestroy {
             levelInput: new FormControl('Débutant'),
             channelInput: new FormControl(''),
             dictionaryInput: new FormControl(this.selectedDictionary.title, [Validators.required]),
+            gameType: new FormControl(this.gameTypes[0]),
         });
         this.adminService.initializeAiPlayers();
     }
@@ -74,7 +75,7 @@ export class FormComponent implements OnInit, OnDestroy {
 
     selectGameType(gameType: number) {
         this.gameTypeInput = gameType === 0 ? NumberOfPlayer.OneVone : NumberOfPlayer.OneVthree;
-        this.gameSettingsService.gameSettings.myGameType = this.gameTypeInput;
+        this.gameSettingsService.gameSettings.gameType = this.gameTypeInput;
     }
 
     async selectGameDictionary(dictionary: Dictionary): Promise<void> {

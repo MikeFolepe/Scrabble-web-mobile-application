@@ -10,8 +10,8 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.scrabbleprototype.R
+import com.example.scrabbleprototype.fragments.ChannelButtonsFragment
 import com.example.scrabbleprototype.model.*
-import com.example.scrabbleprototype.model.Dictionary
 import com.example.scrabbleprototype.objects.CurrentRoom
 import com.example.scrabbleprototype.objects.Players
 import com.example.scrabbleprototype.objects.ThemeManager
@@ -30,9 +30,6 @@ import kotlinx.coroutines.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONObject
-import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.concurrent.timerTask
 import kotlin.coroutines.CoroutineContext
 
 
@@ -60,7 +57,7 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
     override fun onCreate(savedInstanceState: Bundle?) {
         ThemeManager.setActivityTheme(this)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_create_game_2)
+        setContentView(R.layout.activity_create_game)
 
         client = HttpClient() {
             install(ContentNegotiation) {
@@ -68,10 +65,13 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
             }
         }
         receiveMyPlayer()
-        setUpButtons()
+        setupButtons()
         currRoom()
         receiveAis()
         launch { setupSpinners() }
+        if(savedInstanceState == null) {
+            setupFragments()
+        }
     }
 
     suspend fun setupSpinners() {
@@ -113,6 +113,13 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
            response = null
         }
         return response
+    }
+
+    private fun setupFragments() {
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
+        fragmentTransaction.add(R.id.create_game_chatroom_buttons, ChannelButtonsFragment())
+        fragmentTransaction.addToBackStack(null)
+        fragmentTransaction.commit()
     }
 
     private fun handleMinutesSelection(minutesSpinner: Spinner) {
@@ -168,7 +175,7 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
         }
     }
 
-    private fun setUpButtons() {
+    private fun setupButtons() {
         val continueGameButton = findViewById<Button>(R.id.continue_button)
         continueGameButton.setOnClickListener {
             createGame(this.gameSetting)

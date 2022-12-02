@@ -89,6 +89,7 @@ class BoardFragment : Fragment() {
     override fun onStop() {
         super.onStop()
         placeBound = false
+        activity?.unbindService(connection)
     }
 
     private fun receiveOpponentPlacement(view: View) {

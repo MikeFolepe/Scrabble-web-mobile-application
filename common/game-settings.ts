@@ -24,9 +24,9 @@ export class GameSettings {
         public level: AiType,
         public dictionary: string,
         public type: RoomType,
-        public myGameType: NumberOfPlayer
+        gameType: NumberOfPlayer
     ) {
         this.password = '';
-        this.gameType = myGameType;
+        this.gameType = gameType;
     }
 }

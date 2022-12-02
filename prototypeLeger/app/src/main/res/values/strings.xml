@@ -136,4 +136,14 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    //Chat rooms
+    <string name="join_chatroom">Rejoindre</string>
+    <string name="delete_chatroom">Supprimer</string>
+    <string name="available_chatrooms">Liste des canaux disponibles</string>
+    <string name="Leave">Quitter</string>
+    <string name="change_chatRoom">Changer</string>
+    <string name="my_chatRooms">Liste des canaux dont vous faites partie</string>
+    <string name="chatroom_creation">Création de canal de discussion</string>
+    <string name="chatroom_name">Nom du canal de discussion</string>
+
 </resources>

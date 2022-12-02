@@ -249,7 +249,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
     sendLeaveGame(@ConnectedSocket() socket, @MessageBody() playerName: string, @MessageBody() roomId: string) {
         const room = this.roomManagerService.find(roomId[1]);
         const index = room.playerService.players.findIndex((curPlayer) => curPlayer.name === playerName[0]);
-        this.leaveGame(socket, index, room);
+        this.leaveGame(socket, room, index);
     }
 
     @SubscribeMessage('replaceAi')

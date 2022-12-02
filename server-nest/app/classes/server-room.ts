@@ -78,7 +78,7 @@ export class ServerRoom {
     }
 
     initializeAiPlayers(): void {
-        const defaultAiNumber = this.gameSettings.myGameType === NumberOfPlayer.OneVthree ? DEFAULT_AI_PLAYERS_NB : DEFAULT_SOLO_AI_PLAYERS_NB;
+        const defaultAiNumber = this.gameSettings.gameType === NumberOfPlayer.OneVthree ? DEFAULT_AI_PLAYERS_NB : DEFAULT_SOLO_AI_PLAYERS_NB;
         for (let i = 0; i < defaultAiNumber; i++) {
             this.playerService.players.push(
                 new Player(AI_NAMES[this.playerService.players.length - 1], this.letter.getRandomLetters(), 0, false, false, true, bot),

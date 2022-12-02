@@ -65,12 +65,6 @@
         </mat-card>
     </div>
 </div>
-<!-- <button (click)="test()">click me</button> -->
-<!-- <div *ngFor="let channel of this.channelHandlerService.channels">
-    <mat-card-subtitle>
-        {{ channel }}
-    </mat-card-subtitle>
-</div> -->
 
 <div *ngIf="joinRoomService.shouldDisplayError">
     <mat-card class="error-message"><span class="warning">Erreur</span>{{ joinRoomService.errorMessage }}</mat-card>
@@ -78,15 +72,6 @@
 
 <div id="buttons">
     <button mat-raised-button routerLink="/home" color="warn">Retour</button>
-    <!-- <button
-        mat-raised-button
-        *ngIf="this.isRoomAvailable && !shouldDisplayNameError && !shouldDisplayJoinError"
-        color="primary"
-        (click)="placeRandomly()"
-        [disabled]="!this.isRandomButtonAvailable"
-    >
-        Placement aléatoire
-    </button> -->
 </div>
 <div class="chatRooms-buttons">
     <button mat-mini-fab class="addButton tooltip" (click)="joinRoomService.openAddChatRoomDialog()">
