@@ -78,7 +78,7 @@ class WaitingRoomActivity : AppCompatActivity() {
     }
 
 
-    private fun setupCancelButton(){
+    private fun setUpCancelButton(){
         val cancelGameButton = findViewById<Button>(R.id.back_button)
 
         if(currentPlayer.isCreator){
@@ -183,7 +183,7 @@ class WaitingRoomActivity : AppCompatActivity() {
             runOnUiThread { startActivity(Intent(this, MainMenuActivity::class.java)) }
         }
     }
-    
+
     private fun leaveToHome() {
         socket.on("leaveToHome") {
             runOnUiThread{

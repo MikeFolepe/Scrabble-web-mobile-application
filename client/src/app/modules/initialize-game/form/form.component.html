@@ -40,6 +40,18 @@
                 <legend>Protection de la partie</legend>
                 <app-visibility-field [formGroup]="form" [parentForm]="form"></app-visibility-field>
             </fieldset>
+            <fieldset class="form-section">
+                <legend>Type de partie</legend>
+                <mat-form-field [formGroup]="form" appearance="fill">
+                    <mat-label>Type de partie</mat-label>
+                    <mat-select [formControlName]="'gameType'">
+                        <mat-option *ngFor="let gameType of this.gameTypes; let i = index" [value]="gameType" (click)="selectGameType(i)">
+                            {{ gameType }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </fieldset>
+
             <fieldset *ngIf="gameSettingsService.isSoloMode" class="form-section">
                 <legend>Niveau du joueur virtuel</legend>
                 <app-level-field [formGroup]="form" [parentForm]="form"></app-level-field>

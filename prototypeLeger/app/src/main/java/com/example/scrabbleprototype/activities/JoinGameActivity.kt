@@ -102,7 +102,7 @@ class JoinGameActivity : AppCompatActivity() {
         }
     }
 
-    private fun setUpPasswordJoinDialog(currentRoom: Room, isObserver: Boolean) {
+    private fun setupPasswordJoinDialog(currentRoom: Room, isObserver: Boolean) {
         passwordDialog = Dialog(this)
         passwordDialog.setContentView(R.layout.public_game_pwd)
         val validateButton = passwordDialog.findViewById<Button>(R.id.validate_button)
@@ -152,7 +152,7 @@ class JoinGameActivity : AppCompatActivity() {
             return
         }
 
-        this.setupPasswordJoinDialog(currentRoom,isObserver)
+        setupPasswordJoinDialog(currentRoom,isObserver)
 
         passwordDialog.show()
 
