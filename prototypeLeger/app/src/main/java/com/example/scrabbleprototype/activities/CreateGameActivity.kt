@@ -44,7 +44,8 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
         job.cancel()
     }
     var currentRoom = CurrentRoom;
-    var gameSetting: GameSettings = GameSettings(Users.currentUser.pseudonym, StartingPlayer.Player1, "00", "00", AiType.beginner, "", RoomType.public.ordinal)
+    var gameSetting: GameSettings = GameSettings(Users.currentUser.pseudonym, StartingPlayer.Player1, "00", "00",
+                                    AiType.beginner, "", RoomType.public.ordinal, NumberOfPlayer.OneVthree)
     val minutes = arrayListOf("00", "01", "02", "03")
     val seconds = arrayListOf("00", "30")
     var dictionaries = listOf<Dictionary>()
