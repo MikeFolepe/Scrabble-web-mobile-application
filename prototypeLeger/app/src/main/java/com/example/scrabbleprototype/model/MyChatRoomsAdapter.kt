@@ -1,11 +1,9 @@
 package com.example.scrabbleprototype.model
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.CheckBox
 import android.widget.RadioButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -16,7 +14,7 @@ import com.example.scrabbleprototype.objects.Users
 class MyChatRoomsAdapter (private var chatRooms: ArrayList<ChatRoom>) :
     RecyclerView.Adapter<MyChatRoomsAdapter.ViewHolder>() {
 
-    private var selectedPosition: Int = -1
+    private var selectedPosition: Int = 0
 
     var onChatRoomClick: ((position: Int, isChecked: Boolean) -> Unit)? = null
     var onLeave: ((position: Int) -> Unit)? = null

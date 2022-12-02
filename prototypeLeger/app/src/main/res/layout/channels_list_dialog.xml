@@ -24,10 +24,12 @@
 
         <androidx.appcompat.widget.SearchView
             android:id="@+id/search_chatrooms"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:queryHint="Veuillez entrer le nom du canal recherché"
-            android:textColor="?android:textColor"/>
+            android:layout_width="400dp"
+            android:layout_height="40dp"
+            app:title="@string/searchTitle"
+            app:queryHint="@string/searchHint"
+            android:background="@drawable/teal_shadow_button"
+            android:layout_margin="10dp"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/all_chatrooms"

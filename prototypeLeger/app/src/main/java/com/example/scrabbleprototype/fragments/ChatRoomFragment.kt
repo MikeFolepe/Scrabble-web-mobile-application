@@ -98,7 +98,7 @@ class ChatRoomFragment: Fragment() {
     private fun receiveMessages() {
         socket.on("updateChatRooms") { response ->
             Timer().schedule(timerTask {
-                currentChatRoom = chatRooms.find { it.chatRoomName == currentChatRoom?.chatRoomName }
+                currentChatRoom = chatRooms.find { it.chatRoomName == currentChatRoom?.chatRoomName }!!
                 activity?.runOnUiThread {
                     if(currentChatRoom == null || chatAdapter == null) return@runOnUiThread
                     if (currentChatRoom?.messages?.last()?.pseudonym != currentUser.pseudonym) {

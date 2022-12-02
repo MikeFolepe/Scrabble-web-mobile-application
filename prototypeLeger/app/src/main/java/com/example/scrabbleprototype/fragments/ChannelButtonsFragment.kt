@@ -55,6 +55,7 @@ class ChannelButtonsFragment : Fragment() {
         if(savedInstanceState == null) {
             setupFragments()
         }
+
         receiveChatRooms()
         receiveNewChatRoom()
     }
@@ -85,6 +86,8 @@ class ChannelButtonsFragment : Fragment() {
         binding.createChatRoomButton.setOnClickListener {
             CreateChatRoomDialog.show()
         }
+        //currentChatRoom = myChatRooms[0]
+        //recreateChatFragment()
     }
 
     private fun setupFragments() {
@@ -218,8 +221,9 @@ class ChannelButtonsFragment : Fragment() {
             .setNegativeButton("Cancel", null)
             .create()
     }
+
     private fun uncheckAllCheckBoxes(chatsView: RecyclerView) {
-        for(i in 0 until chatRooms.size) {
+        for(i in 1 until chatRooms.size) {
             val chatItem = chatsView.findViewHolderForAdapterPosition(i)?.itemView
             chatItem?.findViewById<CheckBox>(R.id.checkbox)?.isChecked = false
         }
