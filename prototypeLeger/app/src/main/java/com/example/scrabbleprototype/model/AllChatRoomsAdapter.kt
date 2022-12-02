@@ -91,6 +91,7 @@ class AllChatRoomsAdapter (private var chatRooms: ArrayList<ChatRoom>) :
 
     fun updateData(newChatRooms: ArrayList<ChatRoom>) {
         chatRooms = newChatRooms
+
         this.notifyDataSetChanged()
     }
 }

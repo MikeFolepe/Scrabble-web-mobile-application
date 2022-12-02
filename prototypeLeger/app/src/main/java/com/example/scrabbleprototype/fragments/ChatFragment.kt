@@ -77,16 +77,16 @@ class ChatFragment: Fragment() {
     }
 
     private fun setupChatBox(view: View) {
-        val messagesList = view.findViewById<ListView>(com.example.scrabbleprototype.R.id.chat_box)
-        val chatAdapter = ChatAdapter(activityContext, com.example.scrabbleprototype.R.layout.chat_message_style, messages)
+        val messagesList = view.findViewById<ListView>(R.id.chat_box)
+        val chatAdapter = ChatAdapter(activityContext, R.layout.chat_message_style, messages)
         messagesList.adapter = chatAdapter
         messagesList.transcriptMode = AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL
 
-        val sendButton = view.findViewById<ImageButton>(com.example.scrabbleprototype.R.id.send_button)
+        val sendButton = view.findViewById<ImageButton>(R.id.send_button)
         sendButton.setOnClickListener{
             sendMessage(view)
         }
-        val messageInput = view.findViewById<EditText>(com.example.scrabbleprototype.R.id.message_input)
+        val messageInput = view.findViewById<EditText>(R.id.message_input)
         messageInput.setOnKeyListener(View.OnKeyListener {v, keyCode, event ->
             if(keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
                 sendMessage(view)
@@ -98,7 +98,7 @@ class ChatFragment: Fragment() {
     }
 
     private fun sendMessage(view: View) {
-        val messageInput = view.findViewById<EditText>(com.example.scrabbleprototype.R.id.message_input)
+        val messageInput = view.findViewById<EditText>(R.id.message_input)
         val message = ChatRoomMessage(messageInput.text.toString(), "", currentUser.pseudonym)
 
         if(validateMessage(messageInput.text.toString())) {
@@ -112,7 +112,7 @@ class ChatFragment: Fragment() {
     }
 
     private fun addMessage(message: ChatRoomMessage, view: View) {
-        val messagesList = view.findViewById<ListView>(com.example.scrabbleprototype.R.id.chat_box)
+        val messagesList = view.findViewById<ListView>(R.id.chat_box)
         messages.add(message)
 
         activity?.runOnUiThread {
