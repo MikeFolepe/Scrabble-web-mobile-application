@@ -4,12 +4,13 @@ import { AppRoutingModule } from '../app-routing.module';
 import { AppMaterialModule } from '../material.module';
 import { SharedModule } from '../shared/shared.module';
 import { UserMenuNavComponent } from './user-menu-nav/user-menu-nav.component';
-import { UserProfileComponent } from './user-profile/user-profile.component';
+import { UserPreferencesComponent } from './user-preferences/user-preferences.component';
 import { UserListDialogComponent } from './user-profile/user-list-dialog/user-list-dialog.component';
+import { UserProfileComponent } from './user-profile/user-profile.component';
 import { UserStatsComponent } from './user-stats/user-stats.component';
 
 @NgModule({
-    declarations: [UserMenuNavComponent, UserProfileComponent, UserListDialogComponent, UserStatsComponent],
+    declarations: [UserMenuNavComponent, UserProfileComponent, UserListDialogComponent, UserStatsComponent, UserPreferencesComponent],
     imports: [CommonModule, AppRoutingModule, SharedModule, AppMaterialModule],
     exports: [UserMenuNavComponent],
 })

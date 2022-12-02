@@ -197,13 +197,6 @@ export class GameHandlerGateway implements OnGatewayConnection {
         this.leaveGame(socket, room, index);
     }
 
-    @SubscribeMessage('sendLeaveGame')
-    sendLeaveGame(@ConnectedSocket() socket, @MessageBody() playerName: string, @MessageBody() roomId: string) {
-        const room = this.roomManagerService.find(roomId[1]);
-        const index = room.playerService.players.findIndex((curPlayer) => curPlayer.name === playerName[0]);
-        this.leaveGame(socket, room, index);
-    }
-
     @SubscribeMessage('sendObserverLeave')
     sendObserverLeave(@ConnectedSocket() socket, @MessageBody() roomId: string) {
         const room = this.roomManagerService.find(roomId);
@@ -257,6 +250,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
             }
             room.placeLetter.handleValidPlacement(validationResult, index);
             room.placeLetter.scrabbleBoard = JSON.parse(board[5]);
+            if (word.length === 7) socket.emit('playAudio');
             socket.emit('receiveSuccess');
             socket.to(roomId[6]).emit('receivePlacement', board[5], position[0], orientation[2], word[1]);
             this.server.to(roomId[6]).emit('updatePlayer', room.playerService.players[index]);
@@ -271,6 +265,22 @@ export class GameHandlerGateway implements OnGatewayConnection {
         const currentUser = this.userService.activeUsers.find((curUser) => curUser.pseudonym === user.pseudonym);
         if (currentUser) {
             currentUser.socketId = user.socketId;
+        }
+    }
+
+    @SubscribeMessage('sendLeaveGame')
+    sendLeaveGame(@ConnectedSocket() socket, @MessageBody() playerName: string, @MessageBody() roomId: string) {
+        const room = this.roomManagerService.find(roomId[1]);
+        const index = room.playerService.players.findIndex((curPlayer) => curPlayer.name === playerName[0]);
+        this.leaveGame(socket, room, index);
+    }
+
+    @SubscribeMessage('checkingWord')
+    checkingWord(@ConnectedSocket() socket, @MessageBody() word: string, @MessageBody() roomId: string) {
+        const room = this.roomManagerService.find(roomId[1]);
+        if (room.wordValidation.isWordInDictionary(word[0])) socket.emit('receiveChecking', true);
+        else {
+            socket.emit('receiveChecking', false);
         }
     }
 
@@ -325,19 +335,22 @@ export class GameHandlerGateway implements OnGatewayConnection {
 
     async handleDisconnect(socket: Socket) {
         const room = this.roomManagerService.find(this.roomManagerService.findRoomIdOf(socket.id));
-        const userIndex = this.userService.activeUsers.findIndex((curUser) => curUser.socketId === socket.id);
-        await this.userService.addLogout(this.userService.activeUsers[userIndex]._id);
+        if (this.userService.activeUsers.length !== 0) {
+            console.log(this.userService.activeUsers);
+            const userIndex = this.userService.activeUsers.findIndex((curUser) => curUser.socketId === socket.id);
+            await this.userService.addLogout(this.userService.activeUsers[userIndex]._id);
 
-        if (room !== undefined) {
-            let pseudonym;
-            if (userIndex !== INVALID_INDEX) {
-                pseudonym = this.userService.activeUsers[userIndex].pseudonym;
+            if (room !== undefined) {
+                let pseudonym;
+                if (userIndex !== INVALID_INDEX) {
+                    pseudonym = this.userService.activeUsers[userIndex].pseudonym;
+                }
+                const indexPlayer = room.playerService.players.findIndex((player) => player.name === pseudonym);
+                await this.leaveGame(socket, room, indexPlayer, this.userService.activeUsers[userIndex]._id);
             }
-            const indexPlayer = room.playerService.players.findIndex((player) => player.name === pseudonym);
-            await this.leaveGame(socket, room, indexPlayer, this.userService.activeUsers[userIndex]._id);
+            this.userService.activeUsers.splice(userIndex, 1);
+            this.logger.log(`Déconnexion par l'utilisateur avec id : ${socket.id}`);
         }
-        this.logger.log(`Déconnexion par l'utilisateur avec id : ${socket.id}`);
-        this.userService.activeUsers.splice(userIndex, 1);
     }
 
     private async leaveGame(socket: Socket, room: ServerRoom, indexPlayer: number = 0, userId: string = '') {

@@ -9,9 +9,13 @@ export enum RoomType {
     public,
     private,
 }
-
+export enum NumberOfPlayer {
+    OneVone,
+    OneVthree,
+}
 export class GameSettings {
     password: string;
+    gameType: NumberOfPlayer;
     constructor(
         public creatorName: string,
         public startingPlayer: StartingPlayer,
@@ -20,7 +24,9 @@ export class GameSettings {
         public level: AiType,
         public dictionary: string,
         public type: RoomType,
+        gameType: NumberOfPlayer
     ) {
         this.password = '';
+        this.gameType = gameType;
     }
 }

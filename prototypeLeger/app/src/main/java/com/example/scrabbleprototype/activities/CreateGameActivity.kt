@@ -10,8 +10,8 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.scrabbleprototype.R
+import com.example.scrabbleprototype.fragments.ChannelButtonsFragment
 import com.example.scrabbleprototype.model.*
-import com.example.scrabbleprototype.model.Dictionary
 import com.example.scrabbleprototype.objects.CurrentRoom
 import com.example.scrabbleprototype.objects.Players
 import com.example.scrabbleprototype.objects.ThemeManager
@@ -30,9 +30,6 @@ import kotlinx.coroutines.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONObject
-import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.concurrent.timerTask
 import kotlin.coroutines.CoroutineContext
 
 
@@ -48,7 +45,8 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
         job.cancel()
     }
     var currentRoom = CurrentRoom;
-    var gameSetting: GameSettings = GameSettings(Users.currentUser.pseudonym, StartingPlayer.Player1, "00", "00", AiType.beginner, "", RoomType.public.ordinal)
+    var gameSetting: GameSettings = GameSettings(Users.currentUser.pseudonym, StartingPlayer.Player1, "00", "00",
+                                    AiType.beginner, "", RoomType.public.ordinal, NumberOfPlayer.OneVthree)
     val minutes = arrayListOf("00", "01", "02", "03")
     val seconds = arrayListOf("00", "30")
     var dictionaries = listOf<Dictionary>()
@@ -61,7 +59,7 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
     override fun onCreate(savedInstanceState: Bundle?) {
         ThemeManager.setActivityTheme(this)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_create_game_2)
+        setContentView(R.layout.activity_create_game)
 
         client = HttpClient() {
             install(ContentNegotiation) {
@@ -70,10 +68,13 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
         }
         dicoDescription = findViewById(R.id.description)
         receiveMyPlayer()
-        setUpButtons()
+        setupButtons()
         currRoom()
         receiveAis()
         launch { setupSpinners() }
+        if(savedInstanceState == null) {
+            setupFragments()
+        }
     }
 
     suspend fun setupSpinners() {
@@ -115,6 +116,13 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
            response = null
         }
         return response
+    }
+
+    private fun setupFragments() {
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
+        fragmentTransaction.add(R.id.create_game_chatroom_buttons, ChannelButtonsFragment())
+        fragmentTransaction.addToBackStack(null)
+        fragmentTransaction.commit()
     }
 
     private fun handleMinutesSelection(minutesSpinner: Spinner) {
@@ -171,7 +179,7 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
         }
     }
 
-    private fun setUpButtons() {
+    private fun setupButtons() {
         val continueGameButton = findViewById<Button>(R.id.continue_button)
         continueGameButton.setOnClickListener {
             createGame(this.gameSetting)
@@ -230,10 +238,6 @@ class CreateGameActivity : AppCompatActivity(), CoroutineScope {
     }
 
     private fun createGame (gameSetting: GameSettings) {
-        socket.on("yourRoomId") { response ->
-            val roomReceived = Room(response[0].toString(), arrayListOf(socket.id()), gameSetting, State.Waiting, 3 , 1, arrayListOf())
-            currentRoom.myRoom = roomReceived;
-        }
         //gameSetting.dictionary = dictionaries.find { it.title == dicoFileName }!!.fileName
         gameSetting.dictionary = dictionaries[0].fileName
         Log.d("game" , gameSetting.password)

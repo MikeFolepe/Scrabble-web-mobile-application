@@ -2,7 +2,7 @@ package com.example.scrabbleprototype.model
 
 import android.graphics.Bitmap
 import com.fasterxml.jackson.annotation.JsonIgnore
-import environments.Environment
+import environments.Environment.serverUrl
 import kotlinx.serialization.Serializable
 
 @Serializable

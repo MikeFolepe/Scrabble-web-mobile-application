@@ -1,13 +1,34 @@
 <div id="mySidenav" class="sidenav">
     <header><img id="logo-scrabble" src="https://bit.ly/3m206ss" class="not-selectionnable" alt="Logo Scrabble" /></header>
+
     <p class="closebtn" (click)="closeNav()">&times;</p>
-    <p (click)="closeNav()" routerLink="/home">Menu principal</p>
+    <div class="item-nav">
+        <mat-icon>home</mat-icon>
+        <p (click)="closeNav()" routerLink="/home">Menu principal</p>
+    </div>
     <hr />
-    <p routerLink="/profile">Profil</p>
+
+    <div class="item-nav">
+        <mat-icon>person</mat-icon>
+        <p routerLink="/profile">Profil</p>
+    </div>
+
     <hr />
-    <p href="#">Paramètres et personnalisation</p>
-    <p routerLink="/statistics">Statistiques et historique</p>
-    <p href="#">Contact</p>
+
+    <div class="item-nav">
+        <mat-icon>settings</mat-icon>
+        <p routerLink="/settings">Paramètres et personnalisation</p>
+    </div>
+    <div class="item-nav">
+        <mat-icon>bar_chart</mat-icon>
+        <p routerLink="/statistics">Statistiques et historique</p>
+    </div>
+
+    <hr />
+    <div class="item-nav">
+        <mat-icon>shopping_cart</mat-icon>
+        <p routerLink="/home">Boutique</p>
+    </div>
 </div>
 
-<span *ngIf="!isNavOpen" class="openbtn" (click)="openNav()">&#9776; open</span>
+<span *ngIf="!isNavOpen" class="openbtn" (click)="openNav()">&#9776;</span>

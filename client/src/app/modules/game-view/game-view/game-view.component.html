@@ -18,7 +18,7 @@
                     color="primary"
                     id="regular-button-1"
                     [disabled]="!playerService.currentPlayer.isTurn || this.skipTurnService.shouldNotBeDisplayed || this.endGameService.isEndGame"
-                    (click)="this.chatBoxService.sendPlayerMessage('!passer')"
+                    (click)="this.chatBoxService.sendPlayerMessage('!passer'); this.skipTurnService.switchTurn()"
                 >
                     Passer son tour
                 </button>
@@ -26,7 +26,11 @@
                     mat-raised-button
                     color="primary"
                     id="regular-button-1"
-                    [disabled]="!playerService.currentPlayer.isTurn || this.skipTurnService.shouldNotBeDisplayed || this.endGameService.isEndGame"
+                    [disabled]="
+                        !playerService.currentPlayer.isTurn ||
+                        this.skipTurnService.shouldNotBeDisplayed ||
+                        this.playerService.currentPlayer.letterTable.length !== 7 || this.endGameService.isEndGame
+                    "
                     (click)="openBestActionsDialog()"
                 >
                     Meilleurs coups

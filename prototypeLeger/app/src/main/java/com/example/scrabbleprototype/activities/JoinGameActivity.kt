@@ -1,17 +1,20 @@
 package com.example.scrabbleprototype.activities
 
+import android.app.ActivityManager
 import android.app.Dialog
+import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
+import com.example.scrabbleprototype.fragments.ChannelButtonsFragment
 import com.example.scrabbleprototype.model.*
 import com.example.scrabbleprototype.objects.CurrentRoom
 import com.example.scrabbleprototype.objects.Players
@@ -19,13 +22,11 @@ import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.objects.Users
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import org.json.JSONArray
 import org.json.JSONObject
+
 
 class JoinGameActivity : AppCompatActivity() {
 
@@ -50,6 +51,17 @@ class JoinGameActivity : AppCompatActivity() {
         previewRoomPlayers()
         // handleDeletedGame()
         handleObservableRoomsAvailability()
+
+        if(savedInstanceState == null) {
+            setupFragments()
+        }
+    }
+
+    private fun setupFragments() {
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
+        fragmentTransaction.add(R.id.join_game_chatroom_buttons, ChannelButtonsFragment())
+        fragmentTransaction.addToBackStack(null)
+        fragmentTransaction.commit()
     }
 
     private fun setupGameList() {
@@ -122,7 +134,6 @@ class JoinGameActivity : AppCompatActivity() {
 
 
     private fun joinGame(position: Int, isObserver: Boolean) {
-        Log.d("room", rooms.toString())
         val currentRoom = rooms[position]
         if(currentRoom.gameSettings.type == RoomType.private.ordinal) {
             socket.emit("sendRequestToCreator", Users.currentUser.pseudonym, currentRoom.id)
@@ -141,7 +152,7 @@ class JoinGameActivity : AppCompatActivity() {
             return
         }
 
-        this.setUpPasswordJoinDialog(currentRoom,isObserver)
+        this.setupPasswordJoinDialog(currentRoom,isObserver)
 
         passwordDialog.show()
 
@@ -164,7 +175,7 @@ class JoinGameActivity : AppCompatActivity() {
     }
 
     private fun receiveRooms(gameListAdapter: GameListAdapter) {
-        socket.on("roomConfiguration"){ response ->
+        socket.once("roomConfiguration"){ response ->
             rooms = mapper.readValue(response[0].toString(), object: TypeReference<ArrayList<Room>>() {})
             runOnUiThread {
                 gameListAdapter.updateData(rooms)
@@ -180,7 +191,7 @@ class JoinGameActivity : AppCompatActivity() {
     }
 
     private fun receivePlayers() {
-        socket.on("roomPlayers") { response ->
+        socket.once("roomPlayers") { response ->
             Log.d("roomPlayers", "join")
             Players.players = mapper.readValue(response[0].toString(), object: TypeReference<ArrayList<Player>>() {})
         }
@@ -196,7 +207,7 @@ class JoinGameActivity : AppCompatActivity() {
 
 
     private fun receiveJoinDecision() {
-        socket.on("receiveJoinDecision") { response ->
+        socket.once("receiveJoinDecision") { response ->
 
             val decision = mapper.readValue(response[0].toString(), Boolean::class.java)
             val roomId = response[1].toString()
@@ -229,7 +240,8 @@ class JoinGameActivity : AppCompatActivity() {
     }
 
     private fun routeToWaitingRoom() {
-        socket.on("goToWaiting") {
+        socket.once("goToWaiting") {
+            Log.d("routetowaiting", "going")
             startActivity(Intent(this, WaitingRoomActivity::class.java))
         }
     }

@@ -59,10 +59,6 @@ $indigo-pink-theme: mat.define-light-theme(
     @include mat.all-component-colors($purple-green-theme);
 }
 
-.center{
-    display: flex;
-    justify-content: center;
-}
 
 /* You can add global styles to this file, and also import other style files */
 
@@ -99,7 +95,7 @@ header {
     justify-content: center;
     text-align: center;
     width: 100%;
-    
+
     height: 3em;
     background-color: #00804d;
     color: #f5fbf3;

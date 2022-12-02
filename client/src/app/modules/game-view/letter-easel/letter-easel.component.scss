@@ -52,6 +52,34 @@ h2 {
     border-radius: 6px;
 }
 
+.wordButton{
+    float: right;
+    margin-bottom: 25px;
+}
+
+.correct{
+    margin-top: 2em;
+    font-size: 15px;
+    color: green;
+    margin-left: 15px;
+}
+.notCorrect{
+    margin-top: 2em;
+    font-size: 15px;
+    color: red;
+    margin-left: 15px;
+}
+.word{
+    height: 20px;
+    margin-top: 3em;
+    margin-right: 10px;
+}
+.wordWrapper{
+    display: flex;
+    flex-direction:row;
+    width: 400px;
+}
+
 .border-manipulation {
     z-index: 1;
     outline: 5px solid rgba(98, 199, 233, 0.911);

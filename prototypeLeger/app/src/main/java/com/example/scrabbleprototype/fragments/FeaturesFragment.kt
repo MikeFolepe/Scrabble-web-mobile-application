@@ -84,6 +84,7 @@ class FeaturesFragment : Fragment(), CoroutineScope {
         super.onStop()
         skipTurnBound = false
         placeBound = false
+        requireContext().unbindService(connection)
     }
 
     override fun onCreateView(

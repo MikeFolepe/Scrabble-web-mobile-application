@@ -70,7 +70,20 @@ header {
 
 p {
     color: black;
-    font-size: 20px;
-    margin-left: 20px;
     cursor: pointer;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+.sidenav .mat-icon {
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+    margin-left: 15px;
+}
+
+.item-nav {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }

@@ -12,7 +12,7 @@ import com.example.scrabbleprototype.R
 import java.text.SimpleDateFormat
 import java.util.*
 
-class ChatAdapter(context: Context, @LayoutRes private val layoutResource: Int, private val messages: List<ChatRoomMessage>):
+class ChatAdapter(context: Context, @LayoutRes private val layoutResource: Int, private var messages: List<ChatRoomMessage>):
     ArrayAdapter<ChatRoomMessage>(context, layoutResource, messages) {
 
     private var _messages: List<ChatRoomMessage> = messages
@@ -42,11 +42,19 @@ class ChatAdapter(context: Context, @LayoutRes private val layoutResource: Int, 
         val messageUser = view.findViewById<TextView>(R.id.message_user)
         val messageTime = view.findViewById<TextView>(R.id.message_time)
         val message = view.findViewById<TextView>(R.id.message)
+        //imageview.setmageBitMap(_messages[position].getBitMap)
+
 
         messageUser.text = _messages[position].pseudonym
         messageTime.text = _messages[position].time
         message.text = _messages[position].text
 
         return view
+    }
+
+    fun updateData(newMessages: List<ChatRoomMessage>) {
+        this.messages = newMessages
+        this._messages = newMessages
+        notifyDataSetChanged()
     }
 }

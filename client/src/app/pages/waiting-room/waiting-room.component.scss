@@ -10,6 +10,7 @@
 }
 
 .waiting-players-container {
+    display: flex;
     width: 650px;
     height: 350px;
     background-color: #00804d;
@@ -21,7 +22,9 @@
     border-style: solid;
     border-width: 5px;
     padding: 25px;
+    margin: auto;
     margin-top: 100px;
+    top: 20%;
 }
 
 #list-display {
@@ -118,7 +121,7 @@ mat-icon {
 .error-message {
     font-size: x-large;
     text-align: center;
-    width: 100%;
+    width: 400px;
     margin-left: auto;
     margin-right: auto;
     border-radius: 10px;
@@ -126,9 +129,9 @@ mat-icon {
 }
 
 .avatar {
-    height : 40px;
-    width : 40px;
-    border-radius : 100%;
-    margin-right:5px;
+    height: 40px;
+    width: 40px;
+    border-radius: 100%;
+    margin-right: 5px;
     margin-bottom: -5px;
 }

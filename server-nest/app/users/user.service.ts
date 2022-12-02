@@ -70,13 +70,8 @@ export class UserService {
         userToSend._id = user._id;
         userToSend.xpPoints = user.xpPoints;
         userToSend.friends = user.friends;
+        console.log(userToSend);
         return userToSend;
-    }
-
-    async updateUser(user: User): Promise<User> {
-        await this.userModel.findByIdAndUpdate({ _id: user._id }, { pseudonym: user.pseudonym, avatar: user.avatar });
-        const userDB = await this.getSingleUser(user.pseudonym);
-        return userDB;
     }
 
     async getUserStats(userId: string): Promise<UserStatsDB> {
@@ -91,7 +86,6 @@ export class UserService {
             logouts: statsFromDB.logouts,
             games: statsFromDB.games,
         };
-        console.log(userStats);
         return userStats;
     }
 
@@ -135,6 +129,7 @@ export class UserService {
         const userStat = await this.userStatsModel.findOne({ userId }).exec();
         const lastTab = userStat.logouts;
         lastTab.push(newLogout);
+
         await this.userStatsModel.updateOne({ userId }, { logouts: lastTab });
     }
 
@@ -146,7 +141,6 @@ export class UserService {
         });
         console.log(userId);
         const userStat = await this.userStatsModel.findOne({ userId }).exec();
-        console.log(userStat);
         const lastTab = userStat.games;
         lastTab.push(newGame);
 
@@ -176,11 +170,16 @@ export class UserService {
         for (const userId of userIds) {
             console.log(userId);
             const userStats = await this.userStatsModel.findOne({ userId });
-            console.log(userStats);
 
             const newTime = userStats.totalTimeMs + totalTimeMs;
             await this.userStatsModel.updateOne({ userId }, { totalTimeMs: newTime });
         }
+    }
+
+    async updateUser(user: User): Promise<User> {
+        await this.userModel.findByIdAndUpdate({ _id: user._id }, { pseudonym: user.pseudonym, avatar: user.avatar });
+        const userDB = await this.getSingleUser(user.pseudonym);
+        return userDB;
     }
 
     encryptPassword(password: string): string {
