@@ -5,8 +5,8 @@ let appWindow;
 function initWindow() {
     appWindow = new BrowserWindow({
         // fullscreen: true,
-        height: 800,
-        width: 1000,
+        height: 1080,
+        width: 1920,
         webPreferences: {
             nodeIntegration: true,
         },
@@ -19,7 +19,7 @@ function initWindow() {
     appWindow.setMenuBarVisibility(false)
 
     // Initialize the DevTools.
-    appWindow.webContents.openDevTools()
+    // appWindow.webContents.openDevTools()
 
     appWindow.on('closed', function () {
         appWindow = null;

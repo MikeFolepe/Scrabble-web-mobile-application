@@ -17,6 +17,7 @@ import { GameType } from '@common/game-type';
     templateUrl: './main-page.component.html',
     styleUrls: ['./main-page.component.scss'],
 })
+
 export class MainPageComponent {
     selectedGameTypeIndex: number;
     selectedGameType: string | GameType;
@@ -27,7 +28,7 @@ export class MainPageComponent {
     chatRoomName: string;
     readonly gameType: string[];
     readonly gameModes: string[];
-
+    // @ViewChild('popoutWindow') private popoutWindow: PopoutWindowComponent;
     constructor(
         public authService: AuthService,
         public gameSettingsService: GameSettingsService,
