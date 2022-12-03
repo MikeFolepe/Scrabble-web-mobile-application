@@ -98,6 +98,15 @@ export class AuthService {
         this.translate.use(locale);
     }
 
+    async getPreferences(userId: string) {
+        await this.userService.getAppTheme(userId);
+        await this.userService.getBoards(userId);
+        await this.userService.getChats(userId);
+        await this.userService.getCurrentBoard(userId);
+        await this.userService.getCurrentChat(userId);
+        await this.userService.getLanguage(userId);
+    }
+
     logout() {
         this.clientSocketService.socket.disconnect();
         this.router.navigate(['/auth']);
@@ -137,14 +146,5 @@ export class AuthService {
             this.currentUser.socketId = socketId;
             this.clientSocketService.socket.emit(ChatEvents.UpdateUserSocket, this.currentUser);
         });
-    }
-
-    private async getPreferences(userId: string) {
-        await this.userService.getAppTheme(userId);
-        await this.userService.getBoards(userId);
-        await this.userService.getChats(userId);
-        await this.userService.getCurrentBoard(userId);
-        await this.userService.getCurrentChat(userId);
-        await this.userService.getLanguage(userId);
     }
 }
