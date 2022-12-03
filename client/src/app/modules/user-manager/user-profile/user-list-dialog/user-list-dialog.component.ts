@@ -23,7 +23,15 @@ export class UserListDialogComponent {
         this.buttonDisabled = new Set();
 
         const source = interval(3000);
-        source.subscribe((val) => this.userService.getUsers());
+        source.subscribe((val) => {
+            this.userService.getUsers();
+            this.usersToDisplay = [];
+            for (const i of userService.users) {
+                if (i.pseudonym !== this.auth.currentUser.pseudonym) {
+                    this.usersToDisplay.push(i);
+                }
+            }
+        });
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     invite(index: number) {

@@ -20,6 +20,7 @@ export class UserProfileComponent implements OnInit {
     ) {
         console.log(authService.currentUser);
         this.receiveInvitations();
+        this.addFriend();
     }
 
     ngOnInit(): void {
@@ -44,7 +45,6 @@ export class UserProfileComponent implements OnInit {
         this.clientSocket.socket.emit('acceptFriendRequest', currentUserAsFriend, this.authService.currentUser.invitations[index]);
         this.authService.currentUser.friends.push(this.authService.currentUser.invitations[index]);
         this.authService.currentUser.invitations.splice(index, 1);
-        // adapter
     }
     declineInvite(index: number) {
         this.clientSocket.socket.emit(
@@ -53,6 +53,10 @@ export class UserProfileComponent implements OnInit {
             this.authService.currentUser.invitations[index].pseudonym,
         );
         this.authService.currentUser.invitations.splice(index, 1);
-        // adapter
+    }
+    addFriend() {
+        this.clientSocket.socket.on('addFriend', (friend: Friend) => {
+            this.authService.currentUser.friends.push(friend);
+        });
     }
 }

@@ -12,7 +12,9 @@ export class NotificationService {
         this.receiveNotifications();
     }
     receiveNotifications() {
-        this.clientService.socket.on('receiveNotification', (notification) => {
+        console.log(this.clientService.socket.id);
+        this.clientService.socket.on('receiveNotification', (notification: Notification) => {
+            console.log('erefaefeaf');
             this.notifications.push(notification);
         });
     }
