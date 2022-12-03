@@ -31,7 +31,6 @@ export class GameHandlerGateway implements OnGatewayConnection {
     @SubscribeMessage('sendFriendRequest')
     async sendFriendRequest(@ConnectedSocket() socket, @MessageBody() sender: User, @MessageBody() receiver: User) {
         let activeReceiver: User;
-        console.log(receiver[1].pseudonym);
         for (const user of this.userService.activeUsers) {
             if (user.pseudonym === receiver[1].pseudonym) activeReceiver = user;
         }
@@ -185,14 +184,12 @@ export class GameHandlerGateway implements OnGatewayConnection {
 
         const interval = setInterval(async () => {
             room.endGameService.checkEndGame(room.letter.reserveSize);
-            console.log('hhhhfg');
             if (room.endGameService.isEndGame) {
                 const name = room.endGameService.getWinnerName(players);
                 room.skipTurnService.stopTimer();
                 this.server.in(roomId).emit('updateTimer', room.skipTurnService.minutes, room.skipTurnService.seconds);
                 this.server.in(roomId).emit('receiveEndGame', name, room.endGameService.gameStartDate, room.endGameService.gameStartTime);
                 room.endGameService.initEndTime();
-                console.log(room.userIds);
                 await this.userService.updateTimesPlayed(room.endGameService.computeTotalTime(), room.userIds);
                 this.server.socketsLeave(roomId);
                 this.roomManagerService.deleteRoom(roomId);
@@ -384,9 +381,10 @@ export class GameHandlerGateway implements OnGatewayConnection {
     async handleDisconnect(socket: Socket) {
         const room = this.roomManagerService.find(this.roomManagerService.findRoomIdOf(socket.id));
         if (this.userService.activeUsers.length !== 0) {
-            console.log(this.userService.activeUsers);
             const userIndex = this.userService.activeUsers.findIndex((curUser) => curUser.socketId === socket.id);
-            await this.userService.addLogout(this.userService.activeUsers[userIndex]._id);
+            if (this.userService.activeUsers[userIndex] !== undefined) {
+                await this.userService.addLogout(this.userService.activeUsers[userIndex]._id);
+            }
 
             if (room !== undefined) {
                 let pseudonym;
@@ -404,7 +402,6 @@ export class GameHandlerGateway implements OnGatewayConnection {
     private async leaveGame(socket: Socket, room: ServerRoom, indexPlayer: number = 0, userId: string = '') {
         const observer = room.observers.find((observerCur) => observerCur.socketId === socket.id);
         if (observer) {
-            console.log('observer');
             this.roomManagerService.removeObserver(room, socket.id);
             socket.leave(room.id);
             this.server.emit('roomConfiguration', this.roomManagerService.getRoomsToSend());

@@ -87,6 +87,20 @@ p {
         transform: scale(1.1);
     }
 }
+.notif {
+    //put the element on the top right corner of the screen
+    position: absolute;
+    top: 100px;
+    right: 15px;
+    height : 60px;
+    width : 60px;
+    border-radius : 100%;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    &:hover {
+        transform: scale(1.1);
+    }
+}
 
 .tooltip {
     position: relative;

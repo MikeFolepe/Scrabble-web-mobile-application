@@ -173,7 +173,6 @@ export class UserService {
             startTime: game.startTime,
             winnerName: game.winnerName,
         });
-        console.log(userId);
         const userStat = await this.userStatsModel.findOne({ userId }).exec();
         const lastTab = userStat.games;
         lastTab.push(newGame);
@@ -190,7 +189,6 @@ export class UserService {
     }
 
     async updateTotalPoints(userId: string, totalPoints: number): Promise<void> {
-        console.log(totalPoints);
         const userStat = await this.userStatsModel.findOne({ userId });
         const newPoints = userStat.totalPoints + totalPoints;
         await this.userStatsModel.findOneAndUpdate({ userId }, { totalPoints: newPoints });
@@ -202,7 +200,6 @@ export class UserService {
 
     async updateTimesPlayed(totalTimeMs: number, userIds: string[]): Promise<void> {
         for (const userId of userIds) {
-            console.log(userId);
             const userStats = await this.userStatsModel.findOne({ userId });
 
             const newTime = userStats.totalTimeMs + totalTimeMs;
@@ -263,7 +260,6 @@ export class UserService {
 
     async getInvitations(userId: string): Promise<Friend[]> {
         const user = await this.userModel.findOne({ _id: userId });
-        console.log(user.invitations);
         return user.invitations.map((invitation) => ({
             pseudonym: invitation.pseudonym,
             avatar: invitation.avatar,
@@ -287,8 +283,6 @@ export class UserService {
             xpPoints: invitation.xpPoints,
         });
         const user = await this.userModel.findOne({ pseudonym });
-        console.log(user);
-        console.log(newInvitation);
         user.invitations.push(newInvitation);
         await user.save();
         const invitationAdded = new Friend(newInvitation.pseudonym, newInvitation.avatar, newInvitation.xpPoints);

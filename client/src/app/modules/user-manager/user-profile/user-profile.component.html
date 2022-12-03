@@ -23,4 +23,16 @@
     </div>
 
     <button mat-raised-button color="primary" (click)="inviteUser()">Ajouter un ami</button>
+    <h1>Invitations d'amis</h1>
+    <hr style="color: black; width: 50%; height: 1px; background-color: black; left: 0; position: absolute; margin-top: -10px" />
+    <div class="listOfRequests" *ngFor="let i of this.authService.currentUser.invitations; let position=index">
+        <img id="avatarInvitation" src="{{ i.avatar }}" alt="avatar" />
+        <mat-card class="pseudo">{{ i.pseudonym }}</mat-card>
+        <button  mat-raised-button color="primary" (click)="acceptInvite(position)">
+            Accepter
+        </button>
+        <button  mat-raised-button color="warn" (click)="declineInvite(position)">
+            Refuser
+        </button>
+    </div>
 </div>

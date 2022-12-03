@@ -11,6 +11,7 @@ import { GiveUpHandlerService } from '@app/services/give-up-handler.service';
 import { LetterService } from '@app/services/letter.service';
 import { PlaceLetterService } from '@app/services/place-letter.service';
 import { GameType } from '@common/game-type';
+import { NotificationsDialogComponent } from '../notifications-dialog/notifications-dialog.component';
 
 @Component({
     selector: 'app-main-page',
@@ -35,6 +36,7 @@ export class MainPageComponent {
         public bestScoresDialog: MatDialog,
         public joinChatRoomsDialog: MatDialog,
         public changeChatRoomDialog: MatDialog,
+        public notificationsDialog: MatDialog,
         public addChatRoomDialog: MatDialog,
         private letterService: LetterService,
         private placeLetterService: PlaceLetterService,
@@ -77,6 +79,10 @@ export class MainPageComponent {
 
     openJoinChatRoomDialog(): void {
         this.joinChatRoomsDialog.open(JoinChatRoomsComponent, { disableClose: true });
+    }
+
+    openNotificationDialog(): void {
+        this.notificationsDialog.open(NotificationsDialogComponent, { disableClose: true });
     }
 
     openAddChatRoomDialog(): void {
