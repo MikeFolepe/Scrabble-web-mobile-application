@@ -42,6 +42,14 @@ class GameActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         ThemeManager.setActivityTheme(this)
+        val config = resources.configuration
+        val lang = MyLanguage.getLanguage()
+        Log.d("lang", lang)
+        val locale = Locale(lang)
+        Locale.setDefault(locale)
+        config.setLocale(locale)
+        createConfigurationContext(config)
+        resources.updateConfiguration(config, resources.displayMetrics)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
 

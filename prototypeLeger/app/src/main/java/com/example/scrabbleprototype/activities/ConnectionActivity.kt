@@ -196,7 +196,6 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
         var response: HttpResponse?
         try{
             response = client.get("$serverUrl/api/user/findUserInDb/"+pseudonym+"/"+password) {
-                contentType(ContentType.Application.Json)
             }
         } catch(e: Exception) {
             response = null

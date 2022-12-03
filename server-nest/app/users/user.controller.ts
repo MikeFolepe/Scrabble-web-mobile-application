@@ -27,6 +27,7 @@ export class UserController {
         const password = req.params.password;
         const userFound = await this.userService.getSingleUser(pseudonym);
         if (!userFound) return false;
+        console.log(userFound.pseudonym)
         const decryptedPassword = await this.userService.decryptPassword(pseudonym);
         if (password === decryptedPassword) {
             return true;
