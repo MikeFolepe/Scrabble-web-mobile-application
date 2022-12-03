@@ -1,0 +1,97 @@
+
+#title {
+    margin-top: 50px;
+    color: black;
+    margin-left: 50px;
+    margin-right: 0;
+}
+
+hr.class-1 {
+    border-top: 3px solid #23501F;
+    margin-bottom : 50px;
+    margin-left : 25px;
+    margin-right : 25px;
+}
+
+.boardThemeTitle {
+    //center the title
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}
+
+.chatroomThemeTitle {
+    margin-top : 50px;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+
+}
+
+.boardThemes { 
+    //put the box in the cetner
+    display: flex;
+    justify-content: center;
+    margin-left : 345px;
+    margin-top : 50px;
+    border-radius: 20px;
+    background-color : #23501F;
+    height: 500px;
+    width: 1200px;
+}
+
+.chatroomThemes {
+    display: flex;
+    justify-content: center;
+    margin-top : 50px;
+    margin-left : 490px;
+    border-radius: 20px;
+    background-color : #23501F;
+    height: 500px;
+    width: 900px;
+    margin-bottom : 50px;
+
+}
+
+.boardTheme {
+    width: 300px;
+    margin-right : 20px;
+    margin-left : 20px;
+    height : 400px;
+    margin-top : 32.5px;
+}
+
+mat-card-header {
+    //center 
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    //make the elements under the other
+    flex-direction: column;
+    //center everything
+    align-items: center;
+    //space between items 10px
+
+}
+
+mat-card-title {
+    color : #23501F;
+    margin-top : 10px;
+}
+
+.image {
+    width : 300px;
+    height : 300px;
+}
+
+.buyButton {
+    background-color: #00804d;
+    color : white;
+    margin-top : 10px;
+    width : 200px;
+    height : 50px;
+}
+
+.bottom {
+    height:20px;
+}
