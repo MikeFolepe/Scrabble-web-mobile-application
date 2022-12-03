@@ -8,9 +8,13 @@ import { MatDialogRef } from '@angular/material/dialog';
 })
 export class ChatroomThemeDialogComponent implements OnInit {
 
-  constructor(public boardTheme: MatDialogRef<ChatroomThemeDialogComponent>) { }
+  constructor(public chatroomTheme: MatDialogRef<ChatroomThemeDialogComponent>) { }
 
   ngOnInit(): void {
+  }
+
+  closeDialog () {
+    this.chatroomTheme.close();
   }
 
 }
