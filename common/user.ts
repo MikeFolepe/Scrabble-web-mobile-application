@@ -1,4 +1,5 @@
 import { Friend } from '@common/friend';
+import { Notification } from '@common/notification'
 
 export class User {
     _id: string;
@@ -10,6 +11,8 @@ export class User {
     isObserver?: boolean;
     xpPoints: number;
     friends: Friend[];
+    notifications: Notification[]
+    invitations: Friend[]
 
     //ce qui est oblige : avatar, pseudonym, password, email
 
@@ -22,5 +25,7 @@ export class User {
         this.socketId = '';
         this.xpPoints = 0;
         this.friends = [];
+        this.notifications = [];
+        this.invitations = [];
     }
 }

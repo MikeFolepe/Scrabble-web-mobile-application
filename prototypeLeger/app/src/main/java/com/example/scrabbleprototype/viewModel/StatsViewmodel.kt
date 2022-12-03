@@ -1,12 +1,14 @@
 package com.example.scrabbleprototype.viewModel
 
 import android.util.Log
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.scrabbleprototype.model.Game
 import com.example.scrabbleprototype.model.Item
 import com.example.scrabbleprototype.model.Language
 import com.example.scrabbleprototype.model.UserStatsDB
+import com.example.scrabbleprototype.objects.Players
 import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.objects.Themes
 import com.example.scrabbleprototype.objects.Users
@@ -29,6 +31,8 @@ import java.lang.Exception
 
 class StatsViewmodel: ViewModel() {
 
+    var areStatsInit = MutableLiveData(false)
+
     private var serverUrl = Environment.serverUrl
     private var client: HttpClient = HttpClient() {
         install(ContentNegotiation) {
@@ -37,8 +41,16 @@ class StatsViewmodel: ViewModel() {
     }
 
     fun updateStats() {
+        areStatsInit.value = false
         viewModelScope.launch {
             getStats()
+        }
+    }
+
+    fun addLogin() {
+        viewModelScope.launch {
+            val response = postLogin()
+            if(response != null) Log.d("addLogin", response.body())
         }
     }
 
@@ -52,7 +64,6 @@ class StatsViewmodel: ViewModel() {
         if(response != null) {
             Log.d("getStats", response.body())
             var statsDB: UserStatsDB = response.body()
-            Log.d("getstats", statsDB.gamesPlayed.toString())
             Users.userStats.gamesPlayed = statsDB.gamesPlayed
             Users.userStats.gamesWon = statsDB.gamesWon
             Users.userStats.totalPoints = statsDB.totalPoints
@@ -60,7 +71,19 @@ class StatsViewmodel: ViewModel() {
             Users.userStats.logins = statsDB.logins
             Users.userStats.logouts = statsDB.logouts
             Users.userStats.games = statsDB.games
+            areStatsInit.postValue(true)
         }
+        return@withContext response
+    }
+
+    private suspend fun postLogin() = withContext(Dispatchers.Default) {
+        var response: HttpResponse?
+        try {
+            response = client.post("$serverUrl/api/user/userStats/login/" + Users.currentUser._id) {}
+        } catch(e: Exception) {
+            response = null
+        }
+        return@withContext response
     }
 
     fun saveNewGame(game: Game) {

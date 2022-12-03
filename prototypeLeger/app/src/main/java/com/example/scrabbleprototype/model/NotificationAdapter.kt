@@ -26,6 +26,7 @@ class NotificationAdapter(private var notifications: ArrayList<Notification>) :
         val title = view.findViewById<TextView>(R.id.notification_title)
         val date = view.findViewById<TextView>(R.id.notification_date)
         val time = view.findViewById<TextView>(R.id.notification_time)
+        val senderName = view.findViewById<TextView>(R.id.sender_name)
         val description = view.findViewById<TextView>(R.id.notification_description)
 
         init {
@@ -52,6 +53,7 @@ class NotificationAdapter(private var notifications: ArrayList<Notification>) :
         viewHolder.title.text = notifications[position].title
         viewHolder.date.text = notifications[position].date
         viewHolder.time.text = notifications[position].time
+        viewHolder.senderName.text = viewHolder.itemView.context.getString(R.string.notif_sender, notifications[position].sender)
         viewHolder.description.text = notifications[position].description
     }
 

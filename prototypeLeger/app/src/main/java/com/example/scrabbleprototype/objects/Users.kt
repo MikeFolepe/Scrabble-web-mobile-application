@@ -12,7 +12,6 @@ object Users {
     lateinit var currentUser: User
     var userPreferences = UserPreferences()
     var userStats = UserStats()
-    var notifications = arrayListOf<Notification>()
     lateinit var avatarBmp: Bitmap
 
     var isObserver: Boolean = false
