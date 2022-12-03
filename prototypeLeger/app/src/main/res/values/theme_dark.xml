@@ -55,7 +55,7 @@
         <item name="windowNoTitle">true</item>
         <item name="statusBarBackground">@color/black</item>
     </style>
-    <style name="Theme.DarkAlert" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+    <style name="Theme.DarkAlert" parent="@android:style/Theme.Material.Dialog.NoActionBar">
         <item name="android:background">@color/darker_gray</item>
         <item name="android:textColor">@color/teal_200</item>
     </style>

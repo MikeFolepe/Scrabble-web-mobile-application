@@ -245,7 +245,7 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
                 progressText.visibility = View.GONE
             }
             startActivity(intent)
-        }, 750)
+        }, 1000)
     }
 
     fun createAccount() {

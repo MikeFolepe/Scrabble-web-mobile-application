@@ -156,7 +156,7 @@
 
     //Error messages
     <string name="empty_channel_error">Le nom du canal ne peut pas être vide</string>
-    <string name="invalid_channel_name">Le nom doit être de 5 lettres ou chiffes au minimum</string>
+    <string name="invalid_channel_name">Le nom doit être de 5 lettres ou chiffres au minimum</string>
     <string name="channel_already_exist">Le cannal existe déjà</string>
 
     //Dialogs

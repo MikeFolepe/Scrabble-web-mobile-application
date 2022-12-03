@@ -213,13 +213,13 @@ class ChannelButtonsFragment : Fragment() {
         val createView = inflater.inflate(R.layout.create_chat_room_dialog, null)
         val newChatRoomName = createView.findViewById<EditText>(R.id.new_chatroom_name)
 
-        createChatRoomDialog = AlertDialog.Builder(ContextThemeWrapper(requireContext(), ThemeManager.getTheme()))
+        createChatRoomDialog = AlertDialog.Builder(ContextThemeWrapper(requireContext(), ThemeManager.getAlertTheme()))
             .setView(createView)
             .setPositiveButton(R.string.positive_button, DialogInterface.OnClickListener { dialog, id ->
                 if(newChatRoomName.text.isEmpty()) {
                     Toast.makeText(requireContext(), R.string.empty_channel_error, Toast.LENGTH_LONG).show()
                     return@OnClickListener
-                } else if(!newChatRoomName.text.matches(Regex("/^[a-zA-Z0-9]+[a-zA-Z0-9 ]{3,20}[a-zA-Z0-9]$/"))) {
+                } else if(newChatRoomName.text.toString().length < 5) {
                     Toast.makeText(requireContext(), R.string.invalid_channel_name, Toast.LENGTH_LONG).show()
                     return@OnClickListener
                 } else if(chatRooms.any { it.chatRoomName == newChatRoomName.text.toString()}) {
