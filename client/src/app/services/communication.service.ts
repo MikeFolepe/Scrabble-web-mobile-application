@@ -93,6 +93,14 @@ export class CommunicationService {
         return this.http.post(`${this.baseUrl}/user/preference/setLanguage/${userId}`, { language }, { responseType: 'text' });
     }
 
+    addBoardTheme(userId: string, name: string): Observable<boolean> {
+        return this.http.post<boolean>(`${this.baseUrl}/user/preference/addBoard/${userId}`, { name });
+    }
+
+    addChatTheme(userId: string, name: string): Observable<boolean> {
+        return this.http.post<boolean>(`${this.baseUrl}/user/preference/addChat/${userId}`, { name });
+    }
+
     async findUserInDb(pseudonym: string, password: string): Promise<boolean> {
         return this.http.get<boolean>(`${this.baseUrl}/user/findUserInDb/${pseudonym}/${password}`).toPromise();
     }

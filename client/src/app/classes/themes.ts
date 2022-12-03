@@ -1,4 +1,5 @@
 import { Item, Language, UserPreferences } from '@common/user-preferences';
+import { galaxy, gradient, tartan } from '@common/themePics';
 export class Themes {
     appThemes: string[];
     defaultItem: Item;
@@ -11,20 +12,20 @@ export class Themes {
         this.boardItems = [
             {
                 name: 'Gradients animés',
-                price: 300,
-                theme: '',
+                price: 75,
+                theme: gradient,
                 description: '',
             },
             {
                 name: 'Tartan',
-                price: 100,
-                theme: '',
+                price: 50,
+                theme: tartan,
                 description: '',
             },
             {
                 name: 'Galaxie',
-                price: 500,
-                theme: '',
+                price: 50,
+                theme: galaxy,
                 description: '',
             },
         ];
@@ -32,14 +33,14 @@ export class Themes {
         this.chatItems = [
             {
                 name: 'Gradients animés',
-                price: 100,
-                theme: '',
+                price: 75,
+                theme: gradient,
                 description: '',
             },
             {
                 name: 'Galaxie',
-                price: 100,
-                theme: '',
+                price: 50,
+                theme: galaxy,
                 description: '',
             },
         ];

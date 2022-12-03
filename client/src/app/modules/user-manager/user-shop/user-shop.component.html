@@ -7,44 +7,23 @@
 <h2 class="boardThemeTitle">Thèmes du plateau de jeu</h2>
 
 <div class="boardThemes">
-    <mat-card class="boardTheme">
+    <mat-card *ngFor="let theme of this.themes.boardItems" class="boardTheme">
         <mat-card-header>
-            <mat-card-title>Gradients animés</mat-card-title>
-            <img class = "image" src="{{this.gradient}}">
-            <button class="buyButton" mat-raised-button color="basic">Acheter pour 75XP</button>
-        </mat-card-header>
-    </mat-card>
-    <mat-card class="boardTheme">
-        <mat-card-header>
-            <mat-card-title>Tartan</mat-card-title>
-            <img class = "image" src="{{this.tartan}}">
-            <button class="buyButton" mat-raised-button color="basic">Acheter pour 50XP</button>
-        </mat-card-header>
-    </mat-card>
-    <mat-card class="boardTheme">
-        <mat-card-header>
-            <mat-card-title>Galaxie</mat-card-title>
-            <img class = "image" src="{{this.galaxy}}">
-            <button class="buyButton" mat-raised-button color="basic">Acheter pour 50XP</button>
+            <mat-card-title>{{ theme.name }}</mat-card-title>
+            <img class="image" src="{{ theme.theme }}" />
+            <button class="buyButton" mat-raised-button color="basic" (click)="addBoardTheme(theme)">Acheter pour {{ theme.price }}XP</button>
         </mat-card-header>
     </mat-card>
 </div>
 
 <h2 class="chatroomThemeTitle">Thèmes de la boite de discussion</h2>
 
-<div class = "chatroomThemes">
-    <mat-card class="boardTheme">
+<div class="chatroomThemes">
+    <mat-card *ngFor="let theme of this.themes.chatItems" class="boardTheme">
         <mat-card-header>
-            <mat-card-title>Gradients animés</mat-card-title>
-            <img class = "image" src="{{this.gradient}}">
-            <button class="buyButton" mat-raised-button color="basic">Acheter pour 75XP</button>
-        </mat-card-header>
-    </mat-card>
-    <mat-card class="boardTheme">
-        <mat-card-header>
-            <mat-card-title>Galaxie</mat-card-title>
-            <img class = "image" src="{{this.galaxy}}">
-            <button class="buyButton" mat-raised-button color="basic">Acheter pour 50XP</button>
+            <mat-card-title>{{ theme.name }}</mat-card-title>
+            <img class="image" src="{{ theme.theme }}" />
+            <button class="buyButton" mat-raised-button color="basic" (click)="addChatTheme(theme)">Acheter pour {{ theme.price }}XP</button>
         </mat-card-header>
     </mat-card>
 </div>

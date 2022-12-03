@@ -92,6 +92,7 @@ export class UserService {
         });
     }
 
+
     async findUserInDb(pseudonym: string, password: string): Promise<boolean> {
         return this.communicationService.findUserInDb(pseudonym, password);
     }
