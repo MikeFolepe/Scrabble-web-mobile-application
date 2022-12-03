@@ -42,6 +42,14 @@ class GameActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         ThemeManager.setActivityTheme(this)
+        val config = resources.configuration
+        val lang = MyLanguage.getLanguage()
+        Log.d("lang", lang)
+        val locale = Locale(lang)
+        Locale.setDefault(locale)
+        config.setLocale(locale)
+        createConfigurationContext(config)
+        resources.updateConfiguration(config, resources.displayMetrics)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
 
@@ -157,7 +165,7 @@ class GameActivity : AppCompatActivity() {
 
     private fun updateXp(players: ArrayList<Player>) {
 
-        if(CurrentRoom.myRoom.gameSettings.gameType == NumberOfPlayer.OneVone){
+        if(CurrentRoom.myRoom.gameSettings.gameType == 0){
             when(players.indexOfFirst { it.name == Users.currentUser.pseudonym }) {
                 0 -> Users.currentUser.xpPoints += 50
                 1 -> Users.currentUser.xpPoints += 10

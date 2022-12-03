@@ -188,6 +188,7 @@ class ProfileFragment : Fragment(), CoroutineScope {
             response = client.get(environments.Environment.serverUrl + "/api/user/users") {}
         } catch(e: Exception) {
             response = null
+            Log.d("users", "null")
         }
         if(response != null) {
             users = jacksonObjectMapper().readValue(response.body() as String, object : TypeReference<ArrayList<User>>() {})
@@ -196,6 +197,7 @@ class ProfileFragment : Fragment(), CoroutineScope {
                 users.removeAll { it.pseudonym == friend.pseudonym }
             }
             activity?.runOnUiThread {
+                Log.d("users", users.size.toString())
                 userAdapter.updateData(users)
             }
         }
