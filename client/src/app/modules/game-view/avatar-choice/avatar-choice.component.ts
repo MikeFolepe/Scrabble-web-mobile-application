@@ -45,7 +45,6 @@ export class AvatarChoiceComponent implements OnInit {
         this.mustacheGuy = mustacheGuy;
         this.orangeGuy = orangeGuy;
     }
-    selectedFile: File;
     ngOnInit(): void {}
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
