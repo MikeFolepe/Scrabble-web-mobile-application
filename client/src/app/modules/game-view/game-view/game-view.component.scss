@@ -53,6 +53,8 @@
 }
 
 #regular-button-1 {
+    display : flex;
+    justify-content: center;
     height: 3em;
     flex: 1;
     align-items: stretch;
