@@ -88,3 +88,39 @@ hr.class-2 {
     border-radius: 5px;
     border : 0.5px solid #23501F;
 }
+
+.centered {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}
+
+.centeredModification {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    flex-direction: row;
+}
+
+mat-label {
+    color : #23501F;
+}
+
+mat-form-field {
+    width : 350px;
+}
+
+.separateTitles {
+    margin-top : 50px;
+    margin-bottom : 50px;
+}
+
+.modificationPlaceholder {
+    height : 30px;
+    width : 300px;
+    text-align: center;
+}
+
+.bottom {
+    height : 75px;
+}

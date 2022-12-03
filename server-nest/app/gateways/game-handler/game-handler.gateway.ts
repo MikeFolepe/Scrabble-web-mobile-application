@@ -197,7 +197,6 @@ export class GameHandlerGateway implements OnGatewayConnection {
                 this.server.in(roomId).emit('updateTimer', room.skipTurnService.minutes, room.skipTurnService.seconds);
                 this.server.in(roomId).emit('receiveEndGame', name, room.endGameService.gameStartDate, room.endGameService.gameStartTime);
                 room.endGameService.initEndTime();
-                console.log(room.userIds);
                 await this.userService.updateTimesPlayed(room.endGameService.computeTotalTime(), room.userIds);
                 this.server.socketsLeave(roomId);
                 this.roomManagerService.deleteRoom(roomId);
@@ -388,25 +387,28 @@ export class GameHandlerGateway implements OnGatewayConnection {
 
     async handleDisconnect(socket: Socket) {
         const room = this.roomManagerService.find(this.roomManagerService.findRoomIdOf(socket.id));
-        const userIndex = this.userService.activeUsers.findIndex((curUser) => curUser.socketId === socket.id);
-        await this.userService.addLogout(this.userService.activeUsers[userIndex]._id);
-
-        if (room !== undefined) {
-            let pseudonym;
-            if (userIndex !== INVALID_INDEX) {
-                pseudonym = this.userService.activeUsers[userIndex].pseudonym;
+        if (this.userService.activeUsers.length !== 0) {
+            const userIndex = this.userService.activeUsers.findIndex((curUser) => curUser.socketId === socket.id);
+            if (this.userService.activeUsers[userIndex] !== undefined) {
+                await this.userService.addLogout(this.userService.activeUsers[userIndex]._id);
             }
-            const indexPlayer = room.playerService.players.findIndex((player) => player.name === pseudonym);
-            await this.leaveGame(socket, room, indexPlayer, this.userService.activeUsers[userIndex]._id);
+
+            if (room !== undefined) {
+                let pseudonym;
+                if (userIndex !== INVALID_INDEX) {
+                    pseudonym = this.userService.activeUsers[userIndex].pseudonym;
+                }
+                const indexPlayer = room.playerService.players.findIndex((player) => player.name === pseudonym);
+                await this.leaveGame(socket, room, indexPlayer, this.userService.activeUsers[userIndex]._id);
+            }
+            this.logger.log(`Déconnexion par l'utilisateur avec id : ${socket.id}`);
+            this.userService.activeUsers.splice(userIndex, 1);
         }
-        this.logger.log(`Déconnexion par l'utilisateur avec id : ${socket.id}`);
-        this.userService.activeUsers.splice(userIndex, 1);
     }
 
     private async leaveGame(socket: Socket, room: ServerRoom, indexPlayer: number = 0, userId: string = '') {
         const observer = room.observers.find((observerCur) => observerCur.socketId === socket.id);
         if (observer) {
-            console.log('observer');
             this.roomManagerService.removeObserver(room, socket.id);
             socket.leave(room.id);
             this.server.emit('roomConfiguration', this.roomManagerService.getRoomsToSend());
