@@ -35,7 +35,8 @@ export class EndGameService {
     }
 
     initStartGame() {
-        this.gameStartDate = new Date().getFullYear().toString() + '/' + new Date().getMonth().toString() + '/' + new Date().getDate().toString();
+        const month = (new Date().getMonth() + 1).toString();
+        this.gameStartDate = new Date().getFullYear().toString() + '/' + month + '/' + new Date().getDate().toString();
         this.gameStartTime =
             new Date().getHours().toString().padStart(2, '0') +
             ':' +

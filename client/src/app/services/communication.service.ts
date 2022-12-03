@@ -70,11 +70,11 @@ export class CommunicationService {
     }
 
     getCurrentBoard(userId: string): Observable<string> {
-        return this.http.get<string>(`${this.baseUrl}/user/preference/boardTheme/${userId}`);
+        return this.http.get(`${this.baseUrl}/user/preference/boardTheme/${userId}`, { responseType: 'text' });
     }
 
     getCurrentChat(userId: string): Observable<string> {
-        return this.http.get<string>(`${this.baseUrl}/user/preference/chatTheme/${userId}`);
+        return this.http.get(`${this.baseUrl}/user/preference/chatTheme/${userId}`, { responseType: 'text' });
     }
 
     getBoards(userId: string): Observable<string[]> {
@@ -86,7 +86,11 @@ export class CommunicationService {
     }
 
     getLanguage(userId: string): Observable<string> {
-        return this.http.get<string>(`${this.baseUrl}/user/preference/chats/${userId}`);
+        return this.http.get(`${this.baseUrl}/user/preference/language/${userId}`, { responseType: 'text' });
+    }
+
+    updateLanguage(userId: string, language: number): Observable<string> {
+        return this.http.post(`${this.baseUrl}/user/preference/setLanguage/${userId}`, { language }, { responseType: 'text' });
     }
 
     async findUserInDb(pseudonym: string, password: string): Promise<boolean> {

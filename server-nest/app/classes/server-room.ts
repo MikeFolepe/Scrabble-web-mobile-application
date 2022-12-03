@@ -40,6 +40,8 @@ export class ServerRoom {
     aiForBestActions: PlayerAI;
     roomMessages: ChatRoomMessage[];
     constructor(roomId: string, socketId: string, gameSettings: GameSettings, state: State = State.Waiting) {
+        console.log(gameSettings);
+        this.gameSettings = gameSettings;
         this.aiPlayersNumber = this.gameSettings.gameType === NumberOfPlayer.OneVthree ? DEFAULT_AI_PLAYERS_NB : DEFAULT_SOLO_AI_PLAYERS_NB;
         this.humanPlayersNumber = DEFAULT_HUMAN_PLAYERS_NB;
         this.turnCounter = 0;
@@ -48,7 +50,6 @@ export class ServerRoom {
         this.observers = [];
         this.userIds = [];
         this.socketIds.push(socketId);
-        this.gameSettings = gameSettings;
         this.state = state;
         this.wordValidation = new WordValidationService(this.gameSettings.dictionary);
         this.letter = new LetterService();

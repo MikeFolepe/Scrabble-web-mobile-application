@@ -42,7 +42,7 @@ export class AuthService {
     }
     signIn(userData: User) {
         this.communicationService.connectUser(userData).subscribe(
-            (response: HttpResponse<User>) => {
+            async (response: HttpResponse<User>) => {
                 if (response.status === HttpStatusCode.Ok) {
                     this.currentUser = response.body as User;
                     this.setSocketConnection();
@@ -53,13 +53,11 @@ export class AuthService {
                     this.receiveUserSocket();
                     this.addLogin();
                     this.userService.getUserStats(this.currentUser._id);
-                    this.getPreferences(this.currentUser._id);
+                    await this.getPreferences(this.currentUser._id);
                     console.log(this.userService.userPreferences);
                     this.clientSocketService.socket.emit('joinMainRoom', this.currentUser);
-                    setTimeout(async () => {
-                        await this.initLanguage();
-                        this.setAccess();
-                    }, 400);
+                    await this.initLanguage();
+                    this.setAccess();
                 } else if (response.status === HttpStatusCode.NotModified) {
                     this.displayMessage('Cet utilisateur est déjà connecté');
                 }
@@ -75,31 +73,29 @@ export class AuthService {
         return true;
     }
 
-    initLanguage() {
-        return async () =>
-            new Promise<boolean>((resolve: (res: boolean) => void) => {
-                const defaultLocale = 'en';
-                const translationsUrl = '/assets/i18n/translations';
-                const sufix = '.json';
-                console.log('here', this.userService.userPreferences.language);
-                const storageLocale = this.userService.userPreferences.language === Language.French ? 'fr' : 'en';
-                const locale = storageLocale || defaultLocale;
+    async initLanguage() {
+        console.log('called');
 
-                forkJoin([this.http.get('/assets/i18n/dev.json').pipe(), this.http.get(`${translationsUrl}/${locale}${sufix}`).pipe()]).subscribe(
-                    (response: any[]) => {
-                        const devKeys = response[0];
-                        const translatedKeys = response[1];
+        const defaultLocale = 'en';
+        const translationsUrl = '/assets/i18n/translations';
+        const sufix = '.json';
+        console.log('here', this.userService.userPreferences.language);
+        const storageLocale = this.userService.userPreferences.language === Language.French ? 'fr' : 'en';
+        const locale = storageLocale || defaultLocale;
+        console.log(locale);
 
-                        this.translate.setTranslation(defaultLocale, devKeys || {});
-                        this.translate.setTranslation(locale, translatedKeys || {}, true);
+        const response = await forkJoin([
+            this.http.get('/assets/i18n/dev.json').pipe(),
+            this.http.get(`${translationsUrl}/${locale}${sufix}`).pipe(),
+        ]).toPromise();
+        const devKeys = response[0];
+        const translatedKeys = response[1];
 
-                        this.translate.setDefaultLang(defaultLocale);
-                        this.translate.use(locale);
+        this.translate.setTranslation(defaultLocale, devKeys || {});
+        this.translate.setTranslation(locale, translatedKeys || {}, true);
 
-                        resolve(true);
-                    },
-                );
-            });
+        this.translate.setDefaultLang(defaultLocale);
+        this.translate.use(locale);
     }
 
     logout() {
@@ -143,12 +139,12 @@ export class AuthService {
         });
     }
 
-    private getPreferences(userId: string) {
-        this.userService.getAppTheme(userId);
-        this.userService.getCurrentBoard(userId);
-        this.userService.getCurrentChat(userId);
-        this.userService.getBoards(userId);
-        this.userService.getChats(userId);
-        this.userService.getLanguage(userId);
+    private async getPreferences(userId: string) {
+        await this.userService.getAppTheme(userId);
+        await this.userService.getBoards(userId);
+        await this.userService.getChats(userId);
+        await this.userService.getCurrentBoard(userId);
+        await this.userService.getCurrentChat(userId);
+        await this.userService.getLanguage(userId);
     }
 }

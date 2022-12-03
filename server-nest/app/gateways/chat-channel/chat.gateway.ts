@@ -1,10 +1,10 @@
+import { ChatRoomService } from '@app/gateways/services/chat-room/chat-room.service';
+import { ChatEvents } from '@common/chat.gateway.events';
 import { ChatRoomMessage } from '@common/chatRoomMessage';
 import { User } from '@common/user';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { ChatRoomService } from '@app/gateways/services/chat-room/chat-room.service';
-import { ChatEvents } from '@common/chat.gateway.events';
 @WebSocketGateway({ cors: true })
 @Injectable()
 export class ChatGateway {

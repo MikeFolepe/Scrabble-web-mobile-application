@@ -37,54 +37,53 @@ export class UserService {
         });
     }
 
-    getAppTheme(userId: string) {
-        this.communicationService.getAppTheme(userId).subscribe((appTheme: string) => {
-            this.userPreferences.appThemeSelected = appTheme;
-        });
+    async getAppTheme(userId: string) {
+        this.userPreferences.appThemeSelected = await this.communicationService.getAppTheme(userId).toPromise();
     }
 
-    getCurrentBoard(userId: string) {
-        this.communicationService.getCurrentBoard(userId).subscribe((currentBoard: string) => {
-            this.userPreferences.boardItemSelected = this.themes.getBoard(currentBoard);
-        });
+    async getCurrentBoard(userId: string) {
+        const board = await this.communicationService.getCurrentBoard(userId).toPromise();
+        console.log(board);
+        this.userPreferences.boardItemSelected = this.themes.getBoard(board);
+        if (this.userPreferences.boardItemSelected === undefined) {
+            this.userPreferences.boardItemSelected = this.themes.defaultItem;
+        }
     }
 
-    getCurrentChat(userId: string) {
-        this.communicationService.getCurrentChat(userId).subscribe((currentChat: string) => {
-            this.userPreferences.chatItemSelected = this.themes.getChat(currentChat);
-        });
+    async getCurrentChat(userId: string) {
+        const chat = await this.communicationService.getCurrentChat(userId).toPromise();
+        this.userPreferences.chatItemSelected = this.themes.getChat(chat);
+        if (this.userPreferences.chatItemSelected === undefined) {
+            this.userPreferences.chatItemSelected = this.themes.defaultItem;
+        }
     }
 
-    getBoards(userId: string) {
-        this.communicationService.getBoards(userId).subscribe((boards: string[]) => {
-            this.userPreferences.boardItems = [];
-            this.userPreferences.boardItems.push(this.themes.defaultItem);
-            for (const board of boards) {
-                const item = this.themes.getBoard(board);
-                if (item) {
-                    this.userPreferences.boardItems.push(item);
-                }
+    async getBoards(userId: string) {
+        const boards = await this.communicationService.getBoards(userId).toPromise();
+        this.userPreferences.boardItems = [];
+        this.userPreferences.boardItems.push(this.themes.defaultItem);
+        for (const board of boards) {
+            const item = this.themes.getBoard(board);
+            if (item) {
+                this.userPreferences.boardItems.push(item);
             }
-        });
+        }
     }
 
-    getChats(userId: string) {
-        this.communicationService.getChats(userId).subscribe((chats: string[]) => {
-            this.userPreferences.chatItems = [];
-            this.userPreferences.chatItems.push(this.themes.defaultItem);
-            for (const chat of chats) {
-                const item = this.themes.getChat(chat);
-                if (item) {
-                    this.userPreferences.chatItems.push(item);
-                }
+    async getChats(userId: string) {
+        const chats = await this.communicationService.getChats(userId).toPromise();
+        this.userPreferences.chatItems = [];
+        this.userPreferences.chatItems.push(this.themes.defaultItem);
+        for (const chat of chats) {
+            const item = this.themes.getChat(chat);
+            if (item) {
+                this.userPreferences.chatItems.push(item);
             }
-        });
+        }
     }
 
-    getLanguage(userId: string) {
-        this.communicationService.getLanguage(userId).subscribe((language: string) => {
-            this.userPreferences.language = Number(language);
-        });
+    async getLanguage(userId: string) {
+        this.userPreferences.language = Number(await this.communicationService.getLanguage(userId).toPromise());
     }
 
     getUsers(): void {

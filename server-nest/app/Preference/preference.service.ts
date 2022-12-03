@@ -95,10 +95,10 @@ export class PreferenceService {
         return true;
     }
 
-    async setLanguage(userId: string, newLanguage: number): Promise<number> {
-        const preference: Preference = await this.preferenceModel.findOne({ user: userId }).exec();
-        preference.language = newLanguage;
-        preference.save();
-        return preference.language;
+    async setLanguage(userId: string, language: number): Promise<string> {
+        console.log(language);
+        await this.preferenceModel.findOneAndUpdate({ user: userId }, { language }).exec();
+        const newPreference = await this.preferenceModel.findOne({ user: userId });
+        return newPreference.language.toString();
     }
 }
