@@ -13,4 +13,8 @@ export class BoardThemeDialogComponent implements OnInit {
   ngOnInit(): void {
   }
   
+  closeDialog() {
+    this.boardTheme.close();
+  }
+
 }
