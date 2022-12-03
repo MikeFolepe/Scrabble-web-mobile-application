@@ -16,8 +16,8 @@
             </p>
 
             <p>Score : {{ player.score }}</p>
+            <p *ngIf="playerService.currentPlayer.name === player.name">XP : {{ authService.currentUser.xpPoints }}</p>
             <p *ngIf="player.letterTable.length !== 7">Nombre de lettres sur le chevalet : {{ player.letterTable.length }}</p>
-
             <div class="timer" *ngIf="player.isTurn">
                 Joueur actif<br />
                 Temps restant au tour : {{ skipTurnService.minutes }}:{{ displaySeconds() }}
@@ -31,15 +31,6 @@
                 Remplacer
             </button>
             <hr />
-
-            <button
-                *ngIf="this.authService.currentUser.isObserver && player.isAi && !player.isTurn"
-                mat-raised-button
-                color="primary"
-                (click)="playerService.replaceAi(player)"
-            >
-                Remplacer
-            </button>
         </div>
     </div>
 </div>

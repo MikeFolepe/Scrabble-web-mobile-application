@@ -52,10 +52,16 @@
     <br />
     <br />
     <div class="wordWrapper">
-        <input class="word" placeholder="Vérif. de mot"[(ngModel)]="word" />
+        <input class="word" placeholder="Vérif. de mot" [(ngModel)]="word" />
         <button
             class="wordButton"
-            [disabled]="authService.currentUser.isObserver || this.maxButtonCall === 0 || this.word.length === 0"
+            [disabled]="
+                authService.currentUser.isObserver ||
+                this.maxButtonCall === 0 ||
+                this.word.length === 0! ||
+                this.playerService.currentPlayer.isTurn ||
+                this.authService.currentUser.xpPoints < 20
+            "
             mat-raised-button
             color="primary"
             [disabled]="!this.playerService.currentPlayer.isTurn"
