@@ -9,9 +9,11 @@ import { UserListDialogComponent } from './user-profile/user-list-dialog/user-li
 import { UserProfileComponent } from './user-profile/user-profile.component';
 import { UserShopComponent } from './user-shop/user-shop.component';
 import { UserStatsComponent } from './user-stats/user-stats.component';
+import { BoardThemeDialogComponent } from './board-theme-dialog/board-theme-dialog.component';
+import { ChatroomThemeDialogComponent } from './chatroom-theme-dialog/chatroom-theme-dialog.component';
 
 @NgModule({
-    declarations: [UserMenuNavComponent, UserProfileComponent, UserListDialogComponent, UserStatsComponent, UserPreferencesComponent, UserShopComponent],
+    declarations: [UserMenuNavComponent, UserProfileComponent, UserListDialogComponent, UserStatsComponent, UserPreferencesComponent, UserShopComponent, BoardThemeDialogComponent, ChatroomThemeDialogComponent],
     imports: [CommonModule, AppRoutingModule, SharedModule, AppMaterialModule],
     exports: [UserMenuNavComponent],
 })
