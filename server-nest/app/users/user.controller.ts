@@ -127,18 +127,21 @@ export class UserController {
         await this.userService.addInvitation(req.params.userId, req.body.invitation);
     }
 
-    @Post('/updateUser')
-    async updateUserInDb(@Body() user: User, @Res() response: Response) {
-        console.log('boo', user);
-        const userFound = await this.userService.getSingleUser(user.pseudonym);
-        if (userFound) {
-            console.log('userfound');
-            if (userFound._id !== user._id) {
-                console.log('userfound');
-                response.status(HttpStatus.FOUND).send();
+    @Post('/updateUser/:pseudonymChanged')
+    async updateUserInDb(@Req() req, @Res() response: Response) {
+        const pseudonymChanged = req.params.pseudonymChanged;
+        console.log('boo', pseudonymChanged);
+        console.log(req.params.pseudonymChanged);
+        console.log(req.body.pseudonym);
+        if (pseudonymChanged === 'true') {
+            const userFound = await this.userService.getSingleUser(req.body.pseudonym);
+            if (userFound) {
+                console.log('userfound', `new ObjectId("${req.body._id}")`);
+                response.status(HttpStatus.FOUND).send('');
+                return;
             }
         }
-        await this.userService.updateUser(user).then((newUser: User) => {
+        await this.userService.updateUser(req.body).then((newUser: User) => {
             response.status(HttpStatus.OK).send(newUser);
         });
     }

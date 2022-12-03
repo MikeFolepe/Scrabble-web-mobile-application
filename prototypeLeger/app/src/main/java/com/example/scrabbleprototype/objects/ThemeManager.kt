@@ -53,6 +53,16 @@ object ThemeManager {
         return R.style.Theme_ScrabblePrototype
     }
 
+    fun getAlertTheme(): Int {
+        when(currentTheme) {
+            THEME_DEFAULT -> return R.style.Theme_DefaultAlert
+            THEME_DARK -> return R.style.Theme_DarkAlert
+            THEME_BLUE -> return R.style.Theme_DefaultAlert
+            THEME_ORANGE -> return R.style.Theme_DefaultAlert
+        }
+        return R.style.Theme_DefaultAlert
+    }
+
     fun getBoardTheme(): Int {
         when(currentBoardTheme) {
             DEFAULT -> return R.drawable.board_border

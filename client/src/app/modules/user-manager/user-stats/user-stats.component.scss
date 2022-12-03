@@ -95,14 +95,13 @@ hr {
     margin-top: 10px;
     gap: 20px;
     font-size: large;
-
 }
 
 .logins p {
     display: inline-block;
     margin-right: 60px;
+    margin-left: 10px;
 }
-
 
 .logouts {
     top: auto;
@@ -111,12 +110,12 @@ hr {
     gap: 20px;
     font-size: large;
 
-
 }
 
 .logouts p {
     display: inline-block;
     margin-right: 60px;
+    margin-left: 10px;
 
 }
 
@@ -143,7 +142,7 @@ hr {
 .deconnexion {
     background-color: white;
     border-radius: 6px;
-    width: 35%;
+    width: fit-content;
     height: 300px;
     overflow: auto;
 }
@@ -161,10 +160,10 @@ hr {
 .history {
     background-color: white;
     border-radius: 6px;
-    width: 45%;
     height: 250px;
     margin: auto;
     overflow: auto;
+    width: fit-content;
 }
 
 .tooltip {

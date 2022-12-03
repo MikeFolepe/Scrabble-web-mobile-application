@@ -86,6 +86,7 @@ export class UserService {
         const user = await this.userModel.findOne({ pseudonym });
         if (!user) return;
         const userToSend = new User(user.avatar, user.pseudonym, user.password, user.email);
+
         userToSend._id = user._id;
         userToSend.xpPoints = user.xpPoints;
 
@@ -124,7 +125,8 @@ export class UserService {
     }
 
     async addLogin(userId: string): Promise<void> {
-        const newDate = new Date().getFullYear().toString() + '/' + new Date().getMonth().toString() + '/' + new Date().getDate().toString();
+        const month = (new Date().getMonth() + 1).toString();
+        const newDate = new Date().getFullYear().toString() + '/' + month + '/' + new Date().getDate().toString();
         const newHour =
             new Date().getHours().toString().padStart(2, '0') +
             ':' +
@@ -146,7 +148,8 @@ export class UserService {
     }
 
     async addLogout(userId: string): Promise<void> {
-        const newDate = new Date().getFullYear().toString() + '/' + new Date().getMonth().toString() + '/' + new Date().getDate().toString();
+        const month = (new Date().getMonth() + 1).toString();
+        const newDate = new Date().getFullYear().toString() + '/' + month + '/' + new Date().getDate().toString();
         const newHour =
             new Date().getHours().toString().padStart(2, '0') +
             ':' +

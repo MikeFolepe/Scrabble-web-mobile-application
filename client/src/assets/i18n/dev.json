@@ -1,0 +1,8 @@
+{
+    "main.page.button.create": "Create a multiplayer game",
+    "main.page.button.join": "join a multiplayer game",
+    "main.page.section.languages.english": "English",
+    "main.page.section.languages.french": "Français",
+    "main.page.mode": "{{mode}}",
+    "eraseChoice": "Effacer mon choix"
+}

@@ -1,7 +1,7 @@
-<h1>Liste des canaux dont vous faites partie</h1>
+<h1>{{ 'myChannels' | translate }}</h1>
 
 <div *ngIf="userChatsRooms.length === 0">
-    <p>Vous ne faites partie d'aucun canal de dicussion</p>
+    <p>{{ 'noChannels' | translate }}</p>
 </div>
 <div *ngIf="userChatsRooms.length !== 0">
     <mat-radio-group class="radio-group" [(ngModel)]="selectedChatRoom">
@@ -12,14 +12,14 @@
             [disabled]="disableJoinCurrentRoom(chatRoom)"
             *ngFor="let chatRoom of userChatsRooms"
             [value]="chatRoom"
-            >{{ chatRoom.chatRoomName }}{{ ', par ' }}{{ chatRoom.creator.pseudonym }}
+            >{{ chatRoom.chatRoomName }},{{ 'by' | translate }}{{ chatRoom.creator.pseudonym }}
             <button
                 mat-button
                 color="warn"
                 (click)="leaveChatRoom(chatRoom)"
                 *ngIf="chatRoom.chatRoomName !== this.chatRoomService.chatRooms[0].chatRoomName"
             >
-                Quitter
+                {{ 'quit' | translate }}
             </button>
         </mat-radio-button>
     </mat-radio-group>
@@ -31,9 +31,11 @@
     color="primary"
     (click)="changeChatRoom(); this.changeChatRoomDialogRef.close(true); firstSelection()"
 >
-    Changer!
+    {{ 'change' | translate }}!
 </button>
 
 <div mat-dialog-actions>
-    <button class="close-button" mat-raised-button mat-dialog-close (click)="this.changeChatRoomDialogRef.close(true)" color="warn">Fermer</button>
+    <button class="close-button" mat-raised-button mat-dialog-close (click)="this.changeChatRoomDialogRef.close(true)" color="warn">
+        {{ 'close' | translate }}
+    </button>
 </div>

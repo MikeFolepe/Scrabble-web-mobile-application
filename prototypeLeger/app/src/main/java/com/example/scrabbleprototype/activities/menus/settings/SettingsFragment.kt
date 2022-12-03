@@ -31,6 +31,7 @@ import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.activities.RegisterActivity
 import com.example.scrabbleprototype.databinding.FragmentSettingsBinding
 import com.example.scrabbleprototype.model.*
+import com.example.scrabbleprototype.objects.MyLanguage
 import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.objects.Themes
 import com.example.scrabbleprototype.objects.Users
@@ -67,11 +68,19 @@ class SettingsFragment : Fragment(), CoroutineScope {
     private lateinit var boardItemsDialog: Dialog
     private lateinit var chatItemsDialog: Dialog
     private var isAppThemeSpinnerInit = false
+    private var isLanguageSpinnerInit = false
 
     private val preferenceViewModel: PreferenceViewModel by activityViewModels()
     private lateinit var binding: FragmentSettingsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val config = resources.configuration
+        val lang = MyLanguage.getLanguage()
+        val locale = Locale(lang)
+        Locale.setDefault(locale)
+        config.setLocale(locale)
+        activity?.createConfigurationContext(config)
+        activity?.applicationContext?.resources?.updateConfiguration(config, null)
         super.onCreate(savedInstanceState)
     }
 
@@ -132,19 +141,20 @@ class SettingsFragment : Fragment(), CoroutineScope {
             val addAvatarId = resources.getIdentifier("t_l_chargement", "drawable", this.requireContext().packageName)
             avatarDialog.show()
             avatarListAdapter.onClickAvatar = { position ->
-                binding.avatar.setImageResource(avatarSrcImages[position])
 
-                //convert to base64 to coord with heavy client
-                encodeImageToBase64(binding.avatar.drawable.toBitmap())
-                avatarDialog.hide()
-                Log.d("avatarpath", avatarSrcImages[position].toString())
-                if(addAvatarId == avatarSrcImages[position]) {
-                    if(checkAndRequestPermissions()) {
+                if (addAvatarId == avatarSrcImages[position]) {
+                    if (checkAndRequestPermissions()) {
                         takeImageFromCamera()
-
                     }
+                } else {
+                    binding.avatar.setImageResource(avatarSrcImages[position])
+
+                    //convert to base64 to coord with heavy client
+                    encodeImageToBase64(binding.avatar.drawable.toBitmap())
+                    avatarDialog.hide()
+                    Log.d("avatarpath", avatarSrcImages[position].toString())
                 }
-                }
+            }
         }
         }
     fun encodeImageToBase64(bmp: Bitmap) {
@@ -158,6 +168,7 @@ class SettingsFragment : Fragment(), CoroutineScope {
     private fun takeImageFromCamera(){
         val takePicture = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         resultLauncher.launch(takePicture)
+        return
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>,
@@ -312,15 +323,21 @@ class SettingsFragment : Fragment(), CoroutineScope {
     }
 
     private fun setupLanguages() {
+        isLanguageSpinnerInit = false
         val languageSpinner = binding.languageSpinner
         languageSpinner.adapter = ArrayAdapter(this.requireContext(), R.layout.app_theme_spinner_item, Language.values())
 
         languageSpinner.setSelection(userPrefences.language.ordinal)
         languageSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                if(userPrefences.language.name == Language.values()[position].name) return
+                if(userPrefences.language.name == Language.values()[position].name || !isLanguageSpinnerInit) {
+                    isLanguageSpinnerInit = true
+                    return
+                }
                 userPrefences.language = Language.values()[position]
                 preferenceViewModel.saveLanguage()
+                MyLanguage.currentLanguage = userPrefences.language
+                recreateFragment()
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
@@ -328,9 +345,15 @@ class SettingsFragment : Fragment(), CoroutineScope {
 
     private fun setupSaveButton() {
         binding.saveEditsBtn.setOnClickListener {
+            var pseudonymChanged = true
+            val oldPseudonym = user.currentUser.pseudonym
             user.currentUser.pseudonym = binding.profilePseudonym.text.toString()
-            Log.d("inputuser", user.currentUser.pseudonym)
-            preferenceViewModel.saveProfile(user.currentUser).observe(viewLifecycleOwner, androidx.lifecycle.Observer { saved ->
+            Log.d("inputuser", user.currentUser._id)
+            if(oldPseudonym == user.currentUser.pseudonym) {
+                Log.d("no", "changes")
+                pseudonymChanged = false
+            }
+            preferenceViewModel.saveProfile(user.currentUser,pseudonymChanged).observe(viewLifecycleOwner, androidx.lifecycle.Observer { saved ->
                 if(saved) {
                     binding.profilePseudonym.setText(user.currentUser.pseudonym)
                     val split = user.currentUser.avatar.split(",")
@@ -340,7 +363,8 @@ class SettingsFragment : Fragment(), CoroutineScope {
                     Toast.makeText(requireContext(), "Les changements ont été sauvegardés", Toast.LENGTH_LONG).show()
                 }
                 else {
-                    binding.profilePseudonym.setText(user.currentUser.pseudonym)
+                    binding.profilePseudonym.setText(oldPseudonym)
+                    user.currentUser.pseudonym = oldPseudonym
                     Toast.makeText(requireContext(), "Ce pseudonyme existe, les changements n'ont pas été effectués", Toast.LENGTH_LONG).show()
                 }
             })

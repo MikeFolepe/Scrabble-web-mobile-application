@@ -50,7 +50,6 @@ class HomeFragment : Fragment() {
 
     private fun setupUserInfo() {
         binding.userInfoName.text = user.currentUser.pseudonym
-        binding.userProfile.setImageBitmap(user.avatarBmp)
     }
 
     private fun setupButtons() {
@@ -59,9 +58,6 @@ class HomeFragment : Fragment() {
         }
         binding.joinGamesButton.setOnClickListener {
             startActivity(Intent(activity, JoinGameActivity::class.java))
-        }
-        binding.gameViewButton.setOnClickListener {
-            startActivity(Intent(activity, GameActivity::class.java))
         }
     }
 }

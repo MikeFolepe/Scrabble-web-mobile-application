@@ -12,6 +12,7 @@ import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.model.Item
 import com.example.scrabbleprototype.model.Language
 import com.example.scrabbleprototype.model.User
+import com.example.scrabbleprototype.objects.MyLanguage
 import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.objects.Themes
 import com.example.scrabbleprototype.objects.Users
@@ -25,6 +26,7 @@ import io.ktor.client.statement.*
 import io.ktor.client.utils.EmptyContent.contentType
 import io.ktor.http.*
 import io.ktor.serialization.jackson.*
+import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -36,7 +38,7 @@ class PreferenceViewModel: ViewModel() {
     private var serverUrl = Environment.serverUrl
     private var client: HttpClient = HttpClient() {
         install(ContentNegotiation) {
-            jackson()
+            json()
         }
     }
 
@@ -143,6 +145,7 @@ class PreferenceViewModel: ViewModel() {
         if(response != null) {
             Log.d("getLanguage", response.body())
             Users.userPreferences.language = Language.values()[response.body<String>().toInt()]
+            MyLanguage.currentLanguage = Users.userPreferences.language
         }
     }
 
@@ -190,10 +193,11 @@ class PreferenceViewModel: ViewModel() {
         }
     }
 
-    fun saveProfile(currentUser : User): LiveData<Boolean> {
+    fun saveProfile(currentUser : User,pseudonymChanged: Boolean): LiveData<Boolean> {
         val result = MutableLiveData<Boolean>()
         viewModelScope.launch {
-            var response = changeAvatar(currentUser)
+            Log.d("modify", currentUser.pseudonym)
+            var response = changeAvatar(currentUser, pseudonymChanged)
             if (response != null) {
                 if(response.status == HttpStatusCode.OK) {
                     Users.currentUser = response.body()
@@ -285,10 +289,12 @@ class PreferenceViewModel: ViewModel() {
         return@withContext response
     }
 
-    private suspend fun changeAvatar(currentUser : User): HttpResponse? = withContext(Dispatchers.Default)  {
+    private suspend fun changeAvatar(currentUser : User, pseudonymChanged: Boolean): HttpResponse? = withContext(Dispatchers.Default)  {
         var response: HttpResponse?
         try{
-            response = client.post("$serverUrl/api/user/updateUser") {
+            val pseudonym = pseudonymChanged.toString()
+            Log.d("sendpseudo", pseudonym)
+            response = client.post("$serverUrl/api/user/updateUser/$pseudonym" ) {
                 contentType(ContentType.Application.Json)
                 setBody(currentUser)
             }
