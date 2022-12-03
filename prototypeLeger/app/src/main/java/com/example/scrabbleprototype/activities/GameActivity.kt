@@ -165,7 +165,7 @@ class GameActivity : AppCompatActivity() {
 
     private fun updateXp(players: ArrayList<Player>) {
 
-        if(CurrentRoom.myRoom.gameSettings.gameType == NumberOfPlayer.OneVone){
+        if(CurrentRoom.myRoom.gameSettings.gameType == 0){
             when(players.indexOfFirst { it.name == Users.currentUser.pseudonym }) {
                 0 -> Users.currentUser.xpPoints += 50
                 1 -> Users.currentUser.xpPoints += 10
