@@ -10,6 +10,10 @@
     transition: 0.5s;
 }
 
+hr.class-1 {
+    border-top: 2px solid #23501F;
+}
+
 .sidenav a {
     padding: 8px 8px 8px 32px;
     text-decoration: none;
@@ -45,7 +49,10 @@
 }
 
 .openbtn {
-    font-size: 30px;
+    margin-top : 15px;
+    margin-right : 10px;
+    color: #23501F;
+    font-size: 50px;
     cursor: pointer;
     position: fixed;
     z-index: 1;
