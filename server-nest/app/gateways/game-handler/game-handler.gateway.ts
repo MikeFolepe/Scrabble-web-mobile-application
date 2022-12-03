@@ -137,7 +137,6 @@ export class GameHandlerGateway implements OnGatewayConnection {
 
         const interval = setInterval(async () => {
             room.endGameService.checkEndGame(room.letter.reserveSize);
-            console.log('hhhhfg');
             if (room.endGameService.isEndGame) {
                 const name = room.endGameService.getWinnerName(players);
                 room.skipTurnService.stopTimer();
