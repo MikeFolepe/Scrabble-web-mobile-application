@@ -1,11 +1,10 @@
-
 <div class="wrapper">
     <h1 mat-dialog-title>Liste d'utilisateurs</h1>
 
-    <div class="invitationList" mat-dialog-content *ngFor="let user of this.userService.users; let i= index">
+    <div class="invitationList" mat-dialog-content *ngFor="let user of usersToDisplay; let i = index">
         <mat-card class="pseudo">{{ user.pseudonym }}</mat-card>
-        <button [disabled]="this.buttonDisabled.has(i)"  class="inviteButton" mat-raised-button color="primary" (click)="invite(i);">
-        {{this.buttonDisabled.has(i)? 'Envoyé' : "Inviter"}}
+        <button [disabled]="this.buttonDisabled.has(i)" class="inviteButton" mat-raised-button color="primary" (click)="invite(i)">
+            {{ this.buttonDisabled.has(i) ? 'Envoyé' : 'Inviter' }}
         </button>
     </div>
     <br />
@@ -13,4 +12,3 @@
 <div mat-dialog-actions>
     <button mat-button mat-dialog-close color="primary" (click)="this.userListDialog.close()" color="warn">Fermer</button>
 </div>
-

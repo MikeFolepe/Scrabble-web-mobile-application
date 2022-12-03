@@ -1,6 +1,10 @@
 /* eslint-disable no-underscore-dangle */
 import { Component } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { Themes } from '@app/classes/themes';
+import { AddChatRoomComponent } from '@app/modules/game-view/add-chat-room/add-chat-room.component';
+import { ChangeChatRoomComponent } from '@app/modules/game-view/change-chat-room/change-chat-room.component';
+import { JoinChatRoomsComponent } from '@app/modules/game-view/join-chat-rooms/join-chat-rooms.component';
 import { AdministratorService } from '@app/services/administrator.service';
 import { AuthService } from '@app/services/auth.service';
 import { CommunicationService } from '@app/services/communication.service';
@@ -23,6 +27,9 @@ export class UserShopComponent {
         public authService: AuthService,
         private communicationService: CommunicationService,
         private administratorService: AdministratorService,
+        public joinChatRoomsDialog: MatDialog,
+        public changeChatRoomDialog: MatDialog,
+        public addChatRoomDialog: MatDialog,
     ) {
         this.gradient = gradient;
         this.galaxy = galaxy;
@@ -47,7 +54,6 @@ export class UserShopComponent {
                 this.authService.currentUser.xpPoints -= boardItem.price;
                 this.communicationService.updateXps(this.authService.currentUser._id, this.authService.currentUser.xpPoints);
                 await this.userService.getBoards(this.authService.currentUser._id);
-                console.log(this.userService.userPreferences);
             } else {
                 this.administratorService.displayMessage('Achat échoué');
             }
@@ -71,10 +77,20 @@ export class UserShopComponent {
                 this.authService.currentUser.xpPoints -= chatItem.price;
                 this.communicationService.updateXps(this.authService.currentUser._id, this.authService.currentUser.xpPoints);
                 await this.userService.getChats(this.authService.currentUser._id);
-                console.log(this.userService.userPreferences);
             } else {
                 this.administratorService.displayMessage('Achat échoué');
             }
         });
+    }
+    openChangeChatRoomDialog(): void {
+        this.changeChatRoomDialog.open(ChangeChatRoomComponent, { disableClose: true });
+    }
+
+    openJoinChatRoomDialog(): void {
+        this.joinChatRoomsDialog.open(JoinChatRoomsComponent, { disableClose: true });
+    }
+
+    openAddChatRoomDialog(): void {
+        this.addChatRoomDialog.open(AddChatRoomComponent, { disableClose: true });
     }
 }

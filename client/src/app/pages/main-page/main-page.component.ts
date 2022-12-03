@@ -21,7 +21,6 @@ import { NotificationsDialogComponent } from '../notifications-dialog/notificati
     templateUrl: './main-page.component.html',
     styleUrls: ['./main-page.component.scss'],
 })
-
 export class MainPageComponent {
     selectedGameTypeIndex: number;
     selectedGameType: string | GameType;
@@ -30,6 +29,7 @@ export class MainPageComponent {
     chatRoomForm: boolean;
     isOpen: boolean;
     chatRoomName: string;
+    disconnect: boolean;
     readonly gameType: string[];
     readonly gameModes: string[];
     // @ViewChild('popoutWindow') private popoutWindow: PopoutWindowComponent;
@@ -57,6 +57,7 @@ export class MainPageComponent {
         this.chatRoomForm = false;
         this.isOpen = false;
         this.resetServices();
+        this.disconnect = false;
     }
 
     routeToGameMode(): void {
@@ -75,6 +76,9 @@ export class MainPageComponent {
         }
     }
 
+    logout() {
+        this.authService.logout();
+    }
     openChatRoomForm(): void {
         this.chatRoomForm = true;
     }

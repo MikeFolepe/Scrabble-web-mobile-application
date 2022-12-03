@@ -29,7 +29,10 @@
                     [disabled]="
                         !playerService.currentPlayer.isTurn ||
                         this.skipTurnService.shouldNotBeDisplayed ||
-                        this.playerService.currentPlayer.letterTable.length !== 7 || this.endGameService.isEndGame
+                        this.playerService.currentPlayer.letterTable.length !== 7 ||
+                        this.endGameService.isEndGame ||
+                        this.authService.currentUser.xpPoints < 75 ||
+                        this.authService.currentUser.isObserver
                     "
                     (click)="openBestActionsDialog()"
                 >
