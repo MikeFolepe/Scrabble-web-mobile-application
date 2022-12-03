@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
-import { NotificationService } from '@app/services/notification.service';
+import { AuthService } from '@app/services/auth.service';
 
 @Component({
     selector: 'app-notifications-dialog',
@@ -8,7 +8,7 @@ import { NotificationService } from '@app/services/notification.service';
     styleUrls: ['./notifications-dialog.component.scss'],
 })
 export class NotificationsDialogComponent implements OnInit {
-    constructor(public notificationDialog: MatDialogRef<NotificationsDialogComponent>, public notificationsService: NotificationService) {}
+    constructor(public notificationDialog: MatDialogRef<NotificationsDialogComponent>, public auth: AuthService) {}
 
     ngOnInit(): void {}
 }
