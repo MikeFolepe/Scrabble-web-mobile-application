@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { DEFAULT_FONT_SIZE } from '@app/classes/constants';
@@ -7,6 +8,7 @@ import { BoardHandlerService } from '@app/services/board-handler.service';
 import { ChatRoomService } from '@app/services/chat-room.service';
 import { ChatboxService } from '@app/services/chatbox.service';
 import { ClientSocketService } from '@app/services/client-socket.service';
+import { CommunicationService } from '@app/services/communication.service';
 import { EndGameService } from '@app/services/end-game.service';
 import { GameSettingsService } from '@app/services/game-settings.service';
 import { GiveUpHandlerService } from '@app/services/give-up-handler.service';
@@ -51,6 +53,7 @@ export class GameViewComponent {
         public giveUpHandlerService: GiveUpHandlerService,
         public chatRoomService: ChatRoomService,
         public authService: AuthService,
+        public communicationService: CommunicationService,
     ) {
         this.fontSize = DEFAULT_FONT_SIZE;
         // this.giveUpHandlerService.receiveEndGameByGiveUp();
@@ -97,6 +100,8 @@ export class GameViewComponent {
         this.changeChatRoomDialog.open(ChangeChatRoomComponent, { disableClose: true });
     }
     openBestActionsDialog(): void {
+        this.authService.currentUser.xpPoints -= 75;
+        this.communicationService.updateXps(this.authService.currentUser._id, this.authService.currentUser.xpPoints).subscribe();
         this.clientSocketService.socket.emit('sendBest', this.clientSocketService.currentRoom.id, this.playerService.currentPlayer.name);
         this.bestActionsDialog.open(BestActionsDialogComponent, { disableClose: true });
     }

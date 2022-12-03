@@ -1,9 +1,11 @@
+/* eslint-disable no-underscore-dangle */
 import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { EASEL_SIZE } from '@app/classes/constants';
 import { MessageType } from '@app/classes/enum';
 import { AuthService } from '@app/services/auth.service';
 import { BoardHandlerService } from '@app/services/board-handler.service';
 import { ClientSocketService } from '@app/services/client-socket.service';
+import { CommunicationService } from '@app/services/communication.service';
 import { LetterService } from '@app/services/letter.service';
 import { ManipulateService } from '@app/services/manipulate.service';
 import { PlayerService } from '@app/services/player.service';
@@ -35,6 +37,7 @@ export class LetterEaselComponent {
         private sendMessageService: SendMessageService,
         private manipulateService: ManipulateService,
         private skipTurnService: SkipTurnService,
+        public communicationService: CommunicationService,
     ) {
         this.word = '';
         this.display = false;
@@ -128,6 +131,8 @@ export class LetterEaselComponent {
 
     checkWord() {
         this.maxButtonCall--;
+        this.authService.currentUser.xpPoints -= 20;
+        this.communicationService.updateXps(this.authService.currentUser._id, this.authService.currentUser.xpPoints).subscribe();
         this.clientSocket.socket.emit('checkingWord', this.word, this.clientSocket.currentRoom.id);
     }
     receiveChecking() {

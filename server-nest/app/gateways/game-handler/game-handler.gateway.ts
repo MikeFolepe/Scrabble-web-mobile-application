@@ -10,7 +10,7 @@ import { ChatRoomMessage } from '@common/chatRoomMessage';
 import { DELAY_BEFORE_PLAYING, EASEL_SIZE, INVALID_INDEX, ONE_SECOND_DELAY, THREE_SECONDS_DELAY } from '@common/constants';
 import { bot } from '@common/defaultAvatars';
 import { Friend } from '@common/friend';
-import { GameSettings } from '@common/game-settings';
+import { GameSettings, NumberOfPlayer } from '@common/game-settings';
 import { Notification } from '@common/notification';
 import { User } from '@common/user';
 import { GameDB } from '@common/user-stats';
@@ -442,6 +442,10 @@ export class GameHandlerGateway implements OnGatewayConnection {
             return;
         }
         if (room.state === State.Playing) {
+            if (room.gameSettings.gameType === NumberOfPlayer.OneVone) {
+                room.endGameService.isEndGameByGiveUp = true;
+                return;
+            }
             if (room.aiPlayersNumber === 2 || room.humanPlayersNumber <= 1) {
                 // room.skipTurnService.stopTimer();
                 // this.server.to(room.id).emit('leave');
