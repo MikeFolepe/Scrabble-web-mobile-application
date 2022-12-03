@@ -190,10 +190,11 @@ class PreferenceViewModel: ViewModel() {
         }
     }
 
-    fun saveProfile(currentUser : User): LiveData<Boolean> {
+    fun saveProfile(currentUser : User,pseudonymChanged: Boolean): LiveData<Boolean> {
         val result = MutableLiveData<Boolean>()
         viewModelScope.launch {
-            var response = changeAvatar(currentUser)
+            Log.d("modify", currentUser.pseudonym)
+            var response = changeAvatar(currentUser, pseudonymChanged)
             if (response != null) {
                 if(response.status == HttpStatusCode.OK) {
                     Users.currentUser = response.body()
@@ -285,10 +286,10 @@ class PreferenceViewModel: ViewModel() {
         return@withContext response
     }
 
-    private suspend fun changeAvatar(currentUser : User): HttpResponse? = withContext(Dispatchers.Default)  {
+    private suspend fun changeAvatar(currentUser : User, pseudonymChanged: Boolean): HttpResponse? = withContext(Dispatchers.Default)  {
         var response: HttpResponse?
         try{
-            response = client.post("$serverUrl/api/user/updateUser") {
+            response = client.post("$serverUrl/api/user/updateUser/$pseudonymChanged" ) {
                 contentType(ContentType.Application.Json)
                 setBody(currentUser)
             }

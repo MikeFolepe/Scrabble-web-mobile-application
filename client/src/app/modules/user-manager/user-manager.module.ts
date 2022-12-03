@@ -11,7 +11,14 @@ import { UserShopComponent } from './user-shop/user-shop.component';
 import { UserStatsComponent } from './user-stats/user-stats.component';
 
 @NgModule({
-    declarations: [UserMenuNavComponent, UserProfileComponent, UserListDialogComponent, UserStatsComponent, UserPreferencesComponent, UserShopComponent],
+    declarations: [
+        UserMenuNavComponent,
+        UserProfileComponent,
+        UserListDialogComponent,
+        UserStatsComponent,
+        UserPreferencesComponent,
+        UserShopComponent,
+    ],
     imports: [CommonModule, AppRoutingModule, SharedModule, AppMaterialModule],
     exports: [UserMenuNavComponent],
 })

@@ -101,6 +101,10 @@ export class CommunicationService {
         return this.http.post<boolean>(`${this.baseUrl}/user/preference/addChat/${userId}`, { name });
     }
 
+    updateUser(user: User, pseudonymChanged: boolean): Observable<User> {
+        return this.http.post<User>(`${this.baseUrl}/user/updateUser/${pseudonymChanged}`, user);
+    }
+
     async findUserInDb(pseudonym: string, password: string): Promise<boolean> {
         return this.http.get<boolean>(`${this.baseUrl}/user/findUserInDb/${pseudonym}/${password}`).toPromise();
     }
