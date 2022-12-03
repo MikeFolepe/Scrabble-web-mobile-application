@@ -1,39 +1,43 @@
-<div *ngIf="this.isOpen === false" class="closedChat" (click)="openChat()">
-    <div class="textClosedChat">
-        <h2>{{ 'clickChat' | translate }}</h2>
-    </div>
-</div>
-<div *ngIf="this.isOpen === true" class="chatRoom">
-    <div>
-        <div *ngIf="chatRoomInSelectedRooms()">
-            <h2 class="title">{{ this.chatRoomService.chatRooms[this.chatRoomIndexService.chatRoomIndex].chatRoomName }}</h2>
+<popout-window [wrapperRetainSizeOnPopout]="true">
+    <div class="dimension">
+        <div *ngIf="this.isOpen === false" class="closedChat" (click)="openChat()">
+            <div class="textClosedChat">
+                <h2>{{ 'clickChat' | translate }}</h2>
+            </div>
+        </div>
+        <div *ngIf="this.isOpen === true" class="chatRoom">
+            <div>
+                <div *ngIf="chatRoomInSelectedRooms()">
+                    <h2 class="title">{{ this.chatRoomService.chatRooms[this.chatRoomIndexService.chatRoomIndex].chatRoomName }}</h2>
 
-            <div class="conversation" #scrollMe>
-                <div class="text" *ngFor="let message of this.chatRoomService.chatRooms[this.chatRoomIndexService.chatRoomIndex].messages">
-                    <div
-                        *ngIf="
-                            message.text === 'a rejoint le canal de communication' || message.text === 'a quitté le canal de communication';
-                            else elseBlock
-                        "
-                    >
-                        <p class="systemText">{{ message.pseudonym }} {{ message.text | translate }}</p>
+                    <div class="conversation" #scrollMe>
+                        <div class="text" *ngFor="let message of this.chatRoomService.chatRooms[this.chatRoomIndexService.chatRoomIndex].messages">
+                            <div
+                                *ngIf="
+                                    message.text === 'a rejoint le canal de communication' || message.text === 'a quitté le canal de communication';
+                                    else elseBlock
+                                "
+                            >
+                                <p class="systemText">{{ message.pseudonym }} {{ message.text | translate }}</p>
+                            </div>
+                            <ng-template #elseBlock
+                                ><img src="{{ message.avatar }}" class="avatar" alt="Avatar" />
+                                <p>{{ message.pseudonym }}: {{ message.text }}</p></ng-template
+                            >
+                        </div>
                     </div>
-                    <ng-template #elseBlock
-                        ><img src="{{ message.avatar }}" class="avatar" alt="Avatar" />
-                        <p>{{ message.pseudonym }}: {{ message.text }}</p></ng-template
-                    >
+
+                    <button mat-button class="closeButton" (click)="closeChat()"><mat-icon>clear</mat-icon></button>
+
+                    <div class="sendMessage">
+                        <input placeholder="{{ 'sendMessage' | translate }}" [(ngModel)]="currentMessage" (keypress)="handleKeyEvent($event)" />
+                        <button mat-button class="sendButton" (click)="sendMessage()" [disabled]="!currentMessage">{{ 'send' | translate }}</button>
+                    </div>
+                </div>
+                <div *ngIf="!chatRoomInSelectedRooms()">
+                    <h2 class="title">{{ 'noChannelSelected' | translate }}</h2>
                 </div>
             </div>
-
-            <button mat-button class="closeButton" (click)="closeChat()"><mat-icon>clear</mat-icon></button>
-
-            <div class="sendMessage">
-                <input placeholder="{{ 'sendMessage' | translate }}" [(ngModel)]="currentMessage" (keypress)="handleKeyEvent($event)" />
-                <button mat-button class="sendButton" (click)="sendMessage()" [disabled]="!currentMessage">{{ 'send' | translate }}</button>
-            </div>
-        </div>
-        <div *ngIf="!chatRoomInSelectedRooms()">
-            <h2 class="title">{{ 'noChannelSelected' | translate }}</h2>
         </div>
     </div>
-</div>
+</popout-window>

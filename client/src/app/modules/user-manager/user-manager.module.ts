@@ -7,10 +7,11 @@ import { UserMenuNavComponent } from './user-menu-nav/user-menu-nav.component';
 import { UserPreferencesComponent } from './user-preferences/user-preferences.component';
 import { UserListDialogComponent } from './user-profile/user-list-dialog/user-list-dialog.component';
 import { UserProfileComponent } from './user-profile/user-profile.component';
+import { UserShopComponent } from './user-shop/user-shop.component';
 import { UserStatsComponent } from './user-stats/user-stats.component';
 
 @NgModule({
-    declarations: [UserMenuNavComponent, UserProfileComponent, UserListDialogComponent, UserStatsComponent, UserPreferencesComponent],
+    declarations: [UserMenuNavComponent, UserProfileComponent, UserListDialogComponent, UserStatsComponent, UserPreferencesComponent, UserShopComponent],
     imports: [CommonModule, AppRoutingModule, SharedModule, AppMaterialModule],
     exports: [UserMenuNavComponent],
 })

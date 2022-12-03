@@ -1,0 +1,87 @@
+#title {
+    margin-top: 50px;
+    color: black;
+    margin-left: 50px;
+    margin-right: 0;
+}
+
+h2 {
+    margin-left : 568px;
+    margin-bottom : 35px;
+    color : black;
+}
+
+.avatarChange {
+    //center the elemetns of the div
+    border-top : 100px;
+    border-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    margin-right : 300px;
+}
+
+.avatarImage {
+    width:150px;
+    height:150px;
+}
+
+.avatarChangeButton {
+    margin-left : 100px;
+    color : #00804d;
+    margin-top: 50px;
+    width : 200px;
+    height: 50px;
+    //round edges
+    border-radius: 10px;
+}
+
+.pseudoButtonCenter {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}
+
+.pseudonymChangeButton {
+    background-color: #00804d;
+    margin-right : 35px;
+    text-align: center;
+    margin-top: 50px;
+    width : 300px;
+    height: 50px;
+    color: white;
+    border-radius: 10px;
+}
+
+hr.class-1 {
+    border-top: 3px solid #23501F;
+    margin-bottom : 75px;
+    margin-left : 25px;
+    margin-right : 25px;
+}
+
+hr.class-2 {
+    margin-top : 25px;
+    margin-left : 350px;
+    margin-right : 350px;
+    border-top : 2px solid #23501F;
+    margin-bottom : 50px;
+}
+
+.changePseudonym {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}
+
+.pseudonymInput {
+    //center the input 
+    display: flex;
+    margin-right : 500px;
+    //move the text inside the input 10px to the right
+    padding-left : 10px;
+    width : 250px;
+    height : 25px;
+    border-radius: 5px;
+    border : 0.5px solid #23501F;
+}

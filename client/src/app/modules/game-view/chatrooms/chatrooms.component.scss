@@ -1,6 +1,9 @@
 .chatRoom {
-    height: 49vh;
-    width: 20vw;
+    position: absolute;
+    bottom: 0.5px;
+    right: 5px;
+    height: 450px;
+    width: 370px;
     overflow: hidden;
     border-radius: 6px;
     background-image: linear-gradient(0deg, #000000 25%, #005634 25%, #005634 50%, #000000 50%, #000000 75%, #005634 75%, #005634 100%);
@@ -10,6 +13,11 @@
     text-shadow: 0 0 5px #c8c8c8;
     display: flex;
     flex-direction: column;
+} 
+
+.dimension {
+    height: 436px;
+    width: 360px;
 }
 
 .closeButton {
@@ -55,7 +63,7 @@
 .conversation {
     margin-top: -10px;
     margin-bottom: 0px;
-    height: 330px;
+    height: 375px;
     overflow-y: auto;
     word-break: break-word;
 }
@@ -85,14 +93,23 @@
     align-items: baseline;
 }
 
+.dimensions {
+    //make the size constant
+    width: 100%;
+    height: 100%;
+    background-color: #000000;
+    // height: auto;
+    // width: auto;
+}
+
 .closedChat {
     transition: all 0.5s ease;
     user-select: none;
     position: absolute;
     bottom: 0.5px;
-    right: 10px;
+    right: 5px;
     height: 40px;
-    width: 350px;
+    width: 370px;
     background-color: #00804d;
     overflow: hidden;
     border-radius: 10px;
