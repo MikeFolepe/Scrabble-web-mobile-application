@@ -19,7 +19,6 @@ export class AuthController {
         await this.authService
             .login(user)
             .then((newUser: User) => {
-                console.log(newUser);
                 if (newUser === undefined) response.sendStatus(HttpStatus.NOT_MODIFIED);
                 else response.status(HttpStatus.OK).send(newUser);
             })
