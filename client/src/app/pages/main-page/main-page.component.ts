@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
@@ -6,10 +7,12 @@ import { ChangeChatRoomComponent } from '@app/modules/game-view/change-chat-room
 import { JoinChatRoomsComponent } from '@app/modules/game-view/join-chat-rooms/join-chat-rooms.component';
 import { AuthService } from '@app/services/auth.service';
 import { ChatRoomService } from '@app/services/chat-room.service';
+import { CommunicationService } from '@app/services/communication.service';
 import { GameSettingsService } from '@app/services/game-settings.service';
 import { GiveUpHandlerService } from '@app/services/give-up-handler.service';
 import { LetterService } from '@app/services/letter.service';
 import { PlaceLetterService } from '@app/services/place-letter.service';
+import { UserService } from '@app/services/user.service';
 import { GameType } from '@common/game-type';
 import { NotificationsDialogComponent } from '../notifications-dialog/notifications-dialog.component';
 
@@ -18,7 +21,6 @@ import { NotificationsDialogComponent } from '../notifications-dialog/notificati
     templateUrl: './main-page.component.html',
     styleUrls: ['./main-page.component.scss'],
 })
-
 export class MainPageComponent {
     selectedGameTypeIndex: number;
     selectedGameType: string | GameType;
@@ -27,6 +29,7 @@ export class MainPageComponent {
     chatRoomForm: boolean;
     isOpen: boolean;
     chatRoomName: string;
+    disconnect: boolean;
     readonly gameType: string[];
     readonly gameModes: string[];
     // @ViewChild('popoutWindow') private popoutWindow: PopoutWindowComponent;
@@ -43,6 +46,8 @@ export class MainPageComponent {
         private placeLetterService: PlaceLetterService,
         private giveUpHandlerService: GiveUpHandlerService,
         public chatRoomService: ChatRoomService,
+        public userService: UserService,
+        private communicationService: CommunicationService,
     ) {
         this.selectedGameTypeIndex = 0;
         // this.gameType = ['Scrabble classique'];
@@ -52,6 +57,7 @@ export class MainPageComponent {
         this.chatRoomForm = false;
         this.isOpen = false;
         this.resetServices();
+        this.disconnect = false;
     }
 
     routeToGameMode(): void {
@@ -70,6 +76,9 @@ export class MainPageComponent {
         }
     }
 
+    logout() {
+        this.authService.logout();
+    }
     openChatRoomForm(): void {
         this.chatRoomForm = true;
     }
@@ -95,5 +104,14 @@ export class MainPageComponent {
         this.letterService.ngOnDestroy();
         this.placeLetterService.ngOnDestroy();
         this.gameSettingsService.ngOnDestroy();
+    }
+
+    async changeLanguage(language: number) {
+        console.log(language);
+        this.userService.userPreferences.language = Number(
+            await this.communicationService.updateLanguage(this.authService.currentUser._id, language).toPromise(),
+        );
+        console.log(this.userService.userPreferences.language);
+        await this.authService.initLanguage();
     }
 }

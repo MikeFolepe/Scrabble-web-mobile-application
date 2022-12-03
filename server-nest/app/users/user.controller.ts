@@ -131,9 +131,6 @@ export class UserController {
     @Post('/updateUser/:pseudonymChanged')
     async updateUserInDb(@Req() req, @Res() response: Response) {
         const pseudonymChanged = req.params.pseudonymChanged;
-        console.log('boo', pseudonymChanged);
-        console.log(req.params.pseudonymChanged);
-        console.log(req.body.pseudonym)
         if (pseudonymChanged === 'true') {
             const userFound = await this.userService.getSingleUser(req.body.pseudonym);
             if (userFound) {

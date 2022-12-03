@@ -64,6 +64,47 @@ export class CommunicationService {
     addNewGameToStats(game: GameDB, userId: string): Observable<void> {
         return this.http.post<void>(`${this.baseUrl}/user/userStats/game/${userId}`, game);
     }
+
+    getAppTheme(userId: string): Observable<string> {
+        return this.http.get(`${this.baseUrl}/user/preference/appTheme/${userId}`, { responseType: 'text' });
+    }
+
+    getCurrentBoard(userId: string): Observable<string> {
+        return this.http.get(`${this.baseUrl}/user/preference/boardTheme/${userId}`, { responseType: 'text' });
+    }
+
+    getCurrentChat(userId: string): Observable<string> {
+        return this.http.get(`${this.baseUrl}/user/preference/chatTheme/${userId}`, { responseType: 'text' });
+    }
+
+    getBoards(userId: string): Observable<string[]> {
+        return this.http.get<string[]>(`${this.baseUrl}/user/preference/boards/${userId}`);
+    }
+
+    getChats(userId: string): Observable<string[]> {
+        return this.http.get<string[]>(`${this.baseUrl}/user/preference/chats/${userId}`);
+    }
+
+    getLanguage(userId: string): Observable<string> {
+        return this.http.get(`${this.baseUrl}/user/preference/language/${userId}`, { responseType: 'text' });
+    }
+
+    updateLanguage(userId: string, language: number): Observable<string> {
+        return this.http.post(`${this.baseUrl}/user/preference/setLanguage/${userId}`, { language }, { responseType: 'text' });
+    }
+
+    addBoardTheme(userId: string, name: string): Observable<boolean> {
+        return this.http.post<boolean>(`${this.baseUrl}/user/preference/addBoard/${userId}`, { name });
+    }
+
+    addChatTheme(userId: string, name: string): Observable<boolean> {
+        return this.http.post<boolean>(`${this.baseUrl}/user/preference/addChat/${userId}`, { name });
+    }
+
+    updateUser(user: User, pseudonymChanged: boolean): Observable<User> {
+        return this.http.post<User>(`${this.baseUrl}/user/updateUser/${pseudonymChanged}`, user);
+    }
+
     async findUserInDb(pseudonym: string, password: string): Promise<boolean> {
         return this.http.get<boolean>(`${this.baseUrl}/user/findUserInDb/${pseudonym}/${password}`).toPromise();
     }

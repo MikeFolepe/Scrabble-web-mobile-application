@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable no-undef */
+/* eslint-disable prefer-arrow/prefer-arrow-functions */
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -13,6 +16,7 @@ import { JoinRoomComponent } from '@app/pages/join-room/join-room.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { PageNotFoundComponent } from '@app/pages/page-not-found/page-not-found.component';
 import { WaitingRoomComponent } from '@app/pages/waiting-room/waiting-room.component';
+import { TranslateModule } from '@ngx-translate/core';
 import { ClickOutsideModule } from 'ng-click-outside';
 import { UserManagerModule } from './modules/user-manager/user-manager.module';
 import { AdminPageComponent } from './pages/admin-page/admin-page.component';
@@ -26,6 +30,7 @@ import { NotificationsDialogComponent } from './pages/notifications-dialog/notif
  * Please do not move this module in the module folder.
  * Otherwise Angular Cli will not know in which module to put new component
  */
+
 @NgModule({
     declarations: [
         AppComponent,
@@ -52,6 +57,7 @@ import { NotificationsDialogComponent } from './pages/notifications-dialog/notif
         ClickOutsideModule,
         ReactiveFormsModule,
         UserManagerModule,
+        TranslateModule.forRoot(),
     ],
     providers: [MainPageComponent],
     bootstrap: [AppComponent],

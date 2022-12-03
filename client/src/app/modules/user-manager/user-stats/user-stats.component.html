@@ -32,7 +32,7 @@
         <div id="log-label" class="line-break">Déconnexions</div>
         <div class="connexion" #scrollMe>
             <div *ngFor="let login of userService.userStats.logins; let i = index" class="logins">
-                <p></p>
+                <p>{{ i + 1 }}</p>
                 <p>Connecté le</p>
                 <p>
                     {{ login.date }}
@@ -46,7 +46,7 @@
 
         <div class="deconnexion" #scrollMe>
             <div *ngFor="let logout of userService.userStats.logouts; let i = index" class="logouts">
-                <p></p>
+                <p>{{ i + 1 }}</p>
                 <p>Deconnecté le</p>
                 <p>
                     {{ logout.date }}
@@ -64,7 +64,7 @@
 
     <div class="history" #scrollMe>
         <div *ngFor="let game of userService.userStats.games; let i = index" class="logouts">
-            <p></p>
+            <p>{{ i + 1 }}</p>
             <p>Partie jouée le</p>
             <p>
                 {{ game.startDate }}
@@ -79,3 +79,17 @@
         </div>
     </div>
 </div>
+
+<div class="chatRooms-buttons">
+    <button mat-mini-fab class="addButton tooltip" (click)="openAddChatRoomDialog()">
+        <span class="tooltiptext">Ajouter</span><mat-icon>add</mat-icon>
+    </button>
+    <button mat-mini-fab class="allRoomsButton tooltip" (click)="openJoinChatRoomDialog()">
+        <span class="tooltiptext">Rejoindre</span><mat-icon>search</mat-icon>
+    </button>
+    <button mat-mini-fab class="joinedRoomsButton tooltip" (click)="openChangeChatRoomDialog()">
+        <span class="tooltiptext">Changer</span><mat-icon>view_headline</mat-icon>
+    </button>
+</div>
+
+<app-chatrooms class="chatRooms"></app-chatrooms>

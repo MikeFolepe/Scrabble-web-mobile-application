@@ -10,7 +10,7 @@ import { ChatRoomMessage } from '@common/chatRoomMessage';
 import { DELAY_BEFORE_PLAYING, EASEL_SIZE, INVALID_INDEX, ONE_SECOND_DELAY, THREE_SECONDS_DELAY } from '@common/constants';
 import { bot } from '@common/defaultAvatars';
 import { Friend } from '@common/friend';
-import { GameSettings } from '@common/game-settings';
+import { GameSettings, NumberOfPlayer } from '@common/game-settings';
 import { Notification } from '@common/notification';
 import { User } from '@common/user';
 import { GameDB } from '@common/user-stats';
@@ -31,7 +31,6 @@ export class GameHandlerGateway implements OnGatewayConnection {
     @SubscribeMessage('sendFriendRequest')
     async sendFriendRequest(@ConnectedSocket() socket, @MessageBody() sender: User, @MessageBody() receiver: User) {
         let activeReceiver: User;
-        console.log(receiver[1].pseudonym);
         for (const user of this.userService.activeUsers) {
             if (user.pseudonym === receiver[1].pseudonym) activeReceiver = user;
         }
@@ -386,10 +385,11 @@ export class GameHandlerGateway implements OnGatewayConnection {
     }
 
     async handleDisconnect(socket: Socket) {
-        const room = this.roomManagerService.find(this.roomManagerService.findRoomIdOf(socket.id));
         if (this.userService.activeUsers.length !== 0) {
+            console.log(this.userService.activeUsers);
+            const room = this.roomManagerService.find(this.roomManagerService.findRoomIdOf(socket.id));
             const userIndex = this.userService.activeUsers.findIndex((curUser) => curUser.socketId === socket.id);
-            if (this.userService.activeUsers[userIndex] !== undefined) {
+            if (userIndex !== INVALID_INDEX) {
                 await this.userService.addLogout(this.userService.activeUsers[userIndex]._id);
             }
 
@@ -401,8 +401,10 @@ export class GameHandlerGateway implements OnGatewayConnection {
                 const indexPlayer = room.playerService.players.findIndex((player) => player.name === pseudonym);
                 await this.leaveGame(socket, room, indexPlayer, this.userService.activeUsers[userIndex]._id);
             }
-            this.logger.log(`Déconnexion par l'utilisateur avec id : ${socket.id}`);
-            this.userService.activeUsers.splice(userIndex, 1);
+            if (userIndex !== INVALID_INDEX) {
+                this.userService.activeUsers.splice(userIndex, 1);
+                this.logger.log(`Déconnexion par l'utilisateur avec id : ${socket.id}`);
+            }
         }
     }
 
@@ -443,6 +445,10 @@ export class GameHandlerGateway implements OnGatewayConnection {
             return;
         }
         if (room.state === State.Playing) {
+            if (room.gameSettings.gameType === NumberOfPlayer.OneVone) {
+                room.endGameService.isEndGameByGiveUp = true;
+                return;
+            }
             if (room.aiPlayersNumber === 2 || room.humanPlayersNumber <= 1) {
                 // room.skipTurnService.stopTimer();
                 // this.server.to(room.id).emit('leave');

@@ -13,7 +13,7 @@
     <input class="pseudonymInput" placeholder="{{this.authService.currentUser.pseudonym}}" [(ngModel)]="newPseudonym">
 </div>
 <div class="pseudoButtonCenter">
-    <button class="pseudonymChangeButton" mat-raised-button color="basic" (click)="changePseudonym()">Sauvegarder les changements</button>
+    <button class="pseudonymChangeButton" mat-raised-button color="basic" (click)="changeUser()">Sauvegarder les changements</button>
 </div>
 
 <h1 id="title">Personnalisation de l'application</h1>
@@ -56,5 +56,19 @@
     </mat-select>
     </mat-form-field>
 </div>
+
+<div class="chatRooms-buttons">
+    <button mat-mini-fab class="addButton tooltip" (click)="openAddChatRoomDialog()">
+        <span class="tooltiptext">Ajouter</span><mat-icon>add</mat-icon>
+    </button>
+    <button mat-mini-fab class="allRoomsButton tooltip" (click)="openJoinChatRoomDialog()">
+        <span class="tooltiptext">Rejoindre</span><mat-icon>search</mat-icon>
+    </button>
+    <button mat-mini-fab class="joinedRoomsButton tooltip" (click)="openChangeChatRoomDialog()">
+        <span class="tooltiptext">Changer</span><mat-icon>view_headline</mat-icon>
+    </button>
+</div>
+
+<app-chatrooms class="chatRooms"></app-chatrooms>
 
 <div class="bottom"></div>

@@ -143,9 +143,10 @@ export class PreferenceController {
 
     @Post('/setLanguage/:id')
     async setLanguage(@Req() req, @Res() response: Response) {
+        console.log(req.body.language);
         await this.preferenceService
             .setLanguage(req.params.id, req.body.language)
-            .then((language: number) => {
+            .then((language: string) => {
                 response.status(HttpStatus.OK).send(language);
             })
             .catch((error: Error) => {

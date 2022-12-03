@@ -2,13 +2,14 @@
 <app-user-menu-nav></app-user-menu-nav>
 <div></div>
 <div class="userProfile">
-    <img src="{{ this.authService.currentUser.avatar }}" class="avatar" alt="Avatar" />
+    <img (click)="this.disconnect = !this.disconnect" src="{{ this.authService.currentUser.avatar }}" class="avatar" alt="Avatar" />
+    <button class="logout" *ngIf="this.disconnect" (click)="logout()">Se déconnecter</button>
     <!-- <img src="../../../assets/notif.PNG" (click)="openNotificationDialog()" class="notif" alt="notifications" /> -->
 </div>
 <div class="justified">
     <img id="logo-scrabble" src="https://bit.ly/3m206ss" class="not-selectionnable" alt="Logo Scrabble" />
     <div>
-        <p>Bienvenue!</p>
+        <p>{{ 'welcome' | translate }}!</p>
     </div>
     <div>
         <p>
@@ -16,20 +17,35 @@
         </p>
         <br />
     </div>
-    <button class="button" id="playButton" mat-raised-button color="primary" routerLink="/multiplayer-mode">Créer une partie multijoueur</button>
+    <button class="button" id="playButton" mat-raised-button color="primary" routerLink="/multiplayer-mode">
+        {{ 'Créer une partie multijoueur' | translate }}
+    </button>
 
-    <button class="button" id="playButton" mat-raised-button color="primary" routerLink="/join-room">Joindre une partie multijoueur</button>
+    <button class="button" id="playButton" mat-raised-button color="primary" routerLink="/join-room">
+        {{ 'Joindre une partie multijoueur' | translate }}
+    </button>
+
+    <button class="button" mat-raised-button color="primary" (click)="changeLanguage(1)">
+        {{ 'main.page.section.languages.english' | translate }}
+    </button>
+
+    <button class="button" mat-raised-button color="primary" (click)="changeLanguage(0)">
+        {{ 'main.page.section.languages.french' | translate }}
+    </button>
 </div>
 
 <div class="chatRooms-buttons">
     <button mat-mini-fab class="addButton tooltip" (click)="openAddChatRoomDialog()">
-        <span class="tooltiptext">Ajouter</span><mat-icon>add</mat-icon>
+        <span class="tooltiptext">{{ 'add' | translate }}</span
+        ><mat-icon>add</mat-icon>
     </button>
     <button mat-mini-fab class="allRoomsButton tooltip" (click)="openJoinChatRoomDialog()">
-        <span class="tooltiptext">Rejoindre</span><mat-icon>search</mat-icon>
+        <span class="tooltiptext">{{ 'join' | translate }}</span
+        ><mat-icon>search</mat-icon>
     </button>
     <button mat-mini-fab class="joinedRoomsButton tooltip" (click)="openChangeChatRoomDialog()">
-        <span class="tooltiptext">Changer</span><mat-icon>view_headline</mat-icon>
+        <span class="tooltiptext">{{ 'change' | translate }}</span
+        ><mat-icon>view_headline</mat-icon>
     </button>
 </div>
 

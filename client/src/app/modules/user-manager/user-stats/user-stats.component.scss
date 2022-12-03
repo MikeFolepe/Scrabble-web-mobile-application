@@ -95,14 +95,13 @@ hr {
     margin-top: 10px;
     gap: 20px;
     font-size: large;
-
 }
 
 .logins p {
     display: inline-block;
     margin-right: 60px;
+    margin-left: 10px;
 }
-
 
 .logouts {
     top: auto;
@@ -111,12 +110,12 @@ hr {
     gap: 20px;
     font-size: large;
 
-
 }
 
 .logouts p {
     display: inline-block;
     margin-right: 60px;
+    margin-left: 10px;
 
 }
 
@@ -143,7 +142,7 @@ hr {
 .deconnexion {
     background-color: white;
     border-radius: 6px;
-    width: 35%;
+    width: fit-content;
     height: 300px;
     overflow: auto;
 }
@@ -161,8 +160,71 @@ hr {
 .history {
     background-color: white;
     border-radius: 6px;
-    width: 45%;
     height: 250px;
     margin: auto;
     overflow: auto;
+    width: fit-content;
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: #23501f;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 1;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -60px;
+}
+
+.tooltip .tooltiptext::after {
+    content: ' ';
+    position: absolute;
+    top: 100%; /* At the bottom of the tooltip */
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #23501f transparent transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+}
+
+.chatRooms-buttons {
+    position: absolute;
+    bottom: 10px;
+    right: 400px;
+}
+
+.addButton {
+    background-color: #00804d;
+    margin-right: 10px;
+}
+
+.allRoomsButton {
+    background-color: #00804d;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.joinedRoomsButton {
+    background-color: #00804d;
+    margin-left: 10px;
+}
+
+.chatRooms {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
 }
