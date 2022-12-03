@@ -8,9 +8,10 @@ import { UserProfileComponent } from './user-profile/user-profile.component';
 import { UserListDialogComponent } from './user-profile/user-list-dialog/user-list-dialog.component';
 import { UserStatsComponent } from './user-stats/user-stats.component';
 import { UserPreferencesComponent } from './user-preferences/user-preferences.component';
+import { UserShopComponent } from './user-shop/user-shop.component';
 
 @NgModule({
-    declarations: [UserMenuNavComponent, UserProfileComponent, UserListDialogComponent, UserStatsComponent, UserPreferencesComponent],
+    declarations: [UserMenuNavComponent, UserProfileComponent, UserListDialogComponent, UserStatsComponent, UserPreferencesComponent, UserShopComponent],
     imports: [CommonModule, AppRoutingModule, SharedModule, AppMaterialModule],
     exports: [UserMenuNavComponent],
 })
