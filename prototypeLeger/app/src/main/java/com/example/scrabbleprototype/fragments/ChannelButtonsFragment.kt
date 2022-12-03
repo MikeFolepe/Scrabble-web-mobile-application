@@ -3,6 +3,7 @@ package com.example.scrabbleprototype.fragments
 import android.app.Dialog
 import android.content.DialogInterface
 import android.os.Bundle
+import android.util.Log
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
@@ -24,10 +25,12 @@ import com.example.scrabbleprototype.model.AllChatRoomsAdapter
 import com.example.scrabbleprototype.model.ChatRoom
 import com.example.scrabbleprototype.model.MyChatRoomsAdapter
 import com.example.scrabbleprototype.model.SocketHandler
+import com.example.scrabbleprototype.objects.ChatRooms
 import com.example.scrabbleprototype.objects.ChatRooms.chatRoomToChange
 import com.example.scrabbleprototype.objects.ChatRooms.chatRooms
 import com.example.scrabbleprototype.objects.ChatRooms.currentChatRoom
 import com.example.scrabbleprototype.objects.ChatRooms.myChatRooms
+import com.example.scrabbleprototype.objects.Players
 import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.objects.Users.currentUser
 import com.fasterxml.jackson.core.type.TypeReference
@@ -36,6 +39,9 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONArray
 import org.json.JSONObject
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.concurrent.timerTask
 
 class ChannelButtonsFragment : Fragment() {
 
@@ -77,6 +83,7 @@ class ChannelButtonsFragment : Fragment() {
 
         setupAllChatRoomsDialog()
         binding.allChatRoomsButton.setOnClickListener {
+            adapter?.filter?.filter("")
             allChatRoomsDialog.show()
         }
         setupMyChatRoomsDialog()
@@ -106,6 +113,12 @@ class ChannelButtonsFragment : Fragment() {
             }
         }
         socket.emit("getChatRooms")
+        Timer().schedule(timerTask {
+            activity?.runOnUiThread {
+                currentChatRoom = chatRooms[0]
+                recreateChatFragment()
+            }
+        }, 3500)
     }
 
     private fun updateMyChatRooms() {
@@ -132,7 +145,6 @@ class ChannelButtonsFragment : Fragment() {
     }
 
     private fun setupSearchView() {
-
         val chatRoomSearch = allChatRoomsDialog.findViewById<SearchView>(R.id.search_chatrooms)
         chatRoomSearch.setOnQueryTextListener(object: SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {

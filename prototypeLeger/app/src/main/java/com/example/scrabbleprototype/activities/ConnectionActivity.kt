@@ -169,10 +169,8 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
             return
         }
         val user = User("", pseudonym, password, "")
-        Log.d("serverurl", serverUrl)
         val response = findUserInDb(pseudonym, password)
         if(response != null) {
-            Log.d("connect", "?")
             val decision: String = response.body()
             if (decision == "true") {
                 val response = postAuthentication(user)
