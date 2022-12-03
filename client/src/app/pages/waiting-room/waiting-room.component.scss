@@ -128,6 +128,71 @@ mat-icon {
     margin-top: 100px;
 }
 
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: #23501f;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 1;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -60px;
+}
+
+.tooltip .tooltiptext::after {
+    content: ' ';
+    position: absolute;
+    top: 100%; /* At the bottom of the tooltip */
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #23501f transparent transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+}
+
+.chatRooms-buttons {
+    position: absolute;
+    bottom: 10px;
+    right: 400px;
+}
+
+
+.addButton {
+    background-color: #00804d;
+    margin-right: 10px;
+}
+
+.allRoomsButton {
+    background-color: #00804d;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.joinedRoomsButton {
+    background-color: #00804d;
+    margin-left: 10px;
+}
+
+.chatRooms {
+    //put the chatrooms at the botton left of the page
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+}
+
 .avatar {
     height: 40px;
     width: 40px;

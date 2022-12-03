@@ -1,1 +1,24 @@
-<p>user-preferences works!</p>
+<app-background></app-background>
+<app-user-menu-nav></app-user-menu-nav>
+<h1 id="title">Paramètres</h1>
+<hr class="class-1" />
+
+<div class="avatarChange">
+    <img src="{{ this.authService.currentUser.avatar }}" class="avatarImage">
+    <button class="avatarChangeButton" mat-raised-button color="basic" (click)="openChangeAvatarDialog()">Modifier votre avatar</button>
+</div>
+<hr class="class-2" />
+<h2>Pseudonyme</h2>
+<div class="changePseudonym">
+    <input class="pseudonymInput" placeholder="{{this.authService.currentUser.pseudonym}}" [(ngModel)]="newPseudonym">
+</div>
+<div class="pseudoButtonCenter">
+    <button class="pseudonymChangeButton" mat-raised-button color="basic" (click)="changePseudonym()">Sauvegarder les changements</button>
+</div>
+
+<h1 id="title">Personnalisation de l'application</h1>
+<hr class="class-1" />
+
+<h2>Thèmes de l'application</h2>
+
+

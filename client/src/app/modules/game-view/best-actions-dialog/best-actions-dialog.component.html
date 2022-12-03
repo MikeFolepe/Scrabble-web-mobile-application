@@ -4,18 +4,19 @@
 </div>
 <br />
 <br />
-<br />
-<div mat-dialog-actions
-*ngFor="let i of possibilities">
-    <span>
-        Mot : {{i.word}}, Points : {{i.point}} - 
-    </span>
-    <button
-        mat-raised-button
-        mat-dialog-close
-        (click)="play(i.line, i.startIndex, i.orientation, i.word)"
-        color="warn"
-    >
-        jouer 
-    </button>
+<div class = "scrollable">
+    <div mat-dialog-actions *ngFor="let i of possibilities">
+        <span>
+            Mot : {{i.word}}, Points : {{i.point}} - 
+        </span>
+        <button
+            mat-raised-button
+            mat-dialog-close
+            (click)="play(i.line, i.startIndex, i.orientation, i.word)"
+            color="primary"
+        >
+            jouer 
+        </button>
+    </div>
 </div>
+<button class="close" mat-raised-button mat-dialog-close color="warn">Fermer</button>
