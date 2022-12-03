@@ -1,16 +1,18 @@
 p {
     margin-top: 10px;
     text-align: center;
+    font-size: 25px;
 }
 
 #playButton {
-
     margin-top: 20px;
     margin-bottom: 20px;
-    top : 30%;
+    top: 30%;
 }
 
-.test {background-color: red;}
+.test {
+    background-color: red;
+}
 
 .hovertext {
     position: relative;
@@ -58,29 +60,14 @@ p {
     text-align: center;
 }
 
-.tab-group {
-    padding: 20px 0;
-}
-
-.radio-group {
-    display: flex;
-    flex-direction: column;
-    margin: 15px 0;
-    padding: 0 0 0 10px;
-}
-
-.radio-button {
-    margin: 8px;
-}
-
 .avatar {
     //put the element on the top right corner of the screen
     position: absolute;
     top: 30px;
     right: 15px;
-    height : 60px;
-    width : 60px;
-    border-radius : 100%;
+    height: 60px;
+    width: 60px;
+    border-radius: 100%;
     cursor: pointer;
     transition: all 0.3s ease-in-out;
     &:hover {

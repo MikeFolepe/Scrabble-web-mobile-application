@@ -34,6 +34,9 @@
     "noChannelSelected": "No chat channel selected",
     "by":"by ",
     "sendMessage": "Click to enter a message",
-    "passer son tour": "Skip your turn"
+    "passer son tour": "Skip your turn",
+    "welcome": "Welcome",
+    "Créer une partie multijoueur": "Create a multiplayer game",
+    "Joindre une partie multijoueur": "Join a multiplayer game"
 
 }

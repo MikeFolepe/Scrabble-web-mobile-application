@@ -33,5 +33,8 @@
     "noChannelSelected": "Aucun canal de discussion sélectionné",
     "by": "par ",
     "sendMessage": "Cliquez pour entrer un message",
-    "passer son tour": "Passer son tour"
+    "passer son tour": "Passer son tour",
+    "welcome": "Bienvenue",
+    "Créer une partie multijoueur": "Créer une partie multijoueur",
+    "Joindre une partie multijoueur": "Joindre une partie multijoueur"
 }

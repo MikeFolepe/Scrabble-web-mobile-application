@@ -6,25 +6,22 @@
 </div>
 <div class="justified">
     <img id="logo-scrabble" src="https://bit.ly/3m206ss" class="not-selectionnable" alt="Logo Scrabble" />
-    <mat-tab-group>
-        <mat-tab>
-            <mat-radio-group class="radio-group" [(ngModel)]="selectedGameMode">
-                <mat-radio-button color="primary" class="radio-button" value="solo" *ngFor="let mode of gameModes" [value]="mode">
-                    {{ 'main.page.mode' | translate: { mode: mode } }}
-                </mat-radio-button>
-            </mat-radio-group>
-        </mat-tab>
-    </mat-tab-group>
-    <button class="button" id="playButton" mat-raised-button [disabled]="!selectedGameMode" color="primary" (click)="routeToGameMode()">
-        Jouer!
+    <div>
+        <p>{{ 'welcome' | translate }}!</p>
+    </div>
+    <div>
+        <p>
+            <strong>{{ this.authService.currentUser.pseudonym }}</strong>
+        </p>
+        <br />
+    </div>
+    <button class="button" id="playButton" mat-raised-button color="primary" routerLink="/multiplayer-mode">
+        {{ 'Créer une partie multijoueur' | translate }}
     </button>
-    <p>
-        {{ selectedGameMode }}
-    </p>
-    <button class="button" id="resetButton" mat-raised-button [disabled]="!selectedGameMode" color="warn" (click)="this.selectedGameMode = undefined">
-        {{ 'eraseChoice' | translate }}
+
+    <button class="button" id="playButton" mat-raised-button color="primary" routerLink="/join-room">
+        {{ 'Joindre une partie multijoueur' | translate }}
     </button>
-    <br />
 
     <button class="button" mat-raised-button color="primary" (click)="changeLanguage(1)">
         {{ 'main.page.section.languages.english' | translate }}
@@ -41,10 +38,12 @@
         ><mat-icon>add</mat-icon>
     </button>
     <button mat-mini-fab class="allRoomsButton tooltip" (click)="openJoinChatRoomDialog()">
-        <span class="tooltiptext">{{ 'join' | translate }}</span><mat-icon>search</mat-icon>
+        <span class="tooltiptext">{{ 'join' | translate }}</span
+        ><mat-icon>search</mat-icon>
     </button>
     <button mat-mini-fab class="joinedRoomsButton tooltip" (click)="openChangeChatRoomDialog()">
-        <span class="tooltiptext">{{ 'change' | translate }}</span><mat-icon>view_headline</mat-icon>
+        <span class="tooltiptext">{{ 'change' | translate }}</span
+        ><mat-icon>view_headline</mat-icon>
     </button>
 </div>
 <app-chatrooms class="chatRooms"></app-chatrooms>
