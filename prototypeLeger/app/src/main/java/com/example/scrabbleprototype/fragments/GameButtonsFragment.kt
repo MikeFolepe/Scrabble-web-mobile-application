@@ -1,6 +1,8 @@
 package com.example.scrabbleprototype.fragments
 
 import android.content.*
+import android.media.AudioManager
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
@@ -32,6 +34,8 @@ import kotlin.concurrent.timerTask
 
 class GameButtonsFragment : Fragment(), EndTurnCallback {
     private val board = Board.cases
+    val skipUrlSong = "https://docs.google.com/uc?export=download&id=1NrCnDFh6i7by3WfL-Tcnt6G-PLzjdoNL"
+    var mediaPlayer = MediaPlayer()
     private val placementViewModel: PlacementViewModel by activityViewModels()
     private val socket = SocketHandler.getPlayerSocket()
 
@@ -130,8 +134,16 @@ class GameButtonsFragment : Fragment(), EndTurnCallback {
     private fun setupSkipButton() {
         binding.skipTurnButton.setOnClickListener {
             skipTurnService.switchTimer()
+            playSkipSong()
         }
         binding.player = Players.getCurrent()
+    }
+
+    fun playSkipSong() {
+        mediaPlayer!!.setAudioStreamType(AudioManager.STREAM_RING)
+        mediaPlayer!!.setDataSource(skipUrlSong)
+        mediaPlayer.prepare()
+        mediaPlayer.start()
     }
 
     private fun setupPlayButton() {

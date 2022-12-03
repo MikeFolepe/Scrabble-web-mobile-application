@@ -12,7 +12,7 @@ import {
     hatGirl,
     musicGuy,
     mustacheGuy,
-    orangeGuy,
+    orangeGuy
 } from '@common/defaultAvatars';
 
 @Component({
@@ -59,6 +59,7 @@ export class AvatarChoiceComponent implements OnInit {
                 this.authService.chosenAvatar = event.target.result;
             };
         }
+        this.avatarChoice.close();
     }
 }
 

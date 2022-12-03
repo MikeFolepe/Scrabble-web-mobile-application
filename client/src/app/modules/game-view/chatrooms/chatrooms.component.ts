@@ -15,6 +15,7 @@ export class ChatroomsComponent implements OnInit {
 
     currentMessage: string;
     isOpen: boolean;
+    title : string;
 
     constructor(
         public chatRoomIndexService: ChatRoomIndexService,

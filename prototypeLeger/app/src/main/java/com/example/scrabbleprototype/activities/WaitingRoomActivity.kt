@@ -42,8 +42,7 @@ class WaitingRoomActivity : AppCompatActivity() {
         receiveNewOpponent()
         goToGameView()
         setupStartGameButton()
-        setupCancelButton()
-        setupRoomId()
+        setUpCancelButton()
         setupPlayersWaiting()
         receiveNewRequest()
         leave()
@@ -78,12 +77,8 @@ class WaitingRoomActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupRoomId() {
-        val roomIdText = findViewById<TextView>(R.id.roomId)
-        roomIdText.text = "Salle de jeu : " + CurrentRoom.myRoom.id
-    }
 
-    private fun setupCancelButton(){
+    private fun setUpCancelButton(){
         val cancelGameButton = findViewById<Button>(R.id.back_button)
 
         if(currentPlayer.isCreator){
@@ -168,11 +163,8 @@ class WaitingRoomActivity : AppCompatActivity() {
         }
     }
 
-    private fun leave() {
-        socket.on("leave") {
-            runOnUiThread { startActivity(Intent(this, MainMenuActivity::class.java)) }
-        }
-    }
+
+
 
     private fun leaveNotification() {
         socket.on("leaveNotification") { response ->
@@ -183,6 +175,12 @@ class WaitingRoomActivity : AppCompatActivity() {
                     findViewById<TextView>(R.id.leave_notification).text = ""
                 }, 4000)
             }
+        }
+    }
+
+    private fun leave() {
+        socket.on("leave") {
+            runOnUiThread { startActivity(Intent(this, MainMenuActivity::class.java)) }
         }
     }
 

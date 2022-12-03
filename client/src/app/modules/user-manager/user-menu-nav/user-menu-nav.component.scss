@@ -10,6 +10,17 @@
     transition: 0.5s;
 }
 
+hr.class-1 {
+    border-top: 2px solid #23501F;
+}
+
+h3 {
+    color : #23501F;
+    margin-left : 17px;
+    //make the text a little bt bigger
+    font-size: 20px;
+}
+
 .sidenav a {
     padding: 8px 8px 8px 32px;
     text-decoration: none;
@@ -45,7 +56,10 @@
 }
 
 .openbtn {
-    font-size: 30px;
+    margin-top : 15px;
+    margin-right : 10px;
+    color: #23501F;
+    font-size: 50px;
     cursor: pointer;
     position: fixed;
     z-index: 1;
@@ -62,9 +76,11 @@ header {
     height: 30%;
     top: 0;
     align-items: center;
-    background: linear-gradient(90deg, rgba(55, 105, 58, 1) 0%, rgba(56, 207, 165, 1) 56%, rgba(84, 203, 180, 1) 100%);
+    //linear gradient from #23501 to a little bit clearer
+    background: linear-gradient(to left, rgb(69, 138, 120) 0%, #00804D 100%);
     color: #f5fbf3;
-    text-shadow: 1px 1px 1px #a9da9f;
+    // background : #23501F;
+    // text-shadow: 1px 1px 1px #a9da9f;
     margin-bottom: 20px;
 }
 
@@ -75,8 +91,7 @@ p {
     margin-bottom: 15px;
 }
 
-
-.sidenav .mat-icon{
+.sidenav .mat-icon {
     width: 30px;
     height: 30px;
     margin-right: 10px;

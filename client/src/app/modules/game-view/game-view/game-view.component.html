@@ -20,16 +20,20 @@
                     [disabled]="!playerService.currentPlayer.isTurn || this.skipTurnService.shouldNotBeDisplayed || this.endGameService.isEndGame"
                     (click)="this.chatBoxService.sendPlayerMessage('!passer'); this.skipTurnService.switchTurn()"
                 >
-                    Passer son tour
+                    Passer
                 </button>
                 <button
                     mat-raised-button
                     color="primary"
                     id="regular-button-1"
-                    [disabled]="!playerService.currentPlayer.isTurn || this.skipTurnService.shouldNotBeDisplayed || (this.playerService.currentPlayer.letterTable.length !== 7 || this.endGameService.isEndGame)"
+                    [disabled]="
+                        !playerService.currentPlayer.isTurn ||
+                        this.skipTurnService.shouldNotBeDisplayed ||
+                        this.playerService.currentPlayer.letterTable.length !== 7 || this.endGameService.isEndGame
+                    "
                     (click)="openBestActionsDialog()"
                 >
-                    Meilleurs coups
+                    Top coups
                 </button>
                 <div
                     *ngIf="
@@ -54,7 +58,7 @@
                     <source src=" https://docs.google.com/uc?export=download&id=1-iRhSChJbr53df3HcJB4ApZxtq5a2Aec" type="audio/mpeg" />
                 </audio>
             </div>
-            <app-font-size id="font-size" [fontSize]="fontSize" (sizeChange)="handleFontSizeEvent($event)"></app-font-size>
+            <!-- <app-font-size id="font-size" [fontSize]="fontSize" (sizeChange)="handleFontSizeEvent($event)"></app-font-size> -->
         </div>
     </div>
     <app-scrabble-board id="scrabble-board" tabindex="0"></app-scrabble-board>

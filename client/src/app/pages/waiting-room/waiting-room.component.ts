@@ -5,6 +5,9 @@ import { Router } from '@angular/router';
 import { ONE_SECOND_DELAY, TWO_SECOND_DELAY } from '@app/classes/constants';
 import { ErrorMessage } from '@app/classes/error-message-constants';
 import { Player } from '@app/models/player.model';
+import { AddChatRoomComponent } from '@app/modules/game-view/add-chat-room/add-chat-room.component';
+import { ChangeChatRoomComponent } from '@app/modules/game-view/change-chat-room/change-chat-room.component';
+import { JoinChatRoomsComponent } from '@app/modules/game-view/join-chat-rooms/join-chat-rooms.component';
 import { JoiningConfirmationDialogComponent } from '@app/modules/initialize-game/joining-confirmation-dialog/joining-confirmation-dialog.component';
 import { AuthService } from '@app/services/auth.service';
 import { ClientSocketService } from '@app/services/client-socket.service';
@@ -25,6 +28,9 @@ export class WaitingRoomComponent implements OnInit {
     errorMessage: string;
 
     constructor(
+        public joinChatRoomsDialog: MatDialog,
+        public changeChatRoomDialog: MatDialog,
+        public addChatRoomDialog: MatDialog,
         private router: Router,
         private clientSocket: ClientSocketService,
         public playerService: PlayerService,
@@ -113,9 +119,22 @@ export class WaitingRoomComponent implements OnInit {
         });
     }
 
+    openChangeChatRoomDialog(): void {
+        this.changeChatRoomDialog.open(ChangeChatRoomComponent, { disableClose: true });
+    }
+
+    openJoinChatRoomDialog(): void {
+        this.joinChatRoomsDialog.open(JoinChatRoomsComponent, { disableClose: true });
+    }
+
+    openAddChatRoomDialog(): void {
+        this.addChatRoomDialog.open(AddChatRoomComponent, { disableClose: true });
+    }
+
     leaveGame(): void {
         this.clientSocket.socket.emit('sendLeaveGame', this.playerService.currentPlayer.name, this.clientSocket.currentRoom.id);
         this.playerService.currentPlayer = {} as Player;
+        this.router.navigate(['join-room']);
     }
     private acceptNewPlayer(): void {
         this.clientSocket.socket.on('newRequest', (joiningUser: string, roomId: string) => {
