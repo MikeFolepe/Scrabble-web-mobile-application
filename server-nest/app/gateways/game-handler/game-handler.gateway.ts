@@ -392,16 +392,17 @@ export class GameHandlerGateway implements OnGatewayConnection {
                 await this.userService.addLogout(this.userService.activeUsers[userIndex]._id);
             }
 
-        if (room !== undefined) {
-            let pseudonym;
-            if (userIndex !== INVALID_INDEX) {
-                pseudonym = this.userService.activeUsers[userIndex].pseudonym;
+            if (room !== undefined) {
+                let pseudonym;
+                if (userIndex !== INVALID_INDEX) {
+                    pseudonym = this.userService.activeUsers[userIndex].pseudonym;
+                }
+                const indexPlayer = room.playerService.players.findIndex((player) => player.name === pseudonym);
+                await this.leaveGame(socket, room, indexPlayer, this.userService.activeUsers[userIndex]._id);
             }
-            const indexPlayer = room.playerService.players.findIndex((player) => player.name === pseudonym);
-            await this.leaveGame(socket, room, indexPlayer, this.userService.activeUsers[userIndex]._id);
+            this.logger.log(`Déconnexion par l'utilisateur avec id : ${socket.id}`);
+            this.userService.activeUsers.splice(userIndex, 1);
         }
-        this.logger.log(`Déconnexion par l'utilisateur avec id : ${socket.id}`);
-        this.userService.activeUsers.splice(userIndex, 1);
     }
 
     private async leaveGame(socket: Socket, room: ServerRoom, indexPlayer: number = 0, userId: string = '') {
