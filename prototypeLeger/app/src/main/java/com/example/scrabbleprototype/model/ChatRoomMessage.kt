@@ -1,10 +1,11 @@
 package com.example.scrabbleprototype.model
 
 import android.graphics.Bitmap
-import com.fasterxml.jackson.annotation.JsonIgnore
+import android.graphics.BitmapFactory
+import android.util.Base64
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlinx.serialization.Serializable
-import java.text.SimpleDateFormat
 
 @Serializable
 enum class MessageType {
@@ -24,5 +25,11 @@ class ChatRoomMessage(var text: String, var avatar: String ,var pseudonym: Strin
         val time = Date().time
         val timestampFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
         return timestampFormat.format(time)
+    }
+
+    fun getAvatarBitmap():Bitmap{
+        val split = avatar.split(",")
+        val imageBytes = Base64.decode(split[1], Base64.NO_WRAP)
+        return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
     }
 }

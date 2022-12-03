@@ -12,6 +12,7 @@ import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.model.Item
 import com.example.scrabbleprototype.model.Language
 import com.example.scrabbleprototype.model.User
+import com.example.scrabbleprototype.objects.MyLanguage
 import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.objects.Themes
 import com.example.scrabbleprototype.objects.Users
@@ -25,6 +26,7 @@ import io.ktor.client.statement.*
 import io.ktor.client.utils.EmptyContent.contentType
 import io.ktor.http.*
 import io.ktor.serialization.jackson.*
+import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -36,7 +38,7 @@ class PreferenceViewModel: ViewModel() {
     private var serverUrl = Environment.serverUrl
     private var client: HttpClient = HttpClient() {
         install(ContentNegotiation) {
-            jackson()
+            json()
         }
     }
 
@@ -143,6 +145,7 @@ class PreferenceViewModel: ViewModel() {
         if(response != null) {
             Log.d("getLanguage", response.body())
             Users.userPreferences.language = Language.values()[response.body<String>().toInt()]
+            MyLanguage.currentLanguage = Users.userPreferences.language
         }
     }
 
@@ -289,7 +292,9 @@ class PreferenceViewModel: ViewModel() {
     private suspend fun changeAvatar(currentUser : User, pseudonymChanged: Boolean): HttpResponse? = withContext(Dispatchers.Default)  {
         var response: HttpResponse?
         try{
-            response = client.post("$serverUrl/api/user/updateUser/$pseudonymChanged" ) {
+            val pseudonym = pseudonymChanged.toString()
+            Log.d("sendpseudo", pseudonym)
+            response = client.post("$serverUrl/api/user/updateUser/$pseudonym" ) {
                 contentType(ContentType.Application.Json)
                 setBody(currentUser)
             }

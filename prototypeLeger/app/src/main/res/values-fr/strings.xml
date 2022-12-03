@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">ScrabblePrototype</string>
     <string name="title_activity_login">LoginActivity</string>
@@ -26,7 +27,7 @@
     <string name="player_info">Informations du joueur</string>
     <string name="duration">Durée</string>
     <string name="dictionary">Dictionnaire</string>
-    <string name="party_type">Protection de la partie</string>
+    <string name="party_type">Type de partie</string>
     <string name="minute">Minute(s)</string>
     <string name="seconde">Seconde(s)</string>
     <string name="everyone">Public</string>
@@ -161,3 +162,4 @@
     //Dialogs
 
 </resources>
+

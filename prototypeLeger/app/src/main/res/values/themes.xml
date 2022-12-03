@@ -56,4 +56,9 @@
         <item name="windowNoTitle">true</item>
         <item name="statusBarBackground">@color/teal</item>
     </style>
+
+    <style name="Theme.DefaultAlert" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <item name="android:background">@color/white</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
 </resources>

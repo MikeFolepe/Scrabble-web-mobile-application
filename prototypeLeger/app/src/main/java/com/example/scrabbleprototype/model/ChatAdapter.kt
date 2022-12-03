@@ -5,12 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.LayoutRes
 import com.example.scrabbleprototype.R
-import java.text.SimpleDateFormat
-import java.util.*
 
 class ChatAdapter(context: Context, @LayoutRes private val layoutResource: Int, private var messages: List<ChatRoomMessage>):
     ArrayAdapter<ChatRoomMessage>(context, layoutResource, messages) {
@@ -42,9 +41,11 @@ class ChatAdapter(context: Context, @LayoutRes private val layoutResource: Int, 
         val messageUser = view.findViewById<TextView>(R.id.message_user)
         val messageTime = view.findViewById<TextView>(R.id.message_time)
         val message = view.findViewById<TextView>(R.id.message)
+        val messageAvatar = view.findViewById<ImageView>(R.id.message_avatar)
         //imageview.setmageBitMap(_messages[position].getBitMap)
 
 
+        messageAvatar.setImageBitmap(_messages[position].getAvatarBitmap())
         messageUser.text = _messages[position].pseudonym
         messageTime.text = _messages[position].time
         message.text = _messages[position].text

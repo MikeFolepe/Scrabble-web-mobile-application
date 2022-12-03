@@ -3,14 +3,18 @@ package com.example.scrabbleprototype.fragments
 import android.app.Dialog
 import android.content.DialogInterface
 import android.os.Bundle
+import android.util.Log
+import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,10 +25,12 @@ import com.example.scrabbleprototype.model.AllChatRoomsAdapter
 import com.example.scrabbleprototype.model.ChatRoom
 import com.example.scrabbleprototype.model.MyChatRoomsAdapter
 import com.example.scrabbleprototype.model.SocketHandler
+import com.example.scrabbleprototype.objects.ChatRooms
 import com.example.scrabbleprototype.objects.ChatRooms.chatRoomToChange
 import com.example.scrabbleprototype.objects.ChatRooms.chatRooms
 import com.example.scrabbleprototype.objects.ChatRooms.currentChatRoom
 import com.example.scrabbleprototype.objects.ChatRooms.myChatRooms
+import com.example.scrabbleprototype.objects.Players
 import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.objects.Users.currentUser
 import com.fasterxml.jackson.core.type.TypeReference
@@ -33,6 +39,9 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONArray
 import org.json.JSONObject
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.concurrent.timerTask
 
 class ChannelButtonsFragment : Fragment() {
 
@@ -45,7 +54,7 @@ class ChannelButtonsFragment : Fragment() {
 
     lateinit var  allChatRoomsDialog: Dialog
     lateinit var  myChatRoomsDialog: Dialog
-    lateinit var CreateChatRoomDialog: Dialog
+    lateinit var createChatRoomDialog: Dialog
     private val socket = SocketHandler.socket
 
     private lateinit var binding: FragmentChannelButtonsBinding
@@ -74,6 +83,7 @@ class ChannelButtonsFragment : Fragment() {
 
         setupAllChatRoomsDialog()
         binding.allChatRoomsButton.setOnClickListener {
+            adapter?.filter?.filter("")
             allChatRoomsDialog.show()
         }
         setupMyChatRoomsDialog()
@@ -83,7 +93,7 @@ class ChannelButtonsFragment : Fragment() {
         }
         setupCreateChatRoomDialog()
         binding.createChatRoomButton.setOnClickListener {
-            CreateChatRoomDialog.show()
+            createChatRoomDialog.show()
         }
     }
 
@@ -103,6 +113,12 @@ class ChannelButtonsFragment : Fragment() {
             }
         }
         socket.emit("getChatRooms")
+        /*Timer().schedule(timerTask {
+            activity?.runOnUiThread {
+                currentChatRoom = chatRooms[0]
+                recreateChatFragment()
+            }
+        }, 2000)*/
     }
 
     private fun updateMyChatRooms() {
@@ -129,7 +145,6 @@ class ChannelButtonsFragment : Fragment() {
     }
 
     private fun setupSearchView() {
-
         val chatRoomSearch = allChatRoomsDialog.findViewById<SearchView>(R.id.search_chatrooms)
         chatRoomSearch.setOnQueryTextListener(object: SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
@@ -210,12 +225,22 @@ class ChannelButtonsFragment : Fragment() {
         val createView = inflater.inflate(R.layout.create_chat_room_dialog, null)
         val newChatRoomName = createView.findViewById<EditText>(R.id.new_chatroom_name)
 
-        CreateChatRoomDialog = AlertDialog.Builder(requireContext())
+        createChatRoomDialog = AlertDialog.Builder(ContextThemeWrapper(requireContext(), ThemeManager.getAlertTheme()))
             .setView(createView)
-            .setPositiveButton("Create", DialogInterface.OnClickListener { dialog, id ->
+            .setPositiveButton(R.string.positive_button, DialogInterface.OnClickListener { dialog, id ->
+                if(newChatRoomName.text.isEmpty()) {
+                    Toast.makeText(requireContext(), R.string.empty_channel_error, Toast.LENGTH_LONG).show()
+                    return@OnClickListener
+                } else if(newChatRoomName.text.toString().length < 5) {
+                    Toast.makeText(requireContext(), R.string.invalid_channel_name, Toast.LENGTH_LONG).show()
+                    return@OnClickListener
+                } else if(chatRooms.any { it.chatRoomName == newChatRoomName.text.toString()}) {
+                    Toast.makeText(requireContext(), R.string.channel_already_exist, Toast.LENGTH_LONG).show()
+                    return@OnClickListener
+                }
                 socket.emit("createChatRoom", JSONObject(Json.encodeToString(currentUser)), newChatRoomName.text.toString())
             })
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(R.string.negative_button, null)
             .create()
     }
     private fun uncheckAllCheckBoxes(chatsView: RecyclerView) {

@@ -31,6 +31,7 @@ import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.activities.RegisterActivity
 import com.example.scrabbleprototype.databinding.FragmentSettingsBinding
 import com.example.scrabbleprototype.model.*
+import com.example.scrabbleprototype.objects.MyLanguage
 import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.objects.Themes
 import com.example.scrabbleprototype.objects.Users
@@ -67,11 +68,19 @@ class SettingsFragment : Fragment(), CoroutineScope {
     private lateinit var boardItemsDialog: Dialog
     private lateinit var chatItemsDialog: Dialog
     private var isAppThemeSpinnerInit = false
+    private var isLanguageSpinnerInit = false
 
     private val preferenceViewModel: PreferenceViewModel by activityViewModels()
     private lateinit var binding: FragmentSettingsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val config = resources.configuration
+        val lang = MyLanguage.getLanguage()
+        val locale = Locale(lang)
+        Locale.setDefault(locale)
+        config.setLocale(locale)
+        activity?.createConfigurationContext(config)
+        activity?.applicationContext?.resources?.updateConfiguration(config, null)
         super.onCreate(savedInstanceState)
     }
 
@@ -314,15 +323,21 @@ class SettingsFragment : Fragment(), CoroutineScope {
     }
 
     private fun setupLanguages() {
+        isLanguageSpinnerInit = false
         val languageSpinner = binding.languageSpinner
         languageSpinner.adapter = ArrayAdapter(this.requireContext(), R.layout.app_theme_spinner_item, Language.values())
 
         languageSpinner.setSelection(userPrefences.language.ordinal)
         languageSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                if(userPrefences.language.name == Language.values()[position].name) return
+                if(userPrefences.language.name == Language.values()[position].name || !isLanguageSpinnerInit) {
+                    isLanguageSpinnerInit = true
+                    return
+                }
                 userPrefences.language = Language.values()[position]
                 preferenceViewModel.saveLanguage()
+                MyLanguage.currentLanguage = userPrefences.language
+                recreateFragment()
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }

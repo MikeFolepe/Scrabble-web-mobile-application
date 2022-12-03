@@ -31,6 +31,7 @@ export class GameHandlerGateway implements OnGatewayConnection {
     @SubscribeMessage('sendFriendRequest')
     async sendFriendRequest(@ConnectedSocket() socket, @MessageBody() sender: User, @MessageBody() receiver: User) {
         let activeReceiver: User;
+        console.log(receiver[1].pseudonym);
         for (const user of this.userService.activeUsers) {
             if (user.pseudonym === receiver[1].pseudonym) activeReceiver = user;
         }
