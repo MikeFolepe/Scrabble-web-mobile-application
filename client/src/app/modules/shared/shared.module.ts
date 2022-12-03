@@ -12,8 +12,23 @@ import { PasswordForgottenComponent } from '../game-view/password-forgotten/pass
 import { AppMaterialModule } from '../material.module';
 
 @NgModule({
-    declarations: [BackgroundComponent, AddChatRoomComponent, ChatroomsComponent, ChangeChatRoomComponent, JoinChatRoomsComponent, PasswordForgottenComponent],
+    declarations: [
+        BackgroundComponent,
+        AddChatRoomComponent,
+        ChatroomsComponent,
+        ChangeChatRoomComponent,
+        JoinChatRoomsComponent,
+        PasswordForgottenComponent,
+    ],
     imports: [PopoutWindowModule, CommonModule, AppMaterialModule, ReactiveFormsModule, FormsModule],
-    exports: [PopoutWindowModule, BackgroundComponent, AddChatRoomComponent, ChatroomsComponent, ChangeChatRoomComponent, JoinChatRoomsComponent, PasswordForgottenComponent],
+    exports: [
+        PopoutWindowModule,
+        BackgroundComponent,
+        AddChatRoomComponent,
+        ChatroomsComponent,
+        ChangeChatRoomComponent,
+        JoinChatRoomsComponent,
+        PasswordForgottenComponent,
+    ],
 })
 export class SharedModule {}
