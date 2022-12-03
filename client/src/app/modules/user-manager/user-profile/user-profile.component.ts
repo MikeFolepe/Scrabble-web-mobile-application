@@ -4,6 +4,7 @@ import { AuthService } from '@app/services/auth.service';
 import { ClientSocketService } from '@app/services/client-socket.service';
 import { UserService } from '@app/services/user.service';
 import { Friend } from '@common/friend';
+import { Notification } from '@common/notification';
 import { UserListDialogComponent } from './user-list-dialog/user-list-dialog.component';
 
 @Component({
@@ -53,6 +54,12 @@ export class UserProfileComponent implements OnInit {
             this.authService.currentUser.invitations[index].pseudonym,
         );
         this.authService.currentUser.invitations.splice(index, 1);
+    }
+    receiveNotifications() {
+        this.clientSocket.socket.on('receiveNotification', (notification: Notification) => {
+            console.log('sadsadasdasdasd');
+            this.authService.notifications.push(notification);
+        });
     }
     addFriend() {
         this.clientSocket.socket.on('addFriend', (friend: Friend) => {

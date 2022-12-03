@@ -6,6 +6,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { ERROR_MESSAGE_DELAY } from '@app/classes/constants';
 import { ChatEvents } from '@common/chat.gateway.events';
+import { Notification } from '@common/notification';
 import { User } from '@common/user';
 import { io } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
@@ -19,6 +20,7 @@ import { UserService } from './user.service';
 export class AuthService {
     currentUser: User;
     serverUrl: string;
+    notifications: Notification[];
     // srcData: SafeResourceUrl;
     chosenAvatar: string;
     constructor(
@@ -33,6 +35,7 @@ export class AuthService {
         this.chosenAvatar = '';
         this.serverUrl = environment.serverUrl;
         this.communicationService.baseUrl = this.serverUrl + '/api';
+        this.notifications = [];
     }
     signIn(userData: User) {
         this.communicationService.connectUser(userData).subscribe(
