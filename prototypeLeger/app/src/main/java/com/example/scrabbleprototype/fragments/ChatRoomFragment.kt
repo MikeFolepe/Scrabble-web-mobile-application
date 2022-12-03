@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import com.example.scrabbleprototype.R
 import com.example.scrabbleprototype.model.ChatAdapter
@@ -49,12 +50,28 @@ class ChatRoomFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if(currentChatRoom != null) setupChatBox(view)
+        setupCloseChat(view)
+        setupDisplayChat(view)
         receiveMessages()
     }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         activityContext = context
+    }
+
+    private fun setupDisplayChat(view: View) {
+        view.findViewById<Button>(R.id.minimize_chat_btn).setOnClickListener {
+            val channelView = view.findViewById<ConstraintLayout>(R.id.channel_layout)
+            if(channelView.visibility == View.GONE) channelView.visibility = View.VISIBLE
+        }
+    }
+
+    private fun setupCloseChat(view: View) {
+        view.findViewById<View>(R.id.close_chat).setOnClickListener {
+            val channelView = view.findViewById<ConstraintLayout>(R.id.channel_layout)
+            if(channelView.visibility == View.VISIBLE) channelView.visibility = View.GONE
+        }
     }
 
     private fun setupChatBox(view: View) {

@@ -10,6 +10,7 @@ import android.text.SpannableString
 import android.text.style.UnderlineSpan
 import android.util.AttributeSet
 import android.util.Base64
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -168,8 +169,10 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
             return
         }
         val user = User("", pseudonym, password, "")
+        Log.d("serverurl", serverUrl)
         val response = findUserInDb(pseudonym, password)
         if(response != null) {
+            Log.d("connect", "?")
             val decision: String = response.body()
             if (decision == "true") {
                 val response = postAuthentication(user)
@@ -200,6 +203,7 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
         } catch(e: Exception) {
             response = null
         }
+        Log.d("userindb", response.toString())
         return response
     }
 
@@ -218,6 +222,11 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
 
     fun join() {
         val intent = Intent(this, MainMenuActivity::class.java)
+        progressBar = findViewById(R.id.connection_progress)
+        progressBar.visibility = View.VISIBLE
+        val progressText = findViewById<TextView>(R.id.requests_load)
+        progressText.visibility = View.VISIBLE
+
         SocketHandler.setPlayerSocket(serverUrl)
         SocketHandler.establishConnection()
         socket = SocketHandler.getPlayerSocket()
@@ -229,12 +238,11 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
         }
         statsViewModel.addLogin()
         preferenceViewModel.getPreferences()
-        progressBar = findViewById(R.id.connection_progress)
-        progressBar.visibility = View.VISIBLE
         //LOAD while we do requests
         Timer().schedule(timerTask {
             runOnUiThread {
                 progressBar.visibility = View.GONE
+                progressText.visibility = View.GONE
             }
             startActivity(intent)
         }, 750)

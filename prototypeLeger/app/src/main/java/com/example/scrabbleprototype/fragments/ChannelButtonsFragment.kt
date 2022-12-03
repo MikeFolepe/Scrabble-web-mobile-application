@@ -3,14 +3,17 @@ package com.example.scrabbleprototype.fragments
 import android.app.Dialog
 import android.content.DialogInterface
 import android.os.Bundle
+import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -45,7 +48,7 @@ class ChannelButtonsFragment : Fragment() {
 
     lateinit var  allChatRoomsDialog: Dialog
     lateinit var  myChatRoomsDialog: Dialog
-    lateinit var CreateChatRoomDialog: Dialog
+    lateinit var createChatRoomDialog: Dialog
     private val socket = SocketHandler.socket
 
     private lateinit var binding: FragmentChannelButtonsBinding
@@ -83,7 +86,7 @@ class ChannelButtonsFragment : Fragment() {
         }
         setupCreateChatRoomDialog()
         binding.createChatRoomButton.setOnClickListener {
-            CreateChatRoomDialog.show()
+            createChatRoomDialog.show()
         }
     }
 
@@ -210,12 +213,22 @@ class ChannelButtonsFragment : Fragment() {
         val createView = inflater.inflate(R.layout.create_chat_room_dialog, null)
         val newChatRoomName = createView.findViewById<EditText>(R.id.new_chatroom_name)
 
-        CreateChatRoomDialog = AlertDialog.Builder(requireContext())
+        createChatRoomDialog = AlertDialog.Builder(ContextThemeWrapper(requireContext(), ThemeManager.getTheme()))
             .setView(createView)
-            .setPositiveButton("Create", DialogInterface.OnClickListener { dialog, id ->
+            .setPositiveButton(R.string.positive_button, DialogInterface.OnClickListener { dialog, id ->
+                if(newChatRoomName.text.isEmpty()) {
+                    Toast.makeText(requireContext(), R.string.empty_channel_error, Toast.LENGTH_LONG).show()
+                    return@OnClickListener
+                } else if(!newChatRoomName.text.matches(Regex("/^[a-zA-Z0-9]+[a-zA-Z0-9 ]{3,20}[a-zA-Z0-9]$/"))) {
+                    Toast.makeText(requireContext(), R.string.invalid_channel_name, Toast.LENGTH_LONG).show()
+                    return@OnClickListener
+                } else if(chatRooms.any { it.chatRoomName == newChatRoomName.text.toString()}) {
+                    Toast.makeText(requireContext(), R.string.channel_already_exist, Toast.LENGTH_LONG).show()
+                    return@OnClickListener
+                }
                 socket.emit("createChatRoom", JSONObject(Json.encodeToString(currentUser)), newChatRoomName.text.toString())
             })
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(R.string.negative_button, null)
             .create()
     }
     private fun uncheckAllCheckBoxes(chatsView: RecyclerView) {

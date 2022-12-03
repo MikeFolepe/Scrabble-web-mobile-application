@@ -18,8 +18,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="Boite de Clavardage"
-            android:textSize="24dp"
+            android:text="@string/chatbox_title"
+            android:textSize="18dp"
             android:textColor="?android:textColorSecondary"
             android:layout_gravity="center"
             />

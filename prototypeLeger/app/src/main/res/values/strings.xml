@@ -19,6 +19,7 @@
     <string name="cancel_button">Annuler</string>
     <string name="create_game_button">Créer une partie multijoueur</string>
     <string name="join_game_button">Joindre une partie multijoueur</string>
+    <string name="requests_loading">Mise en place des thèmes et de la langue</string>
 
     // Create game form
     <string name="game_settings">Paramètres de la partie</string>
@@ -53,6 +54,7 @@
     <string name="possible_word_orientation">Orientation : 1%s</string>
     <string name="horizontal">Horizontalement</string>
     <string name="vertical">Verticalement</string>
+    <string name="chatbox_title">Boite de clavardage</string>
 
     <string name="endgame_dialog_title">Fin de partie</string>
     <string name="leave_endgame">Quitter</string>
@@ -136,8 +138,6 @@
 
     //Items Dialog
     <string name="themes_dialog_title">Veuillez choisir un thème de %1s</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
     //Chat rooms
     <string name="join_chatroom">Rejoindre</string>
@@ -148,5 +148,16 @@
     <string name="my_chatRooms">Liste des canaux dont vous faites partie</string>
     <string name="chatroom_creation">Création de canal de discussion</string>
     <string name="chatroom_name">Nom du canal de discussion</string>
+    <string name="minimize_chat">Afficher le clavardage</string>
+
+    <string name="positive_button">Confirmer</string>
+    <string name="negative_button">Annuler</string>
+
+    //Error messages
+    <string name="empty_channel_error">Le nom du canal ne peut pas être vide</string>
+    <string name="invalid_channel_name">Le nom doit être de 5 lettres ou chiffes au minimum</string>
+    <string name="channel_already_exist">Le cannal existe déjà</string>
+
+    //Dialogs
 
 </resources>

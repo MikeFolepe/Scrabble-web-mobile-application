@@ -45,14 +45,13 @@
                 android:minHeight="170dp"
                 >
 
-
             <EditText
                 android:id="@+id/username"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_weight="1"
                 android:textColorHint="@color/gray"
-                android:hint="Pseudonyme"
+                android:hint="@string/pseudonym"
                 android:textColor="@color/black"
                 android:backgroundTint="@color/white"
                 android:inputType="text"
@@ -71,7 +70,7 @@
                 android:layout_height="50dp"
                 android:layout_weight="1"
                 android:background="@color/white"
-                android:hint="Mot de passe"
+                android:hint="@string/password"
                 android:textColorHint="@color/gray"
                 android:textColor="@color/black"
                 android:backgroundTint="@color/white"
@@ -139,6 +138,17 @@
             android:indeterminateTintMode="src_atop"
             style="?android:attr/progressBarStyle"
             android:indeterminateTint="?attr/progressBarStyle"/>
+
+        <TextView
+            android:id="@+id/requests_load"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/requests_loading"
+            android:textSize="18sp"
+            android:textColor="?android:textColor"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:visibility="gone"/>
 
     </LinearLayout>
 

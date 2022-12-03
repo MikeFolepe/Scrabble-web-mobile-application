@@ -20,6 +20,8 @@
     <string name="cancel_button">Cancel</string>
     <string name="create_game_button">Create a multiplayer game</string>
     <string name="join_game_button">Join a multiplayer game</string>
+    <string name="chatbox_title">Game chatbox</string>
+    <string name="requests_loading">Setting up themes and language</string>
 
     // Create game form
     <string name="game_settings">Game settings</string>
@@ -147,6 +149,16 @@
     <string name="my_chatRooms">Channels that you are part of</string>
     <string name="chatroom_creation">Channel creation</string>
     <string name="chatroom_name">Channel name</string>
+    <string name="minimize_chat">Display Chat</string>
 
+    <string name="positive_button">Confirm</string>
+    <string name="negative_button">Cancel</string>
+
+    //Error messages
+    <string name="empty_channel_error">Channel name cannot be empty</string>
+    <string name="invalid_channel_name">Channel name needs to be formed of 5 letters or numbers minimum</string>
+    <string name="channel_already_exist">The channel already exists</string>
+
+    //Dialogs
 </resources>
 
