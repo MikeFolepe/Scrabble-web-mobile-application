@@ -11,6 +11,7 @@ import { DELAY_BEFORE_PLAYING, EASEL_SIZE, INVALID_INDEX, ONE_SECOND_DELAY, THRE
 import { bot } from '@common/defaultAvatars';
 import { Friend } from '@common/friend';
 import { GameSettings } from '@common/game-settings';
+import { Notification } from '@common/notification';
 import { User } from '@common/user';
 import { GameDB } from '@common/user-stats';
 import { Logger } from '@nestjs/common';
@@ -26,6 +27,58 @@ export class GameHandlerGateway implements OnGatewayConnection {
     constructor(private readonly logger: Logger, private userService: UserService, private roomManagerService: RoomManagerService) {}
 
     // TODO: set a socket id in player class to easily find the player
+
+    @SubscribeMessage('sendFriendRequest')
+    async sendFriendRequest(@ConnectedSocket() socket, @MessageBody() sender: User, @MessageBody() receiver: User) {
+        let activeReceiver: User;
+        for (const user of this.userService.activeUsers) {
+            if (user.pseudonym === receiver[1].pseudonym) activeReceiver = user;
+        }
+        let notifToAdd = new Notification(0, sender[0].pseudonym, "Cliquez pour être redirigé vers la page d'invitations");
+        notifToAdd = await this.userService.addNotification(receiver[1].pseudonym, notifToAdd);
+        const invitationAdded = await this.userService.addInvitation(
+            receiver[1].pseudonym,
+            new Friend(sender[0].pseudonym, sender[0].avatar, sender[0].xpPoints),
+        );
+        if (activeReceiver !== undefined) {
+            socket.to(activeReceiver.socketId).emit('receiveNotification', notifToAdd);
+            socket.to(activeReceiver.socketId).emit('receiveFriendRequest', invitationAdded);
+        }
+    }
+
+    @SubscribeMessage('acceptFriendRequest')
+    async acceptFriendRequest(@ConnectedSocket() socket, @MessageBody() receiver: Friend, @MessageBody() sender: Friend) {
+        this.userService.acceptInvite(receiver[0], sender[1]);
+
+        let activeSender: User;
+        for (const user of this.userService.activeUsers) {
+            if (user.pseudonym === sender[1].pseudonym) activeSender = user;
+        }
+        if (activeSender !== undefined) {
+            socket.to(activeSender.socketId).emit('addFriend', receiver[0]);
+        }
+        socket.emit('removeFriendNotification', sender[1].pseudonym);
+    }
+
+    @SubscribeMessage('declineFriendRequest')
+    async declineFriendRequest(@ConnectedSocket() socket, @MessageBody() receiverpseudonym: string, @MessageBody() senderPseudonym: string) {
+        this.userService.declineInvite(receiverpseudonym[0], senderPseudonym[1]);
+        socket.emit('removeFriendNotification', senderPseudonym[1]);
+    }
+
+    @SubscribeMessage('sendEmail')
+    sendEmail(@ConnectedSocket() socket, @MessageBody() email: string, @MessageBody() decryptedPassword: string) {
+        const sgMail = require('@sendgrid/mail');
+        sgMail.setApiKey('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');
+        const msg = {
+            to: 'cherkaoui_08@hotmail.fr', // Change to your recipient
+            from: 'log3900.110.22@gmail.com', // Change to your verified sender
+            subject: 'Mot de passe oublié - Scrabble',
+            text: `Bonjour, voici votre mot de passe : ${decryptedPassword[1]}`,
+        };
+        sgMail.send(msg);
+    }
+
     @SubscribeMessage('getRoomsConfiguration')
     getRoomsConfiguration(socket: Socket) {
         socket.emit('roomConfiguration', this.roomManagerService.getRoomsToSend());
@@ -143,7 +196,6 @@ export class GameHandlerGateway implements OnGatewayConnection {
                 this.server.in(roomId).emit('updateTimer', room.skipTurnService.minutes, room.skipTurnService.seconds);
                 this.server.in(roomId).emit('receiveEndGame', name, room.endGameService.gameStartDate, room.endGameService.gameStartTime);
                 room.endGameService.initEndTime();
-                console.log(room.userIds);
                 await this.userService.updateTimesPlayed(room.endGameService.computeTotalTime(), room.userIds);
                 this.server.socketsLeave(roomId);
                 this.roomManagerService.deleteRoom(roomId);
@@ -334,25 +386,28 @@ export class GameHandlerGateway implements OnGatewayConnection {
 
     async handleDisconnect(socket: Socket) {
         const room = this.roomManagerService.find(this.roomManagerService.findRoomIdOf(socket.id));
-        const userIndex = this.userService.activeUsers.findIndex((curUser) => curUser.socketId === socket.id);
-        await this.userService.addLogout(this.userService.activeUsers[userIndex]._id);
-
-        if (room !== undefined) {
-            let pseudonym;
-            if (userIndex !== INVALID_INDEX) {
-                pseudonym = this.userService.activeUsers[userIndex].pseudonym;
+        if (this.userService.activeUsers.length !== 0) {
+            const userIndex = this.userService.activeUsers.findIndex((curUser) => curUser.socketId === socket.id);
+            if (this.userService.activeUsers[userIndex] !== undefined) {
+                await this.userService.addLogout(this.userService.activeUsers[userIndex]._id);
             }
-            const indexPlayer = room.playerService.players.findIndex((player) => player.name === pseudonym);
-            await this.leaveGame(socket, room, indexPlayer, this.userService.activeUsers[userIndex]._id);
+
+            if (room !== undefined) {
+                let pseudonym;
+                if (userIndex !== INVALID_INDEX) {
+                    pseudonym = this.userService.activeUsers[userIndex].pseudonym;
+                }
+                const indexPlayer = room.playerService.players.findIndex((player) => player.name === pseudonym);
+                await this.leaveGame(socket, room, indexPlayer, this.userService.activeUsers[userIndex]._id);
+            }
+            this.logger.log(`Déconnexion par l'utilisateur avec id : ${socket.id}`);
+            this.userService.activeUsers.splice(userIndex, 1);
         }
-        this.logger.log(`Déconnexion par l'utilisateur avec id : ${socket.id}`);
-        this.userService.activeUsers.splice(userIndex, 1);
     }
 
     private async leaveGame(socket: Socket, room: ServerRoom, indexPlayer: number = 0, userId: string = '') {
         const observer = room.observers.find((observerCur) => observerCur.socketId === socket.id);
         if (observer) {
-            console.log('observer');
             this.roomManagerService.removeObserver(room, socket.id);
             socket.leave(room.id);
             this.server.emit('roomConfiguration', this.roomManagerService.getRoomsToSend());

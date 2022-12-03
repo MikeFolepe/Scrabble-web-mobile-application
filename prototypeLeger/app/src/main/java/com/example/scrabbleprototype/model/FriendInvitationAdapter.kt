@@ -9,11 +9,14 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.example.scrabbleprototype.R
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 
-class FriendsListAdapter(private var friends: ArrayList<Friend>) :
-    RecyclerView.Adapter<FriendsListAdapter.ViewHolder>() {
+class FriendInvitationAdapter(private var invitations: ArrayList<Friend>) :
+    RecyclerView.Adapter<FriendInvitationAdapter.ViewHolder>() {
 
+    var onAccept: ((position: Int) -> Unit)? = null
+    var onDecline: ((position: Int) -> Unit)? = null
     /**
      * Provide a reference to the type of views that you are using
      * (custom ViewHolder).
@@ -21,14 +24,24 @@ class FriendsListAdapter(private var friends: ArrayList<Friend>) :
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val avatar = view.findViewById<ImageView>(R.id.friend_avatar)
         val pseudonym = view.findViewById<TextView>(R.id.friend_pseudonym)
-        val xp = view.findViewById<TextView>(R.id.friend_xp)
+        val acceptButton = view.findViewById<FloatingActionButton>(R.id.invitation_accept)
+        val declineButton = view.findViewById<FloatingActionButton>(R.id.invitation_decline)
+
+        init {
+            acceptButton.setOnClickListener {
+                onAccept?.invoke(layoutPosition)
+            }
+            declineButton.setOnClickListener {
+                onDecline?.invoke(layoutPosition)
+            }
+        }
     }
 
     // Create new views (invoked by the layout manager)
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         // Create a new view, which defines the UI of the list item
         val view = LayoutInflater.from(viewGroup.context)
-            .inflate(R.layout.friend_item, viewGroup, false)
+            .inflate(R.layout.friend_invitation_item, viewGroup, false)
 
         return ViewHolder(view)
     }
@@ -38,17 +51,18 @@ class FriendsListAdapter(private var friends: ArrayList<Friend>) :
 
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
-        if(friends[position].avatar == "") viewHolder.avatar.setImageResource(R.color.blue)
-        else viewHolder.avatar.setImageBitmap(friends[position].getAvatarBitmap())
-        viewHolder.pseudonym.text = friends[position].pseudonym
-        viewHolder.xp.text = viewHolder.xp.context.getString(R.string.user_xp, friends[position].xpPoints)
+        if(invitations[position].avatar == "") viewHolder.avatar.setImageResource(R.color.blue)
+        else viewHolder.avatar.setImageResource(R.color.orange_gradient_start)
+        // TODO AVATAR NOT HARDCODED
+        //viewHolder.avatar.setImageResource(invitations[position].avatar.toInt())
+        viewHolder.pseudonym.text = invitations[position].pseudonym
     }
 
     // Return the size of your dataset (invoked by the layout manager)
-    override fun getItemCount() = friends.size
+    override fun getItemCount() = invitations.size
 
-    fun updateData(newFriends: ArrayList<Friend>) {
-        friends = newFriends
+    fun updateData(newInvitations: ArrayList<Friend>) {
+        invitations = newInvitations
         this.notifyDataSetChanged()
     }
 
