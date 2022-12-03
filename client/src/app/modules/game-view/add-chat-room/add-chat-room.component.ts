@@ -29,14 +29,14 @@ export class AddChatRoomComponent {
         const regex = /^[a-zA-Z0-9]+[a-zA-Z0-9 ]{3,20}[a-zA-Z0-9]$/;
 
         if (this.chatRoomName == null) {
-            this.errorMessage = 'emptyCanal';
+            this.errorMessage = 'Le nom du canal ne peut être vide.';
             return false;
         } else if (!regex.test(this.chatRoomName)) {
-            this.errorMessage = 'errorMin5carac';
-            this.secondErrorMessage = 'spaceCharacter';
+            this.errorMessage = 'Le nom du canal doit contenir au moins 5 caractères, les caractères étant seulement des lettres et des chiffres.';
+            this.secondErrorMessage = 'Les espaces doivent être suivis de caractères.';
             return false;
         } else if (this.chatRoomService.chatRooms.find((chatRoom) => chatRoom.chatRoomName === this.chatRoomName)) {
-            this.errorMessage = 'canalNameUsed';
+            this.errorMessage = 'Le nom du canal est déjà utilisé.';
             return false;
         }
         return true;

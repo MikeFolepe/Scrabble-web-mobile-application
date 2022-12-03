@@ -10,7 +10,7 @@
                 [disabled]="!this.boardHandlerService.word.length"
                 (click)="this.boardHandlerService.confirmPlacement()"
             >
-                {{ 'play' | translate }}
+                Jouer
             </button>
             <div id="wrapper">
                 <button
@@ -20,7 +20,7 @@
                     [disabled]="!playerService.currentPlayer.isTurn || this.skipTurnService.shouldNotBeDisplayed || this.endGameService.isEndGame"
                     (click)="this.chatBoxService.sendPlayerMessage('!passer'); this.skipTurnService.switchTurn()"
                 >
-                    {{ 'passer son tour' | translate }}
+                   Passer son tour
                 </button>
                 <button
                     mat-raised-button

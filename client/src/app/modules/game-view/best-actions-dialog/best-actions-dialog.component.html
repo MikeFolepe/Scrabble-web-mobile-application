@@ -1,14 +1,12 @@
-<h1 mat-dialog-title>{{ 'bestPlacements' | translate }}</h1>
+<h1 mat-dialog-title>Meilleurs coupps</h1>
 <div mat-dialog-content>
-    <mat-label>{{ 'bestPlacementsList' | translate }}</mat-label>
+    <mat-label>Liste des meilleurs coups</mat-label>
 </div>
 <br />
 <br />
 <br />
 <div mat-dialog-actions *ngFor="let i of possibilities">
-    <span> {{ 'Word' | translate }} : {{ i.word }}, Points : {{ i.point }} - </span>
-    <button mat-raised-button mat-dialog-close (click)="play(i.line, i.startIndex, i.orientation, i.word)" color="warn">
-        {{ 'play' | translate }}
-    </button>
+    <span> Mot: {{ i.word }}, Points : {{ i.point }} - </span>
+    <button mat-raised-button mat-dialog-close (click)="play(i.line, i.startIndex, i.orientation, i.word)" color="warn">Jouer</button>
 </div>
-<button class="close" mat-raised-button mat-dialog-close color="warn">{{ 'close' | translate }}</button>
+<button class="close" mat-raised-button mat-dialog-close color="warn">Fermer</button>

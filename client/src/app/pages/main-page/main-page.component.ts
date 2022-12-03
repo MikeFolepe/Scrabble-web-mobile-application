@@ -7,7 +7,6 @@ import { ChangeChatRoomComponent } from '@app/modules/game-view/change-chat-room
 import { JoinChatRoomsComponent } from '@app/modules/game-view/join-chat-rooms/join-chat-rooms.component';
 import { AuthService } from '@app/services/auth.service';
 import { ChatRoomService } from '@app/services/chat-room.service';
-import { CommunicationService } from '@app/services/communication.service';
 import { GameSettingsService } from '@app/services/game-settings.service';
 import { GiveUpHandlerService } from '@app/services/give-up-handler.service';
 import { LetterService } from '@app/services/letter.service';
@@ -47,7 +46,6 @@ export class MainPageComponent {
         private giveUpHandlerService: GiveUpHandlerService,
         public chatRoomService: ChatRoomService,
         public userService: UserService,
-        private communicationService: CommunicationService,
     ) {
         this.selectedGameTypeIndex = 0;
         // this.gameType = ['Scrabble classique'];
@@ -106,12 +104,12 @@ export class MainPageComponent {
         this.gameSettingsService.ngOnDestroy();
     }
 
-    async changeLanguage(language: number) {
-        console.log(language);
-        this.userService.userPreferences.language = Number(
-            await this.communicationService.updateLanguage(this.authService.currentUser._id, language).toPromise(),
-        );
-        console.log(this.userService.userPreferences.language);
-        await this.authService.initLanguage();
-    }
+    // async changeLanguage(language: number) {
+    //     console.log(language);
+    //     this.userService.userPreferences.language = Number(
+    //         await this.communicationService.updateLanguage(this.authService.currentUser._id, language).toPromise(),
+    //     );
+    //     console.log(this.userService.userPreferences.language);
+    //     await this.authService.initLanguage();
+    // }
 }

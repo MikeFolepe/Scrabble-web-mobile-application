@@ -12,7 +12,7 @@ import {
     hatGirl,
     musicGuy,
     mustacheGuy,
-    orangeGuy
+    orangeGuy,
 } from '@common/defaultAvatars';
 
 @Component({
@@ -21,17 +21,16 @@ import {
     styleUrls: ['./avatar-choice.component.scss'],
 })
 export class AvatarChoiceComponent implements OnInit {
-    blondeGirl : string;
-    blondeGuy : string;
-    brunetteGirl : string;
-    musicGuy : string;
-    earringsGirl : string;
-    gingerGirl : string;
-    hatGirl : string;
-    doggo : string;
-    mustacheGuy : string;
-    orangeGuy : string;
-
+    blondeGirl: string;
+    blondeGuy: string;
+    brunetteGirl: string;
+    musicGuy: string;
+    earringsGirl: string;
+    gingerGirl: string;
+    hatGirl: string;
+    doggo: string;
+    mustacheGuy: string;
+    orangeGuy: string;
 
     constructor(public avatarChoice: MatDialogRef<AvatarChoiceComponent>, public authService: AuthService) {
         this.blondeGirl = blondeGirl;
@@ -61,4 +60,3 @@ export class AvatarChoiceComponent implements OnInit {
         this.avatarChoice.close();
     }
 }
-

@@ -5,7 +5,7 @@
         <div class="fake-buttons fake-zoom"></div>
     </div>
 
-    <h2>{{ 'partyChat' | translate }}</h2>
+    <h2>Chat de la partie</h2>
 
     <div class="display" #scrollMe>
         <p
@@ -22,5 +22,5 @@
         </p>
     </div>
 
-    <input type="text" placeholder="{{ 'enterMessage' | translate }}" maxlength="512" [(ngModel)]="message" (keypress)="handleKeyEvent($event)" />
+    <input type="text" placeholder="Veuillez entrer un message" maxlength="512" [(ngModel)]="message" (keypress)="handleKeyEvent($event)" />
 </div>

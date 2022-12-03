@@ -9,9 +9,9 @@ import { ERROR_MESSAGE_DELAY } from '@app/classes/constants';
 import { ChatEvents } from '@common/chat.gateway.events';
 import { Notification } from '@common/notification';
 import { User } from '@common/user';
-import { Language } from '@common/user-preferences';
+// import { Language } from '@common/user-preferences';
 import { TranslateService } from '@ngx-translate/core';
-import { forkJoin } from 'rxjs';
+// import { forkJoin } from 'rxjs';
 import { io } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
 import { ClientSocketService } from './client-socket.service';
@@ -59,7 +59,7 @@ export class AuthService {
                     await this.getPreferences(this.currentUser._id);
                     console.log(this.userService.userPreferences);
                     this.clientSocketService.socket.emit('joinMainRoom', this.currentUser);
-                    await this.initLanguage();
+                    // await this.initLanguage();
                     this.setAccess();
                 } else if (response.status === HttpStatusCode.NotModified) {
                     this.displayMessage('Cet utilisateur est déjà connecté');
@@ -76,30 +76,30 @@ export class AuthService {
         return true;
     }
 
-    async initLanguage() {
-        console.log('called');
+    // async initLanguage() {
+    //     console.log('called');
 
-        const defaultLocale = 'en';
-        const translationsUrl = '/assets/i18n/translations';
-        const sufix = '.json';
-        console.log('here', this.userService.userPreferences.language);
-        const storageLocale = this.userService.userPreferences.language === Language.French ? 'fr' : 'en';
-        const locale = storageLocale || defaultLocale;
-        console.log(locale);
+    //     const defaultLocale = 'en';
+    //     const translationsUrl = `file://${__dirname}/dist/client//assets/i18n/translations`;
+    //     const sufix = '.json';
+    //     console.log('here', this.userService.userPreferences.language);
+    //     const storageLocale = this.userService.userPreferences.language === Language.French ? 'fr' : 'en';
+    //     const locale = storageLocale || defaultLocale;
+    //     console.log(locale);
 
-        const response = await forkJoin([
-            this.http.get('/assets/i18n/dev.json').pipe(),
-            this.http.get(`${translationsUrl}/${locale}${sufix}`).pipe(),
-        ]).toPromise();
-        const devKeys = response[0];
-        const translatedKeys = response[1];
+    //     const response = await forkJoin([
+    //         this.http.get(`file://${__dirname}/dist/client/assets/dev.json`).pipe(),
+    //         this.http.get(`${translationsUrl}/${locale}${sufix}`).pipe(),
+    //     ]).toPromise();
+    //     const devKeys = response[0];
+    //     const translatedKeys = response[1];
 
-        this.translate.setTranslation(defaultLocale, devKeys || {});
-        this.translate.setTranslation(locale, translatedKeys || {}, true);
+    //     this.translate.setTranslation(defaultLocale, devKeys || {});
+    //     this.translate.setTranslation(locale, translatedKeys || {}, true);
 
-        this.translate.setDefaultLang(defaultLocale);
-        this.translate.use(locale);
-    }
+    //     this.translate.setDefaultLang(defaultLocale);
+    //     this.translate.use(locale);
+    // }
 
     async getPreferences(userId: string) {
         await this.userService.getAppTheme(userId);
