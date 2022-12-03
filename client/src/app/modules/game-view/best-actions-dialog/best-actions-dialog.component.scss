@@ -1,0 +1,28 @@
+
+h1 {
+    color : #23501F;
+}
+mat-label {
+    //center it
+    display: flex;
+    justify-content: center;
+    text-align: center;
+
+    //make it bigger
+    font-size: 20px;
+}
+.scrollable {
+    //make it scrollable if it is too big
+    overflow-y: auto;
+    max-height: 500px;
+
+}
+
+.close {
+    //center the button 
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    margin: auto;
+    margin-top : 25px;
+}

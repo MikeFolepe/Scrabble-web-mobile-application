@@ -32,7 +32,7 @@ hr.class-1 {
     //put the box in the cetner
     display: flex;
     justify-content: center;
-    margin-left : 345px;
+    margin:auto;
     margin-top : 50px;
     border-radius: 20px;
     background-color : #23501F;
@@ -44,7 +44,7 @@ hr.class-1 {
     display: flex;
     justify-content: center;
     margin-top : 50px;
-    margin-left : 490px;
+    margin:auto;
     border-radius: 20px;
     background-color : #23501F;
     height: 500px;
@@ -55,6 +55,7 @@ hr.class-1 {
 
 .boardTheme {
     width: 300px;
+    margin: auto;
     margin-right : 20px;
     margin-left : 20px;
     height : 400px;

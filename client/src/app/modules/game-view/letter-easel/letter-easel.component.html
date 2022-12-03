@@ -52,7 +52,7 @@
     <br />
     <br />
     <div class="wordWrapper">
-        <input class="word" [(ngModel)]="word" />
+        <input class="word" placeholder="Vérif. de mot"[(ngModel)]="word" />
         <button
             class="wordButton"
             [disabled]="authService.currentUser.isObserver || this.maxButtonCall === 0 || this.word.length === 0"

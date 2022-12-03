@@ -6,33 +6,36 @@
 }
 
 h2 {
-    margin-left : 568px;
+    display : flex;
+    justify-content: center;
     margin-bottom : 35px;
     color : black;
 }
 
 .avatarChange {
-    //center the elemetns of the div
-    border-top : 100px;
+
     border-bottom: 10px;
     display: flex;
     justify-content: center;
+    flex-direction : column;
     text-align: center;
-    margin-right : 300px;
+    margin : auto;
 }
 
 .avatarImage {
+    margin:auto;
     width:150px;
     height:150px;
 }
 
 .avatarChangeButton {
-    margin-left : 100px;
+    // margin : auto;
+    justify-content: center;
     color : #00804d;
+    margin:auto;
     margin-top: 50px;
     width : 200px;
     height: 50px;
-    //round edges
     border-radius: 10px;
 }
 
@@ -44,13 +47,14 @@ h2 {
 
 .pseudonymChangeButton {
     background-color: #00804d;
-    margin-right : 35px;
-    text-align: center;
+    justify-content: center;
+    margin:auto;
     margin-top: 50px;
     width : 300px;
     height: 50px;
     color: white;
     border-radius: 10px;
+
 }
 
 hr.class-1 {
@@ -75,10 +79,10 @@ hr.class-2 {
 }
 
 .pseudonymInput {
-    //center the input 
+
     display: flex;
-    margin-right : 500px;
-    //move the text inside the input 10px to the right
+    margin:auto;
+    text-align: center;
     padding-left : 10px;
     width : 250px;
     height : 25px;

@@ -70,14 +70,16 @@ h2 {
     margin-left: 15px;
 }
 .word{
-    height: 20px;
+    width : 100px;
+    height: 25px;
+    //align the text
+    text-align: center;
     margin-top: 3em;
     margin-right: 10px;
 }
 .wordWrapper{
     display: flex;
-    flex-direction:row;
-    width: 400px;
+    flex-direction:column;
 }
 
 .border-manipulation {
