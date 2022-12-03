@@ -35,6 +35,7 @@
             android:id="@+id/create_game_form_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="50dp"
             android:background="@drawable/black_border"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -71,30 +72,50 @@
                     android:textSize="18sp" />
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="365dp"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
+                    android:layout_marginStart="10dp"
                     android:layout_marginTop="10dp"
                     android:layout_marginBottom="10dp"
-                    android:layout_marginStart="10dp">
+                    android:orientation="horizontal">
 
-                    <Spinner
-                        android:id="@+id/spinner_minutes"
-                        android:layout_width="370dp"
+                    <LinearLayout
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="20dp"
-                        android:backgroundTint="?attr/spinnerArrowColor"
-                        android:hint="@string/minute"
-                        />
-                    <Spinner
-                        android:id="@+id/spinner_secondes"
-                        android:layout_width="match_parent"
+                        android:orientation="vertical">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Minutes"
+                            android:textSize="8sp"/>
+                        <Spinner
+                            android:backgroundTint="@color/white"
+                            android:id="@+id/spinner_minutes"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="20dp"/>
+
+</LinearLayout>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="20dp"
-                        android:backgroundTint="?attr/spinnerArrowColor"
-                        android:hint="@string/seconde"/>
+                        android:orientation="vertical">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Secondes"
+                            android:textSize="8sp"/>
+                        <Spinner
+                            android:layout_marginEnd="20dp"
+                            android:backgroundTint="@color/white"
+                            android:id="@+id/spinner_secondes"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                             />
+                    </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
+
 
             <LinearLayout
                 android:id="@+id/dictionary"
@@ -125,15 +146,25 @@
 
                     <Spinner
                         android:id="@+id/spinner_dictionary"
-                        android:layout_width="match_parent"
+                        android:layout_width="200dp"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="20dp"
                         android:backgroundTint="?attr/spinnerArrowColor"
                         android:hint="@string/dictionary"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
                         />
                 </LinearLayout>
-
+                <TextView
+                    android:id="@+id/description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:textColor="?android:textColor"
+                    android:textSize="13sp" />
             </LinearLayout>
+
 
             <LinearLayout
                 android:id="@+id/party_type"
@@ -172,6 +203,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/everyone"
+                            android:checked="true"
                             android:textColor="?android:textColor"/>
 
                         <RadioButton
@@ -187,6 +219,46 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/game_type"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:background="@drawable/black_border"
+                android:orientation="vertical"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/party_type">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:text="Type de partie"
+                    android:textColor="?android:textColor"
+                    android:textSize="18sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="10dp">
+
+                    <Spinner
+                        android:id="@+id/spinner_game_type"
+                        android:layout_width="200dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="20dp"
+                        android:backgroundTint="?attr/spinnerArrowColor"
+                        android:hint="@string/dictionary"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+                        />
+                </LinearLayout>
+            </LinearLayout>
+
+
+            <LinearLayout
                 android:id="@+id/buttons_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -195,7 +267,7 @@
                 android:orientation="horizontal"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/party_type">
+                app:layout_constraintTop_toBottomOf="@+id/game_type">
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/back_button"
@@ -212,11 +284,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
-                    android:background="?attr/buttonBarPositiveButtonStyle"
+                    android:background="@color/navy_blue"
                     android:text="@string/Continue"
                     android:padding="5dp"
                     android:textColor="?android:textColorSecondary" />
             </LinearLayout>
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

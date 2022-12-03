@@ -26,6 +26,7 @@ export class PlayerService {
         this.fontSize = 14;
         this.players = [];
         this.getMyPlayer();
+        this.previewRoomPlayers();
         // this.getAIs();
         this.updatePlayer();
         this.getPlayers();
@@ -160,6 +161,13 @@ export class PlayerService {
 
     private getPlayers(): void {
         this.clientSocketService.socket.on('roomPlayers', (players) => {
+            console.log('players');
+            this.players = players;
+        });
+    }
+
+    private previewRoomPlayers(): void {
+        this.clientSocketService.socket.on('previewRoomPlayers', (players) => {
             this.players = players;
         });
     }

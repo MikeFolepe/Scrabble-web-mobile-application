@@ -49,6 +49,7 @@ export class JoinRomService {
         this.handleObservableRoomsAvailability();
         this.sendObserverToGame();
         this.confirm();
+        // this.receivePlayers()
         this.initPagination();
         this.rooms = [];
         this.roomItemIndex = 0;
@@ -201,6 +202,11 @@ export class JoinRomService {
             this.rooms = rooms;
         });
     }
+    // private receivePlayers(): void {
+    //     this.clientSocketService.socket.on('roomPlayers', (players) => {
+    //         this.playerService.players = players;
+    //     });
+    // }
 
     private sendObserverToGame(): void {
         this.clientSocketService.socket.on('ObserverToGameView', () => {

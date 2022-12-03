@@ -1,5 +1,6 @@
 package com.example.scrabbleprototype.model
 
+import android.graphics.Bitmap
 import androidx.databinding.BaseObservable
 import androidx.databinding.Bindable
 import androidx.databinding.library.baseAdapters.BR
@@ -14,7 +15,6 @@ class Player: BaseObservable() {
     var isCreator: Boolean = false
     private var isTurn = false
     var isAi: Boolean = false
-
     @Bindable
     fun getTurn(): Boolean {
         return isTurn
