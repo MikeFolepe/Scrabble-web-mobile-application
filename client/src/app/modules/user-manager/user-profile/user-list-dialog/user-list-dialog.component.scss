@@ -12,3 +12,24 @@
     color: #bb0909fd;
     box-shadow: 0 5px 10px -5px rgba(0, 0, 0, 0.5);
 }
+
+.invitationList{
+    display: flex;
+    border-bottom: 2px solid greenyellow;
+}
+.pseudo{
+    width: 100px;
+
+}
+.wrapper{
+   overflow-y: auto;
+   overflow-x: hidden;
+   height: 500px;
+}
+.inviteButton{
+    float: right;
+    right: 0;
+    height: 35px;
+    align-content: flex-end;
+    margin-top: 5px;
+}

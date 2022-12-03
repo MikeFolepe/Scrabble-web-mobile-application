@@ -21,6 +21,7 @@
     <attr name="buttonNegativeShadow" format="reference"/>
     <attr name="buttonShadow" format="reference"/>
     <attr name="floatButtonColor" format="reference"/>
+    <attr name="floatAcceptDecline" format="reference"/>
 
     <attr name="containerColor" format="reference"/>
     <attr name="containerBorderColor" format="reference"/>

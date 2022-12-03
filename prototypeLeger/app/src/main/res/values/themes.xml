@@ -37,6 +37,7 @@
         <item name="buttonShadow">@color/dark_teal</item>
         <item name="buttonNegativeShadow">@color/dark_red</item>
         <item name="floatButtonColor">@color/teal_200</item>
+        <item name="floatAcceptDecline">@color/white</item>
 
         <item name="borderColor">@color/black</item>
         <item name="borderColorSecondary">@color/white</item>

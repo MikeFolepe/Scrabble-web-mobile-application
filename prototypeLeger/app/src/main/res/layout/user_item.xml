@@ -7,7 +7,7 @@
     android:layout_margin="10dp">
 
     <ImageView
-        android:id="@+id/active_user_avatar"
+        android:id="@+id/user_avatar"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:padding="2dp"
@@ -15,7 +15,7 @@
         android:background="@drawable/white_border"/>
 
     <TextView
-        android:id="@+id/active_user_pseudonym"
+        android:id="@+id/user_pseudonym"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="18sp"
@@ -25,7 +25,7 @@
         android:layout_gravity="center"/>
 
     <TextView
-        android:id="@+id/active_user_xp"
+        android:id="@+id/user_xp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="20sp"
@@ -35,7 +35,7 @@
         android:layout_gravity="center"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/add_active_user_button"
+        android:id="@+id/add_user_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_baseline_add_24"

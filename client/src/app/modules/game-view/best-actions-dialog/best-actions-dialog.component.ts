@@ -14,7 +14,7 @@ import { PossibleWords } from '@common/constants';
 export class BestActionsDialogComponent implements OnInit {
     possibilities: PossibleWords[];
     constructor(
-        public bastActionsDialog: MatDialogRef<BestActionsDialogComponent>,
+        public bestActionsDialog: MatDialogRef<BestActionsDialogComponent>,
         private clientService: ClientSocketService,
         private placeLetter: PlaceLetterService,
         private placementService: PlacementsHandlerService,
