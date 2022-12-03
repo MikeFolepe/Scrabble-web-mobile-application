@@ -86,6 +86,8 @@ export class UserService {
         const user = await this.userModel.findOne({ pseudonym });
         if (!user) return;
         const userToSend = new User(user.avatar, user.pseudonym, user.password, user.email);
+        console.log(userToSend._id);
+        console.log(user._id);
         userToSend._id = user._id;
         userToSend.xpPoints = user.xpPoints;
 

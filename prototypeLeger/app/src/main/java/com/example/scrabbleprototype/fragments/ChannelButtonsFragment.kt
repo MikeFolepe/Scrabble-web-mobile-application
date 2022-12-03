@@ -113,12 +113,12 @@ class ChannelButtonsFragment : Fragment() {
             }
         }
         socket.emit("getChatRooms")
-        Timer().schedule(timerTask {
+        /*Timer().schedule(timerTask {
             activity?.runOnUiThread {
                 currentChatRoom = chatRooms[0]
                 recreateChatFragment()
             }
-        }, 3500)
+        }, 2000)*/
     }
 
     private fun updateMyChatRooms() {

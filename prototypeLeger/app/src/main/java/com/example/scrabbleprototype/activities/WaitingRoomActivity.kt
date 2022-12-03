@@ -42,7 +42,7 @@ class WaitingRoomActivity : AppCompatActivity() {
         receiveNewOpponent()
         goToGameView()
         setupStartGameButton()
-        setupCancelButton()
+        setUpCancelButton()
         setupPlayersWaiting()
         receiveNewRequest()
         leave()
@@ -78,7 +78,7 @@ class WaitingRoomActivity : AppCompatActivity() {
     }
 
 
-    private fun setupCancelButton(){
+    private fun setUpCancelButton(){
         val cancelGameButton = findViewById<Button>(R.id.back_button)
 
         if(currentPlayer.isCreator){
