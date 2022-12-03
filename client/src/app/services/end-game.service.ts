@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { RankingComponent } from '@app/pages/ranking/ranking.component';
+import { NumberOfPlayer } from '@common/game-settings';
 import { GameDB } from '@common/user-stats';
 import { AuthService } from './auth.service';
 import { ClientSocketService } from './client-socket.service';
@@ -60,25 +61,42 @@ export class EndGameService {
         this.playerService.players.sort((player1, player2) => player2.score - player1.score);
 
         const myIndex = this.playerService.players.findIndex((currentPlayer) => currentPlayer.name === this.playerService.currentPlayer.name);
-        switch (myIndex) {
-            case 0: {
-                this.authService.currentUser.xpPoints += 75;
-                break;
+
+        if (this.clientSocketService.currentRoom.gameSettings.gameType === NumberOfPlayer.OneVone) {
+            switch (myIndex) {
+                case 0: {
+                    this.authService.currentUser.xpPoints += 50;
+                    break;
+                }
+                case 1: {
+                    this.authService.currentUser.xpPoints += 10;
+                    break;
+                }
+                default: {
+                    break;
+                }
             }
-            case 1: {
-                this.authService.currentUser.xpPoints += 40;
-                break;
-            }
-            case 2: {
-                this.authService.currentUser.xpPoints += 25;
-                break;
-            }
-            case 3: {
-                this.authService.currentUser.xpPoints += 10;
-                break;
-            }
-            default: {
-                break;
+        } else {
+            switch (myIndex) {
+                case 0: {
+                    this.authService.currentUser.xpPoints += 75;
+                    break;
+                }
+                case 1: {
+                    this.authService.currentUser.xpPoints += 40;
+                    break;
+                }
+                case 2: {
+                    this.authService.currentUser.xpPoints += 25;
+                    break;
+                }
+                case 3: {
+                    this.authService.currentUser.xpPoints += 10;
+                    break;
+                }
+                default: {
+                    break;
+                }
             }
         }
 

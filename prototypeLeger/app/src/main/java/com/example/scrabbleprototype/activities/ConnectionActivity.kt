@@ -8,8 +8,11 @@ import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.style.UnderlineSpan
+import android.util.AttributeSet
 import android.util.Base64
+import android.util.Log
 import android.view.MotionEvent
+import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.activity.viewModels
@@ -46,6 +49,7 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
     lateinit var client: HttpClient
     lateinit var socket: Socket
     private val mapper = jacksonObjectMapper()
+    private lateinit var progressBar: ProgressBar
 
     private val preferenceViewModel: PreferenceViewModel by viewModels()
     private val statsViewModel: StatsViewmodel by viewModels()
@@ -197,6 +201,7 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
         } catch(e: Exception) {
             response = null
         }
+        Log.d("userindb", response.toString())
         return response
     }
 
@@ -215,6 +220,11 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
 
     fun join() {
         val intent = Intent(this, MainMenuActivity::class.java)
+        progressBar = findViewById(R.id.connection_progress)
+        progressBar.visibility = View.VISIBLE
+        val progressText = findViewById<TextView>(R.id.requests_load)
+        progressText.visibility = View.VISIBLE
+
         SocketHandler.setPlayerSocket(serverUrl)
         SocketHandler.establishConnection()
         socket = SocketHandler.getPlayerSocket()
@@ -228,8 +238,12 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
         preferenceViewModel.getPreferences()
         //LOAD while we do requests
         Timer().schedule(timerTask {
+            runOnUiThread {
+                progressBar.visibility = View.GONE
+                progressText.visibility = View.GONE
+            }
             startActivity(intent)
-        }, 250)
+        }, 1000)
     }
 
     fun createAccount() {

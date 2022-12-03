@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ScrabblePrototype</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
+    <string name="mobile_server_ip">10.0.2.2:3000</string>
+    <string name="http">http://</string>
+    <string name="play_button">Jouer</string>
+    <string name="skip_turn_button">Passer son tour</string>
+    <string name="give_up_button">Abandonner</string>
+    <string name="chatbox_hint">Entre ton message ici</string>
+    <string name="info_pannel">Panneau d\'information</string>
+    <string name="swap_button">Échanger</string>
+    <string name="cancel_button">Annuler</string>
+    <string name="create_game_button">Créer une partie multijoueur</string>
+    <string name="join_game_button">Joindre une partie multijoueur</string>
+    <string name="requests_loading">Mise en place des thèmes et de la langue</string>
+
+    // Create game form
+    <string name="game_settings">Paramètres de la partie</string>
+    <string name="player_info">Informations du joueur</string>
+    <string name="duration">Durée</string>
+    <string name="dictionary">Dictionnaire</string>
+    <string name="party_type">Type de partie</string>
+    <string name="minute">Minute(s)</string>
+    <string name="seconde">Seconde(s)</string>
+    <string name="everyone">Public</string>
+    <string name="restricted">Privée</string>
+    <string name="back">Retour</string>
+    <string name="Continue">Continuer</string>
+
+    //Game view
+    <string name="timer_display">Temps restant au tour : </string>
+    <string name="reserve_letters">Nombre de lettres dans la réserve : </string>
+    <string name="player_name">Nom : </string>
+    <string name="player_score">Score : </string>
+    <string name="active_player">Joueur actif</string>
+    <string name="timer_init">00:00</string>
+    <string name="timer_format">%1$s:%2$s</string>
+    <string name="replaceAi">Remplacer</string>
+    <string name="placements_list">Liste des meilleurs placements</string>
+    <string name="dictionary_verification">Vérifier la présence d\'un mot dans le dictionnaire</string>
+    <string name="dictionary_verif_hint">Entrez un mot</string>
+    <string name="dictionary_cost">20 XP</string>
+    <string name="placements_list_cost">Acheter pour 75 XP</string>
+    <string name="dictionary_verif_left">Il vous reste %1d utilisation(s)</string>
+    <string name="possible_word_points">%1d Points</string>
+    <string name="possible_words_title">Liste des meilleurs placements</string>
+    <string name="possible_word_orientation">Orientation : 1%s</string>
+    <string name="horizontal">Horizontalement</string>
+    <string name="vertical">Verticalement</string>
+    <string name="chatbox_title">Boite de clavardage</string>
+
+    <string name="endgame_dialog_title">Fin de partie</string>
+    <string name="leave_endgame">Quitter</string>
+
+    //Waiting room
+    <string name="startGame">Démarrer</string>
+    <string name="players_waiting_list">Liste des joueurs</string>
+    <string name="title_activity_hamburger">hamburgerActivity</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+    <string name="join_game_item">Joindre</string>
+
+    //Main menu
+    <string name="welcome">Bienvenue!</string>
+    <string name="user_xp">XP : %1d</string>
+    <string name="logout">Se déconnecter</string>
+    <string name="notif_sender">De : %s</string>
+
+    //Hamburger Main menu
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+    <string name="main_menu">Menu principal</string>
+    <string name="user_profile">Profil Utilisateur</string>
+    <string name="profile">Profil</string>
+    <string name="settings">Paramètres et personnalisation</string>
+    <string name="stats">Statistiques et historique</string>
+    <string name="friend_list">Liste d\'amis</string>
+    <string name="store">Boutique</string>
+    <string name="friend_store_title">Autres</string>
+    <string name="title_activity_main_menu">MainMenuActivity</string>
+
+    //Profile fragment
+    <string name="send_friend_invitation">Envoyer une invitation d\'ami</string>
+    <string name="add_friend">Ajouter un ami</string>
+    <string name="active_users_title">Liste des joueurs actifs</string>
+    <string name="invitations_list">Invitations d\'ami</string>
+    <string name="invitation_from">De : </string>
+
+    //Settings fragment
+    <string name="parameters">Paramètres</string>
+    <string name="pseudonym">Pseudonyme</string>
+    <string name="avatar">Avatar</string>
+    <string name="email">Adresse e-mail</string>
+    <string name="connections_list">Liste de connexions et déconnexions</string>
+    <string name="connections">Connexions</string>
+    <string name="disconnections">Déconnexions</string>
+    <string name="edit_avatar_btn">Modifier votre avatar</string>
+    <string name="password">Mot de passe</string>
+    <string name="save_edits">Sauvegarder les changements</string>
+
+    <string name="personalization">Personnalisation de l\'application</string>
+    <string name="app_theme">Thèmes de l\'application</string>
+    <string name="board_theme">Thèmes du plateau de jeu</string>
+    <string name="chat_theme">Thèmes de la boîte de discussion</string>
+    <string name="language">Langue</string>
+
+    //Stats and history fragment
+    <string name="statistics">Statistiques</string>
+    <string name="connections_history">Historique de connexions</string>
+    <string name="games_history">Historique des parties jouées</string>
+    <string name="games_played">Nombre de parties jouées</string>
+    <string name="games_won">Nombre de parties gagnées</string>
+    <string name="average_points_per_game">Moyenne de points par parties</string>
+    <string name="average_time_per_game">Temps moyen consacré par parties</string>
+    <string name="connection_item">Connecté le </string>
+    <string name="logout_item">Déconnecté le </string>
+    <string name="connection_time_title"> À </string>
+    <string name="game_history_item">Partie jouée le </string>
+    <string name="game_victory">Victoire</string>
+    <string name="game_defeat">Défaite</string>
+
+    //Items store fragment
+    <string name="store_title">Boutique de thèmes</string>
+    <string name="purchase_btn">Acheter pour %1d XP</string>
+
+
+    //Items Dialog
+    <string name="themes_dialog_title">Veuillez choisir un thème de %1s</string>
+
+    //Chat rooms
+    <string name="join_chatroom">Rejoindre</string>
+    <string name="delete_chatroom">Supprimer</string>
+    <string name="available_chatrooms">Liste des canaux disponibles</string>
+    <string name="Leave">Quitter</string>
+    <string name="change_chatRoom">Changer</string>
+    <string name="my_chatRooms">Liste des canaux dont vous faites partie</string>
+    <string name="chatroom_creation">Création de canal de discussion</string>
+    <string name="chatroom_name">Nom du canal de discussion</string>
+    <string name="minimize_chat">Afficher le clavardage</string>
+
+    <string name="positive_button">Confirmer</string>
+    <string name="negative_button">Annuler</string>
+
+    //Error messages
+    <string name="empty_channel_error">Le nom du canal ne peut pas être vide</string>
+    <string name="invalid_channel_name">Le nom doit être de 5 lettres ou chiffres au minimum</string>
+    <string name="channel_already_exist">Le cannal existe déjà</string>
+
+    //Dialogs
+
+</resources>
+

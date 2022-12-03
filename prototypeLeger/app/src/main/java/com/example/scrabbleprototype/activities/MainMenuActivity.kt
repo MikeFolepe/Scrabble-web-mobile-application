@@ -1,14 +1,25 @@
 package com.example.scrabbleprototype.activities
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.app.TaskStackBuilder
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.*
+import android.widget.ImageView
+import android.widget.PopupMenu
 import android.widget.PopupWindow
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LifecycleOwner
@@ -26,11 +37,13 @@ import com.example.scrabbleprototype.fragments.ChannelButtonsFragment
 import com.example.scrabbleprototype.model.Notification
 import com.example.scrabbleprototype.model.NotificationAdapter
 import com.example.scrabbleprototype.model.SocketHandler
+import com.example.scrabbleprototype.objects.MyLanguage
 import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.objects.Users
 import com.example.scrabbleprototype.viewModel.InvitationViewModel
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.google.android.material.navigation.NavigationView
+import java.util.*
 
 class MainMenuActivity : AppCompatActivity() {
 
@@ -40,8 +53,24 @@ class MainMenuActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainMenuBinding
 
+    private lateinit var notifManager: NotificationManagerCompat
+
+    val CHANNEL_ID = "channelID"
+    val CHANNEL_NAME = "channelName"
+    val NOTIF_ID = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         ThemeManager.setActivityTheme(this)
+        val config = resources.configuration
+        val lang = MyLanguage.getLanguage()
+        Log.d("lang", lang)
+        val locale = Locale(lang)
+        Locale.setDefault(locale)
+        config.setLocale(locale)
+        createConfigurationContext(config)
+        resources.updateConfiguration(config, resources.displayMetrics)
+        //this.applicationContext.resources.updateConfiguration(config, null)
+
         super.onCreate(savedInstanceState)
 
         invitationViewModel.updateNotifications()
@@ -49,7 +78,7 @@ class MainMenuActivity : AppCompatActivity() {
             if(areNotifsInit) setupNotifications()
         }
         invitationViewModel.areNotifsInit.observe(this, notifObserver)
-
+        setupPushNotif()
         setupDrawer()
         receiveNotification()
         removeNotification()
@@ -66,21 +95,31 @@ class MainMenuActivity : AppCompatActivity() {
         fragmentTransaction.commit()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.main_menu, menu)
-        return true
-    }
-
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment_content_main_menu)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+    }
+
+    fun setupPushNotif() {
+        createNotifChannel()
+    }
+
+    private fun createNotifChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT).apply {
+                lightColor = Color.BLUE
+                enableLights(true)
+            }
+            val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+            manager.createNotificationChannel(channel)
+        }
     }
 
     private fun setupDrawer() {
         val layoutWithTheme = ThemeManager.setFragmentTheme(layoutInflater, this)
         binding = ActivityMainMenuBinding.inflate(layoutWithTheme)
         setContentView(binding.root)
+        setupAvatar()
 
         val notificationButton = binding.appBarMainMenu.notificationButton
         val notificationDot = binding.appBarMainMenu.newNotificationDot
@@ -104,6 +143,20 @@ class MainMenuActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+    }
+
+    private fun setupAvatar() {
+        val avatar = binding.appBarMainMenu.avatar
+        avatar.setImageBitmap(Users.currentUser.getAvatarBitmap())
+        avatar.setOnClickListener {
+            val popupLogout = PopupMenu(this, avatar)
+            popupLogout.menuInflater.inflate(R.menu.main_menu, popupLogout.menu)
+            popupLogout.setOnMenuItemClickListener {
+                Toast.makeText(this, "Déconnexion", Toast.LENGTH_LONG).show()
+                return@setOnMenuItemClickListener true
+            }
+            popupLogout.show()
+        }
     }
 
     private fun setupNotifications(): PopupWindow {
@@ -138,7 +191,24 @@ class MainMenuActivity : AppCompatActivity() {
         SocketHandler.socket.on("receiveNotification") { response ->
             val newNotif = jacksonObjectMapper().readValue(response[0].toString(), Notification::class.java)
             Users.currentUser.notifications.add(newNotif)
-            runOnUiThread { notifAdapter.updateData(Users.currentUser.notifications) }
+            runOnUiThread {
+                notifAdapter.updateData(Users.currentUser.notifications)
+                createNotifChannel()
+                notifManager = NotificationManagerCompat.from(this)
+                val intent= Intent(this, MainMenuActivity::class.java)
+                val pendingIntent = TaskStackBuilder.create(this).run {
+                    addNextIntentWithParentStack(intent)
+                    getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
+                }
+                val notif = NotificationCompat.Builder(this,CHANNEL_ID)
+                    .setContentTitle("Nouvelle Notification de l'app Scrabble")
+                    .setContentText("Vous avez une nouvelle invitation d'ami en attente")
+                    .setSmallIcon(R.drawable.ic_baseline_notifications_24)
+                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .setContentIntent(pendingIntent)
+                    .build()
+                notifManager.notify(NOTIF_ID, notif)
+            }
         }
     }
 

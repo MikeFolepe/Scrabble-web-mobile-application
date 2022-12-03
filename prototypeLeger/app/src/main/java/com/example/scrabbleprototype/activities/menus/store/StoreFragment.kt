@@ -96,18 +96,18 @@ class StoreFragment : Fragment() {
     }
 
     private fun showConfirmPurchaseDialog(item: Item, userItems: ArrayList<Item>, isBoard: Boolean) {
-        val builder = AlertDialog.Builder(ContextThemeWrapper(requireContext(), ThemeManager.getTheme()))
+        val builder = AlertDialog.Builder(ContextThemeWrapper(requireContext(), ThemeManager.getAlertTheme()))
         builder.setMessage("Veuillez confirmer l'achat du thème  : " + item.name)
+            .setTitle("Confirmation d'achat")
             .setCancelable(false)
-            .setPositiveButton("Confirmer") { dialog, id ->
+            .setPositiveButton(R.string.positive_button) { dialog, id ->
                 buyItem(item, userItems, isBoard)
                 dialog.dismiss()
             }
-            .setNegativeButton("Annuler") { dialog, id -> //  Action for 'NO' Button
+            .setNegativeButton(R.string.negative_button) { dialog, id -> //  Action for 'NO' Button
                 dialog.dismiss()
             }
         val alert: AlertDialog = builder.create()
-        alert.setTitle("Confirmation d'achat")
         alert.show()
     }
 }

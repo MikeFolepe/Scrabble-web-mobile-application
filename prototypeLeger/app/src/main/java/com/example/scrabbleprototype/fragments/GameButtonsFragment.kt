@@ -134,16 +134,8 @@ class GameButtonsFragment : Fragment(), EndTurnCallback {
     private fun setupSkipButton() {
         binding.skipTurnButton.setOnClickListener {
             skipTurnService.switchTimer()
-            playSkipSong()
         }
         binding.player = Players.getCurrent()
-    }
-
-    fun playSkipSong() {
-        mediaPlayer!!.setAudioStreamType(AudioManager.STREAM_RING)
-        mediaPlayer!!.setDataSource(skipUrlSong)
-        mediaPlayer.prepare()
-        mediaPlayer.start()
     }
 
     private fun setupPlayButton() {

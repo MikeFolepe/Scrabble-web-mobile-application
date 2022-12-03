@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BackgroundComponent } from '@app/pages/background/background.component';
+import { TranslateModule } from '@ngx-translate/core';
 import { PopoutWindowModule } from 'angular-opinionated-popout-window';
 import { AddChatRoomComponent } from '../game-view/add-chat-room/add-chat-room.component';
 import { ChangeChatRoomComponent } from '../game-view/change-chat-room/change-chat-room.component';
@@ -20,15 +21,16 @@ import { AppMaterialModule } from '../material.module';
         JoinChatRoomsComponent,
         PasswordForgottenComponent,
     ],
-    imports: [PopoutWindowModule, CommonModule, AppMaterialModule, ReactiveFormsModule, FormsModule],
+    imports: [PopoutWindowModule, CommonModule, AppMaterialModule, ReactiveFormsModule, FormsModule, TranslateModule.forRoot()],
     exports: [
-        PopoutWindowModule,
         BackgroundComponent,
+        PopoutWindowModule,
         AddChatRoomComponent,
         ChatroomsComponent,
         ChangeChatRoomComponent,
         JoinChatRoomsComponent,
         PasswordForgottenComponent,
+        TranslateModule,
     ],
 })
 export class SharedModule {}

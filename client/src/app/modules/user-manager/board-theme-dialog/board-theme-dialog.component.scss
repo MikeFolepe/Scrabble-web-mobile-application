@@ -1,3 +1,137 @@
-.dialog {
-    background-color : #23501F;
+#title {
+    margin-top: 50px;
+    color: black;
+    margin-left: 50px;
+    margin-right: 0;
+}
+
+h2 {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 35px;
+    color: black;
+}
+
+.avatarChange {
+    border-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    margin: auto;
+}
+
+.avatarImage {
+    margin: auto;
+    width: 150px;
+    height: 150px;
+}
+
+.avatarChangeButton {
+    // margin : auto;
+    justify-content: center;
+    color: #00804d;
+    margin: auto;
+    margin-top: 50px;
+    width: 200px;
+    height: 50px;
+    border-radius: 10px;
+}
+
+.pseudoButtonCenter {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}
+
+.pseudonymChangeButton {
+    background-color: #00804d;
+    justify-content: center;
+    margin: auto;
+    margin-top: 50px;
+    width: 300px;
+    height: 50px;
+    color: white;
+    border-radius: 10px;
+}
+
+hr.class-1 {
+    border-top: 3px solid #23501f;
+    margin-bottom: 50px;
+    margin-left: 25px;
+    margin-right: 25px;
+}
+
+hr.class-2 {
+    margin-top: 25px;
+    margin-left: 350px;
+    margin-right: 350px;
+    border-top: 2px solid #23501f;
+    margin-bottom: 50px;
+}
+
+.changePseudonym {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}
+
+.pseudonymInput {
+    display: flex;
+    margin: auto;
+    text-align: center;
+    padding-left: 10px;
+    width: 250px;
+    height: 25px;
+    border-radius: 5px;
+    border: 0.5px solid #23501f;
+}
+
+.image {
+    width: 150px;
+    height: 150px;
+}
+
+.centered {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}
+
+.centeredModification {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    flex-direction: row;
+}
+
+mat-label {
+    color: #23501f;
+}
+
+mat-form-field {
+    width: 350px;
+}
+
+mat-card-header {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.separateTitles {
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+.modificationPlaceholder {
+    height: 30px;
+    width: 300px;
+    text-align: center;
+}
+
+.bottom {
+    height: 75px;
 }
