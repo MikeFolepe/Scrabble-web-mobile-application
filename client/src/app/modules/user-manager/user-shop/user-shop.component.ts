@@ -1,5 +1,5 @@
 /* eslint-disable no-underscore-dangle */
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Themes } from '@app/classes/themes';
 import { AdministratorService } from '@app/services/administrator.service';
 import { AuthService } from '@app/services/auth.service';
@@ -13,7 +13,7 @@ import { Item } from '@common/user-preferences';
     templateUrl: './user-shop.component.html',
     styleUrls: ['./user-shop.component.scss'],
 })
-export class UserShopComponent implements OnInit {
+export class UserShopComponent {
     themes: Themes;
     galaxy: string;
     tartan: string;
@@ -29,8 +29,6 @@ export class UserShopComponent implements OnInit {
         this.tartan = tartan;
         this.themes = new Themes();
     }
-
-    ngOnInit(): void {}
 
     addBoardTheme(boardItem: Item) {
         if (this.authService.currentUser.xpPoints < boardItem.price) {

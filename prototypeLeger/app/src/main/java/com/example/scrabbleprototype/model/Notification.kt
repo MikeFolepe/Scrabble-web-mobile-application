@@ -1,28 +1,21 @@
 package com.example.scrabbleprototype.model
 
+import kotlinx.serialization.Serializable
 import java.text.SimpleDateFormat
 import java.util.*
 
-enum class NotifType {
-    Friend,
-    Game,
-    Message,
-}
-
-class Notification(var type: NotifType, var sender: String, var description: String) {
-    var title: String
+@Serializable
+class Notification(var type: Int, var sender: String, var description: String) {
+    var title: String = ""
     var date: String = getDateStamp()
-    var time: String = getTimestamp()
+    var time: String = getTimeStamp()
 
     init {
         when(type) {
-            NotifType.Friend -> {
+            0 -> {
                 title = "Invitation d'ami"
             }
-            NotifType.Game -> {
-                title = "Invitation à une partie"
-            }
-            NotifType.Message -> {
+            1 -> {
                 title = "Nouveau message"
             }
         }
@@ -32,7 +25,7 @@ class Notification(var type: NotifType, var sender: String, var description: Str
         return dateFormat.format(Date())
     }
 
-    fun getTimestamp(): String {
+    fun getTimeStamp(): String {
         val time = Date().time
         val timestampFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
         return timestampFormat.format(time)

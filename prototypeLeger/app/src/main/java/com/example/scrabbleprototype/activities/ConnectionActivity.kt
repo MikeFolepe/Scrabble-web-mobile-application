@@ -21,6 +21,7 @@ import com.example.scrabbleprototype.model.User
 import com.example.scrabbleprototype.objects.ThemeManager
 import com.example.scrabbleprototype.objects.Users
 import com.example.scrabbleprototype.viewModel.PreferenceViewModel
+import com.example.scrabbleprototype.viewModel.StatsViewmodel
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import environments.Environment.serverUrl
 import io.ktor.client.*
@@ -47,6 +48,7 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
     private val mapper = jacksonObjectMapper()
 
     private val preferenceViewModel: PreferenceViewModel by viewModels()
+    private val statsViewModel: StatsViewmodel by viewModels()
     private var job: Job = Job()
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main + job
@@ -162,38 +164,30 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
             passwordInput.error = "Le mot de passe ne peut pas être vide"
             return
         }
-
-
-        //TO DO mettre une erreur pour si le serveur est down
-        //validate username and ip
-            val user = User("", pseudonym, password, "")
-            val response = findUserInDb(pseudonym, password)
-            if(response != null) {
-                val decision: String = response.body()
-                if (decision == "true") {
-                    val response = postAuthentication(user)
-                    if(response != null) {
-                        if (response.status == HttpStatusCode.OK) {
-                            var newUser =  mapper.readValue(response.body() as String, User::class.java)
-                            val split = newUser.avatar.split(",")
-                            val imageBytes = Base64.decode(split[1], Base64.NO_WRAP)
-                            val image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-                            users.currentUser = newUser
-                            users.avatarBmp = image
-                            joinChat()
-                        }
-                        else if (response.status == HttpStatusCode.NotModified) pseudonymInput.error = "Cet utilisateur est déjà connecté"
+        val user = User("", pseudonym, password, "")
+        val response = findUserInDb(pseudonym, password)
+        if(response != null) {
+            val decision: String = response.body()
+            if (decision == "true") {
+                val response = postAuthentication(user)
+                if(response != null) {
+                    if (response.status == HttpStatusCode.OK) {
+                        var newUser: User =  response.body()
+                        val split = newUser.avatar.split(",")
+                        val imageBytes = Base64.decode(split[1], Base64.NO_WRAP)
+                        val image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+                        users.currentUser = newUser
+                        users.avatarBmp = image
+                        join()
                     }
-                    } else {
-                    Toast.makeText(this@ConnectionActivity, "Aucun compte touvé. Veuillez créer un compte.", Toast.LENGTH_SHORT).show()
+                    else if (response.status == HttpStatusCode.NotModified) pseudonymInput.error = "Cet utilisateur est déjà connecté"
                 }
-                }
-
+            } else {
+                Toast.makeText(this@ConnectionActivity, "Aucun compte touvé. Veuillez créer un compte.", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
-
-
-/// penser a retirer user ici car il sert que pour l'adresse ip qui est hardcoder bad practice
     suspend fun findUserInDb(pseudonym: String, password: String): HttpResponse? {
         var response: HttpResponse?
         try{
@@ -219,10 +213,8 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
         return response
     }
 
-
-    fun joinChat() {
+    fun join() {
         val intent = Intent(this, MainMenuActivity::class.java)
-
         SocketHandler.setPlayerSocket(serverUrl)
         SocketHandler.establishConnection()
         socket = SocketHandler.getPlayerSocket()
@@ -232,6 +224,7 @@ class ConnectionActivity : AppCompatActivity(), CoroutineScope {
             users.currentUser.socketId = response[0].toString()
             socket.emit("updateUserSocket", JSONObject(Json.encodeToString(users.currentUser)))
         }
+        statsViewModel.addLogin()
         preferenceViewModel.getPreferences()
         //LOAD while we do requests
         Timer().schedule(timerTask {

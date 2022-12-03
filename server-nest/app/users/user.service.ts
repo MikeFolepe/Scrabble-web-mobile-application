@@ -3,9 +3,13 @@
 import { ConnectionDocument } from '@app/model/connection-schema';
 import { FriendDocument } from '@app/model/friend.schema';
 import { GameDocument } from '@app/model/game-schema';
+import { NotificationDocument } from '@app/model/notification-schema';
 import { UserStatsDocument } from '@app/model/user-stats.schema';
 import { UserDocument } from '@app/model/user.schema';
 import { PreferenceService } from '@app/Preference/preference.service';
+import { INVALID_INDEX } from '@common/constants';
+import { Friend } from '@common/friend';
+import { Notification } from '@common/notification';
 import { User } from '@common/user';
 import { GameDB, UserStatsDB } from '@common/user-stats';
 import { Injectable } from '@nestjs/common';
@@ -22,6 +26,7 @@ export class UserService {
         @InjectModel('UserStats') private readonly userStatsModel: Model<UserStatsDocument>,
         @InjectModel('Game') private readonly gameModel: Model<GameDocument>,
         @InjectModel('Connection') private readonly connectionModel: Model<ConnectionDocument>,
+        @InjectModel('Notification') private readonly notificationModel: Model<NotificationDocument>,
         private preferenceService: PreferenceService,
     ) {
         this.activeUsers = [];
@@ -29,6 +34,7 @@ export class UserService {
 
     // fonction 1 de Mike
     addUser(userData: User): void {
+        console.log('add active');
         this.activeUsers.push(userData);
     }
 
@@ -51,27 +57,55 @@ export class UserService {
 
     async getUsers(): Promise<User[]> {
         const users = await this.userModel.find().exec();
-        return users.map((user) => ({
-            // eslint-disable-next-line no-underscore-dangle
-            _id: user._id,
-            pseudonym: user.pseudonym,
-            avatar: user.avatar,
-            password: user.password,
-            email: user.email,
-            xpPoints: user.xpPoints,
-            friends: user.friends,
-        }));
+        const usersToSend: User[] = [];
+        for (const user of users) {
+            const notifsToSend: Notification[] = [];
+            const friendsToSend: Friend[] = [];
+            const invitationsToSend: Friend[] = [];
+            for (const notif of user.notifications) {
+                notifsToSend.push(new Notification(notif.type, notif.sender, notif.description));
+            }
+            for (const friend of user.friends) {
+                friendsToSend.push(new Friend(friend.pseudonym, friend.avatar, friend.xpPoints));
+            }
+            for (const invitation of user.invitations) {
+                invitationsToSend.push(new Friend(invitation.pseudonym, invitation.avatar, invitation.xpPoints));
+            }
+            const newUser = new User(user.avatar, user.pseudonym, user.password, user.email);
+            newUser._id = user._id;
+            newUser.xpPoints = user.xpPoints;
+            newUser.friends = friendsToSend;
+            newUser.notifications = notifsToSend;
+            newUser.invitations = invitationsToSend;
+            usersToSend.push(newUser);
+        }
+        return usersToSend;
     }
 
     async getSingleUser(pseudonym: string): Promise<User> {
         const user = await this.userModel.findOne({ pseudonym });
         if (!user) return;
         const userToSend = new User(user.avatar, user.pseudonym, user.password, user.email);
-        console.log(userToSend._id);
-        console.log(user._id);
+
         userToSend._id = user._id;
         userToSend.xpPoints = user.xpPoints;
-        userToSend.friends = user.friends;
+
+        const friendsToSend: Friend[] = [];
+        const invitationsToSend: Friend[] = [];
+        const notifsToSend: Notification[] = [];
+
+        for (const friend of user.friends) {
+            friendsToSend.push(new Friend(friend.pseudonym, friend.avatar, friend.xpPoints));
+        }
+        for (const invitation of user.invitations) {
+            invitationsToSend.push(new Friend(invitation.pseudonym, invitation.avatar, invitation.xpPoints));
+        }
+        for (const notif of user.notifications) {
+            notifsToSend.push(new Notification(notif.type, notif.sender, notif.description));
+        }
+        userToSend.friends = friendsToSend;
+        userToSend.invitations = invitationsToSend;
+        userToSend.notifications = notifsToSend;
         return userToSend;
     }
 
@@ -142,7 +176,6 @@ export class UserService {
             startTime: game.startTime,
             winnerName: game.winnerName,
         });
-        console.log(userId);
         const userStat = await this.userStatsModel.findOne({ userId }).exec();
         const lastTab = userStat.games;
         lastTab.push(newGame);
@@ -159,7 +192,6 @@ export class UserService {
     }
 
     async updateTotalPoints(userId: string, totalPoints: number): Promise<void> {
-        console.log(totalPoints);
         const userStat = await this.userStatsModel.findOne({ userId });
         const newPoints = userStat.totalPoints + totalPoints;
         await this.userStatsModel.findOneAndUpdate({ userId }, { totalPoints: newPoints });
@@ -171,7 +203,6 @@ export class UserService {
 
     async updateTimesPlayed(totalTimeMs: number, userIds: string[]): Promise<void> {
         for (const userId of userIds) {
-            console.log(userId);
             const userStats = await this.userStatsModel.findOne({ userId });
 
             const newTime = userStats.totalTimeMs + totalTimeMs;
@@ -210,5 +241,106 @@ export class UserService {
             .join('');
 
         return password;
+    }
+
+    async getFriends(userId: string): Promise<Friend[]> {
+        const user = await this.userModel.findOne({ _id: userId });
+        return user.friends.map((friend) => ({
+            // eslint-disable-next-line no-underscore-dangle
+            pseudonym: friend.pseudonym,
+            avatar: friend.avatar,
+            xpPoints: friend.xpPoints,
+        }));
+    }
+
+    async getInvitations(userId: string): Promise<Friend[]> {
+        const user = await this.userModel.findOne({ _id: userId });
+        return user.invitations.map((invitation) => ({
+            pseudonym: invitation.pseudonym,
+            avatar: invitation.avatar,
+            xpPoints: invitation.xpPoints,
+        }));
+    }
+
+    async getNotifications(userId: string): Promise<Notification[]> {
+        const user = await this.userModel.findOne({ _id: userId });
+        const notifsToSend: Notification[] = [];
+        for (const notif of user.notifications) {
+            notifsToSend.push(new Notification(notif.type, notif.sender, notif.description));
+        }
+        return notifsToSend;
+    }
+
+    async addInvitation(pseudonym: string, invitation: Friend): Promise<Friend> {
+        const newInvitation = new this.friendModel({
+            avatar: invitation.avatar,
+            pseudonym: invitation.pseudonym,
+            xpPoints: invitation.xpPoints,
+        });
+        const user = await this.userModel.findOne({ pseudonym });
+        user.invitations.push(newInvitation);
+        await user.save();
+        const invitationAdded = new Friend(newInvitation.pseudonym, newInvitation.avatar, newInvitation.xpPoints);
+        return invitationAdded;
+    }
+
+    async addNotification(pseudonym: string, notification: Notification): Promise<Notification> {
+        const newNotif = new this.notificationModel({
+            type: notification.type,
+            sender: notification.sender,
+            description: notification.description,
+            title: notification.title,
+            date: notification.date,
+            time: notification.date,
+        });
+        const user = await this.userModel.findOne({ pseudonym });
+        user.notifications.push(newNotif);
+        await user.save();
+        const notifAdded = new Notification(newNotif.type, newNotif.sender, newNotif.description);
+        return notifAdded;
+    }
+
+    async removeInvitation(pseudonym: string, sender: string) {
+        const user = await this.userModel.findOne({ pseudonym });
+        const indexToRemove = user.invitations.findIndex((invitation) => invitation.pseudonym === sender);
+        if (indexToRemove === INVALID_INDEX) return;
+        user.invitations.splice(indexToRemove, 1);
+        await user.save();
+    }
+
+    async removeNotification(pseudonym: string, sender: string) {
+        const user = await this.userModel.findOne({ pseudonym });
+        const indexToRemove = user.notifications.findIndex((notif) => notif.sender === sender);
+        if (indexToRemove === INVALID_INDEX) return;
+        user.notifications.splice(indexToRemove, 1);
+        await user.save();
+    }
+
+    async acceptInvite(receiver: Friend, sender: Friend) {
+        const receiverAsFriend = new this.friendModel({
+            pseudonym: receiver.pseudonym,
+            avatar: receiver.avatar,
+            xpPoints: receiver.xpPoints,
+        });
+        const senderAsFriend = new this.friendModel({
+            pseudonym: sender.pseudonym,
+            avatar: sender.avatar,
+            xpPoints: sender.xpPoints,
+        });
+        const receiverDB = await this.userModel.findOne({ pseudonym: receiver.pseudonym });
+        receiverDB.friends.push(senderAsFriend);
+        await receiverDB.save();
+
+        const senderDB = await this.userModel.findOne({ pseudonym: sender.pseudonym });
+        senderDB.friends.push(receiverAsFriend);
+        await senderDB.save();
+
+        await this.removeInvitation(receiver.pseudonym, sender.pseudonym);
+        await this.removeNotification(receiver.pseudonym, sender.pseudonym);
+    }
+
+    async declineInvite(receiverPseudonym: string, senderPseudonym: string) {
+        await this.removeInvitation(receiverPseudonym, senderPseudonym);
+        await this.removeNotification(receiverPseudonym, senderPseudonym);
     }
 }

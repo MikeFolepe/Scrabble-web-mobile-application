@@ -1,4 +1,6 @@
 /* eslint-disable no-underscore-dangle */
+import { Friend } from '@common/friend';
+import { Notification } from '@common/notification';
 import { User } from '@common/user';
 import { UserStatsDB } from '@common/user-stats';
 import * as emailS from '@nativescript/email';
@@ -120,21 +122,60 @@ export class UserController {
         await this.userService.updateXpPoints(userId, req.body.xpPoints);
     }
 
-    @Post('/updateUser/:pseudonymChanged')
-    async updateUserInDb(@Body() user: User, @Req() req, @Res() response: Response) {
-        const pseudonymChanged = req.params.pseudonymChanged;
-        console.log('boo', pseudonymChanged);
-        console.log(req.params.pseudonymChanged);
-        if (pseudonymChanged === 'true') {
-            const userFound = await this.userService.getSingleUser(user.pseudonym);
-            if (userFound) {
-                console.log('userfound', `new ObjectId("${user._id}")`);
-                response.status(HttpStatus.FOUND).send('');
-                return;
+    @Post('/addInvitation/:userId')
+    async addInvitation(@Req() req) {
+        await this.userService.addInvitation(req.params.userId, req.body.invitation);
+    }
+
+    @Post('/updateUser')
+    async updateUserInDb(@Body() user: User, @Res() response: Response) {
+        console.log('boo', user);
+        const userFound = await this.userService.getSingleUser(user.pseudonym);
+        if (userFound) {
+            console.log('userfound');
+            if (userFound._id !== user._id) {
+                console.log('userfound');
+                response.status(HttpStatus.FOUND).send();
             }
         }
         await this.userService.updateUser(user).then((newUser: User) => {
             response.status(HttpStatus.OK).send(newUser);
         });
+    }
+
+    @Get('/friends/:userId')
+    async getUserFriends(@Param('userId') userId: string, @Res() response: Response) {
+        await this.userService
+            .getFriends(userId)
+            .then((userFriends: Friend[]) => {
+                response.status(HttpStatus.OK).send(userFriends);
+            })
+            .catch((error: Error) => {
+                response.status(HttpStatus.NOT_FOUND).send('An error occurred while trying to get the stats' + error.message);
+            });
+    }
+
+    @Get('/invitations/:userId')
+    async getUserInvitations(@Param('userId') userId: string, @Res() response: Response) {
+        await this.userService
+            .getInvitations(userId)
+            .then((userInvitations: Friend[]) => {
+                response.status(HttpStatus.OK).send(userInvitations);
+            })
+            .catch((error: Error) => {
+                response.status(HttpStatus.NOT_FOUND).send('An error occurred while trying to get the stats' + error.message);
+            });
+    }
+
+    @Get('/notifications/:userId')
+    async getUserNotifications(@Param('userId') userId: string, @Res() response: Response) {
+        await this.userService
+            .getNotifications(userId)
+            .then((userNotifs: Notification[]) => {
+                response.status(HttpStatus.OK).send(userNotifs);
+            })
+            .catch((error: Error) => {
+                response.status(HttpStatus.NOT_FOUND).send('An error occurred while trying to get the stats' + error.message);
+            });
     }
 }

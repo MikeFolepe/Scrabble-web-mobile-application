@@ -15,12 +15,13 @@ object Themes {
         appThemes.add("Dark")
         appThemes.add("Blue")
         appThemes.add("Orange")
-        boardItems.add(Item("Gradients animés", 300, R.drawable.gradient_animation))
-        boardItems.add(Item("Tartan", 100, R.drawable.tartan))
-        boardItems.add(Item("Galaxie", 500, R.drawable.galaxy))
 
-        chatItems.add(Item("Gradients animés", 100, R.drawable.gradient_animation))
-        chatItems.add(Item("Galaxie", 100, R.drawable.galaxy))
+        boardItems.add(Item("Gradients animés", 75, R.drawable.gradient_animation))
+        boardItems.add(Item("Tartan", 50, R.drawable.tartan))
+        boardItems.add(Item("Galaxie", 50, R.drawable.galaxy))
+
+        chatItems.add(Item("Gradients animés", 75, R.drawable.gradient_animation))
+        chatItems.add(Item("Galaxie", 50, R.drawable.galaxy))
     }
 
     fun getBoard(name: String): Item? {

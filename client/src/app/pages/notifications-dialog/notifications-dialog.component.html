@@ -1,0 +1,18 @@
+<h1 mat-dialog-title>Liste des notifications</h1>
+<div mat-dialog-content>
+    <mat-label>Voici la liste des notifications</mat-label>
+</div>
+<div mat-dialog-actions color="primary"
+*ngFor="let i of this.notificationsService.notifications">
+    <div>
+        
+        <span>
+            Invitation d'ami
+        </span>
+        <span>{{i.date}}</span>
+        <span>{{i.time}}</span>
+    </div>
+    <span> De : {{i.sender}}</span>
+    <span>{{i.description}}</span>
+</div>
+<button>Fermer</button>
