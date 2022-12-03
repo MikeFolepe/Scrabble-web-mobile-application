@@ -1,20 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
+import { UserService } from '@app/services/user.service';
 
 @Component({
-  selector: 'app-chatroom-theme-dialog',
-  templateUrl: './chatroom-theme-dialog.component.html',
-  styleUrls: ['./chatroom-theme-dialog.component.scss']
+    selector: 'app-chatroom-theme-dialog',
+    templateUrl: './chatroom-theme-dialog.component.html',
+    styleUrls: ['./chatroom-theme-dialog.component.scss'],
 })
 export class ChatroomThemeDialogComponent implements OnInit {
+    constructor(public chatroomTheme: MatDialogRef<ChatroomThemeDialogComponent>, public userService: UserService) {}
 
-  constructor(public chatroomTheme: MatDialogRef<ChatroomThemeDialogComponent>) { }
+    ngOnInit(): void {}
 
-  ngOnInit(): void {
-  }
-
-  closeDialog () {
-    this.chatroomTheme.close();
-  }
-
+    closeDialog() {
+        this.chatroomTheme.close();
+    }
 }

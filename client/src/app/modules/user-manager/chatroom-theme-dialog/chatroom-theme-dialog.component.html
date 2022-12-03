@@ -1,5 +1,10 @@
-<div class="dialog">
-    test
+<div class="chatroomThemes">
+    <mat-card *ngFor="let theme of this.userService.userPreferences.chatItems" class="boardTheme">
+        <mat-card-header>
+            <mat-card-title>{{ theme.name }}</mat-card-title>
+            <img class="image" src="{{ theme.theme }}" />
+        </mat-card-header>
+    </mat-card>
 </div>
 
-<button (click)="closeDialog()"></button>
+<button (click)="closeDialog()">Fermer</button>

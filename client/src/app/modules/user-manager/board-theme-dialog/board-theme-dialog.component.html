@@ -1,5 +1,13 @@
 <!-- <div class="dialog">
     test
 </div> -->
-<p>hello test</p>
-<button (click)="closeDialog()">fermer</button>
+<div class="boardThemes">
+    <mat-card *ngFor="let theme of this.userService.userPreferences.boardItems" class="boardTheme">
+        <mat-card-header>
+            <mat-card-title>{{ theme.name }}</mat-card-title>
+            <img class="image" src="{{ theme.theme }}" />
+        </mat-card-header>
+    </mat-card>
+</div>
+
+<button (click)="closeDialog()">Fermer</button>
