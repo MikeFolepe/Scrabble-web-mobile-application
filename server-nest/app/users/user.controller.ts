@@ -128,19 +128,20 @@ export class UserController {
     }
 
     @Post('/updateUser/:pseudonymChanged')
-    async updateUserInDb(@Body() user: User, @Req() req, @Res() response: Response) {
+    async updateUserInDb(@Req() req, @Res() response: Response) {
         const pseudonymChanged = req.params.pseudonymChanged;
         console.log('boo', pseudonymChanged);
         console.log(req.params.pseudonymChanged);
+        console.log(req.body.pseudonym)
         if (pseudonymChanged === 'true') {
-            const userFound = await this.userService.getSingleUser(user.pseudonym);
+            const userFound = await this.userService.getSingleUser(req.body.pseudonym);
             if (userFound) {
-                console.log('userfound', `new ObjectId("${user._id}")`);
+                console.log('userfound', `new ObjectId("${req.body._id}")`);
                 response.status(HttpStatus.FOUND).send('');
                 return;
             }
         }
-        await this.userService.updateUser(user).then((newUser: User) => {
+        await this.userService.updateUser(req.body).then((newUser: User) => {
             response.status(HttpStatus.OK).send(newUser);
         });
     }

@@ -26,6 +26,7 @@ import io.ktor.client.statement.*
 import io.ktor.client.utils.EmptyContent.contentType
 import io.ktor.http.*
 import io.ktor.serialization.jackson.*
+import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -37,7 +38,7 @@ class PreferenceViewModel: ViewModel() {
     private var serverUrl = Environment.serverUrl
     private var client: HttpClient = HttpClient() {
         install(ContentNegotiation) {
-            jackson()
+            json()
         }
     }
 
@@ -292,6 +293,7 @@ class PreferenceViewModel: ViewModel() {
         var response: HttpResponse?
         try{
             val pseudonym = pseudonymChanged.toString()
+            Log.d("sendpseudo", pseudonym)
             response = client.post("$serverUrl/api/user/updateUser/$pseudonym" ) {
                 contentType(ContentType.Application.Json)
                 setBody(currentUser)
